@@ -1,0 +1,20 @@
+{
+  "name": "urbanists-mixer-slidemaker",
+  "version": "1.0.0",
+  "description": "Tool to help with preparing slides for Dallas Urbanists bimonthly mixer",
+  "author": "Hexel Colorado",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "deploy": "gcloud run deploy urbanists-mixer-slides-helper --source . --region us-central1 --allow-unauthenticated --set-build-env-vars=GOOGLE_NODE_RUN_SCRIPTS=\"\""
+  },
+  "dependencies": {
+    "@google-cloud/firestore": "^9.2.0",
+    "express": "^5.2.1"
+  },
+  "allowScripts": {
+    "protobufjs@7.6.6": true
+  }
+}
