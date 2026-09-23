@@ -19,18 +19,27 @@ function isLocalOrigin(origin: string): boolean {
   }
 }
 
+const DEFAULT_AUTHORIZED_ORIGINS = [
+  'https://dallasurbanists.org',
+  'https://dallasurbanists.github.io',
+  'https://dallasurbanists.web.app',
+  'https://dallasurbanists.firebaseapp.com',
+];
+
 /**
  * Retrieves the configured list of authorized domain origins.
  */
 export function getAuthorizedOrigins(): string[] {
   const envOrigins = process.env.ALLOWED_ORIGINS;
   if (!envOrigins) {
-    return [];
+    return DEFAULT_AUTHORIZED_ORIGINS;
   }
-  return envOrigins
+  const customOrigins = envOrigins
     .split(',')
     .map((origin) => origin.trim().replace(/\/$/, ''))
     .filter(Boolean);
+
+  return Array.from(new Set([...DEFAULT_AUTHORIZED_ORIGINS, ...customOrigins]));
 }
 
 /**
