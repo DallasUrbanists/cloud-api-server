@@ -18,7 +18,7 @@ API web service providing database I/O and server-side operations for Dallas Urb
 - **public-improvements**: Hosts civic improvements suggestions, ideas, and neighborhood infrastructure feedback.
     `,
     contact: {
-      name: 'Dallas Urbanists Engineering',
+      name: 'Dallas Urbanists, Main Website',
       url: 'https://dallasurbanists.org',
     },
   },
