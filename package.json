@@ -1,18 +1,31 @@
 {
-  "name": "cloud-api-server",
+  "name": "urbanists-cloud-api-server",
   "version": "1.0.0",
-  "description": "General purpose database and API server hosted on Google Cloud.",
+  "description": "Dallas Urbanists Cloud API Server with Firestore and Google Cloud Run.",
   "author": "Hexel Colorado",
   "type": "module",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js",
-    "deploy": "gcloud run deploy urbanists-mixer-slides-helper --source . --region us-central1 --allow-unauthenticated --set-build-env-vars=GOOGLE_NODE_RUN_SCRIPTS=\"\""
+    "dev": "tsx watch src/index.ts",
+    "build": "rimraf dist && tsc",
+    "start": "node dist/index.js",
+    "deploy": "gcloud run deploy urbanists-cloud-api-server --source . --region us-central1 --allow-unauthenticated"
   },
   "dependencies": {
     "@google-cloud/firestore": "^9.2.0",
-    "express": "^5.2.1"
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^5.2.1",
+    "swagger-ui-express": "^5.0.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.13.10",
+    "@types/swagger-ui-express": "^4.1.8",
+    "rimraf": "^6.0.1",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2"
   },
   "allowScripts": {
     "protobufjs@7.6.6": true
