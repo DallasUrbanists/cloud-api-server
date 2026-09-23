@@ -1,7 +1,7 @@
 {
-  "name": "cloud-firestore-server",
+  "name": "cloud-api-server",
   "version": "1.0.0",
-  "description": "General purpose database server hosted on Google Cloud Firestore.",
+  "description": "General purpose database and API server hosted on Google Cloud.",
   "author": "Hexel Colorado",
   "type": "module",
   "main": "index.js",
