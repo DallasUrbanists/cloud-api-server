@@ -9,10 +9,11 @@
     "dev": "tsx watch src/index.ts",
     "build": "rimraf dist && tsc",
     "start": "node dist/index.js",
-    "deploy": "gcloud run deploy urbanists-cloud-api-server --source . --region us-central1 --allow-unauthenticated"
+    "deploy": "gcloud run deploy urbanists-cloud-api-server --source . --region us-central1 --allow-unauthenticated --update-env-vars SUGGESTION_PHOTOS_BUCKET=urbanists-suggestion-photos"
   },
   "dependencies": {
     "@google-cloud/firestore": "^9.2.0",
+    "@google-cloud/storage": "^8.2.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^5.2.1",

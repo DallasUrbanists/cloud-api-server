@@ -13,9 +13,16 @@ export interface SuggestionAuthor {
   name: string;
 }
 
+export interface SuggestionPhoto {
+  url: string;
+  caption: string;
+  timestamp: string; // ISO 8601 string representation
+}
+
 export interface SuggestionContent {
   summary: string;
   details: string;
+  photos?: SuggestionPhoto[];
 }
 
 export interface SuggestionLocation {
@@ -45,6 +52,7 @@ export interface CreateSuggestionDTO {
   content: {
     summary: string;
     details?: string;
+    photos?: SuggestionPhoto[];
   };
   location?: {
     latitude?: number;
@@ -63,6 +71,7 @@ export interface UpdateSuggestionDTO {
   content?: {
     summary?: string;
     details?: string;
+    photos?: SuggestionPhoto[];
   };
   location?: {
     latitude?: number;
@@ -70,6 +79,52 @@ export interface UpdateSuggestionDTO {
     description?: string;
     address?: string;
   };
+}
+
+/**
+ * Validates an array of suggestion photos. Maximum 10 photos allowed.
+ */
+export function validatePhotos(photos: any): { error?: string; data?: SuggestionPhoto[] } {
+  if (!Array.isArray(photos)) {
+    return { error: 'content.photos must be an array.' };
+  }
+
+  if (photos.length > 10) {
+    return { error: 'content.photos cannot contain more than 10 photos.' };
+  }
+
+  const validatedPhotos: SuggestionPhoto[] = [];
+
+  for (let i = 0; i < photos.length; i++) {
+    const item = photos[i];
+    if (!item || typeof item !== 'object') {
+      return { error: `content.photos[${i}] must be an object.` };
+    }
+
+    if (!item.url || typeof item.url !== 'string' || item.url.trim() === '') {
+      return { error: `content.photos[${i}].url is required and must be a non-empty string.` };
+    }
+
+    if (item.caption !== undefined && typeof item.caption !== 'string') {
+      return { error: `content.photos[${i}].caption must be a string.` };
+    }
+
+    let timestamp = new Date().toISOString();
+    if (item.timestamp !== undefined) {
+      if (typeof item.timestamp !== 'string' || isNaN(Date.parse(item.timestamp))) {
+        return { error: `content.photos[${i}].timestamp must be a valid ISO 8601 date string.` };
+      }
+      timestamp = new Date(item.timestamp).toISOString();
+    }
+
+    validatedPhotos.push({
+      url: item.url.trim(),
+      caption: typeof item.caption === 'string' ? item.caption.trim() : '',
+      timestamp,
+    });
+  }
+
+  return { data: validatedPhotos };
 }
 
 /**
@@ -97,6 +152,15 @@ export function validateCreateSuggestion(body: any): { error?: string; data?: Cr
   }
   if (!body.content.summary || typeof body.content.summary !== 'string' || body.content.summary.trim() === '') {
     return { error: 'content.summary is required and must be a non-empty string.' };
+  }
+
+  let validatedPhotos: SuggestionPhoto[] | undefined = undefined;
+  if (body.content.photos !== undefined) {
+    const photosValidation = validatePhotos(body.content.photos);
+    if (photosValidation.error) {
+      return { error: photosValidation.error };
+    }
+    validatedPhotos = photosValidation.data;
   }
 
   // Validate status if provided
@@ -135,6 +199,7 @@ export function validateCreateSuggestion(body: any): { error?: string; data?: Cr
       content: {
         summary: body.content.summary.trim(),
         details: typeof body.content.details === 'string' ? body.content.details.trim() : '',
+        ...(validatedPhotos !== undefined ? { photos: validatedPhotos } : {}),
       },
       location: {
         latitude: body.location?.latitude,
@@ -203,6 +268,13 @@ export function validateUpdateSuggestion(body: any): { error?: string; data?: Up
         return { error: 'content.details must be a string.' };
       }
       updateData.content.details = body.content.details.trim();
+    }
+    if (body.content.photos !== undefined) {
+      const photosValidation = validatePhotos(body.content.photos);
+      if (photosValidation.error) {
+        return { error: photosValidation.error };
+      }
+      updateData.content.photos = photosValidation.data;
     }
   }
 

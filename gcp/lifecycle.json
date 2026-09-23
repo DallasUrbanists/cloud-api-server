@@ -1,0 +1,17 @@
+{
+  "rule": [
+    {
+      "action": { "type": "Delete" },
+      "condition": {
+        "age": 7,
+        "matchesPrefix": ["staging/"]
+      }
+    },
+    {
+      "action": { "type": "AbortIncompleteMultipartUpload" },
+      "condition": {
+        "age": 1
+      }
+    }
+  ]
+}

@@ -5,6 +5,7 @@ import {
   CreateSuggestionDTO,
   UpdateSuggestionDTO,
   SuggestionStatus,
+  SuggestionContent,
 } from '../models/suggestion.js';
 
 const COLLECTION_NAME = 'suggestion';
@@ -33,6 +34,19 @@ function toIsoDateString(val: any): string {
 function mapDocToSuggestion(docData: any, docId: string): Suggestion {
   const idNumber = typeof docData.id === 'number' ? docData.id : parseInt(docId, 10) || 0;
 
+  const content: SuggestionContent = {
+    summary: docData.content?.summary || '',
+    details: docData.content?.details || '',
+  };
+
+  if (Array.isArray(docData.content?.photos)) {
+    content.photos = docData.content.photos.map((p: any) => ({
+      url: p.url || '',
+      caption: p.caption || '',
+      timestamp: toIsoDateString(p.timestamp),
+    }));
+  }
+
   return {
     id: idNumber,
     creationDate: toIsoDateString(docData.creationDate),
@@ -42,10 +56,7 @@ function mapDocToSuggestion(docData: any, docId: string): Suggestion {
       email: docData.author?.email || '',
       name: docData.author?.name || '',
     },
-    content: {
-      summary: docData.content?.summary || '',
-      details: docData.content?.details || '',
-    },
+    content,
     location: {
       latitude: docData.location?.latitude,
       longitude: docData.location?.longitude,
@@ -154,6 +165,7 @@ export class SuggestionService {
       content: {
         summary: dto.content.summary.trim(),
         details: dto.content.details || '',
+        ...(dto.content.photos !== undefined ? { photos: dto.content.photos } : {}),
       },
       location: {
         latitude: dto.location?.latitude ?? null,
@@ -205,6 +217,7 @@ export class SuggestionService {
         ...existingData.content,
         ...(dto.content.summary ? { summary: dto.content.summary.trim() } : {}),
         ...(dto.content.details !== undefined ? { details: dto.content.details } : {}),
+        ...(dto.content.photos !== undefined ? { photos: dto.content.photos } : {}),
       };
     }
 

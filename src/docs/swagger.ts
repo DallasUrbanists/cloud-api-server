@@ -58,6 +58,83 @@ API web service providing database I/O and server-side operations for Dallas Urb
         },
       },
     },
+    '/api/public-improvements/suggestions/upload-url': {
+      post: {
+        summary: 'Generate Signed Photo Upload URL',
+        description: 'Generates a temporary V4 signed Google Cloud Storage PUT URL allowing client applications to upload resized photos directly to Cloud Storage securely.',
+        tags: ['Public Improvements - Suggestions'],
+        requestBody: {
+          required: false,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  contentType: {
+                    type: 'string',
+                    example: 'image/webp',
+                    description: 'MIME type of the image to upload. Default: image/webp',
+                  },
+                  filename: {
+                    type: 'string',
+                    example: 'sidewalk-photo.webp',
+                    description: 'Optional original filename used to preserve file extension.',
+                  },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          200: {
+            description: 'Signed upload URL generated successfully.',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    message: {
+                      type: 'string',
+                      example: 'Signed upload URL generated successfully.',
+                    },
+                    data: {
+                      type: 'object',
+                      properties: {
+                        uploadUrl: {
+                          type: 'string',
+                          format: 'uri',
+                          description: 'Pre-authorized V4 signed PUT URL for uploading photo binary to GCS.',
+                        },
+                        publicUrl: {
+                          type: 'string',
+                          format: 'uri',
+                          description: 'Permanent public read URL to store in the suggestion photos array.',
+                        },
+                        filePath: {
+                          type: 'string',
+                          example: 'suggestions/uploads/1695484800000-uuid.webp',
+                        },
+                        expiresAt: {
+                          type: 'string',
+                          format: 'date-time',
+                          example: '2026-09-23T15:15:00.000Z',
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          400: {
+            $ref: '#/components/responses/BadRequestError',
+          },
+          500: {
+            $ref: '#/components/responses/InternalServerError',
+          },
+        },
+      },
+    },
     '/api/public-improvements/suggestions': {
       get: {
         summary: 'List All Suggestions',
@@ -329,6 +406,29 @@ API web service providing database I/O and server-side operations for Dallas Urb
   },
   components: {
     schemas: {
+      SuggestionPhoto: {
+        type: 'object',
+        required: ['url', 'caption', 'timestamp'],
+        properties: {
+          url: {
+            type: 'string',
+            format: 'uri',
+            description: 'Public URL of the photo (hosted on Cloud Storage/CDN)',
+            example: 'https://storage.googleapis.com/urbanists-suggestion-photos/suggestions/1/elm-street-lane.webp',
+          },
+          caption: {
+            type: 'string',
+            description: 'Caption or description for the photo',
+            example: 'Current sidewalk layout showing lack of protected barrier',
+          },
+          timestamp: {
+            type: 'string',
+            format: 'date-time',
+            description: 'ISO 8601 timestamp when photo was taken or uploaded',
+            example: '2026-09-23T14:30:00.000Z',
+          },
+        },
+      },
       SuggestionAuthor: {
         type: 'object',
         required: ['email', 'name'],
@@ -356,6 +456,14 @@ API web service providing database I/O and server-side operations for Dallas Urb
             type: 'string',
             default: '',
             example: 'Installing concrete bollards and native Texas oak trees will increase pedestrian safety and lower summer heat.',
+          },
+          photos: {
+            type: 'array',
+            description: 'Optional list of photos associated with the suggestion (max 10 photos).',
+            maxItems: 10,
+            items: {
+              $ref: '#/components/schemas/SuggestionPhoto',
+            },
           },
         },
       },
@@ -479,6 +587,14 @@ API web service providing database I/O and server-side operations for Dallas Urb
               details: {
                 type: 'string',
                 example: 'Updated details with community petition signatures.',
+              },
+              photos: {
+                type: 'array',
+                description: 'Optional updated list of photos (max 10 photos).',
+                maxItems: 10,
+                items: {
+                  $ref: '#/components/schemas/SuggestionPhoto',
+                },
               },
             },
           },

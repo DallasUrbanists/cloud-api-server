@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { SuggestionService } from '../services/suggestionService.js';
+import { StorageService } from '../services/storageService.js';
 import {
   validateCreateSuggestion,
   validateUpdateSuggestion,
@@ -8,6 +9,33 @@ import {
 } from '../models/suggestion.js';
 
 export class SuggestionController {
+  /**
+   * POST /api/public-improvements/suggestions/upload-url
+   */
+  static async getUploadUrl(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { contentType, filename } = req.body || {};
+
+      const result = await StorageService.generateUploadUrl({
+        contentType,
+        filename,
+      });
+
+      res.status(200).json({
+        message: 'Signed upload URL generated successfully.',
+        data: result,
+      });
+    } catch (error: any) {
+      if (error?.message && error.message.includes('Invalid content type')) {
+        res.status(400).json({
+          error: 'Bad Request',
+          message: error.message,
+        });
+        return;
+      }
+      next(error);
+    }
+  }
   /**
    * GET /api/public-improvements/suggestions
    */

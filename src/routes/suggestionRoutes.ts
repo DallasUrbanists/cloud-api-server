@@ -3,6 +3,9 @@ import { SuggestionController } from '../controllers/suggestionController.js';
 
 const router = Router();
 
+// Signed URL Upload Helper
+router.post('/upload-url', SuggestionController.getUploadUrl);
+
 // CRUD Endpoints for Suggestion
 router.get('/', SuggestionController.list);
 router.get('/:id', SuggestionController.getById);

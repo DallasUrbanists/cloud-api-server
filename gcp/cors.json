@@ -1,0 +1,15 @@
+[
+  {
+    "origin": [
+      "https://dallasurbanists.org",
+      "https://dallasurbanists.web.app",
+      "https://dallasurbanists.firebaseapp.com",
+      "http://localhost:3000",
+      "http://localhost:5173",
+      "http://localhost:8080"
+    ],
+    "method": ["GET", "PUT", "OPTIONS", "HEAD"],
+    "responseHeader": ["Content-Type", "Access-Control-Allow-Origin", "ETag"],
+    "maxAgeSeconds": 3600
+  }
+]
