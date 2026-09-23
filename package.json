@@ -1,7 +1,7 @@
 {
-  "name": "urbanists-mixer-slidemaker",
+  "name": "cloud-firestore-server",
   "version": "1.0.0",
-  "description": "Tool to help with preparing slides for Dallas Urbanists bimonthly mixer",
+  "description": "General purpose database server hosted on Google Cloud Firestore.",
   "author": "Hexel Colorado",
   "type": "module",
   "main": "index.js",
