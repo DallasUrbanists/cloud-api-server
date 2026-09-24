@@ -1,6 +1,8 @@
 [
   {
     "origin": [
+      "https://api.dallasurbanists.org",
+      "https://map.dallasurbanists.org",
       "https://dallasurbanists.org",
       "https://dallasurbanists.github.io",
       "https://dallasurbanists.web.app",
