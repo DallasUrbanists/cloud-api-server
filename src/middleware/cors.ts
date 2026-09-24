@@ -20,6 +20,8 @@ function isLocalOrigin(origin: string): boolean {
 }
 
 const DEFAULT_AUTHORIZED_ORIGINS = [
+  'https://map.dallasurbanists.org',
+  'https://api.dallasurbanists.org',
   'https://dallasurbanists.org',
   'https://dallasurbanists.github.io',
   'https://dallasurbanists.web.app',
