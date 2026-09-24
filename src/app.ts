@@ -795,22 +795,17 @@ export function createApp(): Express {
         <body>
           <div class="header">
             <div class="header-info">
-              <span class="badge">Strong Towns Local Conversation</span>
               <h1>Dallas Urbanists Cloud API</h1>
-              <p class="subtitle">General purpose database and API web service hosted on Google Cloud Run.</p>
+              <p class="subtitle">General purpose database and API web service hosted on Google Cloud Run. Explore endpoints, view schemas, and execute test requests live:</p>
+              <a class="button" href="/docs">Swagger documentation</a>
+              <a class="button" href="/docs">Main website</a>
             </div>
             <button id="theme-toggle-btn" class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle Theme">
               <span>☀️</span> Light Mode
             </button>
           </div>
 
-          <div class="card">
-            <h3>Interactive API Documentation</h3>
-            <p>Explore endpoints, view schemas, and execute test requests live:</p>
-            <a class="button" href="/docs">Open Swagger API Docs & UI &rarr;</a>
-          </div>
-
-          <div class="card">
+          <div>
             <h3>Available Endpoints</h3>
             <ul class="endpoints-list">
               <li class="endpoint-item">
@@ -845,10 +840,6 @@ export function createApp(): Express {
               </li>
             </ul>
           </div>
-
-          <footer>
-            Dallas Urbanists &bull; Inspired by <a href="https://www.strongtowns.org" target="_blank" rel="noopener noreferrer">Strong Towns</a>
-          </footer>
         </body>
       </html>
     `);
