@@ -10,7 +10,7 @@
     "dev": "tsx watch src/index.ts",
     "build": "rimraf dist && tsc",
     "start": "node dist/index.js",
-    "deploy": "gcloud run deploy urbanists-cloud-api-server --source . --region us-central1 --allow-unauthenticated --update-env-vars SUGGESTION_PHOTOS_BUCKET=urbanists-suggestion-photos"
+    "deploy": "gcloud run deploy urbanists-cloud-api-server --source . --region us-central1 --allow-unauthenticated --add-cloudsql-instances=urbanists-mixer-slides-helper:us-south1:contacts-relationships-db --update-env-vars SUGGESTION_PHOTOS_BUCKET=urbanists-suggestion-photos,DB_USER=postgres,DB_NAME=postgres,INSTANCE_CONNECTION_NAME=urbanists-mixer-slides-helper:us-south1:contacts-relationships-db --update-secrets DB_PASSWORD=contacts-db-password:latest"
   },
   "dependencies": {
     "@google-cloud/firestore": "^9.2.0",
@@ -18,16 +18,18 @@
     "cors": "^2.8.6",
     "dotenv": "^16.4.7",
     "express": "^5.2.1",
+    "pg": "^8.23.1",
     "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
-    "@types/express": "^5.0.0",
-    "@types/node": "^22.13.10",
+    "@types/express": "^5.0.6",
+    "@types/node": "^22.20.4",
+    "@types/pg": "^8.23.1",
     "@types/swagger-ui-express": "^4.1.8",
     "rimraf": "^6.0.1",
     "tsx": "^4.19.3",
-    "typescript": "^5.8.2"
+    "typescript": "^5.9.3"
   },
   "allowScripts": {
     "protobufjs@7.6.6": true

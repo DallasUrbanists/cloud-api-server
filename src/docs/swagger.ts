@@ -10,12 +10,15 @@ API web service providing database I/O and server-side operations for Dallas Urb
 
 ### Key Features
 - **Firestore multi-database integration** with primary database \`public-improvements\`
+- **PostgreSQL database integration** for contact and member records
 - **Suggestion management** (Create, Read, Update, Delete)
+- **Contact management** (Create, Read, Update, Delete)
 - **Domain Authorization & CORS protection** with unrestricted local testing
 - **Hosted on Google Cloud Run**
 
 ### Databases
 - **public-improvements**: Hosts civic improvements suggestions, ideas, and neighborhood infrastructure feedback.
+- **PostgreSQL**: Stores contact records and organizational data.
     `,
     contact: {
       name: 'Dallas Urbanists, Main Website',
@@ -32,6 +35,10 @@ API web service providing database I/O and server-side operations for Dallas Urb
     {
       name: 'Public Improvements - Suggestions',
       description: 'Endpoints for managing urban improvement suggestions in the public-improvements database.',
+    },
+    {
+      name: 'Contacts',
+      description: 'Endpoints for managing contact records in the PostgreSQL database.',
     },
     {
       name: 'System',
@@ -54,6 +61,212 @@ API web service providing database I/O and server-side operations for Dallas Urb
                 },
               },
             },
+          },
+        },
+      },
+    },
+    '/api/contacts': {
+      get: {
+        summary: 'List All Contacts',
+        description: 'Retrieves all contact records ordered by ID descending from the PostgreSQL database.',
+        tags: ['Contacts'],
+        parameters: [
+          {
+            name: 'limit',
+            in: 'query',
+            description: 'Maximum number of items to return',
+            required: false,
+            schema: {
+              type: 'integer',
+              minimum: 1,
+              example: 50,
+            },
+          },
+        ],
+        responses: {
+          200: {
+            description: 'List of contacts returned successfully.',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'array',
+                  items: {
+                    $ref: '#/components/schemas/Contact',
+                  },
+                },
+              },
+            },
+          },
+          400: {
+            $ref: '#/components/responses/BadRequestError',
+          },
+          500: {
+            $ref: '#/components/responses/InternalServerError',
+          },
+        },
+      },
+      post: {
+        summary: 'Create a New Contact',
+        description: 'Creates a new contact record in the PostgreSQL database.',
+        tags: ['Contacts'],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                $ref: '#/components/schemas/CreateContactDTO',
+              },
+            },
+          },
+        },
+        responses: {
+          201: {
+            description: 'Contact created successfully.',
+            content: {
+              'application/json': {
+                schema: {
+                  $ref: '#/components/schemas/Contact',
+                },
+              },
+            },
+          },
+          400: {
+            $ref: '#/components/responses/BadRequestError',
+          },
+          500: {
+            $ref: '#/components/responses/InternalServerError',
+          },
+        },
+      },
+    },
+    '/api/contacts/{id}': {
+      get: {
+        summary: 'Get Contact by ID',
+        description: 'Retrieves a single contact record by its integer ID.',
+        tags: ['Contacts'],
+        parameters: [
+          {
+            name: 'id',
+            in: 'path',
+            required: true,
+            description: 'Integer ID of the contact',
+            schema: {
+              type: 'integer',
+              example: 1,
+            },
+          },
+        ],
+        responses: {
+          200: {
+            description: 'Contact found.',
+            content: {
+              'application/json': {
+                schema: {
+                  $ref: '#/components/schemas/Contact',
+                },
+              },
+            },
+          },
+          400: {
+            $ref: '#/components/responses/BadRequestError',
+          },
+          404: {
+            $ref: '#/components/responses/NotFoundError',
+          },
+          500: {
+            $ref: '#/components/responses/InternalServerError',
+          },
+        },
+      },
+      put: {
+        summary: 'Update Contact',
+        description: 'Updates an existing contact record by its integer ID.',
+        tags: ['Contacts'],
+        parameters: [
+          {
+            name: 'id',
+            in: 'path',
+            required: true,
+            description: 'Integer ID of the contact to update',
+            schema: {
+              type: 'integer',
+              example: 1,
+            },
+          },
+        ],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                $ref: '#/components/schemas/UpdateContactDTO',
+              },
+            },
+          },
+        },
+        responses: {
+          200: {
+            description: 'Contact updated successfully.',
+            content: {
+              'application/json': {
+                schema: {
+                  $ref: '#/components/schemas/Contact',
+                },
+              },
+            },
+          },
+          400: {
+            $ref: '#/components/responses/BadRequestError',
+          },
+          404: {
+            $ref: '#/components/responses/NotFoundError',
+          },
+          500: {
+            $ref: '#/components/responses/InternalServerError',
+          },
+        },
+      },
+      delete: {
+        summary: 'Delete Contact',
+        description: 'Deletes a contact record by its integer ID from the PostgreSQL database.',
+        tags: ['Contacts'],
+        parameters: [
+          {
+            name: 'id',
+            in: 'path',
+            required: true,
+            description: 'Integer ID of the contact to delete',
+            schema: {
+              type: 'integer',
+              example: 1,
+            },
+          },
+        ],
+        responses: {
+          200: {
+            description: 'Contact deleted successfully.',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    message: {
+                      type: 'string',
+                      example: 'Contact with ID 1 has been deleted successfully.',
+                    },
+                  },
+                },
+              },
+            },
+          },
+          400: {
+            $ref: '#/components/responses/BadRequestError',
+          },
+          404: {
+            $ref: '#/components/responses/NotFoundError',
+          },
+          500: {
+            $ref: '#/components/responses/InternalServerError',
           },
         },
       },
@@ -406,6 +619,169 @@ API web service providing database I/O and server-side operations for Dallas Urb
   },
   components: {
     schemas: {
+      Contact: {
+        type: 'object',
+        required: ['id', 'name', 'created_on'],
+        properties: {
+          id: {
+            type: 'integer',
+            example: 1,
+            description: 'Unique integer identifier (bigint) for the contact',
+          },
+          name: {
+            type: 'string',
+            example: 'Jane Doe',
+            description: 'Full name of the contact',
+          },
+          created_on: {
+            type: 'string',
+            format: 'date-time',
+            example: '2026-09-30T10:00:00.000Z',
+            description: 'Timestamp with time zone when the contact was created',
+          },
+          emails: {
+            type: 'array',
+            items: {
+              type: 'string',
+              format: 'email',
+            },
+            nullable: true,
+            example: ['jane.doe@example.com', 'j.doe@work.org'],
+            description: 'List of email addresses associated with the contact',
+          },
+          phones: {
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+            nullable: true,
+            example: ['+1-214-555-0199'],
+            description: 'List of phone numbers associated with the contact',
+          },
+          zip_home: {
+            type: 'string',
+            nullable: true,
+            example: '75201',
+            description: 'Primary residential ZIP code',
+          },
+          zip_other: {
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+            nullable: true,
+            example: ['75202', '75204'],
+            description: 'Other relevant ZIP codes (work, advocacy areas, etc.)',
+          },
+          roles: {
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+            nullable: true,
+            example: ['volunteer', 'donor', 'advocate'],
+            description: 'Roles assigned to this contact',
+          },
+        },
+      },
+      CreateContactDTO: {
+        type: 'object',
+        required: ['name'],
+        properties: {
+          name: {
+            type: 'string',
+            example: 'Jane Doe',
+            description: 'Full name of the contact',
+          },
+          emails: {
+            type: 'array',
+            items: {
+              type: 'string',
+              format: 'email',
+            },
+            example: ['jane.doe@example.com'],
+            description: 'List of email addresses',
+          },
+          phones: {
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+            example: ['+1-214-555-0199'],
+            description: 'List of phone numbers',
+          },
+          zip_home: {
+            type: 'string',
+            example: '75201',
+            description: 'Primary residential ZIP code',
+          },
+          zip_other: {
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+            example: ['75202'],
+            description: 'Additional ZIP codes',
+          },
+          roles: {
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+            example: ['member', 'volunteer'],
+            description: 'Roles assigned to the contact',
+          },
+        },
+      },
+      UpdateContactDTO: {
+        type: 'object',
+        required: ['name'],
+        properties: {
+          name: {
+            type: 'string',
+            example: 'Jane Doe',
+            description: 'Updated full name of the contact',
+          },
+          emails: {
+            type: 'array',
+            items: {
+              type: 'string',
+              format: 'email',
+            },
+            example: ['jane.doe@example.com'],
+            description: 'Updated list of email addresses',
+          },
+          phones: {
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+            example: ['+1-214-555-0199'],
+            description: 'Updated list of phone numbers',
+          },
+          zip_home: {
+            type: 'string',
+            example: '75201',
+            description: 'Updated primary residential ZIP code',
+          },
+          zip_other: {
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+            example: ['75202', '75204'],
+            description: 'Updated additional ZIP codes',
+          },
+          roles: {
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+            example: ['volunteer', 'organizer'],
+            description: 'Updated roles assigned to the contact',
+          },
+        },
+      },
       SuggestionPhoto: {
         type: 'object',
         required: ['url', 'caption', 'timestamp'],

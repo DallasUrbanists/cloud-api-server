@@ -3,6 +3,7 @@ import swaggerUi from 'swagger-ui-express';
 import dotenv from 'dotenv';
 import { corsMiddleware, corsErrorHandler } from './middleware/cors.js';
 import suggestionRoutes from './routes/suggestionRoutes.js';
+import contactRoutes from './routes/contactRoutes.js';
 import { swaggerDocument } from './docs/swagger.js';
 
 dotenv.config();
@@ -847,8 +848,8 @@ export function createApp(): Express {
 
   // API Routes
   app.use('/api/public-improvements/suggestions', suggestionRoutes);
-  // Also register alias /api/suggestions for convenience
-  app.use('/api/suggestions', suggestionRoutes);
+  app.use('/api/suggestions', suggestionRoutes); // Also register alias /api/suggestions for convenience
+  app.use('/api/contacts', contactRoutes);
 
   // 404 Handler
   app.use((_req: Request, res: Response) => {
