@@ -58,9 +58,39 @@ export const swaggerDocument: JsonObject = {
     '/api/contacts': {
       get: {
         summary: 'List All Contacts',
-        description: 'Retrieves all contact records ordered by ID descending from the PostgreSQL database.',
+        description: 'Retrieves all contact records ordered by ID descending from the PostgreSQL database, with optional search filtering by name, email, or phone number.',
         tags: ['Contacts'],
         parameters: [
+          {
+            name: 'name',
+            in: 'query',
+            description: 'Filter contacts by name (case-insensitive substring match, normalized to uppercase)',
+            required: false,
+            schema: {
+              type: 'string',
+              example: 'John McDonald',
+            },
+          },
+          {
+            name: 'email',
+            in: 'query',
+            description: 'Filter contacts by email address (case-insensitive match, normalized to lowercase)',
+            required: false,
+            schema: {
+              type: 'string',
+              example: 'john.doe@example.com',
+            },
+          },
+          {
+            name: 'phone',
+            in: 'query',
+            description: 'Filter contacts by phone number (normalized to standardized format e.g. +1-752-012-3456)',
+            required: false,
+            schema: {
+              type: 'string',
+              example: '+1-752-012-3456',
+            },
+          },
           {
             name: 'limit',
             in: 'query',

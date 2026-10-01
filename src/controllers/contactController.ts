@@ -23,12 +23,50 @@ export interface ContactRequestBody {
   roles?: string[];
 }
 
-function parseArrayField(field: unknown): string[] | null {
+/**
+ * Normalizes contact name to uppercase.
+ */
+export function normalizeName(name: string): string {
+  return name.trim().toUpperCase();
+}
+
+/**
+ * Normalizes email address to lowercase.
+ */
+export function normalizeEmail(email: string): string {
+  return email.trim().toLowerCase();
+}
+
+/**
+ * Normalizes phone numbers into standardized format (+1-XXX-XXX-XXXX for 10/11-digit NANP).
+ */
+export function normalizePhone(phone: string): string {
+  const trimmed = phone.trim();
+  const digits = trimmed.replace(/\D/g, '');
+
+  if (digits.length === 10) {
+    return `+1-${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6)}`;
+  }
+  if (digits.length === 11 && digits.startsWith('1')) {
+    return `+1-${digits.slice(1, 4)}-${digits.slice(4, 7)}-${digits.slice(7)}`;
+  }
+  if (digits.length > 11 && trimmed.startsWith('+')) {
+    return `+${digits}`;
+  }
+  return trimmed;
+}
+
+function parseArrayField(field: unknown, normalizer?: (val: string) => string): string[] | null {
   if (Array.isArray(field)) {
-    return field.map((item) => String(item).trim()).filter(Boolean);
+    const cleaned = field
+      .map((item) => String(item).trim())
+      .filter(Boolean)
+      .map((item) => (normalizer ? normalizer(item) : item));
+    return cleaned.length > 0 ? cleaned : null;
   }
   if (typeof field === 'string' && field.trim() !== '') {
-    return [field.trim()];
+    const trimmed = field.trim();
+    return normalizer ? [normalizer(trimmed)] : [trimmed];
   }
   return null;
 }
@@ -48,8 +86,9 @@ export class ContactController {
       return;
     }
 
-    const formattedEmails = parseArrayField(emails);
-    const formattedPhones = parseArrayField(phones);
+    const normalizedName = normalizeName(name);
+    const formattedEmails = parseArrayField(emails, normalizeEmail);
+    const formattedPhones = parseArrayField(phones, normalizePhone);
     const formattedZipOther = parseArrayField(zip_other);
     const formattedRoles = parseArrayField(roles);
     const formattedZipHome = typeof zip_home === 'string' && zip_home.trim() !== '' ? zip_home.trim() : null;
@@ -61,7 +100,7 @@ export class ContactController {
         RETURNING *;
       `;
       const values = [
-        name.trim(),
+        normalizedName,
         formattedEmails,
         formattedPhones,
         formattedZipHome,
@@ -85,11 +124,36 @@ export class ContactController {
   // -----------------------------------------------------------------
   // Get all contacts
   static async getAllContacts(req: Request, res: Response, next: NextFunction): Promise<void> {
-    const { limit } = req.query;
+    const { name, email, phone, limit } = req.query;
 
     try {
-      let query = 'SELECT * FROM contacts ORDER BY id DESC';
+      const conditions: string[] = [];
       const values: any[] = [];
+      let paramIndex = 1;
+
+      if (name && typeof name === 'string' && name.trim() !== '') {
+        const normalizedName = normalizeName(name);
+        conditions.push(`name ILIKE $${paramIndex++}`);
+        values.push(`%${normalizedName}%`);
+      }
+
+      if (email && typeof email === 'string' && email.trim() !== '') {
+        const normalizedEmail = normalizeEmail(email);
+        conditions.push(`EXISTS (SELECT 1 FROM unnest(emails) AS e WHERE e ILIKE $${paramIndex++})`);
+        values.push(`%${normalizedEmail}%`);
+      }
+
+      if (phone && typeof phone === 'string' && phone.trim() !== '') {
+        const normalizedPhone = normalizePhone(phone);
+        conditions.push(`EXISTS (SELECT 1 FROM unnest(phones) AS p WHERE p ILIKE $${paramIndex++})`);
+        values.push(`%${normalizedPhone}%`);
+      }
+
+      let query = 'SELECT * FROM contacts';
+      if (conditions.length > 0) {
+        query += ` WHERE ${conditions.join(' AND ')}`;
+      }
+      query += ' ORDER BY id DESC';
 
       if (limit) {
         const parsedLimit = parseInt(limit as string, 10);
@@ -100,7 +164,7 @@ export class ContactController {
           });
           return;
         }
-        query += ' LIMIT $1';
+        query += ` LIMIT $${paramIndex++}`;
         values.push(parsedLimit);
       }
 
@@ -174,8 +238,9 @@ export class ContactController {
       return;
     }
 
-    const formattedEmails = parseArrayField(emails);
-    const formattedPhones = parseArrayField(phones);
+    const normalizedName = normalizeName(name);
+    const formattedEmails = parseArrayField(emails, normalizeEmail);
+    const formattedPhones = parseArrayField(phones, normalizePhone);
     const formattedZipOther = parseArrayField(zip_other);
     const formattedRoles = parseArrayField(roles);
     const formattedZipHome = typeof zip_home === 'string' && zip_home.trim() !== '' ? zip_home.trim() : null;
@@ -188,7 +253,7 @@ export class ContactController {
         RETURNING *;
       `;
       const values = [
-        name.trim(),
+        normalizedName,
         formattedEmails,
         formattedPhones,
         formattedZipHome,
