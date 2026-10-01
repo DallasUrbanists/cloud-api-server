@@ -27,6 +27,10 @@ export const swaggerDocument: JsonObject = {
       description: 'Endpoints for managing contact records in the PostgreSQL database.',
     },
     {
+      name: 'Checkins',
+      description: 'Endpoints for managing checkin records in the PostgreSQL database.',
+    },
+    {
       name: 'System',
       description: 'Health checks and server operational metadata.',
     },
@@ -239,6 +243,244 @@ export const swaggerDocument: JsonObject = {
                     message: {
                       type: 'string',
                       example: 'Contact with ID 1 has been deleted successfully.',
+                    },
+                  },
+                },
+              },
+            },
+          },
+          400: {
+            $ref: '#/components/responses/BadRequestError',
+          },
+          404: {
+            $ref: '#/components/responses/NotFoundError',
+          },
+          500: {
+            $ref: '#/components/responses/InternalServerError',
+          },
+        },
+      },
+    },
+    '/api/checkins': {
+      get: {
+        summary: 'List All Checkins',
+        description: 'Retrieves checkin records ordered by ID descending from the PostgreSQL database, with optional filtering by contact_id or event_id, and pagination.',
+        tags: ['Checkins'],
+        parameters: [
+          {
+            name: 'contact_id',
+            in: 'query',
+            description: 'Filter checkins by contact integer ID',
+            required: false,
+            schema: {
+              type: 'integer',
+              minimum: 1,
+              example: 1,
+            },
+          },
+          {
+            name: 'event_id',
+            in: 'query',
+            description: 'Filter checkins by event identifier string',
+            required: false,
+            schema: {
+              type: 'string',
+              example: 'dallas-bike-ride-2026',
+            },
+          },
+          {
+            name: 'limit',
+            in: 'query',
+            description: 'Maximum number of checkin records to return',
+            required: false,
+            schema: {
+              type: 'integer',
+              minimum: 1,
+              example: 50,
+            },
+          },
+          {
+            name: 'offset',
+            in: 'query',
+            description: 'Number of checkin records to skip for pagination',
+            required: false,
+            schema: {
+              type: 'integer',
+              minimum: 0,
+              example: 0,
+            },
+          },
+        ],
+        responses: {
+          200: {
+            description: 'List of checkins returned successfully.',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'array',
+                  items: {
+                    $ref: '#/components/schemas/Checkin',
+                  },
+                },
+              },
+            },
+          },
+          400: {
+            $ref: '#/components/responses/BadRequestError',
+          },
+          500: {
+            $ref: '#/components/responses/InternalServerError',
+          },
+        },
+      },
+      post: {
+        summary: 'Create a New Checkin',
+        description: 'Creates a new checkin record in the PostgreSQL database.',
+        tags: ['Checkins'],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                $ref: '#/components/schemas/CreateCheckinDTO',
+              },
+            },
+          },
+        },
+        responses: {
+          201: {
+            description: 'Checkin created successfully.',
+            content: {
+              'application/json': {
+                schema: {
+                  $ref: '#/components/schemas/Checkin',
+                },
+              },
+            },
+          },
+          400: {
+            $ref: '#/components/responses/BadRequestError',
+          },
+          500: {
+            $ref: '#/components/responses/InternalServerError',
+          },
+        },
+      },
+    },
+    '/api/checkins/{id}': {
+      get: {
+        summary: 'Get Checkin by ID',
+        description: 'Retrieves a single checkin record by its integer ID from the PostgreSQL database.',
+        tags: ['Checkins'],
+        parameters: [
+          {
+            name: 'id',
+            in: 'path',
+            required: true,
+            description: 'Integer ID (bigint) of the checkin record',
+            schema: {
+              type: 'integer',
+              example: 1,
+            },
+          },
+        ],
+        responses: {
+          200: {
+            description: 'Checkin record retrieved successfully.',
+            content: {
+              'application/json': {
+                schema: {
+                  $ref: '#/components/schemas/Checkin',
+                },
+              },
+            },
+          },
+          400: {
+            $ref: '#/components/responses/BadRequestError',
+          },
+          404: {
+            $ref: '#/components/responses/NotFoundError',
+          },
+          500: {
+            $ref: '#/components/responses/InternalServerError',
+          },
+        },
+      },
+      put: {
+        summary: 'Update Checkin',
+        description: 'Updates an existing checkin record by its integer ID.',
+        tags: ['Checkins'],
+        parameters: [
+          {
+            name: 'id',
+            in: 'path',
+            required: true,
+            description: 'Integer ID of the checkin to update',
+            schema: {
+              type: 'integer',
+              example: 1,
+            },
+          },
+        ],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                $ref: '#/components/schemas/UpdateCheckinDTO',
+              },
+            },
+          },
+        },
+        responses: {
+          200: {
+            description: 'Checkin updated successfully.',
+            content: {
+              'application/json': {
+                schema: {
+                  $ref: '#/components/schemas/Checkin',
+                },
+              },
+            },
+          },
+          400: {
+            $ref: '#/components/responses/BadRequestError',
+          },
+          404: {
+            $ref: '#/components/responses/NotFoundError',
+          },
+          500: {
+            $ref: '#/components/responses/InternalServerError',
+          },
+        },
+      },
+      delete: {
+        summary: 'Delete Checkin',
+        description: 'Deletes a checkin record by its integer ID from the PostgreSQL database.',
+        tags: ['Checkins'],
+        parameters: [
+          {
+            name: 'id',
+            in: 'path',
+            required: true,
+            description: 'Integer ID of the checkin to delete',
+            schema: {
+              type: 'integer',
+              example: 1,
+            },
+          },
+        ],
+        responses: {
+          200: {
+            description: 'Checkin deleted successfully.',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    message: {
+                      type: 'string',
+                      example: 'Checkin with ID 1 has been deleted successfully.',
                     },
                   },
                 },
@@ -765,6 +1007,79 @@ export const swaggerDocument: JsonObject = {
             },
             example: ['volunteer', 'organizer'],
             description: 'Updated roles assigned to the contact',
+          },
+        },
+      },
+      Checkin: {
+        type: 'object',
+        required: ['id', 'event_id', 'submitted_on'],
+        properties: {
+          id: {
+            type: 'integer',
+            example: 1,
+            description: 'Unique integer identifier (bigint) for the checkin',
+          },
+          contact_id: {
+            type: 'integer',
+            nullable: true,
+            example: 42,
+            description: 'ID of the associated contact (bigint), or null if anonymous checkin',
+          },
+          event_id: {
+            type: 'string',
+            example: 'dallas-bike-ride-2026',
+            description: 'Identifier for the event being checked into',
+          },
+          submitted_on: {
+            type: 'string',
+            format: 'date-time',
+            example: '2026-10-01T14:30:00.000Z',
+            description: 'Timestamp with time zone when checkin occurred',
+          },
+        },
+      },
+      CreateCheckinDTO: {
+        type: 'object',
+        required: ['event_id'],
+        properties: {
+          contact_id: {
+            type: 'integer',
+            nullable: true,
+            example: 42,
+            description: 'Optional ID of the associated contact (bigint)',
+          },
+          event_id: {
+            type: 'string',
+            example: 'dallas-bike-ride-2026',
+            description: 'Identifier for the event',
+          },
+          submitted_on: {
+            type: 'string',
+            format: 'date-time',
+            example: '2026-10-01T14:30:00.000Z',
+            description: 'Optional ISO 8601 timestamp. If omitted, server defaults to current timestamp.',
+          },
+        },
+      },
+      UpdateCheckinDTO: {
+        type: 'object',
+        properties: {
+          contact_id: {
+            type: 'integer',
+            nullable: true,
+            example: 42,
+            description: 'Updated associated contact ID (bigint) or null',
+          },
+          event_id: {
+            type: 'string',
+            example: 'dallas-bike-ride-2026-v2',
+            description: 'Updated event identifier string',
+          },
+          submitted_on: {
+            type: 'string',
+            format: 'date-time',
+            example: '2026-10-01T15:00:00.000Z',
+            description: 'Updated ISO 8601 timestamp for the checkin',
           },
         },
       },
