@@ -31,6 +31,10 @@ export const swaggerDocument: JsonObject = {
       description: 'Endpoints for managing checkin records in the PostgreSQL database.',
     },
     {
+      name: 'Events',
+      description: 'Endpoints for retrieving calendar feeds and event integrations.',
+    },
+    {
       name: 'System',
       description: 'Health checks and server operational metadata.',
     },
@@ -874,6 +878,67 @@ export const swaggerDocument: JsonObject = {
         },
       },
     },
+    '/api/events/ical': {
+      get: {
+        summary: 'Proxy Meetup iCal Event Feed',
+        description: 'Fetches and returns the Meetup iCalendar (.ics) feed for Dallas Urbanists with CORS enabled, allowing web clients to retrieve and parse event schedules.',
+        tags: ['Events'],
+        responses: {
+          200: {
+            description: 'iCalendar feed retrieved successfully.',
+            headers: {
+              'Content-Type': {
+                schema: {
+                  type: 'string',
+                  example: 'text/calendar; charset=utf-8',
+                },
+                description: 'MIME type of the iCalendar stream',
+              },
+              'Cache-Control': {
+                schema: {
+                  type: 'string',
+                  example: 'public, max-age=300, stale-while-revalidate=600',
+                },
+                description: 'Caching directive for client applications',
+              },
+            },
+            content: {
+              'text/calendar': {
+                schema: {
+                  type: 'string',
+                  example: 'BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Meetup//RemoteApi//EN\n...',
+                },
+              },
+            },
+          },
+          502: {
+            $ref: '#/components/responses/BadGatewayError',
+          },
+        },
+      },
+    },
+    '/meetup-ical': {
+      get: {
+        summary: 'Proxy Meetup iCal Event Feed (Path Alias)',
+        description: 'Alias for /api/events/ical directly matching check-in helper frontend proxy configurations.',
+        tags: ['Events'],
+        responses: {
+          200: {
+            description: 'iCalendar feed retrieved successfully.',
+            content: {
+              'text/calendar': {
+                schema: {
+                  type: 'string',
+                },
+              },
+            },
+          },
+          502: {
+            $ref: '#/components/responses/BadGatewayError',
+          },
+        },
+      },
+    },
   },
   components: {
     schemas: {
@@ -1392,6 +1457,16 @@ export const swaggerDocument: JsonObject = {
       },
       InternalServerError: {
         description: 'Internal Server Error.',
+        content: {
+          'application/json': {
+            schema: {
+              $ref: '#/components/schemas/ErrorResponse',
+            },
+          },
+        },
+      },
+      BadGatewayError: {
+        description: 'Bad Gateway - Upstream service failure or timeout.',
         content: {
           'application/json': {
             schema: {

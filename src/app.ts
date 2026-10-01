@@ -5,6 +5,7 @@ import { corsMiddleware, corsErrorHandler } from './middleware/cors.js';
 import suggestionRoutes from './routes/suggestionRoutes.js';
 import contactRoutes from './routes/contactRoutes.js';
 import checkinRoutes from './routes/checkinRoutes.js';
+import eventsRoutes from './routes/eventsRoutes.js';
 import { swaggerDocument } from './docs/swagger.js';
 
 dotenv.config();
@@ -524,6 +525,9 @@ export function createApp(): Express {
   app.use('/api/suggestions', suggestionRoutes); // Also register alias /api/suggestions for convenience
   app.use('/api/contacts', contactRoutes);
   app.use('/api/checkins', checkinRoutes);
+  app.use('/api/events', eventsRoutes);
+  app.use('/meetup-ical', eventsRoutes);
+  app.use('/api/meetup-ical', eventsRoutes);
 
   // 404 Handler
   app.use((_req: Request, res: Response) => {
