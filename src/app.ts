@@ -182,11 +182,6 @@ export function createApp(): Express {
 
     .swagger-ui .scheme-container {
       background-color: var(--st-surface) !important;
-      box-shadow: var(--st-shadow) !important;
-      border: 1px solid var(--st-border) !important;
-      border-radius: 8px !important;
-      padding: 16px 20px !important;
-      margin-bottom: 24px !important;
     }
 
     .swagger-ui .scheme-container .schemes-title {
@@ -425,6 +420,9 @@ export function createApp(): Express {
     customCss: swaggerCustomCss,
     customJs: '/swagger-theme.js',
     customCssUrl: 'https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap',
+    swaggerOptions: {
+      docExpansion: 'none',
+    },
   };
 
   // Serve swagger theme synchronization script
@@ -496,9 +494,13 @@ export function createApp(): Express {
     `);
   });
 
-  app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, swaggerUiOptions));
-  app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument, swaggerUiOptions));
-  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, swaggerUiOptions));
+  const swaggerSetup = swaggerUi.setup(swaggerDocument, swaggerUiOptions);
+
+  app.use('/docs', swaggerUi.serve, swaggerSetup);
+  app.use('/swagger', swaggerUi.serve, swaggerSetup);
+  app.use('/api-docs', swaggerUi.serve, swaggerSetup);
+  app.get('/', swaggerUi.serve, swaggerSetup);
+  app.use(swaggerUi.serve);
 
   // Swagger spec JSON endpoint
   app.get('/api-docs.json', (_req: Request, res: Response) => {
@@ -514,336 +516,6 @@ export function createApp(): Express {
       service: 'urbanists-cloud-api-server',
       databases: ['public-improvements'],
     });
-  });
-
-  // Root Welcome & Redirect helper
-  app.get('/', (_req: Request, res: Response) => {
-    res.send(`
-      <!DOCTYPE html>
-      <html lang="en" data-theme="dark">
-        <head>
-          <meta charset="utf-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1">
-          <title>Dallas Urbanists Cloud API</title>
-          <link rel="preconnect" href="https://fonts.googleapis.com">
-          <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-          <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-          <style>
-            :root {
-              --font-heading: 'DM Serif Display', Georgia, serif;
-              --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-              --font-mono: 'JetBrains Mono', Menlo, Monaco, Consolas, monospace;
-
-              /* Light Mode Variables (Strong Towns Brand Palette) */
-              --bg: #f5f3ee;             /* Sidewalk */
-              --surface: #ffffff;        /* White */
-              --surface-hover: #faf8f5;
-              --border: #e4dfd5;
-              --text-primary: #0c2340;   /* Dark Blue */
-              --text-secondary: #4a5d73;
-              --text-muted: #6e7f93;
-              --accent-gold: #ffa800;    /* Yellow */
-              --accent-blue: #488be3;    /* Light Blue */
-              --brand-dark: #0c2340;     /* Dark Blue */
-              --button-bg: #0c2340;
-              --button-hover: #173860;
-              --button-text: #ffffff;
-              --code-bg: #ece8df;
-              --code-text: #0c2340;
-              --method-get: #2b7a4b;
-              --method-post: #b86b00;
-              --method-put: #306cb5;
-              --method-delete: #b33939;
-              --shadow: 0 4px 14px rgba(12, 35, 64, 0.08);
-            }
-
-            [data-theme="dark"] {
-              /* Dark Mode Variables (Strong Towns Brand Palette) */
-              --bg: #07172b;
-              --surface: #0c2340;        /* Dark Blue Core */
-              --surface-hover: #112d50;
-              --border: #193860;
-              --text-primary: #f5f3ee;   /* Sidewalk */
-              --text-secondary: #a9bed4;
-              --text-muted: #748da9;
-              --accent-gold: #ffa800;    /* Yellow */
-              --accent-blue: #488be3;    /* Light Blue */
-              --brand-dark: #0c2340;
-              --button-bg: #ffa800;
-              --button-hover: #e09500;
-              --button-text: #0c2340;
-              --code-bg: #05101f;
-              --code-text: #ffa800;
-              --method-get: #48bb78;
-              --method-post: #ffa800;
-              --method-put: #488be3;
-              --method-delete: #f56565;
-              --shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-            }
-
-            * { box-sizing: border-box; margin: 0; padding: 0; }
-            body {
-              font-family: var(--font-body);
-              background: var(--bg);
-              color: var(--text-primary);
-              max-width: 860px;
-              margin: 0 auto;
-              padding: 40px 24px 60px;
-              line-height: 1.6;
-              transition: background-color 0.25s ease, color 0.25s ease;
-            }
-
-            .header {
-              display: flex;
-              justify-content: space-between;
-              align-items: flex-start;
-              gap: 20px;
-              margin-bottom: 28px;
-              padding-bottom: 20px;
-              border-bottom: 2px solid var(--border);
-            }
-
-            .header-info { flex: 1; }
-
-            .badge {
-              display: inline-block;
-              font-family: var(--font-body);
-              font-size: 0.75rem;
-              font-weight: 700;
-              text-transform: uppercase;
-              letter-spacing: 0.06em;
-              background: var(--accent-gold);
-              color: #0c2340;
-              padding: 3px 9px;
-              border-radius: 4px;
-              margin-bottom: 12px;
-            }
-
-            h1 {
-              font-family: var(--font-heading);
-              font-size: 2.35rem;
-              line-height: 1.15;
-              color: var(--text-primary);
-              margin-bottom: 8px;
-              letter-spacing: -0.01em;
-            }
-
-            .subtitle {
-              font-size: 1.05rem;
-              color: var(--text-secondary);
-            }
-
-            .theme-toggle {
-              display: inline-flex;
-              align-items: center;
-              gap: 8px;
-              background: var(--surface);
-              border: 1px solid var(--border);
-              color: var(--text-primary);
-              padding: 8px 14px;
-              border-radius: 9999px;
-              cursor: pointer;
-              font-family: var(--font-body);
-              font-size: 0.85rem;
-              font-weight: 600;
-              box-shadow: var(--shadow);
-              transition: all 0.2s ease;
-              white-space: nowrap;
-            }
-            .theme-toggle:hover {
-              background: var(--surface-hover);
-              border-color: var(--accent-blue);
-            }
-
-            .card {
-              background: var(--surface);
-              border: 1px solid var(--border);
-              border-radius: 12px;
-              padding: 24px;
-              margin-top: 24px;
-              box-shadow: var(--shadow);
-              transition: background-color 0.25s ease, border-color 0.25s ease;
-            }
-
-            h3 {
-              font-family: var(--font-heading);
-              font-size: 1.4rem;
-              margin-bottom: 10px;
-              color: var(--text-primary);
-              display: flex;
-              align-items: center;
-              gap: 8px;
-            }
-
-            p {
-              color: var(--text-secondary);
-              font-size: 0.96rem;
-            }
-
-            a.button {
-              display: inline-flex;
-              align-items: center;
-              gap: 8px;
-              background: var(--button-bg);
-              color: var(--button-text);
-              padding: 12px 22px;
-              border-radius: 8px;
-              text-decoration: none;
-              font-weight: 600;
-              font-size: 0.95rem;
-              margin-top: 16px;
-              transition: background 0.2s ease, transform 0.15s ease;
-            }
-            a.button:hover {
-              background: var(--button-hover);
-              transform: translateY(-1px);
-            }
-
-            .endpoints-list {
-              list-style: none;
-              margin-top: 14px;
-              display: flex;
-              flex-direction: column;
-              gap: 10px;
-            }
-
-            .endpoint-item {
-              display: flex;
-              align-items: center;
-              flex-wrap: wrap;
-              gap: 10px;
-              padding: 8px 12px;
-              background: var(--bg);
-              border: 1px solid var(--border);
-              border-radius: 6px;
-              font-size: 0.9rem;
-            }
-
-            .method {
-              font-family: var(--font-mono);
-              font-size: 0.75rem;
-              font-weight: 700;
-              padding: 2px 7px;
-              border-radius: 4px;
-              min-width: 58px;
-              text-align: center;
-            }
-            .method.get { background: rgba(72, 187, 120, 0.15); color: var(--method-get); }
-            .method.post { background: rgba(255, 168, 0, 0.15); color: var(--method-post); }
-            .method.put { background: rgba(72, 139, 227, 0.15); color: var(--method-put); }
-            .method.delete { background: rgba(245, 101, 101, 0.15); color: var(--method-delete); }
-
-            code {
-              font-family: var(--font-mono);
-              background: var(--code-bg);
-              color: var(--code-text);
-              padding: 2px 8px;
-              border-radius: 4px;
-              font-size: 0.88rem;
-              font-weight: 500;
-            }
-
-            .endpoint-desc {
-              color: var(--text-secondary);
-              font-size: 0.85rem;
-              margin-left: auto;
-            }
-
-            footer {
-              margin-top: 40px;
-              text-align: center;
-              font-size: 0.82rem;
-              color: var(--text-muted);
-            }
-
-            footer a {
-              color: var(--accent-blue);
-              text-decoration: none;
-            }
-            footer a:hover {
-              text-decoration: underline;
-            }
-          </style>
-          <script>
-            // Theme initialization & toggle logic (Dark Mode by default)
-            (function() {
-              const savedTheme = localStorage.getItem('urbanists_theme') || 'dark';
-              document.documentElement.setAttribute('data-theme', savedTheme);
-            })();
-
-            function toggleTheme() {
-              const html = document.documentElement;
-              const current = html.getAttribute('data-theme') || 'dark';
-              const next = current === 'dark' ? 'light' : 'dark';
-              html.setAttribute('data-theme', next);
-              localStorage.setItem('urbanists_theme', next);
-              updateThemeButton();
-            }
-
-            function updateThemeButton() {
-              const current = document.documentElement.getAttribute('data-theme') || 'dark';
-              const btn = document.getElementById('theme-toggle-btn');
-              if (btn) {
-                btn.innerHTML = current === 'dark' 
-                  ? '<span>☀️</span> Light Mode' 
-                  : '<span>🌙</span> Dark Mode';
-              }
-            }
-
-            document.addEventListener('DOMContentLoaded', updateThemeButton);
-          </script>
-        </head>
-        <body>
-          <div class="header">
-            <div class="header-info">
-              <h1>Dallas Urbanists Cloud API</h1>
-              <p class="subtitle">General purpose database and API web service hosted on Google Cloud Run. Explore endpoints, view schemas, and execute test requests live:</p>
-              <a class="button" href="/docs">Swagger documentation</a>
-              <a class="button" href="/docs">Main website</a>
-            </div>
-            <button id="theme-toggle-btn" class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle Theme">
-              <span>☀️</span> Light Mode
-            </button>
-          </div>
-
-          <div>
-            <h3>Available Endpoints</h3>
-            <ul class="endpoints-list">
-              <li class="endpoint-item">
-                <span class="method get">GET</span>
-                <code>/api/public-improvements/suggestions</code>
-                <span class="endpoint-desc">List suggestions</span>
-              </li>
-              <li class="endpoint-item">
-                <span class="method post">POST</span>
-                <code>/api/public-improvements/suggestions</code>
-                <span class="endpoint-desc">Create a suggestion</span>
-              </li>
-              <li class="endpoint-item">
-                <span class="method get">GET</span>
-                <code>/api/public-improvements/suggestions/:id</code>
-                <span class="endpoint-desc">Get suggestion by ID</span>
-              </li>
-              <li class="endpoint-item">
-                <span class="method put">PUT</span>
-                <code>/api/public-improvements/suggestions/:id</code>
-                <span class="endpoint-desc">Update suggestion</span>
-              </li>
-              <li class="endpoint-item">
-                <span class="method delete">DELETE</span>
-                <code>/api/public-improvements/suggestions/:id</code>
-                <span class="endpoint-desc">Delete suggestion</span>
-              </li>
-              <li class="endpoint-item">
-                <span class="method get">GET</span>
-                <code>/api/health</code>
-                <span class="endpoint-desc">Service health check</span>
-              </li>
-            </ul>
-          </div>
-        </body>
-      </html>
-    `);
   });
 
   // API Routes

@@ -5,23 +5,9 @@ export const swaggerDocument: JsonObject = {
   info: {
     title: 'Dallas Urbanists Cloud API',
     version: '1.0.0',
-    description: `
-API web service providing database I/O and server-side operations for Dallas Urbanists client applications.
-
-### Key Features
-- **Firestore multi-database integration** with primary database \`public-improvements\`
-- **PostgreSQL database integration** for contact and member records
-- **Suggestion management** (Create, Read, Update, Delete)
-- **Contact management** (Create, Read, Update, Delete)
-- **Domain Authorization & CORS protection** with unrestricted local testing
-- **Hosted on Google Cloud Run**
-
-### Databases
-- **public-improvements**: Hosts civic improvements suggestions, ideas, and neighborhood infrastructure feedback.
-- **PostgreSQL**: Stores contact records and organizational data.
-    `,
+    description: `API web service providing database I/O and server-side operations for Dallas Urbanists client applications.`,
     contact: {
-      name: 'Dallas Urbanists, Main Website',
+      name: 'DallasUrbanists.org',
       url: 'https://dallasurbanists.org',
     },
   },
@@ -33,8 +19,8 @@ API web service providing database I/O and server-side operations for Dallas Urb
   ],
   tags: [
     {
-      name: 'Public Improvements - Suggestions',
-      description: 'Endpoints for managing urban improvement suggestions in the public-improvements database.',
+      name: 'Suggestions',
+      description: 'Endpoints for managing suggestions in the public-improvements database.',
     },
     {
       name: 'Contacts',
@@ -271,11 +257,11 @@ API web service providing database I/O and server-side operations for Dallas Urb
         },
       },
     },
-    '/api/public-improvements/suggestions/upload-url': {
+    '/api/suggestions/upload-url': {
       post: {
         summary: 'Generate Signed Photo Upload URL',
         description: 'Generates a temporary V4 signed Google Cloud Storage PUT URL allowing client applications to upload resized photos directly to Cloud Storage securely.',
-        tags: ['Public Improvements - Suggestions'],
+        tags: ['Suggestions'],
         requestBody: {
           required: false,
           content: {
@@ -348,11 +334,11 @@ API web service providing database I/O and server-side operations for Dallas Urb
         },
       },
     },
-    '/api/public-improvements/suggestions': {
+    '/api/suggestions': {
       get: {
         summary: 'List All Suggestions',
         description: 'Retrieves a list of suggestions from the public-improvements database, with optional filters.',
-        tags: ['Public Improvements - Suggestions'],
+        tags: ['Suggestions'],
         parameters: [
           {
             name: 'status',
@@ -420,7 +406,7 @@ API web service providing database I/O and server-side operations for Dallas Urb
       post: {
         summary: 'Create a New Suggestion',
         description: 'Creates a new civic improvement suggestion in the public-improvements database. The integer ID will be auto-generated sequentially if omitted.',
-        tags: ['Public Improvements - Suggestions'],
+        tags: ['Suggestions'],
         requestBody: {
           required: true,
           content: {
@@ -470,11 +456,11 @@ API web service providing database I/O and server-side operations for Dallas Urb
         },
       },
     },
-    '/api/public-improvements/suggestions/{id}': {
+    '/api/suggestions/{id}': {
       get: {
         summary: 'Get Suggestion by ID',
         description: 'Retrieves a single suggestion by its integer ID.',
-        tags: ['Public Improvements - Suggestions'],
+        tags: ['Suggestions'],
         parameters: [
           {
             name: 'id',
@@ -517,7 +503,7 @@ API web service providing database I/O and server-side operations for Dallas Urb
       put: {
         summary: 'Update Suggestion',
         description: 'Updates an existing suggestion by its integer ID. Modification date will be refreshed automatically.',
-        tags: ['Public Improvements - Suggestions'],
+        tags: ['Suggestions'],
         parameters: [
           {
             name: 'id',
@@ -574,7 +560,7 @@ API web service providing database I/O and server-side operations for Dallas Urb
       delete: {
         summary: 'Delete Suggestion',
         description: 'Deletes a suggestion by its integer ID from the public-improvements database.',
-        tags: ['Public Improvements - Suggestions'],
+        tags: ['Suggestions'],
         parameters: [
           {
             name: 'id',
