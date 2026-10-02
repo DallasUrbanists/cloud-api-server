@@ -10,7 +10,11 @@
     "dev": "tsx watch src/index.ts",
     "build": "rimraf dist && tsc",
     "start": "node dist/index.js",
-    "deploy": "gcloud run deploy urbanists-cloud-api-server --source . --region us-central1 --allow-unauthenticated --add-cloudsql-instances=urbanists-mixer-slides-helper:us-south1:contacts-relationships-db --update-env-vars SUGGESTION_PHOTOS_BUCKET=urbanists-suggestion-photos,DB_USER=postgres,DB_NAME=postgres,INSTANCE_CONNECTION_NAME=urbanists-mixer-slides-helper:us-south1:contacts-relationships-db --update-secrets DB_PASSWORD=contacts-db-password:latest"
+    "deploy": "gcloud run deploy urbanists-cloud-api-server --source . --region us-central1 --allow-unauthenticated --add-cloudsql-instances=urbanists-mixer-slides-helper:us-south1:contacts-relationships-db --update-env-vars SUGGESTION_PHOTOS_BUCKET=urbanists-suggestion-photos,DB_USER=postgres,DB_NAME=postgres,INSTANCE_CONNECTION_NAME=urbanists-mixer-slides-helper:us-south1:contacts-relationships-db --update-secrets DB_PASSWORD=contacts-db-password:latest",
+    
+    "major": "npm version major && git push origin main --tags",
+    "minor": "npm version minor && git push origin main --tags",
+    "patch": "npm version patch && git push origin main --tags"
   },
   "dependencies": {
     "@google-cloud/firestore": "^9.2.0",
