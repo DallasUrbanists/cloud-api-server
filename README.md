@@ -2,34 +2,42 @@
 
 An API web service providing database I/O and server-side operations for the suite of client-side web applications created for and by **Dallas Urbanists**.
 
-Hosted on **Google Cloud Run** and backed by **Google Cloud Firestore**.
+Hosted on **Google Cloud Run**, backed by **Google Cloud Firestore**, **Google Cloud SQL (PostgreSQL)**, and **Google Cloud Storage**.
 
 ---
 
 ## 🛠️ Tech Stack
 
-- **Runtime & Language**: Node.js, TypeScript
+- **Runtime & Language**: Node.js, TypeScript (ESM)
 - **Package Manager**: NPM
-- **Web Framework**: Express.js
-- **API Documentation & Testing**: Swagger UI (OpenAPI 3.0)
-- **Database**: Google Cloud Firestore (NoSQL, multi-database architecture)
-- **Deployment & Hosting**: Google Cloud Run
+- **Web Framework**: Express.js (v5)
+- **API Documentation & Testing**: Swagger UI (OpenAPI 3.0.3) with Strong Towns Custom Theme & Dark/Light Mode
+- **Databases**:
+  - **Google Cloud Firestore**: NoSQL multi-database architecture for public suggestions and crowdsourced content.
+  - **PostgreSQL (Google Cloud SQL)**: Relational database for CRM contacts and event checkins.
+- **Media & Storage**: Google Cloud Storage for pre-signed photo uploads and static assets.
+- **Deployment & Hosting**: Google Cloud Run & Cloud SQL Unix socket proxy.
 - **Version Control**: Git
 
 ---
 
 ## 🌟 Features
 
-- **Multi-Database Support**: Modular Firestore database client architecture designed to expand across multiple databases over time.
-- **Public Improvements API**: Full CRUD endpoints for managing civic improvement suggestions in the `public-improvements` database (`suggestion` collection).
-- **Domain Authorization & CORS**: Restricts cross-origin requests in production to authorized domains (configured via `ALLOWED_ORIGINS`) while permitting unrestricted requests from `localhost` / `127.0.0.1` for local development and testing.
-- **Interactive Swagger UI**: Explore endpoints, inspect schemas, and perform manual browser-based testing at `/docs`.
+- **Public Improvements API**: Full CRUD endpoints for managing civic improvement suggestions in Firestore (`public-improvements` database), with support for photo attachments and pre-signed GCS upload URLs.
+- **Contacts & CRM API**: PostgreSQL-backed contacts management with automatic data normalization (uppercase names, lowercase emails, standardized NANP phone formats) and multi-field search filtering.
+- **Event Checkins API**: Record and query event check-in entries linked to CRM contacts or anonymous attendees.
+- **Meetup Events & Calendar Proxy**: Proxies Dallas Urbanists Meetup iCal feeds with HTTP caching headers (`ETag`, `Last-Modified`, `Cache-Control`) and CORS headers for client-side applications.
+- **Multi-Database & Multi-Cloud Architecture**: Integrates Firestore, PostgreSQL on Cloud SQL, and Google Cloud Storage seamlessly.
+- **Interactive Swagger UI**: Explore all endpoints, test requests in the browser, view schemas, and switch between Dark and Light modes styled in the Strong Towns visual palette at `/docs`.
+- **Domain Authorization & CORS**: Restricts production cross-origin requests to authorized domains (configured via `ALLOWED_ORIGINS`) while permitting unrestricted requests from `localhost` / `127.0.0.1` for local development and testing.
 
 ---
 
-## 📊 Data Model: Suggestion
+## 📊 Data Models & Schemas
 
-Documents in the `suggestion` collection inside the `public-improvements` database adhere to the following schema:
+### 1. Suggestion (`public-improvements` Firestore Database)
+
+Documents in the `suggestion` collection inside the `public-improvements` Firestore database adhere to the following schema:
 
 | Field | Type | Description |
 |---|---|---|
@@ -37,14 +45,48 @@ Documents in the `suggestion` collection inside the `public-improvements` databa
 | `creationDate` | `string` (ISO 8601) | Timestamp when suggestion was created |
 | `modificationDate` | `string` (ISO 8601) | Timestamp of most recent update |
 | `status` | `enum` | `'new'` \| `'inprogress'` \| `'stalled'` \| `'withdrawn'` \| `'completed'` |
-| `author.email` | `string` | Author's email address |
+| `author.email` | `string` (email) | Author's email address |
 | `author.name` | `string` | Author's display name |
 | `content.summary` | `string` | Short title / summary of the suggestion |
 | `content.details` | `string` | Extended markdown / detailed description (default `""`) |
+| `content.photos` | `array<object>` | Optional array of photos (max 10 items) |
+| `content.photos[].url` | `string` (URI) | Public URL of uploaded photo |
+| `content.photos[].caption` | `string` | Description / caption for photo |
+| `content.photos[].timestamp` | `string` (ISO 8601) | Timestamp when photo was taken/uploaded |
 | `location.latitude` | `float` (optional) | Geographical latitude coordinate |
 | `location.longitude` | `float` (optional) | Geographical longitude coordinate |
-| `location.description`| `string` | Textual description of landmark/corridor (default `""`) |
+| `location.description`| `string` | Landmark/corridor description (default `""`) |
 | `location.address` | `string` | Street address (default `""`) |
+
+---
+
+### 2. Contact (`contacts` PostgreSQL Table)
+
+Contact records stored in the relational database adhere to the following schema:
+
+| Field | Type | Description |
+|---|---|---|
+| `id` | `integer` (bigint) | Unique identifier for the contact |
+| `name` | `string` | Full name of contact (automatically normalized to uppercase) |
+| `created_on` | `string` (ISO 8601) | Timestamp with time zone when the record was created |
+| `emails` | `array<string>` | Email addresses associated with the contact (normalized to lowercase) |
+| `phones` | `array<string>` | Phone numbers (normalized to `+1-XXX-XXX-XXXX` NANP format) |
+| `zip_home` | `string` (optional) | Primary residential ZIP code |
+| `zip_other` | `array<string>` | Additional ZIP codes (work, advocacy areas, etc.) |
+| `roles` | `array<string>` | Assigned roles (e.g. `volunteer`, `donor`, `advocate`, `organizer`) |
+
+---
+
+### 3. Checkin (`checkins` PostgreSQL Table)
+
+Checkin records stored in the relational database adhere to the following schema:
+
+| Field | Type | Description |
+|---|---|---|
+| `id` | `integer` (bigint) | Unique identifier for the checkin |
+| `contact_id` | `integer` (nullable) | Associated contact ID (foreign key reference to `contacts.id`), or `null` for anonymous |
+| `event_id` | `string` | Identifier or slug for the event checked into |
+| `submitted_on` | `string` (ISO 8601) | Timestamp with time zone when the checkin was recorded |
 
 ---
 
@@ -55,6 +97,7 @@ Documents in the `suggestion` collection inside the `public-improvements` databa
 - [Node.js](https://nodejs.org/) (version 20 LTS or higher recommended)
 - [NPM](https://www.npmjs.com/)
 - [Google Cloud CLI (`gcloud`)](https://cloud.google.com/sdk/docs/install) (for deployment & GCP credentials)
+- [PostgreSQL](https://www.postgresql.org/) (optional for local database testing, defaults to `127.0.0.1:5432`)
 
 ### 2. Clone the Repository
 
@@ -77,20 +120,34 @@ Copy the sample environment file:
 cp .env.example .env
 ```
 
-Edit `.env` to configure your settings:
+Configure your `.env` variables as needed:
 
 ```env
 PORT=8080
 NODE_ENV=development
+
+# Firestore Configuration
 PUBLIC_IMPROVEMENTS_DB=public-improvements
-ALLOWED_ORIGINS=https://dallasurbanists.org,https://dallasurbanists.web.app
+
+# Google Cloud Storage
+SUGGESTION_PHOTOS_BUCKET=urbanists-suggestion-photos
+
+# PostgreSQL Database Configuration
+DB_USER=postgres
+DB_PASSWORD=your_postgres_password
+DB_NAME=postgres
+DB_HOST=127.0.0.1
+DB_PORT=5432
+
+# CORS Allowed Origins
+ALLOWED_ORIGINS=https://dallasurbanists.org,https://dallasurbanists.github.io,https://dallasurbanists.web.app
 ```
 
 > **Note on Local Development**: When running locally, requests from `http://localhost:*` and `http://127.0.0.1:*` are automatically authorized, regardless of the `ALLOWED_ORIGINS` setting.
 
 ### 5. Google Cloud Authentication (Local Development)
 
-To connect to Firestore from your local environment:
+To connect to Firestore and Cloud Storage from your local environment:
 
 ```bash
 gcloud auth application-default login
@@ -125,34 +182,67 @@ npm start
 
 ## 📖 API Documentation & Manual Testing
 
-Once the server is running, open your browser to:
+The server includes an interactive **Swagger UI** built with the **OpenAPI 3.0.3** specification and customized with the Strong Towns design aesthetic, featuring:
+- **Dark Mode & Light Mode** toggle with instant switching and persistent `localStorage` preference.
+- **Categorized Endpoints** grouped under `Suggestions`, `Contacts`, `Checkins`, `Events`, and `System`.
+- **Interactive "Try it out" Execution** for real-time testing and schema inspection directly in the browser.
 
-- **Swagger UI**: [http://localhost:8080/docs](http://localhost:8080/docs) (also available at `/swagger` and `/api-docs`)
-- **OpenAPI JSON Spec**: [http://localhost:8080/api-docs.json](http://localhost:8080/api-docs.json)
-- **Health Check**: [http://localhost:8080/api/health](http://localhost:8080/api/health)
+Once the server is running, access the documentation at any of the following URLs:
 
-You can execute queries, create new suggestions, update records, and delete test entries directly within the Swagger UI.
+- **Swagger UI**: [http://localhost:8080/docs](http://localhost:8080/docs) (also mounted at `/`, `/swagger`, and `/api-docs`)
+- **OpenAPI 3.0 JSON Spec**: [http://localhost:8080/api-docs.json](http://localhost:8080/api-docs.json)
+- **Health Check Endpoint**: [http://localhost:8080/api/health](http://localhost:8080/api/health)
 
 ---
 
 ## 🔌 API Endpoints Summary
 
-### Suggestions (`public-improvements` Database)
+### System (`System` Tag)
 
 | Method | Endpoint | Description |
 |---|---|---|
-| `GET` | `/api/public-improvements/suggestions` | List suggestions (supports `?status=`, `?authorEmail=`, `?limit=`) |
-| `POST` | `/api/public-improvements/suggestions` | Create a new suggestion |
-| `GET` | `/api/public-improvements/suggestions/:id` | Get suggestion details by ID |
-| `PUT` | `/api/public-improvements/suggestions/:id` | Update an existing suggestion |
-| `DELETE` | `/api/public-improvements/suggestions/:id` | Delete a suggestion by ID |
+| `GET` | `/api/health` | Check operational health, service name, and active database connections |
 
-*(Alias routes are also mounted at `/api/suggestions` for convenience).*
+---
 
-### Example: Create Suggestion (`POST /api/public-improvements/suggestions`)
+### Suggestions (`Suggestions` Tag)
+
+Endpoints for managing civic improvement suggestions and photo uploads in Firestore (`public-improvements` database) and Google Cloud Storage. *(Mounted at `/api/suggestions` and `/api/public-improvements/suggestions`).*
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/api/suggestions/upload-url` | Generate a pre-signed GCS URL for direct photo upload |
+| `GET` | `/api/suggestions` | List suggestions (supports `?status=`, `?authorEmail=`, `?limit=`) |
+| `POST` | `/api/suggestions` | Create a new suggestion record |
+| `GET` | `/api/suggestions/:id` | Get suggestion details by integer ID |
+| `PUT` | `/api/suggestions/:id` | Update an existing suggestion by ID |
+| `DELETE` | `/api/suggestions/:id` | Delete a suggestion by ID |
+
+#### Example: Generate Signed Upload URL (`POST /api/suggestions/upload-url`)
 
 **Request Body:**
+```json
+{
+  "fileName": "street-redesign.jpg",
+  "contentType": "image/jpeg",
+  "suggestionId": 12
+}
+```
 
+**Response (`200 OK`):**
+```json
+{
+  "uploadUrl": "https://storage.googleapis.com/urbanists-suggestion-photos/suggestions/12/1727800000000-street-redesign.jpg?X-Goog-Algorithm=...",
+  "publicUrl": "https://storage.googleapis.com/urbanists-suggestion-photos/suggestions/12/1727800000000-street-redesign.jpg",
+  "fileName": "suggestions/12/1727800000000-street-redesign.jpg",
+  "bucket": "urbanists-suggestion-photos",
+  "expiresInSeconds": 900
+}
+```
+
+#### Example: Create Suggestion (`POST /api/suggestions`)
+
+**Request Body:**
 ```json
 {
   "status": "new",
@@ -162,7 +252,14 @@ You can execute queries, create new suggestions, update records, and delete test
   },
   "content": {
     "summary": "Add protected bike lanes and shade trees along Elm Street",
-    "details": "Installing concrete bollards and native Texas oak trees will increase pedestrian safety and lower summer heat."
+    "details": "Installing concrete bollards and native Texas oak trees will increase pedestrian safety and lower summer heat.",
+    "photos": [
+      {
+        "url": "https://storage.googleapis.com/urbanists-suggestion-photos/suggestions/1/elm-street.jpg",
+        "caption": "Current street condition without protected bike lane",
+        "timestamp": "2026-09-23T14:30:00.000Z"
+      }
+    ]
   },
   "location": {
     "latitude": 32.78014,
@@ -175,22 +272,106 @@ You can execute queries, create new suggestions, update records, and delete test
 
 ---
 
-## 🚢 Deployment to Google Cloud Run
+### Contacts (`Contacts` Tag)
 
-Deploy directly to Google Cloud Run using the `deploy` npm script:
+Endpoints for managing CRM contact records in PostgreSQL.
 
-```bash
-npm run deploy
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/api/contacts` | List contacts with search filters (`?name=`, `?email=`, `?phone=`, `?limit=`) |
+| `POST` | `/api/contacts` | Create a new contact (normalizes name, email, and phone) |
+| `GET` | `/api/contacts/:id` | Get contact record by ID |
+| `PUT` | `/api/contacts/:id` | Update an existing contact by ID |
+| `DELETE` | `/api/contacts/:id` | Delete a contact record by ID |
+
+#### Example: Create Contact (`POST /api/contacts`)
+
+**Request Body:**
+```json
+{
+  "name": "Jane Doe",
+  "emails": ["jane.doe@example.com"],
+  "phones": ["214-555-0199"],
+  "zip_home": "75201",
+  "zip_other": ["75202"],
+  "roles": ["volunteer", "advocate"]
+}
 ```
 
-Or run the `gcloud` command directly:
+---
 
-```bash
-gcloud run deploy urbanists-cloud-api-server \
-  --source . \
-  --region us-central1 \
-  --allow-unauthenticated
+### Checkins (`Checkins` Tag)
+
+Endpoints for managing event attendance checkins in PostgreSQL.
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/api/checkins` | List checkins with filters (`?contact_id=`, `?event_id=`, `?limit=`, `?offset=`) |
+| `POST` | `/api/checkins` | Create a new event checkin entry |
+| `GET` | `/api/checkins/:id` | Get checkin record by ID |
+| `PUT` | `/api/checkins/:id` | Update an existing checkin record by ID |
+| `DELETE` | `/api/checkins/:id` | Delete a checkin record by ID |
+
+#### Example: Create Checkin (`POST /api/checkins`)
+
+**Request Body:**
+```json
+{
+  "contact_id": 1,
+  "event_id": "dallas-bike-ride-2026",
+  "submitted_on": "2026-10-01T14:30:00.000Z"
+}
 ```
+
+---
+
+### Events & Calendar (`Events` Tag)
+
+Endpoints for proxying Dallas Urbanists event feeds from Meetup. *(Mounted at `/api/events/ical`, `/meetup-ical`, `/api/meetup-ical`, and `/api/events`).*
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/api/events/ical` | Returns the Meetup iCal feed (`text/calendar; charset=utf-8`) with caching headers |
+| `GET` | `/meetup-ical` | Alias route for the Meetup iCal calendar feed |
+
+---
+
+## 🏷️ Versioning
+
+This project follows [Semantic Versioning](https://semver.org/) (`MAJOR.MINOR.PATCH`):
+
+- **`MAJOR`**: Incompatible or breaking API changes.
+- **`MINOR`**: Backwards-compatible new features and endpoints.
+- **`PATCH`**: Backwards-compatible bug fixes and minor improvements.
+
+### Single Source of Truth
+The version defined in [`package.json`](./package.json) is the single source of truth. The Swagger OpenAPI specification ([`src/docs/swagger.ts`](./src/docs/swagger.ts)) automatically imports and displays this version in the interactive documentation at `/docs`.
+
+### Bumping Versions
+To update the project version, use the built-in `npm version` command:
+
+```powershell
+# For bug fixes (e.g., 1.0.0 -> 1.0.1)
+npm version patch
+
+# For new features / endpoints (e.g., 1.0.0 -> 1.1.0)
+npm version minor
+
+# For breaking changes (e.g., 1.0.0 -> 2.0.0)
+npm version major
+```
+
+Running `npm version` will automatically:
+1. Update `version` in `package.json` and `package-lock.json`.
+2. Create a Git commit and annotated release tag (e.g., `v1.1.0`).
+
+---
+
+## 🚢 Deployment to Production
+
+Pushing to `main` branch automatically triggers build and deploy to Cloud Run service.
+
+Service name: `urbanists-cloud-api-server`
 
 ---
 

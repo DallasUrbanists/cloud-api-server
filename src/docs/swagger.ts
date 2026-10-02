@@ -1,10 +1,14 @@
+import { createRequire } from 'module';
 import { JsonObject } from 'swagger-ui-express';
+
+const require = createRequire(import.meta.url);
+const pkg = require('../../package.json');
 
 export const swaggerDocument: JsonObject = {
   openapi: '3.0.3',
   info: {
     title: 'Dallas Urbanists Cloud API',
-    version: '1.0.0',
+    version: pkg.version || '1.0.0',
     description: `API web service providing database I/O and server-side operations for Dallas Urbanists client applications.`,
     contact: {
       name: 'DallasUrbanists.org',

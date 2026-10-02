@@ -7,6 +7,7 @@ import contactRoutes from './routes/contactRoutes.js';
 import checkinRoutes from './routes/checkinRoutes.js';
 import eventsRoutes from './routes/eventsRoutes.js';
 import { swaggerDocument } from './docs/swagger.js';
+import { HomeController } from './controllers/homeController.js';
 
 dotenv.config();
 
@@ -498,11 +499,13 @@ export function createApp(): Express {
 
   const swaggerSetup = swaggerUi.setup(swaggerDocument, swaggerUiOptions);
 
+  // Homepage: Render README.md with top navigation to GitHub and API Docs
+  app.get('/', HomeController.renderHome);
+
+  // Interactive Swagger Documentation UI
   app.use('/docs', swaggerUi.serve, swaggerSetup);
   app.use('/swagger', swaggerUi.serve, swaggerSetup);
   app.use('/api-docs', swaggerUi.serve, swaggerSetup);
-  app.get('/', swaggerUi.serve, swaggerSetup);
-  app.use(swaggerUi.serve);
 
   // Swagger spec JSON endpoint
   app.get('/api-docs.json', (_req: Request, res: Response) => {
