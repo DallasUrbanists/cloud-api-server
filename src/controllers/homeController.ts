@@ -362,12 +362,19 @@ export class HomeController {
       padding: 0.65rem 1rem;
       text-align: left;
       font-size: 0.9rem;
+      vertical-align: top;
     }
 
     .markdown-body th {
       background-color: var(--st-surface);
       color: var(--st-text);
       font-weight: 600;
+    }
+
+    /* Prevent wrapping in columns like Tags Used */
+    .markdown-body th:nth-child(4),
+    .markdown-body td:nth-child(4) {
+      white-space: nowrap;
     }
 
     .markdown-body tr:nth-child(even) {
@@ -464,6 +471,23 @@ export class HomeController {
           applyTheme(nextTheme);
         });
       }
+
+      // Ensure "Tags Used", "Links", and compact columns never wrap
+      document.querySelectorAll('.markdown-body table').forEach(function(table) {
+        var headers = Array.from(table.querySelectorAll('th'));
+        headers.forEach(function(th, index) {
+          var text = th.textContent.trim().toLowerCase();
+          if (text.includes('tags used') || text === 'links' || text === 'method') {
+            th.style.whiteSpace = 'nowrap';
+            table.querySelectorAll('tr').forEach(function(row) {
+              var cell = row.children[index];
+              if (cell) {
+                cell.style.whiteSpace = 'nowrap';
+              }
+            });
+          }
+        });
+      });
     })();
   </script>
 </body>

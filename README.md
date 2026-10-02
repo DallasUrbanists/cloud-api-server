@@ -6,6 +6,17 @@ Hosted on **Google Cloud Run**, backed by **Google Cloud Firestore**, **Google C
 
 ---
 
+## 🌐 Client Web Applications
+
+This backend API server powers the following client-side applications:
+
+| Project | Tags Used | Links |
+|---|---|---|
+| **Checkin Helper**<br>Tool for event check-in and attendee registration. Saves contacts and check-in records to the Dallas Urbanists PostgreSQL CRM database. | &bull; `Contacts`<br>&bull; `Checkins`<br>&bull; `Events` | &bull; [`GitHub repo`](https://github.com/DallasUrbanists/checkin-helper)<br>&bull; [`dallasurbanists.org/checkin`](https://dallasurbanists.org/checkin) |
+| **Improvement Map**<br>Interactive map application for exploring, submitting, and tracking civic improvement suggestions with photo attachments. | &bull; `Suggestions` | &bull; [`GitHub repo`](https://github.com/DallasUrbanists/improvement-map)<br>&bull; [`map.dallasurbanists.org`](https://map.dallasurbanists.org) |
+
+---
+
 ## 🛠️ Tech Stack
 
 - **Runtime & Language**: Node.js, TypeScript (ESM)
