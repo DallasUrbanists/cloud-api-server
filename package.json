@@ -1,6 +1,6 @@
 {
   "name": "urbanists-cloud-api-server",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Dallas Urbanists Cloud API Server with Firestore and Google Cloud Run.",
   "author": "Hexel Colorado",
   "type": "module",
