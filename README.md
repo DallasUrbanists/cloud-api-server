@@ -101,6 +101,46 @@ Checkin records stored in the relational database adhere to the following schema
 
 ---
 
+### 4. Event (`events` PostgreSQL Table)
+
+Event records stored in the relational database adhere to the following schema:
+
+| Field | Type | Description |
+|---|---|---|
+| `id` | `integer` (bigint) | Unique identifier for the event |
+| `uid` | `string` | Unique iCalendar identifier or external system UID |
+| `start_at` | `string` (ISO 8601) | Timestamp with time zone when the event starts |
+| `end_at` | `string` (ISO 8601, optional) | Timestamp with time zone when the event ends (mutually exclusive with `duration`) |
+| `duration` | `string` (optional) | Duration interval (e.g. `PT2H`, mutually exclusive with `end_at`) |
+| `all_day` | `boolean` | Indicates whether the event is an all-day event (default `false`) |
+| `timezone` | `string` (optional) | Timezone identifier (e.g. `America/Chicago`) |
+| `title` | `string` (optional) | Event title or summary |
+| `description` | `string` (optional) | Description / details of the event |
+| `location` | `string` (optional) | Human-readable event location or venue |
+| `url` | `string` (URI, optional) | External URL for the event |
+| `status` | `string` (optional) | Event status (e.g. `CONFIRMED`, `TENTATIVE`, `CANCELLED`) |
+| `img` | `string` (URI, optional) | Image or banner URL |
+| `classification` | `string` (optional) | Access classification (e.g. `PUBLIC`, `PRIVATE`) |
+| `sequence` | `integer` | iCal revision sequence counter (default `0`) |
+| `organizer_name` | `string` (optional) | Name of event organizer |
+| `organizer_email` | `string` (optional) | Email of event organizer |
+| `recurrence_rule` | `string` (optional) | RFC 5545 recurrence rule (RRULE) |
+| `recurrence_id` | `string` (ISO 8601, optional) | Recurrence instance timestamp |
+| `categories` | `array<string>` (optional) | Categories or tags |
+| `resources` | `array<string>` (optional) | Allocated resources |
+| `attachments` | `array<object>` (optional) | Attachment metadata |
+| `geo_latitude` | `float` (numeric 9,6, optional) | Geographic latitude |
+| `geo_longitude` | `float` (numeric 9,6, optional) | Geographic longitude |
+| `is_hosted_by_du` | `boolean` | Flag indicating whether Dallas Urbanists is hosting (default `true`) |
+| `ical_raw` | `string` (optional) | Raw VEVENT block text |
+| `ical_dtstamp` | `string` (ISO 8601) | iCal generation timestamp |
+| `ical_created` | `string` (ISO 8601, optional) | Timestamp when event was created upstream |
+| `ical_last_modified` | `string` (ISO 8601, optional) | Timestamp when event was last updated upstream |
+| `created_at` | `string` (ISO 8601) | Record creation timestamp |
+| `updated_at` | `string` (ISO 8601) | Record modification timestamp |
+
+---
+
 ## 🚀 Quick Start for Developers
 
 ### 1. Prerequisites
@@ -338,12 +378,51 @@ Endpoints for managing event attendance checkins in PostgreSQL.
 
 ### Events & Calendar (`Events` Tag)
 
-Endpoints for proxying Dallas Urbanists event feeds from Meetup. *(Mounted at `/api/events/ical`, `/meetup-ical`, `/api/meetup-ical`, and `/api/events`).*
+Endpoints for managing PostgreSQL event records and proxying/bulk-importing Dallas Urbanists event feeds from Meetup or external iCalendar URLs. *(Mounted at `/api/events`, `/api/events/ical`, `/meetup-ical`, and `/api/meetup-ical`).*
 
 | Method | Endpoint | Description |
 |---|---|---|
+| `GET` | `/api/events` | List events with filters (`?status=`, `?is_hosted_by_du=`, `?start_after=`, `?start_before=`, `?category=`, `?search=`, `?limit=`, `?offset=`, `?order=`) |
+| `POST` | `/api/events` | Create a new event in the database |
+| `GET` | `/api/events/:id` | Get event details by ID or UID |
+| `PUT` | `/api/events/:id` | Update an existing event record |
+| `PATCH` | `/api/events/:id` | Partially update an existing event record |
+| `DELETE` | `/api/events/:id` | Delete an event record by ID or UID |
+| `POST` | `/api/events/import-ical` | Bulk import events from an iCal feed URL into PostgreSQL |
 | `GET` | `/api/events/ical` | Returns the Meetup iCal feed (`text/calendar; charset=utf-8`) with caching headers |
 | `GET` | `/meetup-ical` | Alias route for the Meetup iCal calendar feed |
+
+#### Example: Bulk Import Events from iCal (`POST /api/events/import-ical`)
+
+**Request Body:**
+```json
+{
+  "url": "https://www.meetup.com/dallasurbanists/events/ical/",
+  "is_hosted_by_du": true,
+  "force": false
+}
+```
+
+**Response (`200 OK`):**
+```json
+{
+  "message": "Import completed: 5 created, 2 updated, 12 skipped, 0 failed.",
+  "sourceUrl": "https://www.meetup.com/dallasurbanists/events/ical/",
+  "totalFound": 19,
+  "created": 5,
+  "updated": 2,
+  "skipped": 12,
+  "failed": 0,
+  "items": [
+    {
+      "uid": "event-304918231@meetup.com",
+      "title": "Dallas Urbanists Monthly Meeting",
+      "action": "created",
+      "id": 1
+    }
+  ]
+}
+```
 
 ---
 

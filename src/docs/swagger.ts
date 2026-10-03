@@ -882,6 +882,383 @@ export const swaggerDocument: JsonObject = {
         },
       },
     },
+    '/api/events': {
+      get: {
+        summary: 'List All Events',
+        description: 'Retrieves event records from the PostgreSQL database ordered by start date, with filtering by status, hosting group, date range, category, and text search.',
+        tags: ['Events'],
+        parameters: [
+          {
+            name: 'status',
+            in: 'query',
+            description: 'Filter events by status (e.g. CONFIRMED, TENTATIVE, CANCELLED)',
+            required: false,
+            schema: {
+              type: 'string',
+              example: 'CONFIRMED',
+            },
+          },
+          {
+            name: 'is_hosted_by_du',
+            in: 'query',
+            description: 'Filter events hosted directly by Dallas Urbanists (true/false)',
+            required: false,
+            schema: {
+              type: 'boolean',
+              example: true,
+            },
+          },
+          {
+            name: 'start_after',
+            in: 'query',
+            description: 'Filter events starting on or after this ISO 8601 timestamp',
+            required: false,
+            schema: {
+              type: 'string',
+              format: 'date-time',
+              example: '2026-10-01T00:00:00.000Z',
+            },
+          },
+          {
+            name: 'start_before',
+            in: 'query',
+            description: 'Filter events starting on or before this ISO 8601 timestamp',
+            required: false,
+            schema: {
+              type: 'string',
+              format: 'date-time',
+              example: '2026-12-31T23:59:59.000Z',
+            },
+          },
+          {
+            name: 'category',
+            in: 'query',
+            description: 'Filter events containing this category tag',
+            required: false,
+            schema: {
+              type: 'string',
+              example: 'Advocacy',
+            },
+          },
+          {
+            name: 'search',
+            in: 'query',
+            description: 'Search substring in event title, description, or location',
+            required: false,
+            schema: {
+              type: 'string',
+              example: 'Downtown',
+            },
+          },
+          {
+            name: 'order',
+            in: 'query',
+            description: 'Sort ordering by event start timestamp (asc or desc)',
+            required: false,
+            schema: {
+              type: 'string',
+              enum: ['asc', 'desc'],
+              default: 'asc',
+            },
+          },
+          {
+            name: 'limit',
+            in: 'query',
+            description: 'Maximum number of event records to return (default: 50)',
+            required: false,
+            schema: {
+              type: 'integer',
+              minimum: 1,
+              example: 50,
+            },
+          },
+          {
+            name: 'offset',
+            in: 'query',
+            description: 'Number of records to skip for pagination (default: 0)',
+            required: false,
+            schema: {
+              type: 'integer',
+              minimum: 0,
+              example: 0,
+            },
+          },
+        ],
+        responses: {
+          200: {
+            description: 'List of events retrieved successfully.',
+            content: {
+              'application/json': {
+                schema: {
+                  $ref: '#/components/schemas/EventListResponse',
+                },
+              },
+            },
+          },
+          500: {
+            $ref: '#/components/responses/InternalServerError',
+          },
+        },
+      },
+      post: {
+        summary: 'Create a New Event',
+        description: 'Creates a new event record in the PostgreSQL database. Note that either end_at or duration must be provided, but not both.',
+        tags: ['Events'],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                $ref: '#/components/schemas/CreateEventDTO',
+              },
+            },
+          },
+        },
+        responses: {
+          201: {
+            description: 'Event created successfully.',
+            content: {
+              'application/json': {
+                schema: {
+                  $ref: '#/components/schemas/Event',
+                },
+              },
+            },
+          },
+          400: {
+            $ref: '#/components/responses/BadRequestError',
+          },
+          409: {
+            description: 'Conflict - An event with the specified UID already exists.',
+            content: {
+              'application/json': {
+                schema: {
+                  $ref: '#/components/schemas/ErrorResponse',
+                },
+              },
+            },
+          },
+          500: {
+            $ref: '#/components/responses/InternalServerError',
+          },
+        },
+      },
+    },
+    '/api/events/import-ical': {
+      post: {
+        summary: 'Bulk Import Events from iCal Feed',
+        description: 'Fetches an upstream iCalendar (.ics) feed URL, parses VEVENT entries, and bulk upserts them into the PostgreSQL events table. Creates new records or updates existing records if the incoming iCal payload has higher sequence numbers or newer modification timestamps.',
+        tags: ['Events'],
+        requestBody: {
+          required: false,
+          content: {
+            'application/json': {
+              schema: {
+                $ref: '#/components/schemas/ImportICalDTO',
+              },
+            },
+          },
+        },
+        responses: {
+          200: {
+            description: 'iCal bulk import completed successfully.',
+            content: {
+              'application/json': {
+                schema: {
+                  $ref: '#/components/schemas/ImportICalResponse',
+                },
+              },
+            },
+          },
+          400: {
+            $ref: '#/components/responses/BadRequestError',
+          },
+          502: {
+            $ref: '#/components/responses/BadGatewayError',
+          },
+        },
+      },
+    },
+    '/api/events/{id}': {
+      get: {
+        summary: 'Get Event by ID or UID',
+        description: 'Retrieves a single event record by its primary key ID (integer) or unique UID string.',
+        tags: ['Events'],
+        parameters: [
+          {
+            name: 'id',
+            in: 'path',
+            required: true,
+            description: 'Event database integer ID or unique UID string',
+            schema: {
+              type: 'string',
+              example: '1',
+            },
+          },
+        ],
+        responses: {
+          200: {
+            description: 'Event record retrieved successfully.',
+            content: {
+              'application/json': {
+                schema: {
+                  $ref: '#/components/schemas/Event',
+                },
+              },
+            },
+          },
+          400: {
+            $ref: '#/components/responses/BadRequestError',
+          },
+          404: {
+            $ref: '#/components/responses/NotFoundError',
+          },
+          500: {
+            $ref: '#/components/responses/InternalServerError',
+          },
+        },
+      },
+      put: {
+        summary: 'Update Event',
+        description: 'Updates an existing event record by its database ID or UID.',
+        tags: ['Events'],
+        parameters: [
+          {
+            name: 'id',
+            in: 'path',
+            required: true,
+            description: 'Event database integer ID or unique UID string',
+            schema: {
+              type: 'string',
+              example: '1',
+            },
+          },
+        ],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                $ref: '#/components/schemas/UpdateEventDTO',
+              },
+            },
+          },
+        },
+        responses: {
+          200: {
+            description: 'Event updated successfully.',
+            content: {
+              'application/json': {
+                schema: {
+                  $ref: '#/components/schemas/Event',
+                },
+              },
+            },
+          },
+          400: {
+            $ref: '#/components/responses/BadRequestError',
+          },
+          404: {
+            $ref: '#/components/responses/NotFoundError',
+          },
+          500: {
+            $ref: '#/components/responses/InternalServerError',
+          },
+        },
+      },
+      patch: {
+        summary: 'Partially Update Event',
+        description: 'Applies partial updates to an existing event record by its ID or UID.',
+        tags: ['Events'],
+        parameters: [
+          {
+            name: 'id',
+            in: 'path',
+            required: true,
+            description: 'Event database integer ID or unique UID string',
+            schema: {
+              type: 'string',
+              example: '1',
+            },
+          },
+        ],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                $ref: '#/components/schemas/UpdateEventDTO',
+              },
+            },
+          },
+        },
+        responses: {
+          200: {
+            description: 'Event updated successfully.',
+            content: {
+              'application/json': {
+                schema: {
+                  $ref: '#/components/schemas/Event',
+                },
+              },
+            },
+          },
+          400: {
+            $ref: '#/components/responses/BadRequestError',
+          },
+          404: {
+            $ref: '#/components/responses/NotFoundError',
+          },
+          500: {
+            $ref: '#/components/responses/InternalServerError',
+          },
+        },
+      },
+      delete: {
+        summary: 'Delete Event',
+        description: 'Deletes an event record by its integer ID or unique UID from the PostgreSQL database.',
+        tags: ['Events'],
+        parameters: [
+          {
+            name: 'id',
+            in: 'path',
+            required: true,
+            description: 'Event database integer ID or unique UID string',
+            schema: {
+              type: 'string',
+              example: '1',
+            },
+          },
+        ],
+        responses: {
+          200: {
+            description: 'Event deleted successfully.',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    message: {
+                      type: 'string',
+                      example: 'Event with identifier 1 has been deleted successfully.',
+                    },
+                  },
+                },
+              },
+            },
+          },
+          400: {
+            $ref: '#/components/responses/BadRequestError',
+          },
+          404: {
+            $ref: '#/components/responses/NotFoundError',
+          },
+          500: {
+            $ref: '#/components/responses/InternalServerError',
+          },
+        },
+      },
+    },
     '/api/events/ical': {
       get: {
         summary: 'Proxy Meetup iCal Event Feed',
@@ -1396,6 +1773,586 @@ export const swaggerDocument: JsonObject = {
                 example: '1500 Elm St, Dallas, TX 75201',
               },
             },
+          },
+        },
+      },
+      Event: {
+        type: 'object',
+        required: ['id', 'uid', 'start_at', 'all_day', 'sequence', 'is_hosted_by_du', 'created_at', 'updated_at'],
+        properties: {
+          id: {
+            type: 'integer',
+            example: 1,
+            description: 'Unique database identifier (bigint)',
+          },
+          uid: {
+            type: 'string',
+            example: 'meetup-event-304918231@meetup.com',
+            description: 'Unique iCalendar UID or external system identifier',
+          },
+          start_at: {
+            type: 'string',
+            format: 'date-time',
+            example: '2026-10-15T19:00:00.000Z',
+            description: 'Event start timestamp with timezone',
+          },
+          end_at: {
+            type: 'string',
+            format: 'date-time',
+            nullable: true,
+            example: '2026-10-15T21:00:00.000Z',
+            description: 'Event end timestamp with timezone (mutually exclusive with duration)',
+          },
+          duration: {
+            type: 'string',
+            nullable: true,
+            example: 'PT2H',
+            description: 'ISO 8601 or Postgres interval duration (mutually exclusive with end_at)',
+          },
+          all_day: {
+            type: 'boolean',
+            example: false,
+            description: 'Flag indicating if this is an all-day event',
+          },
+          timezone: {
+            type: 'string',
+            nullable: true,
+            example: 'America/Chicago',
+            description: 'Timezone identifier for the event',
+          },
+          title: {
+            type: 'string',
+            nullable: true,
+            example: 'Dallas Urbanists Monthly Meeting: Transit Futures',
+            description: 'Event title or summary',
+          },
+          description: {
+            type: 'string',
+            nullable: true,
+            example: 'Join us to discuss upcoming DART transit expansion plans and walkability initiatives.',
+            description: 'Detailed description of the event',
+          },
+          location: {
+            type: 'string',
+            nullable: true,
+            example: 'Pegasus City Brewery, 1508 Commerce St, Dallas, TX 75201',
+            description: 'Human-readable location or address',
+          },
+          url: {
+            type: 'string',
+            format: 'uri',
+            nullable: true,
+            example: 'https://www.meetup.com/dallasurbanists/events/304918231/',
+            description: 'Web URL for event details or registration',
+          },
+          status: {
+            type: 'string',
+            nullable: true,
+            example: 'CONFIRMED',
+            description: 'Event status (e.g. CONFIRMED, TENTATIVE, CANCELLED)',
+          },
+          img: {
+            type: 'string',
+            format: 'uri',
+            nullable: true,
+            example: 'https://secure.meetupstatic.com/photos/event/6/a/1/highres_518281729.webp',
+            description: 'Banner or feature image URL for the event',
+          },
+          classification: {
+            type: 'string',
+            nullable: true,
+            example: 'PUBLIC',
+            description: 'Access classification (e.g. PUBLIC, PRIVATE, CONFIDENTIAL)',
+          },
+          sequence: {
+            type: 'integer',
+            example: 0,
+            description: 'iCal revision sequence counter',
+          },
+          organizer_name: {
+            type: 'string',
+            nullable: true,
+            example: 'Dallas Urbanists',
+            description: 'Name of the organizing individual or entity',
+          },
+          organizer_email: {
+            type: 'string',
+            format: 'email',
+            nullable: true,
+            example: 'events@dallasurbanists.org',
+            description: 'Contact email address of the organizer',
+          },
+          recurrence_rule: {
+            type: 'string',
+            nullable: true,
+            example: 'FREQ=MONTHLY;BYDAY=3TH',
+            description: 'RFC 5545 recurrence rule string (RRULE)',
+          },
+          recurrence_id: {
+            type: 'string',
+            format: 'date-time',
+            nullable: true,
+            description: 'Recurrence instance timestamp identifier',
+          },
+          categories: {
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+            nullable: true,
+            example: ['Transit', 'Advocacy', 'Social'],
+            description: 'Tags or categories associated with the event',
+          },
+          resources: {
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+            nullable: true,
+            description: 'Resources or equipment allocated for the event',
+          },
+          attachments: {
+            type: 'array',
+            items: {
+              type: 'object',
+            },
+            nullable: true,
+            description: 'JSON array or object of event attachments and media',
+          },
+          geo_latitude: {
+            type: 'number',
+            format: 'float',
+            nullable: true,
+            example: 32.78014,
+            description: 'Latitude coordinate (NUMERIC 9,6)',
+          },
+          geo_longitude: {
+            type: 'number',
+            format: 'float',
+            nullable: true,
+            example: -96.79701,
+            description: 'Longitude coordinate (NUMERIC 9,6)',
+          },
+          is_hosted_by_du: {
+            type: 'boolean',
+            example: true,
+            description: 'Flag indicating whether Dallas Urbanists is hosting or co-hosting',
+          },
+          ical_raw: {
+            type: 'string',
+            nullable: true,
+            description: 'Raw VEVENT string from original iCalendar source',
+          },
+          ical_dtstamp: {
+            type: 'string',
+            format: 'date-time',
+            example: '2026-10-02T20:00:00.000Z',
+            description: 'iCal feed generation timestamp',
+          },
+          ical_created: {
+            type: 'string',
+            format: 'date-time',
+            nullable: true,
+            description: 'Timestamp when event was created in original calendar',
+          },
+          ical_last_modified: {
+            type: 'string',
+            format: 'date-time',
+            nullable: true,
+            description: 'Timestamp when event was last modified in original calendar',
+          },
+          created_at: {
+            type: 'string',
+            format: 'date-time',
+            example: '2026-10-02T20:00:00.000Z',
+            description: 'Timestamp when record was created in database',
+          },
+          updated_at: {
+            type: 'string',
+            format: 'date-time',
+            example: '2026-10-02T20:00:00.000Z',
+            description: 'Timestamp when record was last updated in database',
+          },
+        },
+      },
+      CreateEventDTO: {
+        type: 'object',
+        required: ['uid', 'start_at'],
+        properties: {
+          uid: {
+            type: 'string',
+            example: 'meetup-event-304918231@meetup.com',
+            description: 'Unique event identifier',
+          },
+          start_at: {
+            type: 'string',
+            format: 'date-time',
+            example: '2026-10-15T19:00:00.000Z',
+            description: 'Start timestamp (ISO 8601)',
+          },
+          end_at: {
+            type: 'string',
+            format: 'date-time',
+            example: '2026-10-15T21:00:00.000Z',
+            description: 'End timestamp (mutually exclusive with duration)',
+          },
+          duration: {
+            type: 'string',
+            example: 'PT2H',
+            description: 'Duration interval (mutually exclusive with end_at)',
+          },
+          all_day: {
+            type: 'boolean',
+            example: false,
+          },
+          timezone: {
+            type: 'string',
+            example: 'America/Chicago',
+          },
+          title: {
+            type: 'string',
+            example: 'Dallas Urbanists Monthly Meeting',
+          },
+          description: {
+            type: 'string',
+            example: 'Discussion on transit and safe streets.',
+          },
+          location: {
+            type: 'string',
+            example: 'Pegasus City Brewery, 1508 Commerce St, Dallas, TX 75201',
+          },
+          url: {
+            type: 'string',
+            format: 'uri',
+            example: 'https://www.meetup.com/dallasurbanists/events/304918231/',
+          },
+          status: {
+            type: 'string',
+            example: 'CONFIRMED',
+          },
+          img: {
+            type: 'string',
+            format: 'uri',
+            example: 'https://secure.meetupstatic.com/photos/event/6/a/1/highres_518281729.webp',
+          },
+          classification: {
+            type: 'string',
+            example: 'PUBLIC',
+          },
+          sequence: {
+            type: 'integer',
+            example: 0,
+          },
+          organizer_name: {
+            type: 'string',
+            example: 'Dallas Urbanists',
+          },
+          organizer_email: {
+            type: 'string',
+            format: 'email',
+            example: 'events@dallasurbanists.org',
+          },
+          recurrence_rule: {
+            type: 'string',
+            example: 'FREQ=MONTHLY;BYDAY=3TH',
+          },
+          recurrence_id: {
+            type: 'string',
+            format: 'date-time',
+          },
+          categories: {
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+            example: ['Transit', 'Advocacy'],
+          },
+          resources: {
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+          },
+          attachments: {
+            type: 'array',
+            items: {
+              type: 'object',
+            },
+          },
+          geo_latitude: {
+            type: 'number',
+            format: 'float',
+            example: 32.78014,
+          },
+          geo_longitude: {
+            type: 'number',
+            format: 'float',
+            example: -96.79701,
+          },
+          is_hosted_by_du: {
+            type: 'boolean',
+            example: true,
+          },
+          ical_raw: {
+            type: 'string',
+          },
+          ical_dtstamp: {
+            type: 'string',
+            format: 'date-time',
+          },
+          ical_created: {
+            type: 'string',
+            format: 'date-time',
+          },
+          ical_last_modified: {
+            type: 'string',
+            format: 'date-time',
+          },
+        },
+      },
+      UpdateEventDTO: {
+        type: 'object',
+        properties: {
+          uid: {
+            type: 'string',
+            example: 'meetup-event-304918231@meetup.com',
+          },
+          start_at: {
+            type: 'string',
+            format: 'date-time',
+            example: '2026-10-15T19:00:00.000Z',
+          },
+          end_at: {
+            type: 'string',
+            format: 'date-time',
+            nullable: true,
+            example: '2026-10-15T21:00:00.000Z',
+          },
+          duration: {
+            type: 'string',
+            nullable: true,
+            example: 'PT2H',
+          },
+          all_day: {
+            type: 'boolean',
+            example: false,
+          },
+          timezone: {
+            type: 'string',
+            example: 'America/Chicago',
+          },
+          title: {
+            type: 'string',
+            example: 'Dallas Urbanists Monthly Meeting (Updated)',
+          },
+          description: {
+            type: 'string',
+            example: 'Updated discussion agenda.',
+          },
+          location: {
+            type: 'string',
+            example: '1508 Commerce St, Dallas, TX 75201',
+          },
+          url: {
+            type: 'string',
+            format: 'uri',
+            example: 'https://www.meetup.com/dallasurbanists/events/304918231/',
+          },
+          status: {
+            type: 'string',
+            example: 'CONFIRMED',
+          },
+          img: {
+            type: 'string',
+            format: 'uri',
+          },
+          classification: {
+            type: 'string',
+            example: 'PUBLIC',
+          },
+          sequence: {
+            type: 'integer',
+            example: 1,
+          },
+          organizer_name: {
+            type: 'string',
+            example: 'Dallas Urbanists',
+          },
+          organizer_email: {
+            type: 'string',
+            format: 'email',
+            example: 'events@dallasurbanists.org',
+          },
+          recurrence_rule: {
+            type: 'string',
+          },
+          recurrence_id: {
+            type: 'string',
+            format: 'date-time',
+          },
+          categories: {
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+            example: ['Transit', 'Advocacy'],
+          },
+          resources: {
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+          },
+          attachments: {
+            type: 'array',
+            items: {
+              type: 'object',
+            },
+          },
+          geo_latitude: {
+            type: 'number',
+            format: 'float',
+            nullable: true,
+            example: 32.78014,
+          },
+          geo_longitude: {
+            type: 'number',
+            format: 'float',
+            nullable: true,
+            example: -96.79701,
+          },
+          is_hosted_by_du: {
+            type: 'boolean',
+            example: true,
+          },
+          ical_raw: {
+            type: 'string',
+          },
+          ical_dtstamp: {
+            type: 'string',
+            format: 'date-time',
+          },
+          ical_created: {
+            type: 'string',
+            format: 'date-time',
+          },
+          ical_last_modified: {
+            type: 'string',
+            format: 'date-time',
+          },
+        },
+      },
+      ImportICalDTO: {
+        type: 'object',
+        properties: {
+          url: {
+            type: 'string',
+            format: 'uri',
+            example: 'https://www.meetup.com/dallasurbanists/events/ical/',
+            description: 'Optional iCalendar feed URL. If omitted, defaults to the configured Dallas Urbanists Meetup feed URL.',
+          },
+          is_hosted_by_du: {
+            type: 'boolean',
+            default: true,
+            example: true,
+            description: 'Whether imported events should be tagged as hosted by Dallas Urbanists.',
+          },
+          force: {
+            type: 'boolean',
+            default: false,
+            example: false,
+            description: 'If true, forces overwrite of existing events even if sequence/timestamp is not newer.',
+          },
+        },
+      },
+      ImportICalItemResult: {
+        type: 'object',
+        required: ['uid', 'action'],
+        properties: {
+          uid: {
+            type: 'string',
+            example: 'meetup-event-304918231@meetup.com',
+          },
+          title: {
+            type: 'string',
+            nullable: true,
+            example: 'Dallas Urbanists Monthly Meeting',
+          },
+          action: {
+            type: 'string',
+            enum: ['created', 'updated', 'skipped', 'error'],
+            example: 'created',
+          },
+          reason: {
+            type: 'string',
+            example: 'Existing event is up-to-date or newer.',
+          },
+          id: {
+            type: 'integer',
+            example: 1,
+          },
+        },
+      },
+      ImportICalResponse: {
+        type: 'object',
+        required: ['message', 'sourceUrl', 'totalFound', 'created', 'updated', 'skipped', 'failed', 'items'],
+        properties: {
+          message: {
+            type: 'string',
+            example: 'Import completed: 5 created, 2 updated, 12 skipped, 0 failed.',
+          },
+          sourceUrl: {
+            type: 'string',
+            format: 'uri',
+            example: 'https://www.meetup.com/dallasurbanists/events/ical/',
+          },
+          totalFound: {
+            type: 'integer',
+            example: 19,
+          },
+          created: {
+            type: 'integer',
+            example: 5,
+          },
+          updated: {
+            type: 'integer',
+            example: 2,
+          },
+          skipped: {
+            type: 'integer',
+            example: 12,
+          },
+          failed: {
+            type: 'integer',
+            example: 0,
+          },
+          items: {
+            type: 'array',
+            items: {
+              $ref: '#/components/schemas/ImportICalItemResult',
+            },
+          },
+        },
+      },
+      EventListResponse: {
+        type: 'object',
+        required: ['data', 'count', 'total'],
+        properties: {
+          data: {
+            type: 'array',
+            items: {
+              $ref: '#/components/schemas/Event',
+            },
+          },
+          count: {
+            type: 'integer',
+            example: 10,
+            description: 'Number of event records in this page',
+          },
+          total: {
+            type: 'integer',
+            example: 45,
+            description: 'Total matching event records in database',
           },
         },
       },
