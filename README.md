@@ -30,6 +30,12 @@ This backend API server powers the following client-side applications:
 - **Deployment & Hosting**: Google Cloud Run & Cloud SQL Unix socket proxy.
 - **Version Control**: Git
 
+### Authentication configuration
+
+The API uses Firebase Authentication / Google Identity Platform for user JWTs and Firebase App Check for production browser applications. API-key-required routes also require an application key in the `X-API-Key` header. Configure application keys through the `API_KEYS_JSON` environment variable; in Cloud Run, provide it from Secret Manager rather than committing it to source control. Production App Check is enabled when `NODE_ENV=production`. Local development may use a registered Firebase App Check debug token.
+
+Apply `migrations/001_add_firebase_uid.sql` before deploying the contact authorization changes.
+
 ---
 
 ## 🌟 Features

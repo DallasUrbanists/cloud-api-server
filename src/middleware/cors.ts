@@ -88,7 +88,7 @@ export const corsOptions: CorsOptions = {
     }
   },
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key', 'X-Firebase-AppCheck', 'X-Requested-With', 'Accept'],
   credentials: true,
 };
 

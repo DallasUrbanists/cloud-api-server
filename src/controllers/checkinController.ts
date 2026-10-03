@@ -1,6 +1,27 @@
 import { Request, Response, NextFunction } from 'express';
 import { pool } from '../config/db.js';
 import { Checkin, CreateCheckinDTO, UpdateCheckinDTO } from '../models/checkin.js';
+import { hasRole } from '../middleware/auth.js';
+
+function redactContact(contact: any, mode: 'false' | 'partial' | 'full' | 'redacted'): any {
+  if (!contact || mode === 'false') return undefined;
+  if (mode === 'full') return contact;
+  if (mode === 'partial') return { ...contact, name: contact.name.split(/\s+/).map((word: string, index: number) => index === 0 ? word : `${word.charAt(0)}.`).join(' '), emails: null, phones: null, zip_other: null, roles: null, firebase_uid: null };
+  return { name: contact.name.split(/\s+/).map((word: string) => word.charAt(0)).join(''), zip_home: contact.zip_home, emails: null, phones: null, zip_other: null, roles: null, firebase_uid: null };
+}
+
+function attachContact(row: any, mode: 'false' | 'partial' | 'full' | 'redacted'): any {
+  const { contact, firebase_uid, ...checkin } = row;
+  const redacted = redactContact(contact, mode);
+  return redacted === undefined ? checkin : { ...checkin, contact: redacted };
+}
+
+async function canModifyCheckin(id: number, req: Request): Promise<boolean> {
+  if (hasRole(req, 'staff')) return true;
+  if (!req.user) return false;
+  const result = await pool.query<{ firebase_uid: string | null }>('SELECT contacts.firebase_uid FROM checkins LEFT JOIN contacts ON contacts.id = checkins.contact_id WHERE checkins.id = $1', [id]);
+  return result.rows[0]?.firebase_uid === req.user.uid;
+}
 
 export class CheckinController {
   // -----------------------------------------------------------------
@@ -43,8 +64,16 @@ export class CheckinController {
     }
 
     try {
+      const event = await pool.query('SELECT 1 FROM events WHERE id::text = $1 OR uid = $1 LIMIT 1', [event_id.trim()]);
+      if (event.rows.length === 0) { res.status(400).json({ error: 'Bad Request', message: 'event_id must reference a valid event.' }); return; }
+      if (parsedContactId !== null) {
+        const contact = await pool.query('SELECT 1 FROM contacts WHERE id = $1', [parsedContactId]);
+        if (contact.rows.length === 0) { res.status(400).json({ error: 'Bad Request', message: 'contact_id must reference a valid contact.' }); return; }
+        const duplicate = await pool.query('SELECT 1 FROM checkins WHERE contact_id = $1 AND event_id = $2 LIMIT 1', [parsedContactId, event_id.trim()]);
+        if (duplicate.rows.length > 0) { res.status(409).json({ error: 'Conflict', message: 'This contact is already checked in for this event.' }); return; }
+      }
       const query = `
-        INSERT INTO checkins (contact_id, event_id, submitted_on) 
+        INSERT INTO checkins (contact_id, event_id, submitted_on)
         VALUES ($1, $2, COALESCE($3, CURRENT_TIMESTAMP)) 
         RETURNING *;
       `;
@@ -66,6 +95,20 @@ export class CheckinController {
   // -----------------------------------------------------------------
   static async getAllCheckins(req: Request, res: Response, next: NextFunction): Promise<void> {
     const { contact_id, event_id, limit, offset } = req.query;
+    const includeContact = String(req.query.include_contact || 'false');
+    const isStaff = hasRole(req, 'staff');
+    if (!['false', 'partial', 'full'].includes(includeContact)) {
+      res.status(400).json({ error: 'Bad Request', message: 'include_contact must be false, partial, or full.' });
+      return;
+    }
+    if (!isStaff && (!event_id || String(event_id).trim() === '')) {
+      res.status(400).json({ error: 'Bad Request', message: 'event_id is required unless the user has staff role.' });
+      return;
+    }
+    if (includeContact === 'full' && !isStaff) {
+      res.status(403).json({ error: 'Forbidden', message: 'Full contact details require staff authorization.' });
+      return;
+    }
 
     try {
       const conditions: string[] = [];
@@ -93,7 +136,9 @@ export class CheckinController {
         }
       }
 
-      let query = 'SELECT * FROM checkins';
+      let query = includeContact === 'false'
+        ? 'SELECT checkins.* FROM checkins'
+        : 'SELECT checkins.*, row_to_json(contacts) AS contact FROM checkins LEFT JOIN contacts ON contacts.id = checkins.contact_id';
       if (conditions.length > 0) {
         query += ` WHERE ${conditions.join(' AND ')}`;
       }
@@ -125,8 +170,9 @@ export class CheckinController {
         values.push(parsedOffset);
       }
 
-      const result = await pool.query<Checkin>(query, values);
-      res.status(200).json(result.rows);
+      const result = await pool.query<any>(query, values);
+      const contactMode = isStaff ? includeContact : (includeContact === 'false' ? 'false' : 'redacted');
+      res.status(200).json(result.rows.map((row) => attachContact(row, contactMode as 'false' | 'partial' | 'full' | 'redacted')));
     } catch (error) {
       console.error('Error fetching checkins:', error);
       res.status(500).json({
@@ -151,8 +197,16 @@ export class CheckinController {
       return;
     }
 
+    const includeContact = String(req.query.include_contact || 'false');
+    if (!['false', 'partial', 'full'].includes(includeContact)) {
+      res.status(400).json({ error: 'Bad Request', message: 'include_contact must be false, partial, or full.' });
+      return;
+    }
+
     try {
-      const result = await pool.query<Checkin>('SELECT * FROM checkins WHERE id = $1;', [parsedId]);
+      const result = await pool.query<any>(includeContact === 'false'
+        ? 'SELECT checkins.*, contacts.firebase_uid FROM checkins LEFT JOIN contacts ON contacts.id = checkins.contact_id WHERE checkins.id = $1'
+        : 'SELECT checkins.*, row_to_json(contacts) AS contact, contacts.firebase_uid FROM checkins LEFT JOIN contacts ON contacts.id = checkins.contact_id WHERE checkins.id = $1', [parsedId]);
 
       if (result.rows.length === 0) {
         res.status(404).json({
@@ -162,7 +216,17 @@ export class CheckinController {
         return;
       }
 
-      res.status(200).json(result.rows[0]);
+      const row = result.rows[0];
+      const authorized = hasRole(req, 'staff') || Boolean(req.user && row.firebase_uid === req.user.uid);
+      if (includeContact === 'full' && authorized) {
+        res.status(200).json(attachContact(row, 'full'));
+        return;
+      }
+      if (includeContact === 'partial' && authorized) {
+        res.status(200).json(attachContact(row, 'partial'));
+        return;
+      }
+      res.status(200).json(attachContact(row, authorized ? (includeContact as 'false' | 'partial' | 'full') : 'redacted'));
     } catch (error) {
       console.error('Error retrieving checkin:', error);
       res.status(500).json({
@@ -184,6 +248,10 @@ export class CheckinController {
         error: 'Bad Request',
         message: 'Invalid checkin ID. Must be a positive integer.',
       });
+      return;
+    }
+    if (!(await canModifyCheckin(parsedId, req))) {
+      res.status(403).json({ error: 'Forbidden', message: 'You are not authorized to modify this checkin.' });
       return;
     }
 
@@ -284,6 +352,10 @@ export class CheckinController {
         error: 'Bad Request',
         message: 'Invalid checkin ID. Must be a positive integer.',
       });
+      return;
+    }
+    if (!(await canModifyCheckin(parsedId, req))) {
+      res.status(403).json({ error: 'Forbidden', message: 'You are not authorized to delete this checkin.' });
       return;
     }
 

@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { SuggestionService } from '../services/suggestionService.js';
 import { StorageService } from '../services/storageService.js';
+import { hasRole } from '../middleware/auth.js';
 import {
   validateCreateSuggestion,
   validateUpdateSuggestion,
@@ -160,6 +161,13 @@ export class SuggestionController {
         return;
       }
 
+      const existing = await SuggestionService.getById(id);
+      const authorized = Boolean(existing && (hasRole(req, 'staff') || req.user?.emails.some((email) => email.toLowerCase() === existing.author.email.toLowerCase())));
+      if (!authorized) {
+        res.status(403).json({ error: 'Forbidden', message: 'You are not authorized to modify this suggestion.' });
+        return;
+      }
+
       const validation = validateUpdateSuggestion(req.body);
       if (validation.error || !validation.data) {
         res.status(400).json({
@@ -198,6 +206,13 @@ export class SuggestionController {
           error: 'Bad Request',
           message: 'The id parameter must be a positive integer.',
         });
+        return;
+      }
+
+      const existing = await SuggestionService.getById(id);
+      const authorized = Boolean(existing && (hasRole(req, 'staff') || req.user?.emails.some((email) => email.toLowerCase() === existing.author.email.toLowerCase())));
+      if (!authorized) {
+        res.status(403).json({ error: 'Forbidden', message: 'You are not authorized to delete this suggestion.' });
         return;
       }
 
