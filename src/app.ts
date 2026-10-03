@@ -469,7 +469,11 @@ export function createApp(): Express {
 
   // Serve Swagger theme and local Firebase sign-in helper.
   app.get('/swagger-theme.js', (_req: Request, res: Response) => {
-    const firebaseWebApiKey = JSON.stringify(process.env.NODE_ENV === 'production' ? '' : (process.env.FIREBASE_WEB_API_KEY || ''));
+    const firebaseWebApiKey = JSON.stringify(
+      process.env.FIREBASE_WEB_API_KEY && process.env.ENABLE_SWAGGER_FIREBASE_AUTH === 'true'
+        ? process.env.FIREBASE_WEB_API_KEY
+        : '',
+    );
     res.setHeader('Content-Type', 'application/javascript');
     res.send(`
       (function() {
