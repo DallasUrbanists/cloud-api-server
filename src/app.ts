@@ -137,17 +137,17 @@ export function createApp(): Express {
     }
 
     /* Hide any extraneous or broken default topbar toggles/buttons */
-    .swagger-ui .topbar-wrapper > *:not(.link):not(#swagger-theme-btn) {
+    .swagger-ui .topbar-wrapper > *:not(.link):not(#swagger-theme-btn):not(#swagger-auth-btn):not(#swagger-auth-panel) {
       display: none !important;
     }
 
-    .swagger-ui .topbar button:not(#swagger-theme-btn),
+    /*.swagger-ui .topbar button:not(#swagger-theme-btn),
     .swagger-ui .topbar .theme-toggle:not(#swagger-theme-btn),
     .swagger-ui .topbar .theme-switch,
     .swagger-ui .topbar [aria-label*="theme" i]:not(#swagger-theme-btn),
     .swagger-ui .topbar [title*="theme" i]:not(#swagger-theme-btn) {
       display: none !important;
-    }
+    }*/
 
     /* Swagger Theme Toggle Button */
     .swagger-theme-toggle {
@@ -171,6 +171,36 @@ export function createApp(): Express {
       background: rgba(255, 255, 255, 0.22);
       border-color: var(--st-yellow);
       color: var(--st-yellow);
+    }
+
+    .swagger-auth-panel {
+      position: absolute;
+      top: 52px;
+      right: 20px;
+      z-index: 1000;
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      padding: 10px;
+      background: var(--st-surface);
+      border: 1px solid var(--st-border);
+      border-radius: 8px;
+      box-shadow: var(--st-shadow);
+    }
+
+    .swagger-auth-panel input {
+      width: 170px;
+      padding: 6px 8px;
+      color: var(--st-text);
+      background: var(--st-input-bg);
+      border: 1px solid var(--st-border);
+      border-radius: 4px;
+    }
+
+    .swagger-auth-status {
+      max-width: 220px;
+      color: var(--st-text-secondary);
+      font-size: 0.8rem;
     }
 
     .swagger-ui .info {
@@ -437,11 +467,13 @@ export function createApp(): Express {
     },
   };
 
-  // Serve swagger theme synchronization script
+  // Serve Swagger theme and local Firebase sign-in helper.
   app.get('/swagger-theme.js', (_req: Request, res: Response) => {
+    const firebaseWebApiKey = JSON.stringify(process.env.NODE_ENV === 'production' ? '' : (process.env.FIREBASE_WEB_API_KEY || ''));
     res.setHeader('Content-Type', 'application/javascript');
     res.send(`
       (function() {
+        const firebaseWebApiKey = ${firebaseWebApiKey};
         function getTheme() {
           return localStorage.getItem('urbanists_theme') || 'dark';
         }
@@ -470,7 +502,7 @@ export function createApp(): Express {
           if (topbarWrapper) {
             // Remove any extraneous buttons or elements that are not the main link or our button
             Array.from(topbarWrapper.children).forEach(function(child) {
-              if (!child.classList.contains('link') && child.id !== 'swagger-theme-btn') {
+              if (!child.classList.contains('link') && !['swagger-theme-btn', 'swagger-auth-btn', 'swagger-auth-panel'].includes(child.id)) {
                 child.remove();
               }
             });
@@ -487,17 +519,69 @@ export function createApp(): Express {
           }
         }
 
+        function initFirebaseAuth() {
+          if (!firebaseWebApiKey || document.getElementById('swagger-auth-btn')) return;
+          const topbarWrapper = document.querySelector('.swagger-ui .topbar .topbar-wrapper');
+          if (!topbarWrapper) return;
+
+          const button = document.createElement('button');
+          button.id = 'swagger-auth-btn';
+          button.className = 'swagger-theme-toggle';
+          button.type = 'button';
+          button.textContent = '🔐 Firebase Sign In';
+
+          const panel = document.createElement('form');
+          panel.id = 'swagger-auth-panel';
+          panel.className = 'swagger-auth-panel';
+          panel.hidden = true;
+          panel.innerHTML = '<input name="email" type="email" placeholder="Email" required />' +
+            '<input name="password" type="password" placeholder="Password" required />' +
+            '<button class="swagger-theme-toggle" type="submit">Sign in</button>' +
+            '<span class="swagger-auth-status" aria-live="polite"></span>';
+
+          const status = panel.querySelector('.swagger-auth-status');
+          button.onclick = function() { panel.hidden = !panel.hidden; };
+          panel.onsubmit = async function(event) {
+            event.preventDefault();
+            status.textContent = 'Signing in…';
+            const form = new FormData(panel);
+            try {
+              const response = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=' + encodeURIComponent(firebaseWebApiKey), {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: form.get('email'), password: form.get('password'), returnSecureToken: true }),
+              });
+              const data = await response.json();
+              if (!response.ok) throw new Error(data.error?.message || 'Firebase sign-in failed.');
+              if (!window.ui || !window.ui.preauthorizeApiKey) throw new Error('Swagger authorization is not ready. Refresh and try again.');
+              window.ui.preauthorizeApiKey('BearerAuth', data.idToken);
+              panel.querySelector('input[name="password"]').value = '';
+              status.textContent = 'Signed in as ' + (form.get('email') || '') + '.';
+            } catch (error) {
+              status.textContent = error.message || 'Sign-in failed.';
+            }
+          };
+
+          topbarWrapper.appendChild(button);
+          topbarWrapper.appendChild(panel);
+        }
+
+        function initSwaggerControls() {
+          initToggleBtn();
+          initFirebaseAuth();
+        }
+
         applyTheme(getTheme());
         if (document.readyState === 'loading') {
-          document.addEventListener('DOMContentLoaded', initToggleBtn);
+          document.addEventListener('DOMContentLoaded', initSwaggerControls);
         } else {
-          initToggleBtn();
+          initSwaggerControls();
         }
 
         // Retry in case Swagger UI topbar renders asynchronously
         const interval = setInterval(function() {
           if (document.querySelector('.swagger-ui .topbar .topbar-wrapper')) {
-            initToggleBtn();
+            initSwaggerControls();
             clearInterval(interval);
           }
         }, 200);

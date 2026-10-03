@@ -21,7 +21,7 @@ export const swaggerDocument: JsonObject = {
       description: 'Current Environment / Local Server',
     },
   ],
-  security: [{ ApiKeyAuth: [] }],
+  security: [{ ApiKeyAuth: [], BearerAuth: [] }],
   tags: [
     {
       name: 'Suggestions',
@@ -1365,6 +1365,12 @@ export const swaggerDocument: JsonObject = {
         in: 'header',
         name: 'X-API-Key',
         description: 'Local development API key from API_KEYS_JSON.',
+      },
+      BearerAuth: {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        description: 'Firebase Authentication ID token.',
       },
     },
     schemas: {
