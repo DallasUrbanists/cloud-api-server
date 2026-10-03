@@ -99,11 +99,6 @@ export class CheckinController {
       res.status(400).json({ error: 'Bad Request', message: 'event_id is required unless the user has staff role.' });
       return;
     }
-    if (includeContact === 'full' && !isStaff) {
-      res.status(403).json({ error: 'Forbidden', message: 'Full contact details require staff authorization.' });
-      return;
-    }
-
     try {
       const conditions: string[] = [];
       const values: any[] = [];
@@ -167,7 +162,7 @@ export class CheckinController {
       }
 
       const result = await pool.query<any>(query, values);
-      const contactMode = isStaff ? includeContact : (includeContact === 'false' ? 'false' : 'redacted');
+      const contactMode = isStaff ? includeContact : (includeContact === 'false' ? 'false' : 'partial');
       res.status(200).json(result.rows.map((row) => attachContact(row, contactMode as 'false' | 'partial' | 'full' | 'redacted')));
     } catch (error) {
       console.error('Error fetching checkins:', error);
