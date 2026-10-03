@@ -469,15 +469,86 @@ export function createApp(): Express {
 
   // Serve Swagger theme and local Firebase sign-in helper.
   app.get('/swagger-theme.js', (_req: Request, res: Response) => {
+    const firebaseWebConfig = JSON.stringify({
+      apiKey: process.env.FIREBASE_WEB_API_KEY || process.env.VITE_FIREBASE_API_KEY || '',
+      authDomain: process.env.FIREBASE_AUTH_DOMAIN || process.env.VITE_FIREBASE_AUTH_DOMAIN || '',
+      projectId: process.env.FIREBASE_PROJECT_ID || process.env.VITE_FIREBASE_PROJECT_ID || '',
+      storageBucket: process.env.FIREBASE_STORAGE_BUCKET || process.env.VITE_FIREBASE_STORAGE_BUCKET || '',
+      messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID || process.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '',
+      appId: process.env.FIREBASE_APP_ID || process.env.VITE_FIREBASE_APP_ID || '',
+    });
     const firebaseWebApiKey = JSON.stringify(
       process.env.FIREBASE_WEB_API_KEY && process.env.ENABLE_SWAGGER_FIREBASE_AUTH === 'true'
         ? process.env.FIREBASE_WEB_API_KEY
         : '',
     );
+    const recaptchaSiteKey = JSON.stringify(
+      process.env.FIREBASE_RECAPTCHA_SITE_KEY || process.env.VITE_RECAPTCHA_SITE_KEY || '',
+    );
+    const appCheckDebugToken = JSON.stringify(
+      process.env.NODE_ENV !== 'production'
+        ? process.env.FIREBASE_APPCHECK_DEBUG_TOKEN || process.env.VITE_FIREBASE_APPCHECK_DEBUG_TOKEN || ''
+        : '',
+    );
     res.setHeader('Content-Type', 'application/javascript');
     res.send(`
       (function() {
+        const firebaseWebConfig = ${firebaseWebConfig};
         const firebaseWebApiKey = ${firebaseWebApiKey};
+        const recaptchaSiteKey = ${recaptchaSiteKey};
+        const appCheckDebugToken = ${appCheckDebugToken};
+        let appCheckReady = Promise.resolve();
+
+        function loadScript(src) {
+          return new Promise(function(resolve, reject) {
+            const script = document.createElement('script');
+            script.src = src;
+            script.onload = resolve;
+            script.onerror = reject;
+            document.head.appendChild(script);
+          });
+        }
+
+        if (firebaseWebConfig.apiKey && recaptchaSiteKey) {
+          if (appCheckDebugToken) window.FIREBASE_APPCHECK_DEBUG_TOKEN = appCheckDebugToken;
+          const appCheckSetup = loadScript('https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js')
+            .then(function() { return loadScript('https://www.gstatic.com/firebasejs/10.14.1/firebase-app-check-compat.js'); })
+            .then(function() {
+              if (!firebase.apps.length) firebase.initializeApp(firebaseWebConfig);
+              firebase.appCheck().activate(recaptchaSiteKey, true);
+            })
+            .catch(function(error) { console.warn('Swagger Firebase App Check unavailable:', error); });
+          // Never block Swagger requests if a CDN, extension, or network policy prevents SDK loading.
+          appCheckReady = Promise.race([
+            appCheckSetup,
+            new Promise(function(resolve) { setTimeout(resolve, 3000); }),
+          ]);
+        }
+
+        const originalFetch = window.fetch.bind(window);
+        window.fetch = function(input, init) {
+          const requestUrl = new URL(typeof input === 'string' ? input : input.url, window.location.href);
+          // Only API calls need App Check. Excluding Firebase and reCAPTCHA traffic avoids
+          // recursively requesting an App Check token while Firebase is obtaining one.
+          if (requestUrl.origin !== window.location.origin || !requestUrl.pathname.startsWith('/api/')) {
+            return originalFetch(input, init);
+          }
+          return appCheckReady.then(function() {
+            if (typeof firebase === 'undefined' || !firebase.apps.length || !firebase.appCheck) {
+              return originalFetch(input, init);
+            }
+            const tokenPromise = firebase.appCheck().getToken();
+            const tokenTimeout = new Promise(function(resolve) { setTimeout(function() { resolve(null); }, 3000); });
+            return Promise.race([tokenPromise, tokenTimeout]).then(function(result) {
+              const headers = new Headers((init && init.headers) || (input instanceof Request ? input.headers : undefined));
+              if (result && result.token) headers.set('X-Firebase-AppCheck', result.token);
+              return originalFetch(input, Object.assign({}, init, { headers: headers }));
+            });
+          }).catch(function() {
+            return originalFetch(input, init);
+          });
+        };
+
         function getTheme() {
           return localStorage.getItem('urbanists_theme') || 'dark';
         }

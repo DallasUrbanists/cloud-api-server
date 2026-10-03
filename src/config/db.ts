@@ -8,6 +8,12 @@ interface DBConfig {
   database: string;
   host?: string;
   port?: number;
+  connectionTimeoutMillis?: number;
+  idleTimeoutMillis?: number;
+  maxLifetimeSeconds?: number;
+  keepAlive?: boolean;
+  keepAliveInitialDelayMillis?: number;
+  max?: number;
 }
 
 const isCloudRun = process.env.K_SERVICE !== undefined;
@@ -27,4 +33,17 @@ if (isCloudRun && process.env.INSTANCE_CONNECTION_NAME) {
   poolConfig.port = process.env.DB_PORT ? parseInt(process.env.DB_PORT, 10) : 5432;
 }
 
-export const pool = new Pool(poolConfig);
+// Recycle idle connections before Cloud SQL or a proxy can drop them silently.
+export const pool = new Pool({
+  ...poolConfig,
+  max: 10,
+  connectionTimeoutMillis: 10_000,
+  idleTimeoutMillis: 30_000,
+  maxLifetimeSeconds: 300,
+  keepAlive: true,
+  keepAliveInitialDelayMillis: 10_000,
+});
+
+pool.on('error', (error) => {
+  console.error('Unexpected PostgreSQL pool error:', error);
+});

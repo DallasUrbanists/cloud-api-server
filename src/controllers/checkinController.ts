@@ -142,7 +142,7 @@ export class CheckinController {
             error: 'Bad Request',
             message: 'limit parameter must be a positive integer.',
           });
-          return;
+        return;
         }
         query += ` LIMIT $${paramIndex++}`;
         values.push(parsedLimit);
@@ -162,7 +162,7 @@ export class CheckinController {
       }
 
       const result = await pool.query<any>(query, values);
-      const contactMode = isStaff ? includeContact : (includeContact === 'false' ? 'false' : 'partial');
+      const contactMode = isStaff ? includeContact : (includeContact === 'false' ? 'false' : 'redacted');
       res.status(200).json(result.rows.map((row) => attachContact(row, contactMode as 'false' | 'partial' | 'full' | 'redacted')));
     } catch (error) {
       console.error('Error fetching checkins:', error);
