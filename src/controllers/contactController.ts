@@ -3,6 +3,7 @@ import crypto from 'node:crypto';
 import { pool } from '../config/db.js';
 import { hasRole } from '../middleware/auth.js';
 import { getPublicImprovementsDb } from '../config/firestore.js';
+import { abbreviateName, redactEmail, redactPhone, redactZip } from '../utils/redaction.js';
 
 // Interface for Contact in the PostgreSQL DB matching table schema
 export interface Contact {
@@ -76,16 +77,16 @@ function parseArrayField(field: unknown, normalizer?: (val: string) => string): 
   return null;
 }
 
-function abbreviation(name: string): string {
-  return name.trim().split(/\s+/).filter(Boolean).map((word) => word[0]).join('');
-}
-
 function redactContact(contact: Contact, query: { name?: string; email?: string; phone?: string; zip?: string }): Contact {
-  const nameTerms = (query.name || '').trim().split(/\s+/).filter(Boolean).map(normalizeName);
-  const visibleName = contact.name.split(/\s+/).map((word) => {
-    const matched = nameTerms.some((term) => term.length >= 2 && word.startsWith(term));
-    return matched ? word : `${word.charAt(0)}.`;
-  }).join(' ');
+  const normalizedQueryName = normalizeName(query.name || '');
+  const normalizedContactName = normalizeName(contact.name);
+  const nameTerms = normalizedQueryName.split(/\s+/).filter(Boolean);
+  const visibleName = normalizedQueryName === normalizedContactName
+    ? contact.name
+    : contact.name.split(/\s+/).map((word) => {
+      const matched = nameTerms.some((term) => term.length >= 2 && normalizeName(word).startsWith(term));
+      return matched ? word : `${word.charAt(0)}.`;
+    }).join(' ');
   const exactEmail = query.email ? normalizeEmail(query.email) : undefined;
   const exactPhone = query.phone ? normalizePhone(query.phone) : undefined;
   const exactZip = query.zip?.trim();
@@ -93,10 +94,16 @@ function redactContact(contact: Contact, query: { name?: string; email?: string;
   return {
     ...contact,
     name: visibleName,
-    emails: exactEmail ? (contact.emails || []).filter((value) => value === exactEmail) : null,
-    phones: exactPhone ? (contact.phones || []).filter((value) => value === exactPhone) : null,
-    zip_home: exactZip && contact.zip_home === exactZip ? contact.zip_home : null,
-    zip_other: exactZip ? (contact.zip_other || []).filter((value) => value === exactZip) : null,
+    emails: exactEmail
+      ? (contact.emails || []).map((value) => value === exactEmail ? value : redactEmail(value))
+      : (contact.emails || []).map(redactEmail),
+    phones: exactPhone
+      ? (contact.phones || []).map((value) => value === exactPhone ? value : redactPhone(value))
+      : (contact.phones || []).map(redactPhone),
+    zip_home: exactZip && contact.zip_home === exactZip ? contact.zip_home : (contact.zip_home ? redactZip(contact.zip_home) : null),
+    zip_other: exactZip
+      ? (contact.zip_other || []).map((value) => value === exactZip ? value : redactZip(value))
+      : (contact.zip_other || []).map(redactZip),
     roles: null,
     firebase_uid: null,
   };
@@ -105,7 +112,7 @@ function redactContact(contact: Contact, query: { name?: string; email?: string;
 function redactContactById(contact: Contact): Contact {
   return {
     ...contact,
-    name: abbreviation(contact.name),
+    name: abbreviateName(contact.name),
     emails: null,
     phones: null,
     zip_home: null,
@@ -135,7 +142,12 @@ export class ContactController {
   // 1. CREATE (POST /api/contacts)
   // -----------------------------------------------------------------
   static async createContact(req: Request, res: Response, next: NextFunction): Promise<void> {
-    const { name, emails, phones, zip_home, zip_other, roles } = req.body || {};
+    const { name, emails, phones, zip_home, zip_other } = req.body || {};
+
+    if (Object.prototype.hasOwnProperty.call(req.body || {}, 'roles')) {
+      res.status(400).json({ error: 'Bad Request', message: 'roles cannot be provided when creating a contact.' });
+      return;
+    }
 
     if (!name || typeof name !== 'string' || name.trim() === '') {
       res.status(400).json({
@@ -149,7 +161,6 @@ export class ContactController {
     const formattedEmails = parseArrayField(emails, normalizeEmail);
     const formattedPhones = parseArrayField(phones, normalizePhone);
     const formattedZipOther = parseArrayField(zip_other);
-    const formattedRoles = parseArrayField(roles);
     const formattedZipHome = typeof zip_home === 'string' && zip_home.trim() !== '' ? zip_home.trim() : null;
 
     try {
@@ -169,7 +180,7 @@ export class ContactController {
         const state: ChallengeState = (challengeSnapshot.data() as ChallengeState | undefined) || { failures: 0, banUntil: 0, durationMinutes: 5 };
         if (state.banUntil > Date.now()) { res.status(429).json({ error: 'Too Many Requests', message: 'Contact creation is temporarily blocked. Please try again later.' }); return; }
         const answer = Number(req.body?.challenge_answer);
-        if (!Number.isInteger(answer)) { res.status(409).json({ error: 'Challenge Required', message: 'A challenge answer is required to continue.', challenge_question: 'How many existing contacts match this information?', match_count: duplicateCount }); return; }
+        if (!Number.isInteger(answer)) { res.status(409).json({ error: 'Challenge Required', message: 'A challenge answer is required to continue.', challenge_question: 'How many existing contacts match this information?' }); return; }
         if (answer !== duplicateCount) {
           state.failures += 1;
           if (state.failures >= 3) { state.banUntil = Date.now() + state.durationMinutes * 60_000; state.durationMinutes += 5; state.failures = 0; }
@@ -191,7 +202,7 @@ export class ContactController {
         formattedPhones,
         formattedZipHome,
         formattedZipOther,
-        formattedRoles,
+        [],
       ];
       const result = await pool.query<Contact>(query, values);
 

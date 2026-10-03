@@ -2,12 +2,18 @@ import { Request, Response, NextFunction } from 'express';
 import { pool } from '../config/db.js';
 import { Checkin, CreateCheckinDTO, UpdateCheckinDTO } from '../models/checkin.js';
 import { hasRole } from '../middleware/auth.js';
+import { abbreviateName, redactEmail, redactPhone, redactZip } from '../utils/redaction.js';
+
+function normalizeEventId(value: unknown): string | null {
+  const text = typeof value === 'number' ? (Number.isSafeInteger(value) ? String(value) : '') : String(value ?? '').trim();
+  return /^\d+$/.test(text) && BigInt(text) > 0n ? text : null;
+}
 
 function redactContact(contact: any, mode: 'false' | 'partial' | 'full' | 'redacted'): any {
   if (!contact || mode === 'false') return undefined;
   if (mode === 'full') return contact;
   if (mode === 'partial') return { ...contact, name: contact.name.split(/\s+/).map((word: string, index: number) => index === 0 ? word : `${word.charAt(0)}.`).join(' '), emails: null, phones: null, zip_other: null, roles: null, firebase_uid: null };
-  return { name: contact.name.split(/\s+/).map((word: string) => word.charAt(0)).join(''), zip_home: contact.zip_home, emails: null, phones: null, zip_other: null, roles: null, firebase_uid: null };
+  return { name: abbreviateName(contact.name), zip_home: contact.zip_home, emails: null, phones: null, zip_other: null, roles: null, firebase_uid: null };
 }
 
 function attachContact(row: any, mode: 'false' | 'partial' | 'full' | 'redacted'): any {
@@ -28,12 +34,13 @@ export class CheckinController {
   // 1. CREATE (POST /api/checkins)
   // -----------------------------------------------------------------
   static async createCheckin(req: Request, res: Response, next: NextFunction): Promise<void> {
-    const { contact_id, event_id, submitted_on } = (req.body || {}) as CreateCheckinDTO;
+    const { contact_id, event_id } = (req.body || {}) as CreateCheckinDTO;
 
-    if (!event_id || typeof event_id !== 'string' || event_id.trim() === '') {
+    const normalizedEventId = normalizeEventId(event_id);
+    if (!normalizedEventId) {
       res.status(400).json({
         error: 'Bad Request',
-        message: 'event_id is required and must be a non-empty string.',
+        message: 'event_id is required and must be a positive integer event ID.',
       });
       return;
     }
@@ -50,34 +57,21 @@ export class CheckinController {
       }
     }
 
-    let parsedSubmittedOn: Date | null = null;
-    if (submitted_on) {
-      const parsedDate = new Date(submitted_on);
-      if (isNaN(parsedDate.getTime())) {
-        res.status(400).json({
-          error: 'Bad Request',
-          message: 'submitted_on must be a valid ISO 8601 timestamp string.',
-        });
-        return;
-      }
-      parsedSubmittedOn = parsedDate;
-    }
-
     try {
-      const event = await pool.query('SELECT 1 FROM events WHERE id::text = $1 OR uid = $1 LIMIT 1', [event_id.trim()]);
-      if (event.rows.length === 0) { res.status(400).json({ error: 'Bad Request', message: 'event_id must reference a valid event.' }); return; }
+      const event = await pool.query('SELECT 1 FROM events WHERE id = $1 LIMIT 1', [normalizedEventId]);
+      if (event.rows.length === 0) { res.status(400).json({ error: 'Bad Request', message: 'event_id must reference a valid event ID.' }); return; }
       if (parsedContactId !== null) {
         const contact = await pool.query('SELECT 1 FROM contacts WHERE id = $1', [parsedContactId]);
         if (contact.rows.length === 0) { res.status(400).json({ error: 'Bad Request', message: 'contact_id must reference a valid contact.' }); return; }
-        const duplicate = await pool.query('SELECT 1 FROM checkins WHERE contact_id = $1 AND event_id = $2 LIMIT 1', [parsedContactId, event_id.trim()]);
+        const duplicate = await pool.query('SELECT 1 FROM checkins WHERE contact_id = $1 AND event_id = $2 LIMIT 1', [parsedContactId, normalizedEventId]);
         if (duplicate.rows.length > 0) { res.status(409).json({ error: 'Conflict', message: 'This contact is already checked in for this event.' }); return; }
       }
       const query = `
         INSERT INTO checkins (contact_id, event_id, submitted_on)
-        VALUES ($1, $2, COALESCE($3, CURRENT_TIMESTAMP)) 
+        VALUES ($1, $2, CURRENT_TIMESTAMP)
         RETURNING *;
       `;
-      const values = [parsedContactId, event_id.trim(), parsedSubmittedOn];
+      const values = [parsedContactId, normalizedEventId];
       const result = await pool.query<Checkin>(query, values);
 
       res.status(201).json(result.rows[0]);
@@ -129,11 +123,13 @@ export class CheckinController {
       }
 
       if (event_id) {
-        const trimmedEventId = String(event_id).trim();
-        if (trimmedEventId !== '') {
-          conditions.push(`event_id = $${paramIndex++}`);
-          values.push(trimmedEventId);
+        const normalizedEventId = normalizeEventId(event_id);
+        if (!normalizedEventId) {
+          res.status(400).json({ error: 'Bad Request', message: 'event_id must be a positive integer event ID.' });
+          return;
         }
+        conditions.push(`event_id = $${paramIndex++}`);
+        values.push(normalizedEventId);
       }
 
       let query = includeContact === 'false'
@@ -255,7 +251,7 @@ export class CheckinController {
       return;
     }
 
-    const { contact_id, event_id, submitted_on } = (req.body || {}) as UpdateCheckinDTO;
+    const { contact_id, event_id } = (req.body || {}) as UpdateCheckinDTO;
 
     const updates: string[] = [];
     const values: any[] = [];
@@ -279,34 +275,19 @@ export class CheckinController {
     }
 
     if (event_id !== undefined) {
-      if (typeof event_id !== 'string' || event_id.trim() === '') {
-        res.status(400).json({
-          error: 'Bad Request',
-          message: 'event_id must be a non-empty string.',
-        });
+      const normalizedEventId = normalizeEventId(event_id);
+      if (!normalizedEventId) {
+        res.status(400).json({ error: 'Bad Request', message: 'event_id must be a positive integer event ID.' });
         return;
       }
       updates.push(`event_id = $${paramIndex++}`);
-      values.push(event_id.trim());
-    }
-
-    if (submitted_on !== undefined) {
-      const parsedDate = new Date(submitted_on);
-      if (isNaN(parsedDate.getTime())) {
-        res.status(400).json({
-          error: 'Bad Request',
-          message: 'submitted_on must be a valid ISO 8601 timestamp string.',
-        });
-        return;
-      }
-      updates.push(`submitted_on = $${paramIndex++}`);
-      values.push(parsedDate);
+      values.push(normalizedEventId);
     }
 
     if (updates.length === 0) {
       res.status(400).json({
         error: 'Bad Request',
-        message: 'At least one field (contact_id, event_id, submitted_on) must be provided for update.',
+        message: 'At least one field (contact_id, event_id) must be provided for update.',
       });
       return;
     }

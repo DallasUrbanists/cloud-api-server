@@ -21,6 +21,7 @@ export const swaggerDocument: JsonObject = {
       description: 'Current Environment / Local Server',
     },
   ],
+  security: [{ ApiKeyAuth: [] }],
   tags: [
     {
       name: 'Suggestions',
@@ -97,6 +98,16 @@ export const swaggerDocument: JsonObject = {
             schema: {
               type: 'string',
               example: '+1-752-012-3456',
+            },
+          },
+          {
+            name: 'zip',
+            in: 'query',
+            description: 'Filter contacts by an exact home or other ZIP code match.',
+            required: false,
+            schema: {
+              type: 'string',
+              example: '75201',
             },
           },
           {
@@ -319,11 +330,25 @@ export const swaggerDocument: JsonObject = {
           {
             name: 'event_id',
             in: 'query',
-            description: 'Filter checkins by event identifier string',
+            description: 'Filter checkins by the BIGINT events.id foreign key.',
+            required: false,
+            schema: {
+              type: 'integer',
+              format: 'int64',
+              minimum: 1,
+              example: 42,
+            },
+          },
+          {
+            name: 'include_contact',
+            in: 'query',
+            description: 'Whether to include the joined contact: false, partial, or full. Defaults to false.',
             required: false,
             schema: {
               type: 'string',
-              example: 'dallas-bike-ride-2026',
+              enum: ['false', 'partial', 'full'],
+              default: 'false',
+              example: 'partial',
             },
           },
           {
@@ -419,6 +444,18 @@ export const swaggerDocument: JsonObject = {
             schema: {
               type: 'integer',
               example: 1,
+            },
+          },
+          {
+            name: 'include_contact',
+            in: 'query',
+            description: 'Whether to include the joined contact: false, partial, or full. Defaults to false.',
+            required: false,
+            schema: {
+              type: 'string',
+              enum: ['false', 'partial', 'full'],
+              default: 'false',
+              example: 'partial',
             },
           },
         ],
@@ -1322,6 +1359,14 @@ export const swaggerDocument: JsonObject = {
     },
   },
   components: {
+    securitySchemes: {
+      ApiKeyAuth: {
+        type: 'apiKey',
+        in: 'header',
+        name: 'X-API-Key',
+        description: 'Local development API key from API_KEYS_JSON.',
+      },
+    },
     schemas: {
       Contact: {
         type: 'object',
@@ -1427,13 +1472,11 @@ export const swaggerDocument: JsonObject = {
             example: ['75202'],
             description: 'Additional ZIP codes',
           },
-          roles: {
-            type: 'array',
-            items: {
-              type: 'string',
-            },
-            example: ['member', 'volunteer'],
-            description: 'Roles assigned to the contact',
+          challenge_answer: {
+            type: 'integer',
+            minimum: 0,
+            description: 'Required only when duplicate matches are found. Send the answer from the challenge prompt returned by the previous request.',
+            example: 1,
           },
         },
       },
@@ -1502,9 +1545,11 @@ export const swaggerDocument: JsonObject = {
             description: 'ID of the associated contact (bigint), or null if anonymous checkin',
           },
           event_id: {
-            type: 'string',
-            example: 'dallas-bike-ride-2026',
-            description: 'Identifier for the event being checked into',
+            type: 'integer',
+            format: 'int64',
+            minimum: 1,
+            example: 42,
+            description: 'BIGINT foreign key referencing events.id.',
           },
           submitted_on: {
             type: 'string',
@@ -1525,15 +1570,11 @@ export const swaggerDocument: JsonObject = {
             description: 'Optional ID of the associated contact (bigint)',
           },
           event_id: {
-            type: 'string',
-            example: 'dallas-bike-ride-2026',
-            description: 'Identifier for the event',
-          },
-          submitted_on: {
-            type: 'string',
-            format: 'date-time',
-            example: '2026-10-01T14:30:00.000Z',
-            description: 'Optional ISO 8601 timestamp. If omitted, server defaults to current timestamp.',
+            type: 'integer',
+            format: 'int64',
+            minimum: 1,
+            example: 42,
+            description: 'BIGINT foreign key referencing events.id.',
           },
         },
       },
@@ -1547,15 +1588,11 @@ export const swaggerDocument: JsonObject = {
             description: 'Updated associated contact ID (bigint) or null',
           },
           event_id: {
-            type: 'string',
-            example: 'dallas-bike-ride-2026-v2',
-            description: 'Updated event identifier string',
-          },
-          submitted_on: {
-            type: 'string',
-            format: 'date-time',
-            example: '2026-10-01T15:00:00.000Z',
-            description: 'Updated ISO 8601 timestamp for the checkin',
+            type: 'integer',
+            format: 'int64',
+            minimum: 1,
+            example: 42,
+            description: 'Updated BIGINT foreign key referencing events.id.',
           },
         },
       },

@@ -8,6 +8,7 @@ import checkinRoutes from './routes/checkinRoutes.js';
 import eventsRoutes from './routes/eventsRoutes.js';
 import { swaggerDocument } from './docs/swagger.js';
 import { HomeController } from './controllers/homeController.js';
+import { formatResponseIntegers } from './utils/responseFormatting.js';
 
 dotenv.config();
 
@@ -17,6 +18,14 @@ export function createApp(): Express {
   // Basic Middleware
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
+
+  // PostgreSQL returns BIGINT values as strings. Normalize integer response fields
+  // at the HTTP boundary so every endpoint emits JSON numbers consistently.
+  app.use((_req, res, next) => {
+    const originalJson = res.json.bind(res);
+    res.json = ((body: unknown) => originalJson(formatResponseIntegers(body))) as typeof res.json;
+    next();
+  });
 
   // CORS Middleware & Error handling
   app.use(corsMiddleware);

@@ -36,6 +36,26 @@ The API uses Firebase Authentication / Google Identity Platform for user JWTs an
 
 Apply `migrations/001_add_firebase_uid.sql` before deploying the contact authorization changes.
 
+#### Rotating API keys
+
+1. Create a new `api-keys-rotated.json` containing the existing keys and a newly generated key. Keep the JSON format used by `API_KEYS_JSON`.
+2. Upload it as a new Secret Manager version:
+
+```powershell
+gcloud secrets versions add api-keys-json --data-file="api-keys-rotated.json"
+```
+
+3. Deploy the new secret version to Cloud Run:
+
+```powershell
+gcloud run services update urbanists-cloud-api-server `
+  --region=us-central1 `
+  --update-secrets="API_KEYS_JSON=api-keys-json:latest"
+```
+
+4. Update the client application to use the new key, then upload another secret version with the retired key removed.
+5. Never commit API-key JSON files or expose Secret Manager credentials. Browser API keys identify applications but are not confidential secrets.
+
 ---
 
 ## 🌟 Features
@@ -102,7 +122,7 @@ Checkin records stored in the relational database adhere to the following schema
 |---|---|---|
 | `id` | `integer` (bigint) | Unique identifier for the checkin |
 | `contact_id` | `integer` (nullable) | Associated contact ID (foreign key reference to `contacts.id`), or `null` for anonymous |
-| `event_id` | `string` | Identifier or slug for the event checked into |
+| `event_id` | `bigint` | Foreign key referencing `events.id` for the event checked into |
 | `submitted_on` | `string` (ISO 8601) | Timestamp with time zone when the checkin was recorded |
 
 ---
@@ -375,8 +395,7 @@ Endpoints for managing event attendance checkins in PostgreSQL.
 ```json
 {
   "contact_id": 1,
-  "event_id": "dallas-bike-ride-2026",
-  "submitted_on": "2026-10-01T14:30:00.000Z"
+  "event_id": 42
 }
 ```
 
