@@ -32,7 +32,31 @@ This backend API server powers the following client-side applications:
 
 ### Authentication configuration
 
-The API uses Firebase Authentication / Google Identity Platform for user JWTs and Firebase App Check for production browser applications. API-key-required routes also require an application key in the `X-API-Key` header. Configure application keys through the `API_KEYS_JSON` environment variable; in Cloud Run, provide it from Secret Manager rather than committing it to source control. Production App Check is enabled when `NODE_ENV=production`. Local development may use a registered Firebase App Check debug token.
+The API uses two independent authorization layers:
+
+- **API key authorization:** send `X-API-Key: <application-key>`. `OPTIONAL` endpoints work without a key; `REQUIRED` endpoints require a valid key. Keys identify applications, are configured through `API_KEYS_JSON`, and should be stored in Cloud Secret Manager rather than committed to source control. In production, API-key-required browser requests also require Firebase App Check. Local development may use a registered Firebase App Check debug token.
+- **User authorization:** send `Authorization: Bearer <Firebase-ID-token>` when required. Firebase Authentication / Google Identity Platform issues the token. Administrators assign `staff` and `system` custom claims. `PUBLIC` endpoints do not require a user token; `PARTIAL` endpoints return restricted data without an authorized token; `PRIVATE` endpoints require a valid token and the endpoint's ownership or role condition. Invalid JWTs are ignored on `PUBLIC` and use restricted behavior on `PARTIAL` endpoints.
+
+### Endpoint authorization matrix
+
+| Endpoint group | API key | User authorization | Additional conditions |
+|---|---|---|---|
+| `GET /api/health` | Optional | Public | None |
+| `GET /api/contacts` | Required | Partial | Staff receives full search; others need a search term and receive redacted results |
+| `POST /api/contacts` | Required | Public | Duplicate challenge may be required; `roles` is not accepted |
+| `GET /api/contacts/{id}` | Required | Partial | Owner or staff receives full details; others receive redacted details |
+| `PUT /api/contacts/{id}` | Required | Partial | Owner/staff authorization controls additive or full updates |
+| `DELETE /api/contacts/{id}` | Required | Private | Contact owner or staff; soft delete |
+| `GET /api/checkins` | Required | Partial | Non-staff callers must provide `event_id`; contact data is redacted |
+| `POST /api/checkins` | Optional | Public | Valid BIGINT event/contact IDs; one check-in per contact/event |
+| `GET /api/checkins/{id}` | Required | Partial | Contact details depend on ownership/staff status and `include_contact` |
+| `PUT`/`DELETE /api/checkins/{id}` | Required | Private | Contact owner or staff |
+| Suggestions reads/creation | Required | Public | `GET`, `POST`, and upload URL are public to authorized applications |
+| Suggestion update/delete | Required | Private | Author email match or staff |
+| Event reads and calendars | Optional | Public | Includes `/api/events`, `/api/events/{id}`, `/api/events/ical`, and `/meetup-ical` |
+| Event writes/import | Required | Private | `staff` or `system` role |
+
+Configure application keys through the `API_KEYS_JSON` environment variable; in Cloud Run, provide it from Secret Manager rather than committing it to source control.
 
 Apply `migrations/001_add_firebase_uid.sql` before deploying the contact authorization changes.
 

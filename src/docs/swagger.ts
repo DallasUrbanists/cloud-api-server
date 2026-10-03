@@ -9,7 +9,18 @@ export const swaggerDocument: JsonObject = {
   info: {
     title: 'Dallas Urbanists Cloud API',
     version: pkg.version || '1.0.0',
-    description: `API web service providing database I/O and server-side operations for Dallas Urbanists client applications.`,
+    description: `API web service providing database I/O and server-side operations for Dallas Urbanists client applications.
+
+Authorization:
+- API keys use the X-API-Key header. Optional endpoints work without a key; required endpoints require a valid application key. Production browser requests to required endpoints also require Firebase App Check.
+- Firebase user tokens use Authorization: Bearer <Firebase ID token>. PUBLIC endpoints do not require a token, PARTIAL endpoints return redacted data without an authorized token, and PRIVATE endpoints require a valid token plus the endpoint's ownership or role condition.
+- Administrators assign staff and system roles through Firebase custom claims.
+
+Endpoint policies:
+- Contacts: GET/list and GET/{id}/PUT/{id} are API-key REQUIRED and JWT PARTIAL; POST is REQUIRED/PUBLIC; DELETE is REQUIRED/PRIVATE.
+- Check-ins: GET/list and GET/{id} are REQUIRED/PARTIAL; POST is OPTIONAL/PUBLIC; PUT and DELETE are REQUIRED/PRIVATE. include_contact accepts false, partial, or full.
+- Suggestions: reads, creation, and upload URLs are REQUIRED/PUBLIC; update and delete are REQUIRED/PRIVATE for the author or staff.
+- Events and calendar reads are OPTIONAL/PUBLIC; event creation, updates, deletion, and iCal imports are REQUIRED/PRIVATE for staff or system roles.`,
     contact: {
       name: 'DallasUrbanists.org',
       url: 'https://dallasurbanists.org',
