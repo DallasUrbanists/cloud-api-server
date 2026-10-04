@@ -1,6 +1,6 @@
 {
   "name": "urbanists-cloud-api-server",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "Dallas Urbanists Cloud API Server with Firestore and Google Cloud Run.",
   "author": "Hexel Colorado",
   "type": "module",
@@ -30,8 +30,8 @@
     "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
-      "@electric-sql/pglite": "^0.3.14",
-      "@types/cors": "^2.8.17",
+    "@electric-sql/pglite": "^0.3.14",
+    "@types/cors": "^2.8.17",
     "@types/express": "^5.0.6",
     "@types/node": "^22.20.4",
     "@types/pg": "^8.23.1",
