@@ -1,5 +1,6 @@
 import { createRequire } from 'module';
 import { JsonObject } from 'swagger-ui-express';
+import { operationPaths, operationSchemas, stagingParameters, stagingResponses } from './operations.js';
 
 const require = createRequire(import.meta.url);
 const pkg = require('../../package.json');
@@ -56,7 +57,8 @@ Endpoint policies:
     },
   ],
   paths: {
-    '/api/health': {
+      ...operationPaths,
+      '/api/health': {
       get: {
         summary: 'Server Health Check',
         description: 'Returns the operational health and environment state of the API server.',
@@ -1385,6 +1387,7 @@ Endpoint policies:
       },
     },
     schemas: {
+          ...operationSchemas,
       Contact: {
         type: 'object',
         required: ['id', 'name', 'created_on'],
@@ -1499,7 +1502,8 @@ Endpoint policies:
       },
       UpdateContactDTO: {
         type: 'object',
-        required: ['name'],
+              minProperties: 1,
+              description: 'Authorized partial update: omitted fields are preserved; null, empty arrays and legacy empty strings explicitly clear nullable fields. Empty name is invalid. Only staff may change or clear roles/firebase_uid. Ordinary non-owner updates remain additive and cannot clear.',
         properties: {
           name: {
             type: 'string',
@@ -1597,7 +1601,13 @@ Endpoint policies:
       },
       UpdateCheckinDTO: {
         type: 'object',
-        properties: {
+              minProperties: 1,
+              properties: {
+                submitted_on: {
+                  type: 'string',
+                  format: 'date-time',
+                  description: 'RFC 3339 with explicit offset, up to six fractional digits. Inclusive bounds: start minus two hours through end plus one hour, or start plus four hours if no end. Omission preserves the timestamp. Moving event_id also validates the retained timestamp.',
+                },
           contact_id: {
             type: 'integer',
             nullable: true,
@@ -2493,3 +2503,23 @@ Endpoint policies:
     },
   },
 };
+
+
+swaggerDocument.tags.push({name:'Operations',description:'Account-bound atomic changes, discoverable history, and verified Undo.'});
+for (const resource of ['contacts','checkins']) {
+  const path = swaggerDocument.paths[`/api/${resource}/{id}`];
+  for (const method of ['put','delete']) {
+    path[method].parameters.push(...stagingParameters);
+    Object.assign(path[method].responses,stagingResponses);
+  }
+  path.get.responses[200].headers = {ETag:{schema:{type:'string'},description:'Quoted opaque revision token for If-Match when staging.'}};
+}
+for (const schema of ['Contact','Checkin']) {
+  swaggerDocument.components.schemas[schema].properties.revision = {type:'string',description:'Opaque resource revision token from reads; ordinary writes do not require it.'};
+}
+swaggerDocument.components.schemas.Checkin.properties.is_self = {type:'boolean',description:'Verified UID matches the linked contact; false for anonymous or unauthenticated rows.'};
+swaggerDocument.paths['/api/checkins'].get.description += ' Non-staff attendance lists expose the authenticated attendee?s own full name and safe is_self marker; other contacts remain redacted. include_contact=false still omits contacts.';
+for (const field of ['emails','phones','zip_home','zip_other','roles']) {
+  swaggerDocument.components.schemas.UpdateContactDTO.properties[field].nullable = true;
+}
+swaggerDocument.components.schemas.UpdateContactDTO.properties.firebase_uid = {type:'string',nullable:true,description:'Staff-only assignment or explicit clearing; omission preserves the value.'};

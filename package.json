@@ -9,6 +9,7 @@
     "auth": "gcloud auth application-default login && gcloud config set project urbanists-mixer-slides-helper",
     "dev": "tsx watch src/index.ts",
     "build": "rimraf dist && tsc",
+    "test": "tsx --test tests/*.test.ts",
     "start": "node dist/index.js",
     "proxy": "cloud-sql-proxy urbanists-mixer-slides-helper:us-south1:contacts-relationships-db --port 5432",
     "deploy": "gcloud run deploy urbanists-cloud-api-server --source . --region us-central1 --allow-unauthenticated --add-cloudsql-instances=urbanists-mixer-slides-helper:us-south1:contacts-relationships-db --update-env-vars SUGGESTION_PHOTOS_BUCKET=urbanists-suggestion-photos,DB_USER=postgres,DB_NAME=postgres,INSTANCE_CONNECTION_NAME=urbanists-mixer-slides-helper:us-south1:contacts-relationships-db --update-secrets DB_PASSWORD=contacts-db-password:latest",
@@ -29,7 +30,8 @@
     "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
-    "@types/cors": "^2.8.17",
+      "@electric-sql/pglite": "^0.3.14",
+      "@types/cors": "^2.8.17",
     "@types/express": "^5.0.6",
     "@types/node": "^22.20.4",
     "@types/pg": "^8.23.1",

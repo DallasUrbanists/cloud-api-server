@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import crypto from 'node:crypto';
 import { pool } from '../config/db.js';
 import { hasRole } from '../middleware/auth.js';
+import { recordMutationHandler, recordId } from '../services/operationService.js';
 import { getPublicImprovementsDb } from '../config/firestore.js';
 import { abbreviateName, redactEmail, redactPhone, redactZip } from '../utils/redaction.js';
 
@@ -16,7 +17,8 @@ export interface Contact {
   zip_other: string[] | null;
   roles: string[] | null;
   firebase_uid: string | null;
-}
+    revision?: string;
+  }
 
 // Interface for API Request Payloads
 export interface ContactRequestBody {
@@ -122,7 +124,7 @@ function redactContactById(contact: Contact): Contact {
   };
 }
 
-async function canAccessContact(id: number, req: Request): Promise<boolean> {
+async function canAccessContact(id: number | string, req: Request): Promise<boolean> {
   if (hasRole(req, 'staff')) return true;
   if (!req.user) return false;
   const result = await pool.query<{ firebase_uid: string | null }>('SELECT firebase_uid FROM contacts WHERE id = $1', [id]);
@@ -241,7 +243,9 @@ export class ContactController {
       if (phone) { conditions.push(`EXISTS (SELECT 1 FROM unnest(phones) AS p WHERE p = $${paramIndex++})`); values.push(normalizePhone(phone)); }
       if (zip) { conditions.push(`(zip_home = $${paramIndex} OR EXISTS (SELECT 1 FROM unnest(zip_other) AS z WHERE z = $${paramIndex}))`); values.push(zip); paramIndex++; }
 
-      let query = `SELECT * FROM contacts${conditions.length ? ` WHERE ${conditions.join(' AND ')}` : ''} ORDER BY id DESC`;
+      let query = `SELECT contacts.*,
+        (SELECT incarnation::text || ':' || revision::text FROM resource_revisions WHERE resource='contacts' AND record_id=contacts.id) AS revision
+        FROM contacts${conditions.length ? ` WHERE ${conditions.join(' AND ')}` : ''} ORDER BY id DESC`;
       if (isStaff && req.query.limit) {
         const limit = parseInt(String(req.query.limit), 10);
         if (!Number.isInteger(limit) || limit < 1) { res.status(400).json({ error: 'Bad Request', message: 'limit parameter must be a positive integer.' }); return; }
@@ -252,6 +256,7 @@ export class ContactController {
         res.status(400).json({ error: 'Bad Request', message: 'Your search is too broad. Please try again with more details.' });
         return;
       }
+      res.setHeader('Cache-Control', 'private, no-store');
       res.status(200).json(isStaff ? result.rows : result.rows.map((contact) => redactContact(contact, { name, email, phone, zip })));
     } catch (error) {
       console.error('Error fetching contacts:', error);
@@ -262,9 +267,9 @@ export class ContactController {
   // Get single contact by ID
   static async getContactById(req: Request, res: Response, next: NextFunction): Promise<void> {
     const id = req.params.id as string;
-    const parsedId = parseInt(id, 10);
+    let parsedId: string;
+    try { parsedId = recordId(id); } catch {
 
-    if (isNaN(parsedId) || parsedId < 1) {
       res.status(400).json({
         error: 'Bad Request',
         message: 'Invalid contact ID. Must be a positive integer.',
@@ -273,7 +278,9 @@ export class ContactController {
     }
 
     try {
-      const result = await pool.query<Contact>('SELECT * FROM contacts WHERE id = $1;', [parsedId]);
+      const result = await pool.query<Contact>(`SELECT contacts.*,
+        (SELECT incarnation::text || ':' || revision::text FROM resource_revisions WHERE resource='contacts' AND record_id=contacts.id) AS revision
+        FROM contacts WHERE id = $1`, [parsedId]);
 
       if (result.rows.length === 0) {
         res.status(404).json({
@@ -283,8 +290,10 @@ export class ContactController {
         return;
       }
 
-      const authorized = await canAccessContact(parsedId, req);
-      res.status(200).json(authorized ? result.rows[0] : redactContactById(result.rows[0]));
+      const authorized = hasRole(req, 'staff') || Boolean(req.user && result.rows[0].firebase_uid === req.user.uid);
+            if (result.rows[0].revision) res.setHeader('ETag', `"${result.rows[0].revision}"`);
+            res.setHeader('Cache-Control', 'private, no-store');
+            res.status(200).json(authorized ? result.rows[0] : redactContactById(result.rows[0]));
     } catch (error) {
       console.error('Error retrieving contact:', error);
       res.status(500).json({
@@ -299,9 +308,9 @@ export class ContactController {
   // -----------------------------------------------------------------
   static async updateContact(req: Request, res: Response, next: NextFunction): Promise<void> {
     const id = req.params.id as string;
-    const parsedId = parseInt(id, 10);
+    let parsedId: string;
+    try { parsedId = recordId(id); } catch {
 
-    if (isNaN(parsedId) || parsedId < 1) {
       res.status(400).json({
         error: 'Bad Request',
         message: 'Invalid contact ID. Must be a positive integer.',
@@ -309,8 +318,12 @@ export class ContactController {
       return;
     }
 
+    if (req.header('X-Operation-Group') !== undefined) {
+      await recordMutationHandler('contacts')(req, res, next);
+      return;
+    }
     const authorized = await canAccessContact(parsedId, req);
-    const { name, emails, phones, zip_home, zip_other, roles, firebase_uid } = req.body || {};
+    const { emails, phones, zip_home, zip_other } = req.body || {};
 
     if (!authorized) {
       try {
@@ -328,105 +341,8 @@ export class ContactController {
       } catch (error) { next(error); return; }
     }
 
-    if (!name || typeof name !== 'string' || name.trim() === '') {
-      res.status(400).json({
-        error: 'Bad Request',
-        message: 'name is required for update and must be a non-empty string.',
-      });
-      return;
-    }
-
-    const normalizedName = normalizeName(name);
-    const formattedEmails = parseArrayField(emails, normalizeEmail);
-    const formattedPhones = parseArrayField(phones, normalizePhone);
-    const formattedZipOther = parseArrayField(zip_other);
-    const formattedRoles = parseArrayField(roles);
-    const formattedZipHome = typeof zip_home === 'string' && zip_home.trim() !== '' ? zip_home.trim() : null;
-    let protectedRoles = formattedRoles;
-    let protectedFirebaseUid = typeof firebase_uid === 'string' && firebase_uid.trim() ? firebase_uid.trim() : null;
-    if (!hasRole(req, 'staff')) {
-      const existing = await pool.query<Contact>('SELECT roles, firebase_uid FROM contacts WHERE id = $1', [parsedId]);
-      protectedRoles = existing.rows[0]?.roles || null;
-      protectedFirebaseUid = existing.rows[0]?.firebase_uid || null;
-    }
-
-    try {
-      const query = `
-        UPDATE contacts 
-        SET name = $1, emails = $2, phones = $3, zip_home = $4, zip_other = $5, roles = $6, firebase_uid = COALESCE($7, firebase_uid)
-        WHERE id = $8 
-        RETURNING *;
-      `;
-      const values = [
-        normalizedName,
-        formattedEmails,
-        formattedPhones,
-        formattedZipHome,
-        formattedZipOther,
-        protectedRoles,
-        protectedFirebaseUid,
-        parsedId,
-      ];
-      const result = await pool.query<Contact>(query, values);
-
-      if (result.rows.length === 0) {
-        res.status(404).json({
-          error: 'Not Found',
-          message: `Contact with ID ${parsedId} not found.`,
-        });
-        return;
-      }
-
-      res.status(200).json(result.rows[0]);
-    } catch (error) {
-      console.error('Error updating contact:', error);
-      res.status(500).json({
-        error: 'Internal Server Error',
-        message: 'An unexpected error occurred while updating contact.',
-      });
-    }
+    await recordMutationHandler('contacts')(req, res, next);
   }
 
-  // -----------------------------------------------------------------
-  // 4. DELETE (DELETE /api/contacts/:id)
-  // -----------------------------------------------------------------
-  static async deleteContact(req: Request, res: Response, next: NextFunction): Promise<void> {
-    const id = req.params.id as string;
-    const parsedId = parseInt(id, 10);
-
-    if (isNaN(parsedId) || parsedId < 1) {
-      res.status(400).json({
-        error: 'Bad Request',
-        message: 'Invalid contact ID. Must be a positive integer.',
-      });
-      return;
-    }
-
-    try {
-      if (!(await canAccessContact(parsedId, req))) {
-        res.status(403).json({ error: 'Forbidden', message: 'You are not authorized to delete this contact.' });
-        return;
-      }
-      const result = await pool.query<Contact>(`UPDATE contacts SET name = 'DELETED USER', emails = NULL, phones = NULL, zip_home = NULL, zip_other = NULL, roles = NULL, firebase_uid = NULL WHERE id = $1 RETURNING id;`, [parsedId]);
-
-      if (result.rows.length === 0) {
-        res.status(404).json({
-          error: 'Not Found',
-          message: `Contact with ID ${parsedId} not found.`,
-        });
-        return;
-      }
-
-      res.status(200).json({
-        message: `Contact with ID ${parsedId} has been deleted successfully.`,
-      });
-    } catch (error) {
-      console.error('Error deleting contact:', error);
-      res.status(500).json({
-        error: 'Internal Server Error',
-        message: 'An unexpected error occurred while deleting contact.',
-      });
-    }
-  }
+  static deleteContact = recordMutationHandler('contacts');
 }
-

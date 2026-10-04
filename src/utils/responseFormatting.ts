@@ -13,7 +13,10 @@ function formatValue(value: unknown, key?: string): unknown {
   if (value instanceof Date) return value.toISOString();
   if (Array.isArray(value)) return value.map((item) => formatValue(item));
   if (!value || typeof value !== 'object') {
-    if (key && integerFields.has(key) && typeof value === 'string' && /^-?\d+$/.test(value)) return Number(value);
+    if (key && integerFields.has(key) && typeof value === 'string' && /^-?\d+$/.test(value)) {
+      const number = Number(value);
+      return Number.isSafeInteger(number) ? number : value;
+    }
     return value;
   }
 

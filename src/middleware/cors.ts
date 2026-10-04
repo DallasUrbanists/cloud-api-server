@@ -88,7 +88,8 @@ export const corsOptions: CorsOptions = {
     }
   },
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key', 'X-Firebase-AppCheck', 'X-Requested-With', 'Accept'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key', 'X-Firebase-AppCheck', 'X-Requested-With', 'Accept', 'X-Operation-Group', 'Idempotency-Key', 'If-Match'],
+  exposedHeaders: ['ETag'],
   credentials: true,
 };
 

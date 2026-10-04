@@ -19,6 +19,7 @@ export interface CreateCheckinDTO {
 export interface UpdateCheckinDTO {
   contact_id?: number | string | null;
   event_id?: EventId;
+  submitted_on?: string;
 }
 
 export interface CheckinQueryParams {

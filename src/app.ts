@@ -5,6 +5,7 @@ import { corsMiddleware, corsErrorHandler } from './middleware/cors.js';
 import suggestionRoutes from './routes/suggestionRoutes.js';
 import contactRoutes from './routes/contactRoutes.js';
 import checkinRoutes from './routes/checkinRoutes.js';
+import operationGroupRoutes from './routes/operationGroupRoutes.js';
 import eventsRoutes from './routes/eventsRoutes.js';
 import { swaggerDocument } from './docs/swagger.js';
 import { HomeController } from './controllers/homeController.js';
@@ -16,7 +17,12 @@ export function createApp(): Express {
   const app = express();
 
   // Basic Middleware
-  app.use(express.json());
+  const ordinaryJson = express.json();
+  const operationJson = express.json({ limit: '2mb' });
+  app.use((req, res, next) => {
+    const isOperation = req.path === '/api/operation-groups' || req.path.startsWith('/api/operation-groups/');
+    return (isOperation || req.header('X-Operation-Group') !== undefined ? operationJson : ordinaryJson)(req, res, next);
+  });
   app.use(express.urlencoded({ extended: true }));
 
   // PostgreSQL returns BIGINT values as strings. Normalize integer response fields
@@ -30,8 +36,16 @@ export function createApp(): Express {
   // CORS Middleware & Error handling
   app.use(corsMiddleware);
   app.use(corsErrorHandler);
+    app.use((req, res, next) => {
+      if (req.header('X-Operation-Group') !== undefined && !['GET', 'HEAD', 'OPTIONS'].includes(req.method)
+        && (!['PUT', 'DELETE'].includes(req.method) || !/^\/api\/(contacts|checkins)\/\d+\/?$/.test(req.path))) {
+        res.status(400).json({ error: 'UNSUPPORTED_GROUP_MUTATION', message: 'Operation groups support only per-record contact/check-in PUT and DELETE requests.' });
+        return;
+      }
+      next();
+    });
 
-  // Swagger Documentation UI with Strong Towns Theme (Dark & Light) & Typography
+    // Swagger Documentation UI with Strong Towns Theme (Dark & Light) & Typography
   const swaggerCustomCss = `
     @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
@@ -195,6 +209,11 @@ export function createApp(): Express {
       background: var(--st-input-bg);
       border: 1px solid var(--st-border);
       border-radius: 4px;
+    }
+
+    .swagger-auth-divider {
+      color: var(--st-text-secondary);
+      font-size: 0.8rem;
     }
 
     .swagger-auth-status {
@@ -609,13 +628,36 @@ export function createApp(): Express {
           panel.id = 'swagger-auth-panel';
           panel.className = 'swagger-auth-panel';
           panel.hidden = true;
-          panel.innerHTML = '<input name="email" type="email" placeholder="Email" required />' +
+          panel.innerHTML = '<button class="swagger-theme-toggle" id="swagger-google-sign-in" type="button">Sign in with Google</button>' +
+            '<span class="swagger-auth-divider">or</span>' +
+            '<input name="email" type="email" placeholder="Email" required />' +
             '<input name="password" type="password" placeholder="Password" required />' +
             '<button class="swagger-theme-toggle" type="submit">Sign in</button>' +
             '<span class="swagger-auth-status" aria-live="polite"></span>';
 
           const status = panel.querySelector('.swagger-auth-status');
+          const authorize = function(idToken, userLabel) {
+            if (!window.ui || !window.ui.preauthorizeApiKey) throw new Error('Swagger authorization is not ready. Refresh and try again.');
+            window.ui.preauthorizeApiKey('BearerAuth', idToken);
+            status.textContent = 'Signed in as ' + userLabel + '.';
+          };
           button.onclick = function() { panel.hidden = !panel.hidden; };
+          panel.querySelector('#swagger-google-sign-in').onclick = async function() {
+            status.textContent = 'Opening Google sign-in…';
+            try {
+              if (typeof firebase === 'undefined') {
+                await loadScript('https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js');
+              }
+              await loadScript('https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js');
+              if (!firebase.apps.length) firebase.initializeApp(firebaseWebConfig);
+              const provider = new firebase.auth.GoogleAuthProvider();
+              const result = await firebase.auth().signInWithPopup(provider);
+              const user = result.user;
+              authorize(await user.getIdToken(), user.email || 'Google account');
+            } catch (error) {
+              status.textContent = error.message || 'Google sign-in failed.';
+            }
+          };
           panel.onsubmit = async function(event) {
             event.preventDefault();
             status.textContent = 'Signing in…';
@@ -628,10 +670,8 @@ export function createApp(): Express {
               });
               const data = await response.json();
               if (!response.ok) throw new Error(data.error?.message || 'Firebase sign-in failed.');
-              if (!window.ui || !window.ui.preauthorizeApiKey) throw new Error('Swagger authorization is not ready. Refresh and try again.');
-              window.ui.preauthorizeApiKey('BearerAuth', data.idToken);
+              authorize(data.idToken, form.get('email') || 'Firebase account');
               panel.querySelector('input[name="password"]').value = '';
-              status.textContent = 'Signed in as ' + (form.get('email') || '') + '.';
             } catch (error) {
               status.textContent = error.message || 'Sign-in failed.';
             }
@@ -696,6 +736,7 @@ export function createApp(): Express {
   app.use('/api/suggestions', suggestionRoutes); // Also register alias /api/suggestions for convenience
   app.use('/api/contacts', contactRoutes);
   app.use('/api/checkins', checkinRoutes);
+  app.use('/api/operation-groups', operationGroupRoutes);
   app.use('/api/events', eventsRoutes);
   app.use('/meetup-ical', eventsRoutes);
   app.use('/api/meetup-ical', eventsRoutes);

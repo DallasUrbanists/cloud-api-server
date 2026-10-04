@@ -58,7 +58,15 @@ The API uses two independent authorization layers:
 
 Configure application keys through the `API_KEYS_JSON` environment variable; in Cloud Run, provide it from Secret Manager rather than committing it to source control.
 
-Apply `migrations/001_add_firebase_uid.sql` before deploying the contact authorization changes.
+Apply migrations `001_add_firebase_uid.sql`, `002_event_id_bigint_foreign_key.sql`, and `003_operation_groups.sql` before deploying this version. Rehearse against the actual schema in a non-production database; resolve duplicate contact/event check-ins before migration 003.
+
+### Atomic changes, history, and Undo
+
+Owner/staff contact and check-in PUT/DELETE requests may be staged using `X-Operation-Group`, `If-Match`, and `Idempotency-Key`. Begin requires an immutable manifest and UUIDv7 client action ID; commit requires exact completeness. Commits and trusted Undo are atomic, revision/lineage checked, and account-bound. Existing requests without a group remain immediate.
+
+Authenticated source-filtered history discovery recovers committed actions after lost responses, without local snapshots. Server history/Undo lasts 30 days; logout clears frontend state, not account history. Open groups expire after 24 hours. Each group is limited to 100 typed targets and 1 MiB canonical UTF-8 payload; one Save/Remove must never be split into separate commits. Retry metadata has a 90-day horizon enforced even after cleanup.
+
+See the [operation-group API contract](docs/operation-groups.md) for exact byte accounting, UUIDv7/retry rules, history pagination, cross-device Ctrl-Z, lineage, error recovery, deployment and cleanup. Run `npm test` for isolated PostgreSQL contract tests and `npm run build` for TypeScript validation.
 
 #### Rotating API keys
 
