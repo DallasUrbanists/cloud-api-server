@@ -88,6 +88,7 @@ export function userAuth(requirement: UserRequirement, roles: string[] = []): (r
 
     if (!token) {
       if (requirement === 'private') {
+        console.warn(JSON.stringify({ event: 'user_authentication_failed', requirement, reason: 'missing_or_malformed_bearer_token' }));
         res.status(401).json({ error: 'Unauthorized', message: 'A valid user token is required.' });
         return;
       }
@@ -110,7 +111,10 @@ export function userAuth(requirement: UserRequirement, roles: string[] = []): (r
         return;
       }
       next();
-    } catch {
+    } catch (error) {
+      const code = error && typeof error === 'object' && 'code' in error ? error.code : undefined;
+      const errorCode = typeof code === 'string' && /^(auth|app)\/[a-z0-9-]+$/.test(code) ? code : 'unknown';
+      console.warn(JSON.stringify({ event: 'user_authentication_failed', requirement, reason: 'authentication_processing_failed', error_code: errorCode }));
       delete req.user;
       if (requirement === 'private') {
         res.status(401).json({ error: 'Unauthorized', message: 'A valid user token is required.' });

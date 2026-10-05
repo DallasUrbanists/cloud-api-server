@@ -19,6 +19,7 @@ const writes: Array<{ uid: string; claims: Record<string, unknown> }> = [];
 const revocations: string[] = [];
 const verified: Array<{ token: string; revoked: boolean | undefined }> = [];
 const audits: Array<Record<string, unknown>> = [];
+const authWarnings: string[] = [];
 let fail: 'get' | 'set' | 'revoke' | undefined;
 const originalEnv = { apiKeys: process.env.API_KEYS_JSON, nodeEnv: process.env.NODE_ENV };
 const tokens: Record<string, Record<string, unknown>> = {
@@ -61,7 +62,7 @@ before(async () => {
   mock.method(console, 'info', (message: string) => {
     if (message.startsWith('{')) audits.push(JSON.parse(message));
   });
-  mock.method(console, 'warn', () => {});
+  mock.method(console, 'warn', (message: string) => { authWarnings.push(message); });
   server = createApp().listen(0, '127.0.0.1');
   await once(server, 'listening');
   base = `http://127.0.0.1:${(server.address() as { port: number }).port}`;
@@ -70,7 +71,7 @@ beforeEach(() => {
   process.env.API_KEYS_JSON = JSON.stringify([{ key: 'test-key', name: 'test' }]);
   process.env.NODE_ENV = 'test';
   users.clear(); users.set('target-not-a-uuid', {}); users.set('actor', { staff: true });
-  writes.length = revocations.length = verified.length = audits.length = 0;
+  writes.length = revocations.length = verified.length = audits.length = authWarnings.length = 0;
   fail = undefined;
 });
 after(async () => {
@@ -207,6 +208,25 @@ test('revoked/disabled/invalid tokens never attach a user; public and partial re
     }
   }
   assert.ok(verified.every(call => call.revoked === true));
+});
+
+test('authentication diagnostics distinguish absent credentials and Firebase rejection without logging tokens or messages', async () => {
+  await authenticate('private', '');
+  assert.deepEqual(JSON.parse(authWarnings[0]), {
+    event: 'user_authentication_failed', requirement: 'private', reason: 'missing_or_malformed_bearer_token',
+  });
+  await authenticate('partial', 'sensitive-invalid-token');
+  assert.deepEqual(JSON.parse(authWarnings[1]), {
+    event: 'user_authentication_failed', requirement: 'partial', reason: 'authentication_processing_failed', error_code: 'auth/id-token-revoked',
+  });
+  assert.ok(!authWarnings.join('\n').includes('sensitive-invalid-token'));
+  assert.ok(!authWarnings.join('\n').includes('SECRET TOKEN'));
+});
+
+test('successful staff authentication emits no failure diagnostics', async () => {
+  const result = await authenticate('private', 'staff', ['staff']);
+  assert.equal(result.nextCalls, 1);
+  assert.deepEqual(authWarnings, []);
 });
 
 test('canonical role derivation excludes legacy staff but preserves unrelated and system roles', async () => {

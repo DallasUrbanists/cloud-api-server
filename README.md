@@ -37,6 +37,12 @@ The API uses two independent authorization layers:
 - **API key authorization:** send `X-API-Key: <application-key>`. `OPTIONAL` endpoints work without a key; `REQUIRED` endpoints require a valid key. Keys identify applications, are configured through `API_KEYS_JSON`, and should be stored in Cloud Secret Manager rather than committed to source control. In production, API-key-required browser requests also require Firebase App Check. Local development may use a registered Firebase App Check debug token.
 - **User authorization:** send `Authorization: Bearer <Firebase-ID-token>` when required. Firebase Authentication / Google Identity Platform issues the token. Only the canonical boolean custom claim `staff: true` authorizes staff; legacy `role: 'staff'` and `roles` staff entries no longer authorize staff. The `system` claim and unrelated roles retain their existing behavior. `PUBLIC` endpoints do not require a user token; `PARTIAL` endpoints return restricted data without an authorized token; `PRIVATE` endpoints require a valid token and the endpoint's ownership or role condition. Invalid JWTs are ignored on `PUBLIC` and use restricted behavior on `PARTIAL` endpoints.
 
+### User authentication troubleshooting
+
+If private endpoints return `401` while public/partial endpoints behave anonymously, user authentication is missing or failing—not merely missing a staff role (which returns `403`). Cloud Run uses its runtime service account, not the local credentials used for migration. Revocation checks require `firebaseauth.users.get`; staff claim administration additionally requires user-update permission. Ensure the runtime identity has the appropriate Firebase Authentication permissions in the authentication project.
+
+The middleware emits `user_authentication_failed` warnings with a missing/malformed credential reason or a sanitized Firebase error code. It never logs bearer tokens, decoded claims, or raw exception messages. Search Cloud Run logs for this event to distinguish credential errors from runtime permission failures; missing role claims alone do not emit authentication-failure warnings.
+
 ### Swagger Firebase App Check
 
 Swagger initializes App Check on page load, independently of user sign-in and the Authorize button. Configure `FIREBASE_WEB_API_KEY`, `FIREBASE_AUTH_DOMAIN`, `FIREBASE_PROJECT_ID`, and `FIREBASE_APP_ID` from the same Firebase web app. Register that exact app under Firebase Console → App Check.
