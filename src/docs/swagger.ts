@@ -56,6 +56,10 @@ Endpoint policies:
       name: 'System',
       description: 'Health checks and server operational metadata.',
     },
+    {
+      name: 'Users',
+      description: 'Firebase Authentication user directory and staff claim administration.',
+    },
   ],
   paths: {
       ...operationPaths,
@@ -2530,6 +2534,42 @@ for (const field of ['emails','phones','zip_home','zip_other','roles']) {
   swaggerDocument.components.schemas.UpdateContactDTO.properties[field].nullable = true;
 }
 swaggerDocument.components.schemas.UpdateContactDTO.properties.firebase_uid = {type:'string',nullable:true,description:'Staff-only assignment or explicit clearing; omission preserves the value.'};
+
+swaggerDocument.components.schemas.User = {
+  type: 'object',
+  required: ['uid', 'email', 'displayName', 'disabled', 'staff'],
+  properties: {
+    uid: { type: 'string', description: 'Firebase Authentication UID (not a UUID).' },
+    email: { type: 'string', nullable: true },
+    displayName: { type: 'string', nullable: true },
+    disabled: { type: 'boolean' },
+    staff: { type: 'boolean', description: 'True only when the current stored custom claim staff is exactly boolean true; legacy role/roles claims are not counted.' },
+  },
+};
+swaggerDocument.paths['/api/users'] = {
+  get: {
+    tags: ['Users'],
+    summary: 'List all current users and staff status',
+    description: 'Returns all existing Firebase Authentication users, including disabled accounts, as a JSON array. Reads all Firebase pages internally; no pagination parameters are needed. Requires a valid API key, a verified non-revoked Firebase ID token, and production App Check. Any authenticated user is allowed; no staff role is required. Missing email/name values are null. Password hashes, salts, provider data, and unrelated custom claims are not exposed.',
+    security: [{ ApiKeyAuth: [], BearerAuth: [], AppCheckAuth: [] }],
+    responses: {
+      200: {
+        description: 'All current users; an empty directory returns an empty array.',
+        content: { 'application/json': { schema: { type: 'array', items: { $ref: '#/components/schemas/User' } } } },
+      },
+      ...Object.fromEntries(Object.entries({
+        401: 'Missing/invalid API key, ID token (including revoked/disabled users), or production App Check.',
+        500: 'Firebase user listing failed; internal details and partial results are not exposed.',
+      }).map(([status, description]) => [status, {
+        description,
+        content: { 'application/json': { schema: {
+          type: 'object', required: ['error', 'message'],
+          properties: { error: { type: 'string' }, message: { type: 'string' } },
+        } } },
+      }])),
+    },
+  },
+};
 
 swaggerDocument.paths['/api/users/{uid}/claims/staff'] = Object.fromEntries(
   ['put', 'delete'].map(method => [method, {

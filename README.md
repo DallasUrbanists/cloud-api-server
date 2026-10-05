@@ -69,9 +69,16 @@ For the production Enterprise registration, deploy the updated code and set `FIR
 | Suggestion update/delete | Required | Private | Author email match or staff |
 | Event reads and calendars | Optional | Public | Includes `/api/events`, `/api/events/{id}`, `/api/events/ical`, and `/meetup-ical` |
 | Event writes/import | Required | Private | `staff` or `system` role |
+| `GET /api/users` | Required | Private | Any authenticated user; no staff role required |
 | `PUT`/`DELETE /api/users/{uid}/claims/staff` | Required | Private | Canonical `staff: true` only; never self; no system-only access |
 
 Configure application keys through the `API_KEYS_JSON` environment variable; in Cloud Run, provide it from Secret Manager rather than committing it to source control.
+
+### User directory
+
+`GET /api/users` returns a JSON array of all existing Firebase Authentication users, including disabled accounts (not CRM contacts). The server reads every Firebase page; no pagination parameters are needed. Each entry contains `uid`, `email`, `displayName`, `disabled`, and boolean `staff`. Missing email/name values are `null`. `staff` is true only when the current stored custom claim is exactly `staff: true`; legacy role/roles values are not counted. Password hashes, salts, provider data, and other custom claims are never returned.
+
+Any authenticated user may list the directory with a valid API key and non-revoked Firebase ID token; no staff role is required. Production also requires Firebase App Check. Success is `200` (an empty directory returns `[]`); invalid/missing credentials return `401`, and Firebase listing failures return a sanitized `500` without a partial list. The runtime service account needs Firebase Authentication user-read permission.
 
 ### Staff claim administration
 
