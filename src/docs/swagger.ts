@@ -15,7 +15,8 @@ export const swaggerDocument: JsonObject = {
 Authorization:
 - API keys use the X-API-Key header. Optional endpoints work without a key; required endpoints require a valid application key. Production browser requests to required endpoints also require Firebase App Check.
 - Firebase user tokens use Authorization: Bearer <Firebase ID token>. PUBLIC endpoints do not require a token, PARTIAL endpoints return redacted data without an authorized token, and PRIVATE endpoints require a valid token plus the endpoint's ownership or role condition.
-- Administrators assign staff and system roles through Firebase custom claims.
+- Only the canonical boolean Firebase custom claim staff:true authorizes staff; legacy role/roles staff entries do not. System and unrelated roles retain their existing behavior. All supplied ID tokens are checked for revocation; rejected tokens never attach a user and use anonymous/restricted fallback on PUBLIC/PARTIAL endpoints.
+- PUT and DELETE /api/users/{uid}/claims/staff require a valid API key, production App Check, and a private canonical staff caller. System-only access and self-targeting are forbidden.
 
 Endpoint policies:
 - Contacts: GET/list and GET/{id}/PUT/{id} are API-key REQUIRED and JWT PARTIAL; POST is REQUIRED/PUBLIC; DELETE is REQUIRED/PRIVATE.
@@ -1379,6 +1380,12 @@ Endpoint policies:
         name: 'X-API-Key',
         description: 'Local development API key from API_KEYS_JSON.',
       },
+      AppCheckAuth: {
+        type: 'apiKey',
+        in: 'header',
+        name: 'X-Firebase-AppCheck',
+        description: 'Required in production for API-key-required endpoints; optional in development.',
+      },
       BearerAuth: {
         type: 'http',
         scheme: 'bearer',
@@ -2523,3 +2530,29 @@ for (const field of ['emails','phones','zip_home','zip_other','roles']) {
   swaggerDocument.components.schemas.UpdateContactDTO.properties[field].nullable = true;
 }
 swaggerDocument.components.schemas.UpdateContactDTO.properties.firebase_uid = {type:'string',nullable:true,description:'Staff-only assignment or explicit clearing; omission preserves the value.'};
+
+swaggerDocument.paths['/api/users/{uid}/claims/staff'] = Object.fromEntries(
+  ['put', 'delete'].map(method => [method, {
+    tags: ['Users'],
+    summary: method === 'put' ? 'Assign canonical staff claim' : 'Remove staff claims and revoke refresh tokens',
+    description: 'Bodyless operation on a Firebase Authentication UID (not a UUID). Requires a valid API key, production App Check, and a verified non-revoked caller with staff:true. System-only and legacy staff roles are insufficient. Self-targeting is forbidden, including no-ops. Unrelated custom claims and roles are preserved; legacy staff entries in role/roles are removed. DELETE revokes refresh tokens on every success, including when staff was already absent. If revocation fails after the claims update, retry DELETE. PUT requires the target to refresh its ID token to observe staff:true.',
+    security: [{ ApiKeyAuth: [], BearerAuth: [], AppCheckAuth: [] }],
+    parameters: [{ name: 'uid', in: 'path', required: true, description: 'Firebase Authentication UID; URL-encode as a path segment.', schema: { type: 'string', minLength: 1, maxLength: 128 } }],
+    responses: {
+      204: { description: 'Claim operation completed; no response body.' },
+      ...Object.fromEntries(Object.entries({
+        400: 'Invalid Firebase UID (must contain 1–128 characters).',
+        401: 'Missing/invalid API key, ID token (including revoked/disabled users), or production App Check.',
+        403: 'Caller is not canonical staff, or targets their own UID.',
+        404: 'Target Firebase user does not exist.',
+        500: 'Claim update or token revocation failed; internal details are not exposed.',
+      }).map(([status, description]) => [status, {
+        description,
+        content: { 'application/json': { schema: {
+          type: 'object', required: ['error', 'message'],
+          properties: { error: { type: 'string' }, message: { type: 'string' } },
+        } } },
+      }])),
+    },
+  }]),
+);

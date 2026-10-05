@@ -35,7 +35,7 @@ This backend API server powers the following client-side applications:
 The API uses two independent authorization layers:
 
 - **API key authorization:** send `X-API-Key: <application-key>`. `OPTIONAL` endpoints work without a key; `REQUIRED` endpoints require a valid key. Keys identify applications, are configured through `API_KEYS_JSON`, and should be stored in Cloud Secret Manager rather than committed to source control. In production, API-key-required browser requests also require Firebase App Check. Local development may use a registered Firebase App Check debug token.
-- **User authorization:** send `Authorization: Bearer <Firebase-ID-token>` when required. Firebase Authentication / Google Identity Platform issues the token. Administrators assign `staff` and `system` custom claims. `PUBLIC` endpoints do not require a user token; `PARTIAL` endpoints return restricted data without an authorized token; `PRIVATE` endpoints require a valid token and the endpoint's ownership or role condition. Invalid JWTs are ignored on `PUBLIC` and use restricted behavior on `PARTIAL` endpoints.
+- **User authorization:** send `Authorization: Bearer <Firebase-ID-token>` when required. Firebase Authentication / Google Identity Platform issues the token. Only the canonical boolean custom claim `staff: true` authorizes staff; legacy `role: 'staff'` and `roles` staff entries no longer authorize staff. The `system` claim and unrelated roles retain their existing behavior. `PUBLIC` endpoints do not require a user token; `PARTIAL` endpoints return restricted data without an authorized token; `PRIVATE` endpoints require a valid token and the endpoint's ownership or role condition. Invalid JWTs are ignored on `PUBLIC` and use restricted behavior on `PARTIAL` endpoints.
 
 ### Endpoint authorization matrix
 
@@ -55,8 +55,49 @@ The API uses two independent authorization layers:
 | Suggestion update/delete | Required | Private | Author email match or staff |
 | Event reads and calendars | Optional | Public | Includes `/api/events`, `/api/events/{id}`, `/api/events/ical`, and `/meetup-ical` |
 | Event writes/import | Required | Private | `staff` or `system` role |
+| `PUT`/`DELETE /api/users/{uid}/claims/staff` | Required | Private | Canonical `staff: true` only; never self; no system-only access |
 
 Configure application keys through the `API_KEYS_JSON` environment variable; in Cloud Run, provide it from Secret Manager rather than committing it to source control.
+
+### Staff claim administration
+
+`PUT /api/users/{uid}/claims/staff` assigns canonical `staff: true`; `DELETE` removes it. Both remove legacy staff from `role` and scalar/array `roles`, preserving unrelated roles and custom claims. No body is required. The target is a URL-encoded Firebase Authentication UID of 1–128 characters, **not a UUID**. Only a private canonical staff caller may administer another user; `system` alone never suffices and self-targeting is always forbidden, even for no-ops.
+
+Success is an empty `204`; failures are structured JSON: `400` invalid UID, `401` invalid/missing credentials (API key, ID token, production App Check), `403` nonstaff/self, `404` unknown user, `500` internal failures. DELETE revokes refresh tokens **every time**, even if staff was already absent. If claims were removed but revocation failed (`500`), retry DELETE. PUT does not revoke tokens: the target must force-refresh its ID token to receive the new claim. Every supplied ID token is verified with revocation checking; revoked/disabled/invalid tokens are rejected on PRIVATE endpoints and fall back anonymously/restricted on PUBLIC/PARTIAL endpoints, never attaching a user.
+
+```bash
+curl -i -X PUT "$API_URL/api/users/$TARGET_UID/claims/staff" \
+  -H "X-API-Key: $API_KEY" -H "Authorization: Bearer $STAFF_ID_TOKEN" \
+  -H "X-Firebase-AppCheck: $APP_CHECK_TOKEN"
+curl -i -X DELETE "$API_URL/api/users/$TARGET_UID/claims/staff" \
+  -H "X-API-Key: $API_KEY" -H "Authorization: Bearer $STAFF_ID_TOKEN" \
+  -H "X-Firebase-AppCheck: $APP_CHECK_TOKEN"
+```
+
+URL-encode `TARGET_UID` if necessary. App Check is required on all production requests to these endpoints, not only browser requests; it is not required locally. Existing `API_KEYS_JSON` and `NODE_ENV=production` settings apply. Firebase Admin uses Application Default Credentials (`GOOGLE_APPLICATION_CREDENTIALS` locally or the Cloud Run service account); no new secret is needed. The runtime service account needs Firebase Authentication user read/update permissions (for example `roles/firebaseauth.admin`) and App Check verification permissions (for example `roles/firebaseappcheck.tokenVerifier`). Audit logs contain only structured actor UID, target UID, action, outcome and HTTP status, never tokens, keys, emails or claim contents.
+
+### Staff claims migration — run before authorization cutover
+
+The standalone `npm run migrate:staff-claims` tool uses Firebase `listUsers`, normalizing **all** recognized existing staff (`staff: true`, `role: 'staff'`, scalar `roles: 'staff'`, or array `roles` containing `'staff'`) to canonical `staff: true` and removing their legacy staff representations. Other claims/roles are preserved. It does not run on startup, build or deployment. Tests use mocks; never run it automatically against live Firebase.
+
+1. Before deploying canonical-only authorization, inventory/back up custom claims using approved secure procedures and rehearse in a non-production Firebase project. Pause other custom-claim writers during migration: Firebase custom-claim updates replace the entire map and are not transactional. The API also uses read/merge/write, so serialize competing writes per target.
+2. Use an explicitly selected project and ADC identity with user read/update permissions (`roles/firebaseauth.admin` is sufficient). Dry run is the default and never mutates users or writes checkpoints:
+
+   ```bash
+   npm run migrate:staff-claims -- --project "$FIREBASE_PROJECT_ID"
+   ```
+
+If the dry run fails, the CLI prints the underlying error code/message. Check Application Default Credentials (`gcloud auth application-default login`), the explicit project, and Firebase Authentication read/update permissions. Do not proceed to apply until the full dry run succeeds.
+
+3. Review dry-run counts, then explicitly apply with a checkpoint file in an existing, private local directory. Reuse the same command/file to resume after interruption. The checkpoint is project-bound and saved atomically only after a complete page; a failed page is replayed safely. Run only one migration process per checkpoint/project.
+
+   ```bash
+   npm run migrate:staff-claims -- --project "$FIREBASE_PROJECT_ID" --apply --checkpoint ./staff-claims.checkpoint.json
+   ```
+
+   `--cursor <Firebase-page-token>` may start a dry run or a new apply checkpoint at a supplied cursor. Do not combine it with an existing checkpoint; omit it for the initial full migration. Completed checkpoints do not restart; use a new checkpoint for a fresh full scan. Keep checkpoints private and out of version control. They contain project/cursor metadata, not credentials.
+4. Confirm a fresh **full** dry run reports zero changes. Before cutover, require every existing staff client to force-refresh its Firebase ID token (`getIdToken(true)`) or sign in again and verify `getIdTokenResult(true).claims.staff === true`. Old ID tokens retain legacy-only claims until refreshed; otherwise these clients lose staff access after deployment. Migration deliberately does not revoke tokens. Ensure at least one refreshed canonical staff administrator is available before deploying.
+5. Deploy canonical-only authorization and these administration endpoints; smoke-test using the refreshed staff account and a separate target. Resume claim writers only once cutover is verified. Roll back the authorization deployment if refresh readiness cannot be confirmed; do not restore legacy staff authorization through API claims.
 
 Apply migrations `001_add_firebase_uid.sql`, `002_event_id_bigint_foreign_key.sql`, and `003_operation_groups.sql` before deploying this version. Rehearse against the actual schema in a non-production database; resolve duplicate contact/event check-ins before migration 003.
 

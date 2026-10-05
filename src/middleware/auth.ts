@@ -1,21 +1,11 @@
 import { NextFunction, Request, Response } from 'express';
-import { getApps, initializeApp } from 'firebase-admin/app';
+import { firebaseApp } from '../config/firebase.js';
 import { getAuth, DecodedIdToken } from 'firebase-admin/auth';
 import { getAppCheck } from 'firebase-admin/app-check';
 import crypto from 'node:crypto';
 
 type ApiKeyRequirement = 'optional' | 'required';
 type UserRequirement = 'public' | 'partial' | 'private';
-
-// Your web app's Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyC3bIA4RfgUnx8Rsfjkxx3HwltPS6o51S0",
-  authDomain: "urbanists-mixer-slides-helper.firebaseapp.com",
-  projectId: "urbanists-mixer-slides-helper",
-  storageBucket: "urbanists-mixer-slides-helper.firebasestorage.app",
-  messagingSenderId: "143738155808",
-  appId: "1:143738155808:web:385e87e73d547fdaf49d45"
-};
 
 export interface AuthenticatedUser {
   uid: string;
@@ -32,10 +22,6 @@ declare global {
       user?: AuthenticatedUser;
     }
   }
-}
-
-function firebaseApp() {
-  return getApps().length > 0 ? getApps()[0] : initializeApp(firebaseConfig);
 }
 
 function configuredApiKeys(): Array<{ key: string; name?: string }> {
@@ -87,7 +73,7 @@ export function apiAccess(options: { apiKey: ApiKeyRequirement }): (req: Request
       if (appCheckRequired) await verifyAppCheck(req);
       next();
     } catch (error) {
-      console.warn('Request authentication failed:', error instanceof Error ? error.message : error);
+      console.warn('Request application verification failed.');
       res.status(401).json({ error: 'Unauthorized', message: 'Application verification failed.' });
     }
   };
@@ -95,6 +81,8 @@ export function apiAccess(options: { apiKey: ApiKeyRequirement }): (req: Request
 
 export function userAuth(requirement: UserRequirement, roles: string[] = []): (req: Request, res: Response, next: NextFunction) => Promise<void> {
   return async (req, res, next) => {
+    // Never reuse a user attached by an earlier middleware after rejection.
+    delete req.user;
     const header = req.header('Authorization');
     const token = header?.startsWith('Bearer ') ? header.slice(7).trim() : undefined;
 
@@ -108,10 +96,10 @@ export function userAuth(requirement: UserRequirement, roles: string[] = []): (r
     }
 
     try {
-      const decoded = await getAuth(firebaseApp()).verifyIdToken(token);
+      const decoded = await getAuth(firebaseApp()).verifyIdToken(token, true);
       const claims = decoded as DecodedIdToken & { roles?: unknown; role?: unknown; staff?: unknown; system?: unknown };
-      const claimRoles = Array.isArray(claims.roles) ? claims.roles.filter((role): role is string => typeof role === 'string') : [];
-      if (typeof claims.role === 'string') claimRoles.push(claims.role);
+      const claimRoles = Array.isArray(claims.roles) ? claims.roles.filter((role): role is string => typeof role === 'string' && role !== 'staff') : [];
+      if (typeof claims.role === 'string' && claims.role !== 'staff') claimRoles.push(claims.role);
       if (claims.staff === true) claimRoles.push('staff');
       if (claims.system === true) claimRoles.push('system');
       const emails = Array.from(new Set([decoded.email, ...((decoded as DecodedIdToken & { emails?: unknown }).emails as string[] || [])].filter((email): email is string => typeof email === 'string')));
@@ -123,6 +111,7 @@ export function userAuth(requirement: UserRequirement, roles: string[] = []): (r
       }
       next();
     } catch {
+      delete req.user;
       if (requirement === 'private') {
         res.status(401).json({ error: 'Unauthorized', message: 'A valid user token is required.' });
         return;

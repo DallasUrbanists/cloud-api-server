@@ -7,6 +7,7 @@ import contactRoutes from './routes/contactRoutes.js';
 import checkinRoutes from './routes/checkinRoutes.js';
 import operationGroupRoutes from './routes/operationGroupRoutes.js';
 import eventsRoutes from './routes/eventsRoutes.js';
+import userRoutes from './routes/userRoutes.js';
 import { swaggerDocument } from './docs/swagger.js';
 import { HomeController } from './controllers/homeController.js';
 import { formatResponseIntegers } from './utils/responseFormatting.js';
@@ -738,6 +739,7 @@ export function createApp(): Express {
   app.use('/api/checkins', checkinRoutes);
   app.use('/api/operation-groups', operationGroupRoutes);
   app.use('/api/events', eventsRoutes);
+  app.use('/api/users', userRoutes);
   app.use('/meetup-ical', eventsRoutes);
   app.use('/api/meetup-ical', eventsRoutes);
 

@@ -4,3 +4,5 @@ dist/
 .env
 .env.local
 .DS_Store
+staff-claims.checkpoint.json
+staff-claims.checkpoint.json.tmp
