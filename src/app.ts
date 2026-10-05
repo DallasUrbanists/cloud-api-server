@@ -505,6 +505,9 @@ export function createApp(): Express {
     const recaptchaSiteKey = JSON.stringify(
       process.env.FIREBASE_RECAPTCHA_SITE_KEY || process.env.VITE_RECAPTCHA_SITE_KEY || '',
     );
+    const appCheckProvider = JSON.stringify(
+      process.env.FIREBASE_APPCHECK_PROVIDER || process.env.VITE_FIREBASE_APPCHECK_PROVIDER || 'recaptcha-v3',
+    );
     const appCheckDebugToken = JSON.stringify(
       process.env.NODE_ENV !== 'production'
         ? process.env.FIREBASE_APPCHECK_DEBUG_TOKEN || process.env.VITE_FIREBASE_APPCHECK_DEBUG_TOKEN || ''
@@ -516,6 +519,7 @@ export function createApp(): Express {
         const firebaseWebConfig = ${firebaseWebConfig};
         const firebaseWebApiKey = ${firebaseWebApiKey};
         const recaptchaSiteKey = ${recaptchaSiteKey};
+        const appCheckProvider = ${appCheckProvider};
         const appCheckDebugToken = ${appCheckDebugToken};
         let appCheckReady = Promise.resolve();
 
@@ -535,7 +539,15 @@ export function createApp(): Express {
             .then(function() { return loadScript('https://www.gstatic.com/firebasejs/10.14.1/firebase-app-check-compat.js'); })
             .then(function() {
               if (!firebase.apps.length) firebase.initializeApp(firebaseWebConfig);
-              firebase.appCheck().activate(recaptchaSiteKey, true);
+              let provider;
+              if (appCheckProvider === 'recaptcha-enterprise') {
+                provider = new firebase.appCheck.ReCaptchaEnterpriseProvider(recaptchaSiteKey);
+              } else if (appCheckProvider === 'recaptcha-v3') {
+                provider = new firebase.appCheck.ReCaptchaV3Provider(recaptchaSiteKey);
+              } else {
+                throw new Error('FIREBASE_APPCHECK_PROVIDER must be recaptcha-v3 or recaptcha-enterprise.');
+              }
+              firebase.appCheck().activate(provider, true);
             })
             .catch(function(error) { console.warn('Swagger Firebase App Check unavailable:', error); });
           // Never block Swagger requests if a CDN, extension, or network policy prevents SDK loading.

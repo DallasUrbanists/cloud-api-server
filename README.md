@@ -37,6 +37,14 @@ The API uses two independent authorization layers:
 - **API key authorization:** send `X-API-Key: <application-key>`. `OPTIONAL` endpoints work without a key; `REQUIRED` endpoints require a valid key. Keys identify applications, are configured through `API_KEYS_JSON`, and should be stored in Cloud Secret Manager rather than committed to source control. In production, API-key-required browser requests also require Firebase App Check. Local development may use a registered Firebase App Check debug token.
 - **User authorization:** send `Authorization: Bearer <Firebase-ID-token>` when required. Firebase Authentication / Google Identity Platform issues the token. Only the canonical boolean custom claim `staff: true` authorizes staff; legacy `role: 'staff'` and `roles` staff entries no longer authorize staff. The `system` claim and unrelated roles retain their existing behavior. `PUBLIC` endpoints do not require a user token; `PARTIAL` endpoints return restricted data without an authorized token; `PRIVATE` endpoints require a valid token and the endpoint's ownership or role condition. Invalid JWTs are ignored on `PUBLIC` and use restricted behavior on `PARTIAL` endpoints.
 
+### Swagger Firebase App Check
+
+Swagger initializes App Check on page load, independently of user sign-in and the Authorize button. Configure `FIREBASE_WEB_API_KEY`, `FIREBASE_AUTH_DOMAIN`, `FIREBASE_PROJECT_ID`, and `FIREBASE_APP_ID` from the same Firebase web app. Register that exact app under Firebase Console → App Check.
+
+Set `FIREBASE_APPCHECK_PROVIDER` to match its registration: `recaptcha-v3` (the backwards-compatible default) or `recaptcha-enterprise`. Set `FIREBASE_RECAPTCHA_SITE_KEY` to the matching provider's site key, permitting the Swagger hostname. Never expose a secret key in these browser settings. For Enterprise, use the Enterprise website/score-based key registered in Firebase, not a separate v3 key. Set `ENABLE_SWAGGER_FIREBASE_AUTH=true` to enable the sign-in helper. The corresponding `VITE_FIREBASE_APPCHECK_PROVIDER` setting is also supported as a fallback.
+
+For the production Enterprise registration, deploy the updated code and set `FIREBASE_APPCHECK_PROVIDER=recaptcha-enterprise` on Cloud Run (local environment files do not configure Cloud Run). Hard-refresh Swagger after deployment; token exchange should use `exchangeRecaptchaEnterpriseToken`, not `exchangeRecaptchaV3Token`. A provider mismatch can produce `App not registered` even when the app is registered for the other provider. Production App Check enforcement is unchanged; debug tokens remain development-only.
+
 ### Endpoint authorization matrix
 
 | Endpoint group | API key | User authorization | Additional conditions |
