@@ -30,6 +30,12 @@ This backend API server powers the following client-side applications:
 - **Deployment & Hosting**: Google Cloud Run & Cloud SQL Unix socket proxy.
 - **Version Control**: Git
 
+### Representatives table migration
+
+Apply [004_representatives.sql](migrations/004_representatives.sql) to PostgreSQL to create `representatives`. The migration runs in a transaction and requires no extensions. It creates an integer identity primary key (explicit IDs are also accepted), nullable text fields, and nullable `start`/`end` timestamps without time zones. Quote `"start"` and `"end"` in SQL queries.
+
+`emails`, `phones`, `social_accounts`, and `elections` are JSONB arrays defaulting to `[]`. Check constraints validate required properties and types, ten-digit phone strings, boolean `can_sms`, and the specified social platform values. Elections reject extra properties and require valid `YYYY-MM-DD` calendar dates. `district_bounds` stores a GeoJSON Polygon object as JSONB, validating numeric positions and closed rings with at least four positions; it does not perform spatial topology validation. All non-ID fields accept SQL `NULL`; JSON `null` is not a valid array or Polygon. No representative data is seeded and no API endpoints are added.
+
 ### Authentication configuration
 
 The API uses two independent authorization layers:
