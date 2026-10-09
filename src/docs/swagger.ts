@@ -5,6 +5,18 @@ import { operationPaths, operationSchemas, stagingParameters, stagingResponses }
 const require = createRequire(import.meta.url);
 const pkg = require('../../package.json');
 
+const representativeSearchParameters = [
+  { name: 'entity', in: 'query', description: 'Match the representative entity (case-insensitive exact match).', schema: { type: 'string', example: 'City of Dallas' } },
+  { name: 'body', in: 'query', description: 'Match the representative body (case-insensitive exact match).', schema: { type: 'string', example: 'City Council' } },
+  { name: 'title', in: 'query', description: 'Match the representative title (case-insensitive exact match).', schema: { type: 'string', example: 'Council member' } },
+  { name: 'district', in: 'query', description: 'Match the district (case-insensitive exact match).', schema: { type: 'string', example: 'District 1' } },
+  { name: 'servingAsOf', in: 'query', description: 'Return representatives serving on this date; defaults to the current date.', schema: { type: 'string', format: 'date', example: '2026-10-09' } },
+  { name: 'electionAsOf', in: 'query', description: 'Keep representatives with an election period containing this date (from early voting start through election day).', schema: { type: 'string', format: 'date', example: '2025-04-25' } },
+  { name: 'lat', in: 'query', description: 'Latitude; used for district-boundary search only when lon is also provided.', schema: { type: 'number', minimum: -90, maximum: 90, example: 32.78 } },
+  { name: 'lon', in: 'query', description: 'Longitude; used for district-boundary search only when lat is also provided.', schema: { type: 'number', minimum: -180, maximum: 180, example: -96.8 } },
+  { name: 'address', in: 'query', description: 'Address to geocode and search within district boundaries. Ignored when both lat and lon are provided.', schema: { type: 'string', example: '1500 Marilla St, Dallas, TX' } },
+].map((parameter) => ({ ...parameter, required: false }));
+
 export const swaggerDocument: JsonObject = {
   openapi: '3.0.3',
   info: {
@@ -22,7 +34,8 @@ Endpoint policies:
 - Contacts: GET/list and GET/{id}/PUT/{id} are API-key REQUIRED and JWT PARTIAL; POST is REQUIRED/PUBLIC; DELETE is REQUIRED/PRIVATE.
 - Check-ins: GET/list and GET/{id} are REQUIRED/PARTIAL; POST is OPTIONAL/PUBLIC; PUT and DELETE are REQUIRED/PRIVATE. include_contact accepts false, partial, or full.
 - Suggestions: reads, creation, and upload URLs are REQUIRED/PUBLIC; update and delete are REQUIRED/PRIVATE for the author or staff.
-- Events and calendar reads are OPTIONAL/PUBLIC; event creation, updates, deletion, and iCal imports are REQUIRED/PRIVATE for staff or system roles.`,
+- Events and calendar reads are OPTIONAL/PUBLIC; event creation, updates, deletion, and iCal imports are REQUIRED/PRIVATE for staff or system roles.
+- Representatives, including the Dallas City Council shortcut, are public and require no API key or user authentication.`,
     contact: {
       name: 'DallasUrbanists.org',
       url: 'https://dallasurbanists.org',
@@ -53,6 +66,10 @@ Endpoint policies:
       description: 'Endpoints for retrieving calendar feeds and event integrations.',
     },
     {
+      name: 'Representatives',
+      description: 'Public representative search by office, term, election period, and district geography.',
+    },
+    {
       name: 'System',
       description: 'Health checks and server operational metadata.',
     },
@@ -79,6 +96,54 @@ Endpoint policies:
               },
             },
           },
+        },
+      },
+    },
+    '/api/representatives': {
+      get: {
+        summary: 'Search Representatives',
+        description: 'Returns representatives matching every supplied filter. Without servingAsOf, representatives serving today are returned. Spatial search uses lat and lon together; address is geocoded only when that coordinate pair is absent. This endpoint is public and requires no API key or user token.',
+        tags: ['Representatives'],
+        security: [],
+        parameters: representativeSearchParameters,
+        responses: {
+          200: {
+            description: 'Matching representatives.',
+            content: {
+              'application/json': {
+                schema: { type: 'array', items: { $ref: '#/components/schemas/Representative' } },
+              },
+            },
+          },
+          400: { $ref: '#/components/responses/BadRequestError' },
+          404: { $ref: '#/components/responses/NotFoundError' },
+          502: { $ref: '#/components/responses/BadGatewayError' },
+          503: { description: 'Address search is not configured on this server.' },
+          500: { $ref: '#/components/responses/InternalServerError' },
+        },
+      },
+    },
+    '/api/dallascitycouncil': {
+      get: {
+        summary: 'Search Dallas City Council Members',
+        description: 'Searches representatives using the same filters as /api/representatives, with entity=City of Dallas, body=City Council, and title=Council member fixed by the server. Caller-supplied entity, body, and title values do not override these filters. This endpoint is public and requires no API key or user token.',
+        tags: ['Representatives'],
+        security: [],
+        parameters: representativeSearchParameters.filter((parameter) => !['entity', 'body', 'title'].includes(parameter.name)),
+        responses: {
+          200: {
+            description: 'Matching Dallas City Council members.',
+            content: {
+              'application/json': {
+                schema: { type: 'array', items: { $ref: '#/components/schemas/Representative' } },
+              },
+            },
+          },
+          400: { $ref: '#/components/responses/BadRequestError' },
+          404: { $ref: '#/components/responses/NotFoundError' },
+          502: { $ref: '#/components/responses/BadGatewayError' },
+          503: { description: 'Address search is not configured on this server.' },
+          500: { $ref: '#/components/responses/InternalServerError' },
         },
       },
     },
@@ -1399,6 +1464,41 @@ Endpoint policies:
     },
     schemas: {
           ...operationSchemas,
+      Representative: {
+        type: 'object',
+        required: ['id'],
+        properties: {
+          id: { type: 'integer', example: 1 },
+          entity: { type: 'string', nullable: true, example: 'City of Dallas' },
+          body: { type: 'string', nullable: true, example: 'City Council' },
+          title: { type: 'string', nullable: true, example: 'Council member' },
+          name: { type: 'string', nullable: true, example: 'Jane Doe' },
+          bio: { type: 'string', nullable: true },
+          webpage_url: { type: 'string', format: 'uri', nullable: true },
+          photo_url: { type: 'string', format: 'uri', nullable: true },
+          emails: { type: 'array', nullable: true, items: { type: 'object' } },
+          phones: { type: 'array', nullable: true, items: { type: 'object' } },
+          social_accounts: { type: 'array', nullable: true, items: { type: 'object' } },
+          elections: {
+            type: 'array',
+            nullable: true,
+            items: {
+              type: 'object',
+              properties: {
+                label: { type: 'string' },
+                date: { type: 'string', format: 'date' },
+                early_vote_start: { type: 'string', format: 'date' },
+                early_vote_end: { type: 'string', format: 'date' },
+                status: { type: 'string' },
+              },
+            },
+          },
+          start: { type: 'string', format: 'date-time', nullable: true },
+          end: { type: 'string', format: 'date-time', nullable: true           },
+          district: { type: 'string', nullable: true, example: 'District 1' },
+          district_description: { type: 'string', nullable: true },
+        },
+      },
       Contact: {
         type: 'object',
         required: ['id', 'name', 'created_on'],
