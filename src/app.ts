@@ -10,6 +10,7 @@ import eventsRoutes from './routes/eventsRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import representativesRoutes from './routes/representativesRoutes.js';
 import dallasCityCouncilRoutes from './routes/dallasCityCouncilRoutes.js';
+import assistRoutes from './routes/assistRoutes.js';
 import { swaggerDocument } from './docs/swagger.js';
 import { HomeController } from './controllers/homeController.js';
 import { formatResponseIntegers } from './utils/responseFormatting.js';
@@ -19,10 +20,21 @@ dotenv.config();
 export function createApp(): Express {
   const app = express();
 
+  app.use('/api/assist', (req, res, next) => {
+    res.setHeader('Cache-Control', 'no-store');
+    if (req.method === 'POST' && !req.is('application/json')) {
+      res.status(415).json({ error: 'UNSUPPORTED_MEDIA_TYPE', message: 'Send an application/json request body.' });
+      return;
+    }
+    next();
+  });
+
   // Basic Middleware
   const ordinaryJson = express.json();
   const operationJson = express.json({ limit: '2mb' });
+  const assistJson = express.json({ limit: '64kb' });
   app.use((req, res, next) => {
+    if (/^\/api\/assist(?:\/|$)/i.test(req.path)) return assistJson(req, res, next);
     const isOperation = req.path === '/api/operation-groups' || req.path.startsWith('/api/operation-groups/');
     return (isOperation || req.header('X-Operation-Group') !== undefined ? operationJson : ordinaryJson)(req, res, next);
   });
@@ -756,6 +768,7 @@ export function createApp(): Express {
   app.use('/api/users', userRoutes);
   app.use('/api/representatives', representativesRoutes);
   app.use('/api/dallascitycouncil', dallasCityCouncilRoutes);
+  app.use('/api/assist', assistRoutes);
   app.use('/meetup-ical', eventsRoutes);
   app.use('/api/meetup-ical', eventsRoutes);
 
@@ -768,7 +781,15 @@ export function createApp(): Express {
   });
 
   // Global Error Handler
-  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+  app.use((err: any, req: Request, res: Response, _next: NextFunction) => {
+    if (/^\/api\/assist(?:\/|$)/i.test(req.path)) {
+      const status = err.status === 413 ? 413 : err.status === 400 ? 400 : 500;
+      res.status(status).json({
+        error: status === 413 ? 'PAYLOAD_TOO_LARGE' : status === 400 ? 'INVALID_GRAMMAR_INPUT' : 'ASSIST_INTERNAL_ERROR',
+        message: status === 413 ? 'Request body cannot exceed 64 KiB.' : status === 400 ? 'Request body must be a valid JSON object.' : 'Grammar assistance could not complete the request.',
+      });
+      return;
+    }
     console.error('Unhandled Server Error:', err);
     res.status(err.status || 500).json({
       error: err.name || 'Internal Server Error',

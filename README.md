@@ -49,6 +49,49 @@ The API uses two independent authorization layers:
 - **API key authorization:** send `X-API-Key: <application-key>`. `OPTIONAL` endpoints work without a key; `REQUIRED` endpoints require a valid key. Keys identify applications, are configured through `API_KEYS_JSON`, and should be stored in Cloud Secret Manager rather than committed to source control. In production, API-key-required browser requests also require Firebase App Check. Local development may use a registered Firebase App Check debug token.
 - **User authorization:** send `Authorization: Bearer <Firebase-ID-token>` when required. Firebase Authentication / Google Identity Platform issues the token. Only the canonical boolean custom claim `staff: true` authorizes staff; legacy `role: 'staff'` and `roles` staff entries no longer authorize staff. The `system` claim and unrelated roles retain their existing behavior. `PUBLIC` endpoints do not require a user token; `PARTIAL` endpoints return restricted data without an authorized token; `PRIVATE` endpoints require a valid token and the endpoint's ownership or role condition. Invalid JWTs are ignored on `PUBLIC` and use restricted behavior on `PARTIAL` endpoints.
 
+### Grammar assistance
+
+`POST /api/assist/grammar` accepts `{ "text": "Their is a meeting tomorrow." }` and returns `{ "data": { "text": "There is a meeting tomorrow." } }`. Supply a valid `X-API-Key` and, in production, `X-Firebase-AppCheck`. User sign-in is optional; supplied Firebase tokens use existing PUBLIC authentication behavior.
+
+Only `application/json` with a single `text` field is accepted. Text must be nonblank, valid Unicode, and at most **5000 Unicode code points** (not UTF-16 units or grapheme clusters). The encoded body is limited to **64 KiB**, even when an operation-group header is supplied. Original whitespace is not trimmed before sending to Gemini. Corrections may slightly expand the text; output is capped at 10000 code points.
+
+Conservative prose-only screening rejects recognizable JavaScript, HTML markup, shell/Python/SQL snippets, code fences, and unsupported control characters, including quoted code. Rejection returns `422 EXECUTABLE_CONTENT_DETECTED` with locally generated `feedback` entries containing a reason and one-based line number, never an echoed snippet. Screening uses normalized text only for detection; the original is used for correction. Parsers and patterns are not exhaustive, and conservative matches can reject legitimate technical prose. They never execute or decode submitted payloads or fetch submitted URLs.
+
+The official `@google/genai` SDK calls the fixed `gemini-3.1-flash-lite` model using a server-only API key. The system instructions are fixed; caller text is serialized into a separate data field. The caller cannot select models, tools, prompts, URLs, or generation settings. Tools, code execution, automatic function calling, retrieval, and conversational state are not enabled. Instructions request grammar/spelling corrections only while preserving meaning, language, dialect, names, numbers, tone, and paragraph structure. Schema, completion, size, and executable-content checks apply to output. These controls reduce prompt injection and model mistakes; they **cannot guarantee** perfect corrections or that Gemini never follows embedded instructions. Client applications must display returned text as text, not executable HTML, and should let users review corrections.
+
+Configure the following before deployment:
+
+| Setting | Default | Purpose |
+|---|---|---|
+| `GEMINI_API_KEY` | Required | Gemini API key restricted to the Generative Language API; inject from Secret Manager, never from clients |
+| `ASSIST_QUOTA_DB` | `PUBLIC_IMPROVEMENTS_DB` or `public-improvements` | Existing Firestore database for atomic shared quotas |
+| `ASSIST_GLOBAL_REQUESTS_PER_MINUTE` | `100` | Aggregate quota across every application and Cloud Run replica |
+| `ASSIST_APP_REQUESTS_PER_MINUTE` | `20` | Quota per application API key, shared across users and replicas |
+| `ASSIST_USER_REQUESTS_PER_MINUTE` | `10` | Additional quota per authenticated UID; optional sign-in cannot bypass the application quota |
+| `ASSIST_MAX_CONCURRENT` | `4` | Concurrent admitted requests per process, including quota checks; maximum configurable value is 32 |
+
+Rate settings must be positive integers no greater than 10000. Quotas use fixed one-minute windows; bursts across window boundaries are possible. Application-key quotas are deliberately used instead of trusting spoofable forwarding headers or assuming a Cloud Run proxy address identifies an end user. Quotas consume one attempt before each model call and are not refunded for failures. Per-process concurrency is supplemented by shared global quotas across replicas.
+
+The runtime service account needs Firestore transaction read/write access (for example `roles/datastore.user`) and access to the Gemini secret (`roles/secretmanager.secretAccessor` on that secret). Quota checks fail closed after five seconds or on storage/configuration errors, without calling Gemini. Documents in `assist-grammar-quotas` contain hashed identifiers, counters, and expiration timestamps, not keys, UIDs, or text. Enable Firestore TTL for the collection group's `expiresAt` field to clean up inactive identifiers; quota correctness does not depend on timely TTL deletion. Configure billing alerts and appropriate Google API quotas as additional cost controls.
+
+Create a `gemini-api-key` secret using your secure secret-management workflow, then attach it to the service without exposing its value:
+
+```bash
+gcloud run services update urbanists-cloud-api-server --region us-central1 --update-secrets GEMINI_API_KEY=gemini-api-key:latest
+```
+
+Deploy the endpoint code through the existing deployment workflow. Locally, configure `GEMINI_API_KEY` in your private environment and use Application Default Credentials for the quota database. Missing Gemini configuration returns `503` and does not affect other endpoints.
+
+All endpoint responses use `Cache-Control: no-store`. The application does not persist or log source/corrected text, provider responses, keys, or raw provider errors; Gemini's own data handling remains governed by the selected API tier and provider terms. Error statuses are `400` validation, `401` application authentication, `413` body size, `415` media type, `422` content rejection/refusal, `429` quota/concurrency, and sanitized `500`/`502`/`503`/`504` failures. `Retry-After` accompanies local throttling and selected upstream availability failures. Gemini calls have a 20-second deadline and no automatic retries; cancellation may not stop provider billing.
+
+Run `npx tsx --test tests/assist.test.ts` for local validation, HTTP, quota, and mocked-provider tests. Live evaluation is opt-in and incurs Gemini API usage:
+
+```bash
+RUN_ASSIST_LIVE_TESTS=true npx tsx --test tests/assist.test.ts
+```
+
+The live test checks a representative correction and an embedded instruction. Passing these examples is not proof of universal injection resistance; broaden evaluation with representative user text and adversarial cases before production rollout.
+
 ### User authentication troubleshooting
 
 If private endpoints return `401` while public/partial endpoints behave anonymously, user authentication is missing or failing—not merely missing a staff role (which returns `403`). Cloud Run uses its runtime service account, not the local credentials used for migration. Revocation checks require `firebaseauth.users.get`; staff claim administration additionally requires user-update permission. Ensure the runtime identity has the appropriate Firebase Authentication permissions in the authentication project.
@@ -83,6 +126,7 @@ For the production Enterprise registration, deploy the updated code and set `FIR
 | Event writes/import | Required | Private | `staff` or `system` role |
 | `GET /api/users` | Required | Private | Any authenticated user; no staff role required |
 | `PUT`/`DELETE /api/users/{uid}/claims/staff` | Required | Private | Canonical `staff: true` only; never self; no system-only access |
+| `POST /api/assist/grammar` | Required | Public | Production App Check; prose-only text up to 5000 code points; shared quotas |
 
 Configure application keys through the `API_KEYS_JSON` environment variable; in Cloud Run, provide it from Secret Manager rather than committing it to source control.
 

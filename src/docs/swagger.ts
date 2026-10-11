@@ -35,7 +35,8 @@ Endpoint policies:
 - Check-ins: GET/list and GET/{id} are REQUIRED/PARTIAL; POST is OPTIONAL/PUBLIC; PUT and DELETE are REQUIRED/PRIVATE. include_contact accepts false, partial, or full.
 - Suggestions: reads, creation, and upload URLs are REQUIRED/PUBLIC; update and delete are REQUIRED/PRIVATE for the author or staff.
 - Events and calendar reads are OPTIONAL/PUBLIC; event creation, updates, deletion, and iCal imports are REQUIRED/PRIVATE for staff or system roles.
-- Representatives, including the Dallas City Council shortcut, are public and require no API key or user authentication.`,
+- Representatives, including the Dallas City Council shortcut, are public and require no API key or user authentication.
+- Grammar assistance is REQUIRED/PUBLIC: API key and production App Check are required; user sign-in is optional.`,
     contact: {
       name: 'DallasUrbanists.org',
       url: 'https://dallasurbanists.org',
@@ -76,6 +77,10 @@ Endpoint policies:
     {
       name: 'Users',
       description: 'Firebase Authentication user directory and staff claim administration.',
+    },
+    {
+      name: 'Assist',
+      description: 'Server-side AI assistance for prose, with validation and shared quotas.',
     },
   ],
   paths: {
@@ -2696,3 +2701,60 @@ swaggerDocument.paths['/api/users/{uid}/claims/staff'] = Object.fromEntries(
     },
   }]),
 );
+
+swaggerDocument.components.schemas.GrammarInput = {
+  type: 'object', required: ['text'], additionalProperties: false,
+  properties: { text: { type: 'string', minLength: 1, maxLength: 5000, description: 'Nonblank prose; maximum 5000 Unicode code points. Whitespace is preserved. Recognizable code, HTML markup, and unsupported control characters are rejected.', example: 'Their is a meeting tomorrow.' } },
+};
+swaggerDocument.components.schemas.GrammarResponse = {
+  type: 'object', required: ['data'], additionalProperties: false,
+  properties: { data: {
+    type: 'object', required: ['text'], additionalProperties: false,
+    properties: { text: { type: 'string', minLength: 1, maxLength: 10000, example: 'There is a meeting tomorrow.' } },
+  } },
+};
+swaggerDocument.components.schemas.GrammarError = {
+  type: 'object', required: ['error', 'message'],
+  properties: {
+    error: { type: 'string' }, message: { type: 'string' },
+    feedback: { type: 'array', description: 'Local code-screening feedback, when input is rejected. Source snippets are never echoed.', items: {
+      type: 'object', required: ['reason', 'line'],
+      properties: { reason: { type: 'string' }, line: { type: 'integer', minimum: 1 } },
+    } },
+  },
+};
+swaggerDocument.paths['/api/assist/grammar'] = {
+  post: {
+    tags: ['Assist'],
+    summary: 'Correct grammar and spelling in prose',
+    description: 'Uses Gemini 3.1 Flash-Lite with fixed server instructions and data-only input. Requires a valid application API key and production App Check. Firebase user sign-in is optional; invalid user tokens fall back to anonymous access. Only application/json with the text field is accepted, up to 5000 Unicode code points and 64 KiB encoded body. Recognizable executable snippets (including quoted code) and HTML markup are rejected before quota consumption or Gemini calls. Output is checked for shape, size, completion, and executable content. These are defense-in-depth controls, not guarantees of model correctness or exhaustive code detection. Preserves language and dialect rather than translating. No text is persisted or logged by this application. Shared fixed-window quotas and per-instance concurrency limits apply.',
+    security: [{ ApiKeyAuth: [], AppCheckAuth: [] }, { ApiKeyAuth: [], AppCheckAuth: [], BearerAuth: [] }],
+    requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/GrammarInput' } } } },
+    responses: {
+      200: {
+        description: 'Corrected prose, or unchanged text if no corrections are needed.',
+        headers: { 'Cache-Control': { schema: { type: 'string', example: 'no-store' } } },
+        content: { 'application/json': { schema: { $ref: '#/components/schemas/GrammarResponse' } } },
+      },
+      ...Object.fromEntries(Object.entries({
+        400: 'Invalid JSON, invalid text, unknown fields, or text exceeding 5000 Unicode code points.',
+        401: 'Missing or invalid application API key or production App Check.',
+        413: 'Encoded request body exceeds 64 KiB.',
+        415: 'Content-Type must be application/json.',
+        422: 'Recognizable executable content or unsupported controls detected (with local feedback), or model safety refusal.',
+        429: 'Shared quota or per-instance concurrency limit reached; retry after the indicated delay.',
+        500: 'Unexpected assistance failure; internal details are not exposed.',
+        502: 'Provider failure, incomplete generation, or invalid/unsafe output.',
+        503: 'Gemini or quota storage is unavailable, unconfigured, or misconfigured.',
+        504: 'Gemini did not finish within the 20-second deadline.',
+      }).map(([status, description]) => [status, {
+        description,
+        headers: {
+          'Cache-Control': { schema: { type: 'string', example: 'no-store' } },
+          ...(['429', '503'].includes(status) ? { 'Retry-After': { description: 'Seconds to wait when supplied.', schema: { type: 'integer', minimum: 1 } } } : {}),
+        },
+        content: { 'application/json': { schema: { $ref: '#/components/schemas/GrammarError' } } },
+      }])),
+    },
+  },
+};

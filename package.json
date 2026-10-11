@@ -21,6 +21,8 @@
   "dependencies": {
     "@google-cloud/firestore": "^9.2.0",
     "@google-cloud/storage": "^8.2.0",
+    "@google/genai": "^2.28.0",
+    "acorn": "^8.19.0",
     "cors": "^2.8.6",
     "dotenv": "^16.4.7",
     "express": "^5.2.1",
