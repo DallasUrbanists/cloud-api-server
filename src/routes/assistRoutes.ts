@@ -5,5 +5,6 @@ import { apiAccess, userAuth } from '../middleware/auth.js';
 const router = Router();
 
 router.post('/grammar', apiAccess({ apiKey: 'required' }), userAuth('public'), AssistController.grammar);
+router.post('/clarity', apiAccess({ apiKey: 'required' }), userAuth('public'), AssistController.clarity);
 
 export default router;

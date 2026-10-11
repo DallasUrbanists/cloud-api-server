@@ -36,7 +36,7 @@ Endpoint policies:
 - Suggestions: reads, creation, and upload URLs are REQUIRED/PUBLIC; update and delete are REQUIRED/PRIVATE for the author or staff.
 - Events and calendar reads are OPTIONAL/PUBLIC; event creation, updates, deletion, and iCal imports are REQUIRED/PRIVATE for staff or system roles.
 - Representatives, including the Dallas City Council shortcut, are public and require no API key or user authentication.
-- Grammar assistance is REQUIRED/PUBLIC: API key and production App Check are required; user sign-in is optional.`,
+- Grammar and clarity assistance are REQUIRED/PUBLIC: API key and production App Check are required; user sign-in is optional.`,
     contact: {
       name: 'DallasUrbanists.org',
       url: 'https://dallasurbanists.org',
@@ -2756,5 +2756,38 @@ swaggerDocument.paths['/api/assist/grammar'] = {
         content: { 'application/json': { schema: { $ref: '#/components/schemas/GrammarError' } } },
       }])),
     },
+  },
+};
+
+swaggerDocument.components.schemas.ClarityInput = {
+  ...swaggerDocument.components.schemas.GrammarInput,
+  properties: { text: {
+    ...swaggerDocument.components.schemas.GrammarInput.properties.text,
+    example: 'I have been thinking about the faded school crosswalk on Elm Street. I feel scared when my children cross there. Please repaint it by October 20.',
+  } },
+};
+swaggerDocument.components.schemas.ClarityResponse = {
+  ...swaggerDocument.components.schemas.GrammarResponse,
+  properties: { data: {
+    ...swaggerDocument.components.schemas.GrammarResponse.properties.data,
+    properties: { text: {
+      ...swaggerDocument.components.schemas.GrammarResponse.properties.data.properties.text,
+      example: 'Please repaint the faded school crosswalk on Elm Street by October 20. I feel scared when my children cross there.',
+    } },
+  } },
+};
+swaggerDocument.components.schemas.ClarityError = { ...swaggerDocument.components.schemas.GrammarError };
+const grammarOperation = swaggerDocument.paths['/api/assist/grammar'].post;
+swaggerDocument.paths['/api/assist/clarity'] = {
+  post: {
+    ...grammarOperation,
+    summary: 'Rewrite prose for improved clarity and structure',
+    description: 'Rewrites text while retaining its substance, meaning, intent, tone, and emotional expression as faithfully as possible. Fixes grammar and spelling, removes unnecessary repetition, clearly expresses the author\'s intent, and leads with the main point, purpose, or key takeaway. Aims for a 10th-grade reading level or lower and concise wording without sacrificing essential content or nuance. May reorder sentences and paragraphs; does not invent facts, motives, or commitments. Fidelity takes priority over brevity and readability. These quality goals are best effort, not guaranteed or enforced by a reading-grade score. Grammar and clarity share the same quota buckets, concurrency budget, Gemini API key, and configuration. ' + grammarOperation.description,
+    requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/ClarityInput' } } } },
+    responses: Object.fromEntries(Object.entries(grammarOperation.responses).map(([status, response]) => [status, {
+      ...(response as JsonObject),
+      ...(status === '200' ? { description: 'Prose rewritten for clarity and structure, or unchanged text if it already meets the editing goals.' } : {}),
+      content: { 'application/json': { schema: { $ref: `#/components/schemas/${status === '200' ? 'ClarityResponse' : 'ClarityError'}` } } },
+    }])),
   },
 };

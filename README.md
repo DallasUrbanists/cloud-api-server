@@ -53,6 +53,8 @@ The API uses two independent authorization layers:
 
 `POST /api/assist/grammar` accepts `{ "text": "Their is a meeting tomorrow." }` and returns `{ "data": { "text": "There is a meeting tomorrow." } }`. Supply a valid `X-API-Key` and, in production, `X-Firebase-AppCheck`. User sign-in is optional; supplied Firebase tokens use existing PUBLIC authentication behavior.
 
+The validation, safety controls, model configuration, quotas, and deployment requirements below also apply to `POST /api/assist/clarity`. Both endpoints consume the **same** application/user/global quota buckets and per-process concurrency budget. Existing `assist-grammar-quotas` documents and their TTL policy serve both endpoints; no new secret, environment setting, or storage migration is needed.
+
 Only `application/json` with a single `text` field is accepted. Text must be nonblank, valid Unicode, and at most **5000 Unicode code points** (not UTF-16 units or grapheme clusters). The encoded body is limited to **64 KiB**, even when an operation-group header is supplied. Original whitespace is not trimmed before sending to Gemini. Corrections may slightly expand the text; output is capped at 10000 code points.
 
 Conservative prose-only screening rejects recognizable JavaScript, HTML markup, shell/Python/SQL snippets, code fences, and unsupported control characters, including quoted code. Rejection returns `422 EXECUTABLE_CONTENT_DETECTED` with locally generated `feedback` entries containing a reason and one-based line number, never an echoed snippet. Screening uses normalized text only for detection; the original is used for correction. Parsers and patterns are not exhaustive, and conservative matches can reject legitimate technical prose. They never execute or decode submitted payloads or fetch submitted URLs.
@@ -90,7 +92,17 @@ Run `npx tsx --test tests/assist.test.ts` for local validation, HTTP, quota, and
 RUN_ASSIST_LIVE_TESTS=true npx tsx --test tests/assist.test.ts
 ```
 
-The live test checks a representative correction and an embedded instruction. Passing these examples is not proof of universal injection resistance; broaden evaluation with representative user text and adversarial cases before production rollout.
+Live tests check a representative grammar correction, a clarity rewrite, and embedded instructions for both modes. Passing these examples is not proof of universal injection resistance; broaden evaluation with representative user text and adversarial cases before production rollout.
+
+### Clarity assistance
+
+`POST /api/assist/clarity` uses the same `{ "text": "..." }` request and `{ "data": { "text": "..." } }` response as grammar assistance, with a separate fixed server prompt for rewriting. It corrects grammar and spelling, removes unnecessary repetition, makes the author's intent clear, and puts the main point, purpose, or key takeaway first. It aims for a 10th-grade reading level or lower, with concise wording that preserves substance, emotional expression, tone, nuance, and meaningful emphasis.
+
+Unlike grammar-only editing, clarity may reorder sentences and paragraphs. Instructions preserve facts, names, numbers, dates, URLs, language, dialect, qualifications, uncertainty, questions, and requests, and prohibit inventing facts, inferring missing motives, or adding commitments. Fidelity to the original message takes priority when readability or brevity conflicts with its substance. The reading-level target and rewrite quality are best-effort model goals, not guaranteed or enforced by a numerical grade check. Callers should review the result before using it.
+
+For example, `{ "text": "I have been thinking about the faded school crosswalk on Elm Street. I feel scared when my children cross there. Please repaint it by October 20." }` may return `{ "data": { "text": "Please repaint the faded school crosswalk on Elm Street by October 20. I feel scared when my children cross there." } }`.
+
+Validation errors use `INVALID_CLARITY_INPUT`; executable-content feedback and all other status/error codes follow the grammar contract. Both operations appear under the Swagger **Assist** tag. To run only the clarity live evaluation (two billed Gemini calls), use `RUN_ASSIST_LIVE_TESTS=true npx tsx --test --test-name-pattern='opt-in live Gemini clarity' tests/assist.test.ts`.
 
 ### User authentication troubleshooting
 
@@ -127,6 +139,7 @@ For the production Enterprise registration, deploy the updated code and set `FIR
 | `GET /api/users` | Required | Private | Any authenticated user; no staff role required |
 | `PUT`/`DELETE /api/users/{uid}/claims/staff` | Required | Private | Canonical `staff: true` only; never self; no system-only access |
 | `POST /api/assist/grammar` | Required | Public | Production App Check; prose-only text up to 5000 code points; shared quotas |
+| `POST /api/assist/clarity` | Required | Public | Same validation and shared quotas as grammar; best-effort clarity and structure rewrite |
 
 Configure application keys through the `API_KEYS_JSON` environment variable; in Cloud Run, provide it from Secret Manager rather than committing it to source control.
 
