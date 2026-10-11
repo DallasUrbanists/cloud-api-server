@@ -784,10 +784,11 @@ export function createApp(): Express {
   app.use((err: any, req: Request, res: Response, _next: NextFunction) => {
     if (/^\/api\/assist(?:\/|$)/i.test(req.path)) {
       const isClarity = /^\/api\/assist\/clarity\/?$/i.test(req.path);
+      const isSummary = /^\/api\/assist\/summarize\/?$/i.test(req.path);
       const status = err.status === 413 ? 413 : err.status === 400 ? 400 : 500;
       res.status(status).json({
-        error: status === 413 ? 'PAYLOAD_TOO_LARGE' : status === 400 ? (isClarity ? 'INVALID_CLARITY_INPUT' : 'INVALID_GRAMMAR_INPUT') : 'ASSIST_INTERNAL_ERROR',
-        message: status === 413 ? 'Request body cannot exceed 64 KiB.' : status === 400 ? 'Request body must be a valid JSON object.' : `${isClarity ? 'Clarity' : 'Grammar'} assistance could not complete the request.`,
+        error: status === 413 ? 'PAYLOAD_TOO_LARGE' : status === 400 ? (isSummary ? 'INVALID_SUMMARY_INPUT' : isClarity ? 'INVALID_CLARITY_INPUT' : 'INVALID_GRAMMAR_INPUT') : 'ASSIST_INTERNAL_ERROR',
+        message: status === 413 ? 'Request body cannot exceed 64 KiB.' : status === 400 ? 'Request body must be a valid JSON object.' : `${isSummary ? 'Summarization' : isClarity ? 'Clarity' : 'Grammar'} assistance could not complete the request.`,
       });
       return;
     }

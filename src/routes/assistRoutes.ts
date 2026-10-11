@@ -6,5 +6,6 @@ const router = Router();
 
 router.post('/grammar', apiAccess({ apiKey: 'required' }), userAuth('public'), AssistController.grammar);
 router.post('/clarity', apiAccess({ apiKey: 'required' }), userAuth('public'), AssistController.clarity);
+router.post('/summarize', apiAccess({ apiKey: 'required' }), userAuth('public'), AssistController.summarize);
 
 export default router;

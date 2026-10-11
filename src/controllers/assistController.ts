@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { validateGrammarInput } from '../models/assist.js';
+import { validateGrammarInput, validateSummaryInput } from '../models/assist.js';
 import { AssistError, assistLimit, AssistService } from '../services/assistService.js';
 
 export class AssistController {
@@ -13,12 +13,18 @@ export class AssistController {
     return AssistController.edit(req, res, 'clarity');
   }
 
-  private static async edit(req: Request, res: Response, mode: 'grammar' | 'clarity'): Promise<void> {
-    const label = mode === 'grammar' ? 'Grammar' : 'Clarity';
-    const validation = validateGrammarInput(req.body);
+  static async summarize(req: Request, res: Response): Promise<void> {
+    return AssistController.edit(req, res, 'summarize');
+  }
+
+  private static async edit(req: Request, res: Response, mode: 'grammar' | 'clarity' | 'summarize'): Promise<void> {
+    const label = mode === 'grammar' ? 'Grammar' : mode === 'clarity' ? 'Clarity' : 'Summarization';
+    const inputError = mode === 'grammar' ? 'INVALID_GRAMMAR_INPUT' : mode === 'clarity' ? 'INVALID_CLARITY_INPUT' : 'INVALID_SUMMARY_INPUT';
+    const summaryInput = mode === 'summarize' ? validateSummaryInput(req.body) : undefined;
+    const validation = summaryInput ?? validateGrammarInput(req.body);
     if (!validation.data) {
       res.status(validation.feedback ? 422 : 400).json({
-        error: validation.feedback ? 'EXECUTABLE_CONTENT_DETECTED' : mode === 'grammar' ? 'INVALID_GRAMMAR_INPUT' : 'INVALID_CLARITY_INPUT',
+        error: validation.feedback ? 'EXECUTABLE_CONTENT_DETECTED' : inputError,
         message: validation.error,
         ...(validation.feedback ? { feedback: validation.feedback } : {}),
       });
@@ -39,7 +45,8 @@ export class AssistController {
       if (abort.signal.aborted) return;
       const text = mode === 'grammar'
         ? await AssistService.correctGrammar(validation.data.text, abort.signal)
-        : await AssistService.improveClarity(validation.data.text, abort.signal);
+        : mode === 'clarity' ? await AssistService.improveClarity(validation.data.text, abort.signal)
+          : await AssistService.summarize(validation.data.text, summaryInput?.data, abort.signal);
       if (!res.destroyed) res.status(200).json({ data: { text } });
     } catch (error) {
       const failure = error instanceof AssistError ? error : new AssistError(500, 'ASSIST_INTERNAL_ERROR', `${label} assistance could not complete the request.`);

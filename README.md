@@ -53,13 +53,13 @@ The API uses two independent authorization layers:
 
 `POST /api/assist/grammar` accepts `{ "text": "Their is a meeting tomorrow." }` and returns `{ "data": { "text": "There is a meeting tomorrow." } }`. Supply a valid `X-API-Key` and, in production, `X-Firebase-AppCheck`. User sign-in is optional; supplied Firebase tokens use existing PUBLIC authentication behavior.
 
-The validation, safety controls, model configuration, quotas, and deployment requirements below also apply to `POST /api/assist/clarity`. Both endpoints consume the **same** application/user/global quota buckets and per-process concurrency budget. Existing `assist-grammar-quotas` documents and their TTL policy serve both endpoints; no new secret, environment setting, or storage migration is needed.
+The validation, safety controls, model configuration, quotas, and deployment requirements below also apply to `POST /api/assist/clarity` and `POST /api/assist/summarize`. All three endpoints consume the **same** application/user/global quota buckets and per-process concurrency budget. Existing `assist-grammar-quotas` documents and their TTL policy serve all three endpoints; no new secret, environment setting, or storage migration is needed.
 
-Only `application/json` with a single `text` field is accepted. Text must be nonblank, valid Unicode, and at most **5000 Unicode code points** (not UTF-16 units or grapheme clusters). The encoded body is limited to **64 KiB**, even when an operation-group header is supplied. Original whitespace is not trimmed before sending to Gemini. Corrections may slightly expand the text; output is capped at 10000 code points.
+Only `application/json` is accepted. Grammar and clarity allow a single `text` field; summarization also allows its four documented options. Text must be nonblank, valid Unicode, and at most **5000 Unicode code points** (not UTF-16 units or grapheme clusters). The encoded body is limited to **64 KiB**, even when an operation-group header is supplied. Original whitespace is not trimmed before sending to Gemini. Corrections may slightly expand the text; output is capped at 10000 code points.
 
 Conservative prose-only screening rejects recognizable JavaScript, HTML markup, shell/Python/SQL snippets, code fences, and unsupported control characters, including quoted code. Rejection returns `422 EXECUTABLE_CONTENT_DETECTED` with locally generated `feedback` entries containing a reason and one-based line number, never an echoed snippet. Screening uses normalized text only for detection; the original is used for correction. Parsers and patterns are not exhaustive, and conservative matches can reject legitimate technical prose. They never execute or decode submitted payloads or fetch submitted URLs.
 
-The official `@google/genai` SDK calls the fixed `gemini-3.1-flash-lite` model using a server-only API key. The system instructions are fixed; caller text is serialized into a separate data field. The caller cannot select models, tools, prompts, URLs, or generation settings. Tools, code execution, automatic function calling, retrieval, and conversational state are not enabled. Instructions request grammar/spelling corrections only while preserving meaning, language, dialect, names, numbers, tone, and paragraph structure. Schema, completion, size, and executable-content checks apply to output. These controls reduce prompt injection and model mistakes; they **cannot guarantee** perfect corrections or that Gemini never follows embedded instructions. Client applications must display returned text as text, not executable HTML, and should let users review corrections.
+The official `@google/genai` SDK calls the fixed `gemini-3.1-flash-lite` model using a server-only API key. Instruction templates are fixed; caller text is serialized into a separate data field. Only validated summary settings are added as server constraints, never source text. The caller cannot select models, tools, prompts, URLs, or Gemini generation settings. Tools, code execution, automatic function calling, retrieval, and conversational state are not enabled. Grammar instructions request grammar/spelling corrections only while preserving meaning, language, dialect, names, numbers, tone, and paragraph structure. Schema, completion, size, and executable-content checks apply to output. These controls reduce prompt injection and model mistakes; they **cannot guarantee** perfect corrections or that Gemini never follows embedded instructions. Client applications must display returned text as text, not executable HTML, and should let users review corrections.
 
 Configure the following before deployment:
 
@@ -92,7 +92,7 @@ Run `npx tsx --test tests/assist.test.ts` for local validation, HTTP, quota, and
 RUN_ASSIST_LIVE_TESTS=true npx tsx --test tests/assist.test.ts
 ```
 
-Live tests check a representative grammar correction, a clarity rewrite, and embedded instructions for both modes. Passing these examples is not proof of universal injection resistance; broaden evaluation with representative user text and adversarial cases before production rollout.
+Live tests check grammar correction, clarity rewriting, constrained summaries, and embedded instructions. Passing these examples is not proof of universal injection resistance; broaden evaluation with representative user text and adversarial cases before production rollout.
 
 ### Clarity assistance
 
@@ -103,6 +103,41 @@ Unlike grammar-only editing, clarity may reorder sentences and paragraphs. Instr
 For example, `{ "text": "I have been thinking about the faded school crosswalk on Elm Street. I feel scared when my children cross there. Please repaint it by October 20." }` may return `{ "data": { "text": "Please repaint the faded school crosswalk on Elm Street by October 20. I feel scared when my children cross there." } }`.
 
 Validation errors use `INVALID_CLARITY_INPUT`; executable-content feedback and all other status/error codes follow the grammar contract. Both operations appear under the Swagger **Assist** tag. To run only the clarity live evaluation (two billed Gemini calls), use `RUN_ASSIST_LIVE_TESTS=true npx tsx --test --test-name-pattern='opt-in live Gemini clarity' tests/assist.test.ts`.
+
+### Summary assistance
+
+`POST /api/assist/summarize` returns `{ "data": { "text": "concise summary" } }` with the same authentication, 5000-code-point input limit, prose-only screening, privacy, quotas, concurrency, and provider/output safeguards as clarity. It produces a summary rather than rewriting the entire message, retaining the main point, key facts, intent, qualifications, and emotional expression as faithfully as the length limits allow.
+
+Summaries prefer widely known common abbreviations when their meaning remains clear, such as `Elm St` instead of `Elm Street` and `Ross Ave` instead of `Ross Avenue`. This is a model-directed brevity preference, not automatic string replacement; instructions prohibit invented abbreviations, obscure acronyms, and ambiguous shortcuts that change identities or reduce readability.
+
+Only `text` is required. Four optional JSON fields control the result:
+
+| Field | Default | Meaning |
+|---|---|---|
+| `type` | `auto` | `declarative`, `imperative`, `interrogative`, `exclamatory`, or `auto`; controls only the final sentence, or lets the model choose |
+| `max_sentences` | `1` | Hard maximum sentence count |
+| `target_sentences` | `1` | Ideal count, not a minimum; must be no greater than `max_sentences`. Fewer sentences are allowed for shorter sources or to avoid padding or violating the character cap |
+| `max_characters` | `140` | Hard maximum total Unicode code points, including spaces and punctuation |
+
+Numeric fields must be integers between 1 and 10000, matching the existing absolute output ceiling. Numeric strings, fractions, zero, `null`, invalid types, and unknown fields are rejected before quota consumption or model calls. Defaults are applied independently: for example, `target_sentences: 2` without increasing `max_sentences` is invalid. Grammar and clarity do not accept these options.
+
+Example request:
+
+```json
+{
+  "text": "The school crosswalk on Elm Street is faded. I worry when my children cross there. Please repaint it by October 20.",
+  "type": "imperative",
+  "max_sentences": 2,
+  "target_sentences": 1,
+  "max_characters": 140
+}
+```
+
+Gemini returns a structured sentence list internally; the server validates each item and joins sentence text with one space. Only the resulting `data.text` is exposed. Local checks enforce the requested character cap, sentence-list cap, and `sentence-splitter` sentence boundaries, including common English time abbreviations and multilingual sentence-ending punctuation. Ambiguous linguistic boundaries may cause conservative rejection. Final-type checks validate the model's declared type and compatible ending punctuation; grammatical mood, ideal count, reading level, and semantic fidelity remain best-effort model behavior, not infallible linguistic classification.
+
+Invalid requests return `400 INVALID_SUMMARY_INPUT`; executable-content feedback remains `422 EXECUTABLE_CONTENT_DETECTED`. Invalid or unsafe summaries, including cap violations, return `502 ASSIST_INVALID_OUTPUT`. Results are **never silently truncated**, and no automatic repair/retry call is made. Very small character caps may be impossible to satisfy faithfully; loosen constraints when appropriate and review summaries before use. Character counts are code points, not UTF-16 units or user-perceived grapheme clusters.
+
+The endpoint appears under Swagger **Assist**. Run its opt-in live evaluation (three billed Gemini calls) with `RUN_ASSIST_LIVE_TESTS=true npx tsx --test --test-name-pattern='opt-in live Gemini summary' tests/assist.test.ts`.
 
 ### User authentication troubleshooting
 
@@ -140,6 +175,7 @@ For the production Enterprise registration, deploy the updated code and set `FIR
 | `PUT`/`DELETE /api/users/{uid}/claims/staff` | Required | Private | Canonical `staff: true` only; never self; no system-only access |
 | `POST /api/assist/grammar` | Required | Public | Production App Check; prose-only text up to 5000 code points; shared quotas |
 | `POST /api/assist/clarity` | Required | Public | Same validation and shared quotas as grammar; best-effort clarity and structure rewrite |
+| `POST /api/assist/summarize` | Required | Public | Same shared safeguards; validated summary options; enforced sentence and character caps |
 
 Configure application keys through the `API_KEYS_JSON` environment variable; in Cloud Run, provide it from Secret Manager rather than committing it to source control.
 

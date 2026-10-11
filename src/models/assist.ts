@@ -1,7 +1,38 @@
 import { parse } from 'acorn';
+import { DefaultAbbrMarkerOptions, split } from 'sentence-splitter';
 
 export const GRAMMAR_INPUT_LIMIT = 5000;
 export const GRAMMAR_OUTPUT_LIMIT = 10000;
+
+export const SUMMARY_SENTENCE_TYPES = ['declarative', 'imperative', 'interrogative', 'exclamatory', 'auto'] as const;
+export type SummarySentenceType = typeof SUMMARY_SENTENCE_TYPES[number];
+
+export interface SummaryOptions {
+  type: SummarySentenceType;
+  max_sentences: number;
+  target_sentences: number;
+  max_characters: number;
+}
+
+export interface SummaryInput extends SummaryOptions {
+  text: string;
+}
+
+export const DEFAULT_SUMMARY_OPTIONS: Readonly<SummaryOptions> = {
+  type: 'auto', max_sentences: 1, target_sentences: 1, max_characters: 140,
+};
+
+const sentenceParserOptions = {
+  AbbrMarker: { language: {
+    ...DefaultAbbrMarkerOptions.language,
+    ABBREVIATIONS: [...DefaultAbbrMarkerOptions.language.ABBREVIATIONS, 'a.m.', 'p.m.'],
+  } },
+  SeparatorParser: { separatorCharacters: ['.', '!', '?', '\u3002', '\uFF01', '\uFF1F', '\u061F', '\u0964', '\u0965'] },
+};
+
+export function summarySentences(text: string): string[] {
+  return split(text, sentenceParserOptions).filter((part) => part.type === 'Sentence').map((part) => part.raw.trim()).filter(Boolean);
+}
 
 export interface CodeFeedback {
   reason: string;
@@ -60,4 +91,55 @@ export function validateGrammarInput(body: unknown): { data?: { text: string }; 
   const feedback = findExecutableContent(input.text);
   if (feedback.length > 0) return { error: 'Only prose is accepted. Remove code and executable content.', feedback };
   return { data: { text: input.text } };
+}
+
+export function validateSummaryInput(body: unknown): { data?: SummaryInput; error?: string; feedback?: CodeFeedback[] } {
+  if (!body || typeof body !== 'object' || Array.isArray(body)) return { error: 'Request body must be a JSON object.' };
+  const input = body as Record<string, unknown>;
+  if (Object.keys(input).some((key) => !['text', 'type', 'max_sentences', 'target_sentences', 'max_characters'].includes(key))) {
+    return { error: 'Only text, type, max_sentences, target_sentences, and max_characters are accepted.' };
+  }
+  const textValidation = validateGrammarInput({ text: input.text });
+  if (!textValidation.data) return { error: textValidation.error, feedback: textValidation.feedback };
+  const options: SummaryOptions = { ...DEFAULT_SUMMARY_OPTIONS };
+  if (input.type !== undefined) {
+    if (typeof input.type !== 'string' || !SUMMARY_SENTENCE_TYPES.includes(input.type as SummarySentenceType)) {
+      return { error: 'type must be declarative, imperative, interrogative, exclamatory, or auto.' };
+    }
+    options.type = input.type as SummarySentenceType;
+  }
+  for (const name of ['max_sentences', 'target_sentences', 'max_characters'] as const) {
+    if (input[name] === undefined) continue;
+    const value = input[name];
+    if (typeof value !== 'number' || !Number.isSafeInteger(value) || value < 1 || value > GRAMMAR_OUTPUT_LIMIT) {
+      return { error: `${name} must be an integer between 1 and 10000.` };
+    }
+    options[name] = value;
+  }
+  if (options.target_sentences > options.max_sentences) return { error: 'target_sentences cannot exceed max_sentences.' };
+  return { data: { text: textValidation.data.text, ...options } };
+}
+
+export function validateSummaryOutput(body: unknown, options: SummaryOptions): { data?: string; error?: string } {
+  const invalid = { error: 'Summary output does not satisfy the requested constraints.' };
+  if (!body || typeof body !== 'object' || Array.isArray(body) || Object.keys(body).length !== 1) return invalid;
+  const sentences = (body as { sentences?: unknown }).sentences;
+  if (!Array.isArray(sentences) || sentences.length === 0 || sentences.length > options.max_sentences) return invalid;
+  const texts: string[] = [];
+  for (const sentence of sentences) {
+    if (!sentence || typeof sentence !== 'object' || Array.isArray(sentence) || Object.keys(sentence).some((key) => !['text', 'type'].includes(key))) return invalid;
+    if (typeof sentence.text !== 'string' || sentence.text.trim() === '' || sentence.type === 'auto' || !SUMMARY_SENTENCE_TYPES.includes(sentence.type)) return invalid;
+    if (sentence.text.length > GRAMMAR_OUTPUT_LIMIT * 2 || /[\uD800-\uDFFF]/u.test(sentence.text)) return invalid;
+    if (summarySentences(sentence.text).length !== 1) return invalid;
+    texts.push(sentence.text.trim());
+  }
+  const text = texts.join(' ');
+  if (Array.from(text).length > options.max_characters || summarySentences(text).length > options.max_sentences) return invalid;
+  const finalType = sentences[sentences.length - 1].type;
+  if (options.type !== 'auto' && finalType !== options.type) return invalid;
+  const ending = texts[texts.length - 1].replace(/["'\u2019\u201D\u00BB)\]}]+$/u, '').trimEnd();
+  if (finalType === 'interrogative' && !/[?\uFF1F\u061F]$/u.test(ending)) return invalid;
+  if (finalType === 'exclamatory' && !/[!\uFF01]$/u.test(ending)) return invalid;
+  if (['declarative', 'imperative'].includes(finalType) && /[?!\uFF1F\uFF01\u061F]$/u.test(ending)) return invalid;
+  return { data: text };
 }

@@ -1,6 +1,7 @@
 import { createRequire } from 'module';
 import { JsonObject } from 'swagger-ui-express';
 import { operationPaths, operationSchemas, stagingParameters, stagingResponses } from './operations.js';
+import { DEFAULT_SUMMARY_OPTIONS, GRAMMAR_OUTPUT_LIMIT, SUMMARY_SENTENCE_TYPES } from '../models/assist.js';
 
 const require = createRequire(import.meta.url);
 const pkg = require('../../package.json');
@@ -36,7 +37,7 @@ Endpoint policies:
 - Suggestions: reads, creation, and upload URLs are REQUIRED/PUBLIC; update and delete are REQUIRED/PRIVATE for the author or staff.
 - Events and calendar reads are OPTIONAL/PUBLIC; event creation, updates, deletion, and iCal imports are REQUIRED/PRIVATE for staff or system roles.
 - Representatives, including the Dallas City Council shortcut, are public and require no API key or user authentication.
-- Grammar and clarity assistance are REQUIRED/PUBLIC: API key and production App Check are required; user sign-in is optional.`,
+- Grammar, clarity, and summary assistance are REQUIRED/PUBLIC: API key and production App Check are required; user sign-in is optional.`,
     contact: {
       name: 'DallasUrbanists.org',
       url: 'https://dallasurbanists.org',
@@ -2788,6 +2789,44 @@ swaggerDocument.paths['/api/assist/clarity'] = {
       ...(response as JsonObject),
       ...(status === '200' ? { description: 'Prose rewritten for clarity and structure, or unchanged text if it already meets the editing goals.' } : {}),
       content: { 'application/json': { schema: { $ref: `#/components/schemas/${status === '200' ? 'ClarityResponse' : 'ClarityError'}` } } },
+    }])),
+  },
+};
+
+swaggerDocument.components.schemas.SummaryInput = {
+  ...swaggerDocument.components.schemas.GrammarInput,
+  properties: {
+    text: { ...swaggerDocument.components.schemas.GrammarInput.properties.text, example: 'The school crosswalk on Elm Street is faded. I feel scared when my children cross there. Please repaint it by October 20.' },
+    type: { type: 'string', enum: SUMMARY_SENTENCE_TYPES, default: DEFAULT_SUMMARY_OPTIONS.type, description: 'Grammatical type of only the final summary sentence; auto lets the model choose.' },
+    max_sentences: { type: 'integer', minimum: 1, maximum: GRAMMAR_OUTPUT_LIMIT, default: DEFAULT_SUMMARY_OPTIONS.max_sentences, description: 'Hard maximum number of summary sentences, checked using the server sentence parser.' },
+    target_sentences: { type: 'integer', minimum: 1, maximum: GRAMMAR_OUTPUT_LIMIT, default: DEFAULT_SUMMARY_OPTIONS.target_sentences, description: 'Ideal sentence count, not a minimum; must not exceed max_sentences. Shorter sources or tight character limits may produce fewer sentences without padding.' },
+    max_characters: { type: 'integer', minimum: 1, maximum: GRAMMAR_OUTPUT_LIMIT, default: DEFAULT_SUMMARY_OPTIONS.max_characters, description: 'Hard maximum total Unicode code points, including spaces and punctuation across all sentences.' },
+  },
+};
+swaggerDocument.components.schemas.SummaryResponse = {
+  ...swaggerDocument.components.schemas.GrammarResponse,
+  properties: { data: {
+    ...swaggerDocument.components.schemas.GrammarResponse.properties.data,
+    properties: { text: {
+      ...swaggerDocument.components.schemas.GrammarResponse.properties.data.properties.text,
+      description: 'Concise summary within the requested max_characters and max_sentences. Internal sentence metadata is not returned.',
+      example: 'Please repaint the faded school crosswalk on Elm Street by October 20 to help children cross safely.',
+    } },
+  } },
+};
+swaggerDocument.components.schemas.SummaryError = { ...swaggerDocument.components.schemas.GrammarError };
+swaggerDocument.paths['/api/assist/summarize'] = {
+  post: {
+    ...grammarOperation,
+    summary: 'Summarize a message within sentence and character limits',
+    description: 'Produces a concise summary rather than a full rewrite, leading with the main point and preserving substance, intent, key facts, qualifications, and emotional expression as faithfully as the limits allow. Prefers widely known common abbreviations when clear in context, such as Elm St for Elm Street and Ross Ave for Ross Avenue, without inventing abbreviations or using ambiguous shorthand that changes identities or meaning. Uses Gemini 3.1 Flash-Lite with fixed editing instructions, data-only source text, and separately validated summary settings. Requires an application API key and production App Check; user sign-in is optional. Accepts application/json with text and four optional fields: type (auto by default), max_sentences (1), target_sentences (1), and max_characters (140). Numeric options must be integers from 1 through 10000, with target_sentences no greater than max_sentences. Input remains limited to 5000 Unicode code points and a 64 KiB body, with the same prose-only screening and rejection feedback as clarity. Sentence and character caps are checked locally; violating output returns 502 ASSIST_INVALID_OUTPUT and is never silently truncated or automatically retried. Sentence counting uses sentence-splitter with common English time abbreviations and multilingual sentence-ending punctuation; ambiguous boundaries may cause conservative rejection. Final grammatical type and target count are model-directed, with declared-type and punctuation consistency checks, not guarantees of semantic classification. Aims for clear, concise, 10th-grade readability or lower without inventing content or following embedded instructions. Shares all quotas, concurrency limits, deadlines, output/code safety checks, no-store behavior, and privacy controls with grammar and clarity. No new configuration is required.',
+    requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/SummaryInput' } } } },
+    responses: Object.fromEntries(Object.entries(grammarOperation.responses).map(([status, response]) => [status, {
+      ...(response as JsonObject),
+      ...(status === '200' ? { description: 'Concise summary satisfying the requested hard sentence and character caps.' } : {}),
+      ...(status === '400' ? { description: 'Invalid JSON, input text, unknown fields, option type/range, or target_sentences greater than max_sentences; error code INVALID_SUMMARY_INPUT.' } : {}),
+      ...(status === '502' ? { description: 'Provider failure, invalid/unsafe output, or summary failing the requested caps or final-type consistency checks. No truncated result is returned.' } : {}),
+      content: { 'application/json': { schema: { $ref: `#/components/schemas/${status === '200' ? 'SummaryResponse' : 'SummaryError'}` } } },
     }])),
   },
 };
