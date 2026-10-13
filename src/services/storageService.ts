@@ -20,6 +20,7 @@ const ALLOWED_CONTENT_TYPES = [
   'image/gif',
   'image/heic',
   'image/heif',
+  'image/svg+xml',
 ];
 
 /**
@@ -40,7 +41,9 @@ export class StorageService {
 
     const extension = options.filename && options.filename.includes('.')
       ? options.filename.split('.').pop()!.toLowerCase()
-      : contentType.split('/')[1] || 'webp';
+      : contentType === 'image/svg+xml'
+        ? 'svg'
+        : contentType.split('/')[1] || 'webp';
 
     const uniqueId = crypto.randomUUID();
     const timestamp = Date.now();

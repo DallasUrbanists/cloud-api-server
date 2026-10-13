@@ -677,8 +677,9 @@ Endpoint policies:
                 properties: {
                   contentType: {
                     type: 'string',
+                    enum: ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/heic', 'image/heif', 'image/svg+xml'],
                     example: 'image/webp',
-                    description: 'MIME type of the image to upload. Default: image/webp',
+                    description: 'MIME type of the image to upload. SVG (image/svg+xml) is supported. Default: image/webp',
                   },
                   filename: {
                     type: 'string',
