@@ -13,6 +13,7 @@ import dallasCityCouncilRoutes from './routes/dallasCityCouncilRoutes.js';
 import assistRoutes from './routes/assistRoutes.js';
 import boundariesRoutes from './routes/boundariesRoutes.js';
 import boundaryTickRoutes from './routes/boundaryTickRoutes.js';
+import recommendableActionRoutes from './routes/recommendableActionRoutes.js';
 import { swaggerDocument } from './docs/swagger.js';
 import { HomeController } from './controllers/homeController.js';
 import { formatResponseIntegers } from './utils/responseFormatting.js';
@@ -773,6 +774,7 @@ export function createApp(): Express {
   app.use('/api/representatives', representativesRoutes);
   app.use('/api/dallascitycouncil', dallasCityCouncilRoutes);
   app.use('/api/assist', assistRoutes);
+  app.use('/api/recommendables', recommendableActionRoutes);
   app.use('/meetup-ical', eventsRoutes);
   app.use('/api/meetup-ical', eventsRoutes);
 

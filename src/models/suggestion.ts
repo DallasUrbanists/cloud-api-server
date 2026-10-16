@@ -42,6 +42,10 @@ export interface Suggestion {
   location: SuggestionLocation;
 }
 
+export interface SuggestionDetail extends Suggestion {
+  log: import('./recommendedAction.js').LoggedAction[];
+}
+
 export interface CreateSuggestionDTO {
   id?: number;
   status?: SuggestionStatus;

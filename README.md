@@ -370,6 +370,14 @@ Documents in the `suggestion` collection inside the `public-improvements` Firest
 | `location.description`| `string` | Landmark/corridor description (default `""`) |
 | `location.address` | `string` | Street address (default `""`) |
 
+Recommended Actions are stored as documents in `suggestion/{suggestionId}/recommendedActions/{actionId}`. Each has summary, instructions, reason, a nullable `representativeId` (validated against PostgreSQL), nullable UTC `expirationDate`, status (`open`, `ignored`, `started`, `paused`, `cancelled`, or `finished`), and creation/modification dates. Expired actions are hidden by default and can be included with `includeExpired=true`; expiration does not alter status.
+
+Suggestion activity is append-only under `suggestion/{suggestionId}/log/{entryId}`. Suggestion detail returns the newest 50 entries and pagination metadata; the Suggestions list omits logs. Status transitions add a server-attributed log entry atomically with the update. Repeating the current status is a no-op (`noOp: true`) and does not add another entry.
+
+Reusable Recommendable Actions are stored separately from suggestion-specific actions in the Firestore `recommendableActions` collection. Candidates extracted from official City of Dallas pages are held in `recommendableActionCandidates` until staff approval. Catalog entries retain exact source evidence and a version number. `boundaries` contains applicable boundary IDs; an empty array is unrestricted, otherwise any overlap with the suggestion's resolved boundary IDs is sufficient. Suggestion submission invokes Jev matching against approved entries; matches above `RECOMMENDABLE_MATCH_THRESHOLD` (default `0.9`) create linked Recommended Actions. Boundary-scoped entries do not match suggestions without coordinates that resolve to boundaries.
+
+Recommendable Action routes are `/api/recommendables` (approved catalog), `/api/recommendables/candidates` (authenticated submission and staff listing), `PATCH /api/recommendables/candidates/:id` (staff approval/rejection), and `PATCH /api/recommendables/:id` (staff status update to approved, closed, or uncertain). Submission currently accepts official `dallascityhall.com` sources only and requires staff approval before an entry can match. `npm run scan:recommendables` checks the version-controlled source registry in `src/data/recommendableSources.ts`, skips unchanged pages using content fingerprints, and creates evidence-backed candidates when an opportunity is detected. Schedule this command as a Cloud Run Job or other trusted scheduled job; discovery never auto-publishes. A changed page with no verifiable opportunity moves its catalog entry to `uncertain` for staff review.
+
 ---
 
 ### 2. Contact (`contacts` PostgreSQL Table)
@@ -569,6 +577,15 @@ Endpoints for managing civic improvement suggestions and photo uploads in Firest
 | `GET` | `/api/suggestions/:id` | Get suggestion details by integer ID |
 | `PUT` | `/api/suggestions/:id` | Update an existing suggestion by ID |
 | `DELETE` | `/api/suggestions/:id` | Delete a suggestion by ID |
+| `GET` | `/api/suggestions/:suggestionId/recommended-actions` | List actions (`?status=`, `?includeExpired=`) |
+| `POST` | `/api/suggestions/:suggestionId/recommended-actions` | Create a staff-managed action |
+| `GET` | `/api/suggestions/:suggestionId/recommended-actions/:actionId` | Get one action |
+| `PATCH` | `/api/suggestions/:suggestionId/recommended-actions/:actionId` | Update an action (staff only) |
+| `DELETE` | `/api/suggestions/:suggestionId/recommended-actions/:actionId` | Delete an action (staff only) |
+| `GET` | `/api/suggestions/:suggestionId/log` | Read paginated activity (`limit` max 100, opaque `cursor`) |
+| `POST` | `/api/suggestions/:suggestionId/log` | Append activity as the Suggestion author or staff |
+
+The nested routes are also available under `/api/public-improvements/suggestions`. All routes require an API key; action mutations require staff authentication. Child documents are removed when a Suggestion is deleted, and child writes are blocked while deletion is in progress.
 
 #### Example: Generate Signed Upload URL (`POST /api/suggestions/upload-url`)
 

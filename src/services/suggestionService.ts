@@ -242,13 +242,25 @@ export class SuggestionService {
   static async delete(id: number): Promise<boolean> {
     const db = getPublicImprovementsDb();
     const docRef = db.collection(COLLECTION_NAME).doc(id.toString());
-    const doc = await docRef.get();
+    let found = false;
+    await db.runTransaction(async (transaction) => {
+      const doc = await transaction.get(docRef);
+      if (!doc.exists) return;
+      found = true;
+      if (doc.get('_deleting') === true) throw Object.assign(new Error('Suggestion deletion is already in progress.'), { status: 409 });
+      transaction.update(docRef, { _deleting: true });
+    });
+    if (!found) return false;
 
-    if (!doc.exists) {
-      return false;
+    try {
+      await db.recursiveDelete(docRef.collection('recommendedActions'));
+      await db.recursiveDelete(docRef.collection('log'));
+      await docRef.delete();
+      return true;
+    } catch (error) {
+      // Partial child cleanup is safe to retry; reopen writes only after cleanup failed.
+      await docRef.update({ _deleting: false }).catch(() => undefined);
+      throw error;
     }
-
-    await docRef.delete();
-    return true;
   }
 }

@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { SuggestionService } from '../services/suggestionService.js';
+import { RecommendedActionService } from '../services/recommendedActionService.js';
+import { RecommendableActionService } from '../services/recommendableActionService.js';
 import { StorageService } from '../services/storageService.js';
 import { hasRole } from '../middleware/auth.js';
 import {
@@ -110,7 +112,8 @@ export class SuggestionController {
         return;
       }
 
-      res.status(200).json({ data: suggestion });
+      const logPage = await RecommendedActionService.getLog(id, 50);
+      res.status(200).json({ data: { ...suggestion, log: logPage.data }, logNextCursor: logPage.nextCursor, logHasMore: logPage.hasMore });
     } catch (error) {
       next(error);
     }
@@ -131,6 +134,9 @@ export class SuggestionController {
       }
 
       const created = await SuggestionService.create(validation.data);
+      // Suggestions remain available if the external matcher is temporarily unavailable.
+      try { await RecommendableActionService.matchSuggestion(created); }
+      catch (error) { console.warn(JSON.stringify({ event: 'recommendable_match_failed', suggestionId: created.id, message: error instanceof Error ? error.message : 'unknown error' })); }
       res.status(201).json({
         message: 'Suggestion created successfully.',
         data: created,

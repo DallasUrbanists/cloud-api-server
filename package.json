@@ -18,6 +18,7 @@
     "minor": "npm version minor && git push origin main --tags",
     "patch": "npm version patch && git push origin main --tags",
     "worker:boundaries": "tsx src/scripts/boundaryWorker.ts",
+    "scan:recommendables": "tsx src/scripts/recommendableWorker.ts",
     "seed:boundaries": "tsx src/scripts/seedBoundaries.ts"
   },
   "dependencies": {

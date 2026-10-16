@@ -870,6 +870,95 @@ Endpoint policies:
         },
       },
     },
+    '/api/suggestions/{suggestionId}/recommended-actions': {
+      get: {
+        summary: 'List Recommended Actions', tags: ['Suggestions'], security: [{ ApiKeyAuth: [] }],
+        description: 'Lists actions for a Suggestion. Expired actions are excluded unless includeExpired=true.',
+        parameters: [
+          { name: 'suggestionId', in: 'path', required: true, schema: { type: 'integer', minimum: 1 } },
+          { name: 'status', in: 'query', schema: { $ref: '#/components/schemas/RecommendedActionStatus' } },
+          { name: 'includeExpired', in: 'query', schema: { type: 'boolean', default: false } },
+        ],
+        responses: { 200: { description: 'Actions returned.', content: { 'application/json': { schema: { type: 'object', properties: { data: { type: 'array', items: { $ref: '#/components/schemas/RecommendedAction' } }, count: { type: 'integer' } } } } } }, 404: { $ref: '#/components/responses/NotFoundError' } },
+      },
+      post: {
+        summary: 'Create Recommended Action', tags: ['Suggestions'], security: [{ ApiKeyAuth: [], BearerAuth: [] }],
+        description: 'Staff only. representativeId is validated against PostgreSQL.',
+        parameters: [{ name: 'suggestionId', in: 'path', required: true, schema: { type: 'integer', minimum: 1 } }],
+        requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/CreateRecommendedActionDTO' } } } },
+        responses: { 201: { description: 'Action created.', content: { 'application/json': { schema: { $ref: '#/components/schemas/RecommendedActionEnvelope' } } } }, 400: { $ref: '#/components/responses/BadRequestError' }, 401: { $ref: '#/components/responses/UnauthorizedError' }, 403: { $ref: '#/components/responses/ForbiddenError' }, 404: { $ref: '#/components/responses/NotFoundError' } },
+      },
+    },
+    '/api/recommendables': {
+      get: {
+        summary: 'List approved Recommendable Actions', tags: ['Suggestions'], security: [{ ApiKeyAuth: [] }],
+        responses: { 200: { description: 'Approved catalog entries.', content: { 'application/json': { schema: {
+          type: 'object', properties: { data: { type: 'array', items: { $ref: '#/components/schemas/RecommendableAction' } }, count: { type: 'integer' } },
+        } } } } },
+      },
+    },
+    '/api/recommendables/{id}': {
+      patch: {
+        summary: 'Update Recommendable Action status', tags: ['Suggestions'], security: [{ ApiKeyAuth: [], BearerAuth: [] }], description: 'Staff only. Creates a versioned status snapshot; uncertain and closed entries are excluded from matching.',
+        parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
+        requestBody: { required: true, content: { 'application/json': { schema: { type: 'object', required: ['status'], properties: { status: { type: 'string', enum: ['approved', 'closed', 'uncertain'] } } } } } },
+        responses: { 200: { description: 'Catalog status updated.' }, 400: { $ref: '#/components/responses/BadRequestError' }, 403: { $ref: '#/components/responses/ForbiddenError' }, 404: { $ref: '#/components/responses/NotFoundError' } },
+      },
+    },
+    '/api/recommendables/candidates': {
+      post: {
+        summary: 'Extract a Recommendable Action candidate', tags: ['Suggestions'], security: [{ ApiKeyAuth: [], BearerAuth: [] }],
+        description: 'Authenticated users may submit an official City of Dallas source URL, a description, and optional boundary IDs. The candidate is evidence-validated and queued for staff review.',
+        requestBody: { required: true, content: { 'application/json': { schema: {
+          type: 'object', required: ['sourceUrl', 'description'], properties: {
+            sourceUrl: { type: 'string', format: 'uri' }, description: { type: 'string', maxLength: 5000 },
+            boundaries: { type: 'array', items: { type: 'integer', minimum: 1 }, maxItems: 50 },
+          },
+        } } } },
+        responses: { 201: { description: 'Candidate created.' }, 400: { $ref: '#/components/responses/BadRequestError' }, 401: { $ref: '#/components/responses/UnauthorizedError' }, 422: { description: 'No evidence-backed public input opportunity was found.' } },
+      },
+      get: {
+        summary: 'List Recommendable Action candidates', tags: ['Suggestions'], security: [{ ApiKeyAuth: [], BearerAuth: [] }], description: 'Staff only.',
+        responses: { 200: { description: 'Candidates returned.' }, 403: { $ref: '#/components/responses/ForbiddenError' } },
+      },
+    },
+    '/api/recommendables/candidates/{id}': {
+      patch: {
+        summary: 'Approve or reject a candidate', tags: ['Suggestions'], security: [{ ApiKeyAuth: [], BearerAuth: [] }], description: 'Staff only. Approved entries become eligible for matching.',
+        parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
+        requestBody: { required: true, content: { 'application/json': { schema: { type: 'object', required: ['decision'], properties: { decision: { type: 'string', enum: ['approve', 'reject'] } } } } } },
+        responses: { 200: { description: 'Candidate reviewed.' }, 400: { $ref: '#/components/responses/BadRequestError' }, 403: { $ref: '#/components/responses/ForbiddenError' }, 404: { $ref: '#/components/responses/NotFoundError' } },
+      },
+    },
+    '/api/suggestions/{suggestionId}/recommended-actions/{actionId}': {
+      get: { summary: 'Get Recommended Action', tags: ['Suggestions'], security: [{ ApiKeyAuth: [] }], parameters: [{ name: 'suggestionId', in: 'path', required: true, schema: { type: 'integer' } }, { name: 'actionId', in: 'path', required: true, schema: { type: 'string' } }], responses: { 200: { description: 'Action found.', content: { 'application/json': { schema: { $ref: '#/components/schemas/RecommendedActionEnvelope' } } } }, 404: { $ref: '#/components/responses/NotFoundError' } } },
+      patch: { summary: 'Update Recommended Action', tags: ['Suggestions'], security: [{ ApiKeyAuth: [], BearerAuth: [] }], description: 'Staff only. Repeating the current status returns noOp=true and does not append a log entry.', parameters: [{ name: 'suggestionId', in: 'path', required: true, schema: { type: 'integer' } }, { name: 'actionId', in: 'path', required: true, schema: { type: 'string' } }], requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/UpdateRecommendedActionDTO' } } } }, responses: { 200: { description: 'Action updated or unchanged.', content: { 'application/json': { schema: { $ref: '#/components/schemas/RecommendedActionEnvelope' } } } }, 400: { $ref: '#/components/responses/BadRequestError' }, 401: { $ref: '#/components/responses/UnauthorizedError' }, 403: { $ref: '#/components/responses/ForbiddenError' }, 404: { $ref: '#/components/responses/NotFoundError' } } },
+      delete: { summary: 'Delete Recommended Action', tags: ['Suggestions'], security: [{ ApiKeyAuth: [], BearerAuth: [] }], parameters: [{ name: 'suggestionId', in: 'path', required: true, schema: { type: 'integer' } }, { name: 'actionId', in: 'path', required: true, schema: { type: 'string' } }], responses: { 200: { description: 'Action deleted.' }, 401: { $ref: '#/components/responses/UnauthorizedError' }, 403: { $ref: '#/components/responses/ForbiddenError' }, 404: { $ref: '#/components/responses/NotFoundError' } } },
+    },
+    '/api/suggestions/{suggestionId}/log': {
+      get: { summary: 'List Suggestion Activity', tags: ['Suggestions'], security: [{ ApiKeyAuth: [] }], parameters: [{ name: 'suggestionId', in: 'path', required: true, schema: { type: 'integer' } }, { name: 'limit', in: 'query', schema: { type: 'integer', minimum: 1, maximum: 100, default: 50 } }, { name: 'cursor', in: 'query', schema: { type: 'string' } }], responses: { 200: { description: 'Newest-first page of activity.', content: { 'application/json': { schema: { $ref: '#/components/schemas/LoggedActionPage' } } } }, 400: { $ref: '#/components/responses/BadRequestError' }, 404: { $ref: '#/components/responses/NotFoundError' } } },
+      post: {
+        summary: 'Append Suggestion Activity', tags: ['Suggestions'], security: [{ ApiKeyAuth: [], BearerAuth: [] }],
+        description: 'Authenticated Suggestion author or staff. Actor and timestamp are server supplied.',
+        parameters: [{ name: 'suggestionId', in: 'path', required: true, schema: { type: 'integer' } }],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object', required: ['summary', 'description'],
+                properties: { summary: { type: 'string' }, description: { type: 'string' } },
+              },
+            },
+          },
+        },
+        responses: {
+          201: { description: 'Activity appended.', content: { 'application/json': { schema: { type: 'object', properties: { data: { $ref: '#/components/schemas/LoggedAction' } } } } } },
+          400: { $ref: '#/components/responses/BadRequestError' }, 401: { $ref: '#/components/responses/UnauthorizedError' },
+          403: { $ref: '#/components/responses/ForbiddenError' }, 404: { $ref: '#/components/responses/NotFoundError' },
+        },
+      },
+    },
     '/api/suggestions/{id}': {
       get: {
         summary: 'Get Suggestion by ID',
@@ -898,6 +987,8 @@ Endpoint policies:
                     data: {
                       $ref: '#/components/schemas/Suggestion',
                     },
+                    logNextCursor: { type: 'string', nullable: true },
+                    logHasMore: { type: 'boolean' },
                   },
                 },
               },
@@ -1871,8 +1962,17 @@ Endpoint policies:
           location: {
             $ref: '#/components/schemas/SuggestionLocation',
           },
+          log: { type: 'array', description: 'Newest page of activity. Suggestion list results omit this field.', items: { $ref: '#/components/schemas/LoggedAction' } },
         },
       },
+      RecommendedActionStatus: { type: 'string', enum: ['open', 'ignored', 'started', 'paused', 'cancelled', 'finished'] },
+      RecommendableAction: { type: 'object', required: ['id', 'summary', 'instructions', 'reason', 'boundaries', 'sourceUrl', 'sourceEvidence', 'sourceDescription', 'status', 'version'], properties: { id: { type: 'string' }, summary: { type: 'string' }, instructions: { type: 'string' }, reason: { type: 'string' }, boundaries: { type: 'array', description: 'Empty means unrestricted; any one matching suggestion boundary is sufficient.', items: { type: 'integer' } }, sourceUrl: { type: 'string', format: 'uri' }, sourceEvidence: { type: 'string' }, sourceDescription: { type: 'string' }, status: { type: 'string', enum: ['candidate', 'approved', 'closed', 'uncertain', 'rejected'] }, version: { type: 'integer' }, confidence: { type: 'number', nullable: true }, createdAt: { type: 'string', format: 'date-time' }, updatedAt: { type: 'string', format: 'date-time' } } },
+      RecommendedAction: { type: 'object', required: ['id', 'summary', 'instructions', 'representativeId', 'reason', 'expirationDate', 'status', 'creationDate', 'modificationDate'], properties: { id: { type: 'string' }, summary: { type: 'string' }, instructions: { type: 'string' }, representativeId: { type: 'integer', nullable: true }, reason: { type: 'string' }, expirationDate: { type: 'string', format: 'date-time', nullable: true }, status: { $ref: '#/components/schemas/RecommendedActionStatus' }, recommendableId: { type: 'string' }, matchProbability: { type: 'number', minimum: 0, maximum: 1 }, creationDate: { type: 'string', format: 'date-time' }, modificationDate: { type: 'string', format: 'date-time' } } },
+      CreateRecommendedActionDTO: { type: 'object', required: ['summary', 'instructions', 'reason'], properties: { summary: { type: 'string' }, instructions: { type: 'string' }, representativeId: { type: 'integer', nullable: true }, reason: { type: 'string' }, expirationDate: { type: 'string', format: 'date-time', nullable: true }, status: { $ref: '#/components/schemas/RecommendedActionStatus' } } },
+      UpdateRecommendedActionDTO: { type: 'object', minProperties: 1, properties: { summary: { type: 'string' }, instructions: { type: 'string' }, representativeId: { type: 'integer', nullable: true }, reason: { type: 'string' }, expirationDate: { type: 'string', format: 'date-time', nullable: true }, status: { $ref: '#/components/schemas/RecommendedActionStatus' } }, description: 'Partial update; id and dates are server managed.' },
+      RecommendedActionEnvelope: { type: 'object', properties: { message: { type: 'string' }, data: { $ref: '#/components/schemas/RecommendedAction' }, noOp: { type: 'boolean' } } },
+      LoggedAction: { type: 'object', required: ['id', 'summary', 'description', 'actor', 'timestamp'], properties: { id: { type: 'string' }, summary: { type: 'string' }, description: { type: 'string' }, actor: { type: 'object', required: ['name', 'email'], properties: { name: { type: 'string' }, email: { type: 'string', format: 'email' } } }, timestamp: { type: 'string', format: 'date-time' } } },
+      LoggedActionPage: { type: 'object', required: ['data', 'nextCursor', 'hasMore'], properties: { data: { type: 'array', items: { $ref: '#/components/schemas/LoggedAction' } }, nextCursor: { type: 'string', nullable: true }, hasMore: { type: 'boolean' } } },
       CreateSuggestionDTO: {
         type: 'object',
         required: ['author', 'content'],
@@ -2606,6 +2706,14 @@ Endpoint policies:
             },
           },
         },
+      },
+      UnauthorizedError: {
+        description: 'Unauthorized - A valid API key or user token is required.',
+        content: { 'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } } },
+      },
+      ForbiddenError: {
+        description: 'Forbidden - The authenticated user does not have the required role.',
+        content: { 'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } } },
       },
       InternalServerError: {
         description: 'Internal Server Error.',
