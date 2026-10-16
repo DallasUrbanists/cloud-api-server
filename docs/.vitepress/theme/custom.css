@@ -1,21 +1,49 @@
 @media (min-width: 960px) {
   :root {
-    --vp-sidebar-width: 320px;
+    --vp-sidebar-width: 360px;
   }
 }
 
 @media (min-width: 1440px) {
   :root {
-    --vp-sidebar-width: 360px;
+    --vp-sidebar-width: 384px;
   }
 }
 
-/* Allow long generated symbol names to shrink within nested flex rows and wrap. */
-.VPSidebarItem .link,
-.VPSidebarItem .text {
-  min-width: 0;
+.VPSidebar .VPSidebarItem:not(.level-0) > .items {
+  margin: 0;
+  padding-left: 8px;
+}
+
+.VPSidebarItem:not(.level-0) > .item .text {
+  padding: 2px 0;
+}
+
+.VPSidebarItem > .item .caret {
+  margin-right: 0;
+}
+
+.VPSidebarItem:not(.level-0) > .item .caret {
+  width: 28px;
+  height: 28px;
+}
+
+.VPSidebarItem:not(.level-0) > .item .indicator {
+  left: -9px;
 }
 
 .VPSidebarItem .text {
-  overflow-wrap: anywhere;
+  white-space: nowrap;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+/* Narrow drawers scroll rather than clipping or splitting symbol names. */
+.VPSidebar .nav {
+  overflow-x: auto;
+}
+
+.VPSidebar .nav > .group {
+  width: 100%;
+  min-width: max-content;
 }

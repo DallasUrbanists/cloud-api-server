@@ -46,6 +46,24 @@ test('Recommendable Action boundary applicability uses any overlap, with empty b
   assert.equal(anyBoundaryOverlap([10, 20, 30], [99, 20]), true);
   assert.equal(anyBoundaryOverlap([10, 20], [99]), false);
   assert.equal(anyBoundaryOverlap([], []), true);
+  assert.equal(anyBoundaryOverlap([10, 20], [20, 99]), true);
+  assert.equal(anyBoundaryOverlap([10, 20], []), false);
+});
+
+test('park-feedback documentation example normalizes without persisting', () => {
+  const result = validateRecommendableInput({
+    summary: ' Share park feedback ',
+    instructions: 'Use the feedback channel described by the source.',
+    reason: 'Help shape the proposed park redesign.',
+    boundaries: [20, 10, 20],
+    sourceUrl: 'https://example.org/park-feedback',
+    sourceEvidence: 'Invitation to share park feedback.',
+    sourceDescription: 'Park consultation.',
+  });
+  assert.equal(result.error, undefined);
+  assert.equal(result.data?.summary, 'Share park feedback');
+  assert.deepEqual(result.data?.boundaries, [10, 20]);
+  assert.ok(validateRecommendableInput({ summary: 'Incomplete' }).error);
 });
 
 test('Recommendable Action input normalizes boundary IDs and rejects invalid source URLs or boundary IDs', () => {

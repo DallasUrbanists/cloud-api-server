@@ -44,6 +44,11 @@ export class RecommendableActionService {
    * @returns Proposed content without geographic restrictions or persistence metadata.
    * @throws Errors for disallowed hosts, unavailable configuration, unverifiable output,
    * or retrieval/model failures; cancellation also rejects the operation.
+   *
+   * @example
+   * Let's imagine there's a city webpage asking for ideas about a park. This function
+   * reads the page and turns its invitation into a simple suggestion: "Share your
+   * ideas for the park." It also keeps the words from the page that explain the invitation.
    */
   static async extractCandidate(sourceUrl: string, description: string, signal: AbortSignal): Promise<Omit<RecommendableInput, 'boundaries'>> {
     const url = new URL(sourceUrl);
@@ -86,6 +91,11 @@ export class RecommendableActionService {
    * @param metadata - Internal source identity/fingerprint fields for discovery.
    * @returns The newly created candidate or the record already stored at that ID.
    * @throws Boundary lookup or Firestore failures.
+   *
+   * @example
+   * Let's imagine someone finds a chance for neighbors to share ideas for a park.
+   * This function puts that idea in a review basket, where staff can look at it
+   * before deciding whether to share it with everyone.
    */
   static async createCandidate(input: RecommendableInput, candidateId?: string, metadata: Record<string, unknown> = {}): Promise<RecommendableAction> {
     for (const boundaryId of input.boundaries) await BoundaryService.findById(boundaryId);
@@ -102,13 +112,25 @@ export class RecommendableActionService {
   /**
    * Reads the newest review records, including previously approved or rejected candidates.
    * @returns A bounded, newest-first list, not a pending-only queue or paginated result.
+   *
+   * @example
+   * Let's imagine a staff member opens a basket of ideas people have sent in. The
+   * newest park idea is on top, with older ideas underneath. This function brings
+   * out that list so the staff member can see what people have suggested.
    */
   static async listCandidates(): Promise<RecommendableAction[]> {
     const snapshot = await getPublicImprovementsDb().collection(CANDIDATES).orderBy('createdAt', 'desc').limit(200).get();
     return snapshot.docs.map(doc => mapDoc(doc.data(), doc.id));
   }
 
-  /** Returns a bounded approved-only catalog view for readers and suggestion matching. */
+  /**
+   * Returns a bounded approved-only catalog view for readers and suggestion matching.
+   *
+   * @example
+   * Let's imagine a noticeboard of things neighbors can do to help their community.
+   * This function gathers the actions staff have approved, such as sharing ideas
+   * for a park, so people can find a useful next step.
+   */
   static async listApproved(): Promise<RecommendableAction[]> {
     const snapshot = await getPublicImprovementsDb().collection(CATALOG).where('status', '==', 'approved').limit(500).get();
     return snapshot.docs.map(doc => mapDoc(doc.data(), doc.id));
@@ -126,6 +148,11 @@ export class RecommendableActionService {
    *
    * @returns The reviewed record, or null when the candidate does not exist.
    * @throws Boundary lookup or Firestore failures.
+   *
+   * @example
+   * Let's imagine a staff member reads an invitation to share ideas for a park.
+   * They decide whether it is a helpful action to share with neighbors. This function
+   * records that decision and puts approved actions on the community's noticeboard.
    */
   static async reviewCandidate(id: string, decision: 'approve' | 'reject'): Promise<RecommendableAction | null> {
     const db = getPublicImprovementsDb();
@@ -167,6 +194,11 @@ export class RecommendableActionService {
    *
    * @returns The updated catalog entry, or null if it does not exist.
    * @throws Firestore read or transaction failures.
+   *
+   * @example
+   * Let's imagine the city has finished collecting ideas for the park. A staff member
+   * marks that invitation as closed, like taking an old flyer off the noticeboard,
+   * so it is no longer offered as a new thing for neighbors to do.
    */
   static async setCatalogStatus(id: string, status: 'approved' | 'closed' | 'uncertain'): Promise<RecommendableAction | null> {
     const db = getPublicImprovementsDb();
@@ -198,6 +230,11 @@ export class RecommendableActionService {
    * @param suggestion - Persisted suggestion whose location and content drive matching.
    * @returns Catalog entries accepted and passed to action creation in this invocation.
    * @throws Configuration, boundary lookup, relevance service, or persistence failures.
+   *
+   * @example
+   * Let's imagine a neighbor asks for more shade in a park. Nearby, the city is
+   * collecting ideas for that park's future. This function helps connect the neighbor's
+   * wish with a useful next step, such as sharing their idea with the city.
    */
   static async matchSuggestion(suggestion: Suggestion): Promise<RecommendableAction[]> {
     const approved = await this.listApproved();

@@ -1,6 +1,12 @@
 /**
  * Domain shapes, input normalization, and geographic applicability for reusable civic actions.
  *
+ * Let's imagine there's a city webpage inviting residents to comment on a proposed
+ * neighborhood park redesign. A recommendable action is like a helpful card saying,
+ * "Share your ideas for the park." It tells people what they can do and why their
+ * ideas matter. Recommendable actions can apply to particular neighborhoods or
+ * have no geographic boundaries and apply anywhere.
+ *
  * @remarks
  * This module performs no I/O. Source retrieval, boundary existence checks, and
  * persistence belong to the service layer; HTTP contracts belong to OpenAPI.
@@ -57,6 +63,24 @@ export interface RecommendableInput {
  *
  * @param body - Untrusted candidate content, not the HTTP extraction request shape.
  * @returns Normalized data on success, or the first validation error on failure.
+ *
+ * @example
+ * Let's imagine someone fills out a card inviting neighbors to share ideas for a
+ * park. This function helps tidy the card and check that the important pieces are
+ * there, so its message is ready for someone to review.
+ * ```typescript
+ * const result = validateRecommendableInput({
+ *   summary: ' Share park feedback ',
+ *   instructions: 'Use the feedback channel described by the source.',
+ *   reason: 'Help shape the proposed park redesign.',
+ *   boundaries: [20, 10, 20],
+ *   sourceUrl: 'https://example.org/park-feedback',
+ *   sourceEvidence: 'Invitation to share park feedback.',
+ *   sourceDescription: 'Park consultation.',
+ * });
+ * result.data?.summary; // 'Share park feedback'
+ * result.data?.boundaries; // [10, 20]
+ * ```
  */
 export function validateRecommendableInput(body: unknown): { data?: RecommendableInput; error?: string } {
   if (!body || typeof body !== 'object' || Array.isArray(body)) return { error: 'Request body must be an object.' };
@@ -90,6 +114,18 @@ export function validateRecommendableInput(body: unknown): { data?: Recommendabl
  * @param recommendableBoundaries - Action restrictions; empty means global applicability.
  * @param suggestionBoundaryIds - Boundaries resolved for the suggestion's location.
  * @returns Whether the geographic scope matches; does not judge topical relevance.
+ *
+ * @example
+ * Let's imagine there's a recommendable action for Downtown and Uptown. A suggestion
+ * in either neighborhood is in the right place for that action. This function is
+ * like checking a map to see whether the action and the suggestion share a place.
+ * ```typescript
+ * const downtown = 10;
+ * const uptown = 20;
+ * const oakCliff = 99;
+ * anyBoundaryOverlap([downtown, uptown], [uptown]); // true
+ * anyBoundaryOverlap([downtown, uptown], [oakCliff]); // false
+ * ```
  */
 export function anyBoundaryOverlap(recommendableBoundaries: number[], suggestionBoundaryIds: number[]): boolean {
   if (recommendableBoundaries.length === 0) return true;

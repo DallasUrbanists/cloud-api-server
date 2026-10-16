@@ -9,7 +9,7 @@ const repository = 'https://github.com/DallasUrbanists/cloud-api-server';
 export default defineConfig({
   title: 'Dallas Urbanists Cloud API',
   description: 'System guides and generated developer reference.',
-  outDir: '../../docs-site',
+  outDir: '../docs-site',
   srcExclude: ['operation-groups.md', 'public/**', 'reference/_media/**'],
   themeConfig: {
     nav: [

@@ -36,6 +36,16 @@ The build fails on TypeDoc warnings (including invalid symbol references), TypeS
 
 The workflow has read-only repository permissions, requires no application secrets, and neither deploys nor publishes documentation. After committing and pushing it, review the first GitHub Actions run. To block merging on failures, a repository administrator must add `Documentation build (ubuntu-latest)` and `Documentation build (windows-latest)` as required checks in the branch ruleset; adding the workflow alone does not change branch protection.
 
+## Reference presentation
+
+The [local TypeDoc theme](../scripts/typedoc-theme.mjs) uses the Markdown generator's theme API to simplify reference headers. Module breadcrumbs contain only the containing folder path (for example, `models/`), and the page title contains only the module name (`recommendableAction`). Interface, type alias, variable, function, and class pages show linked ancestors only in the breadcrumb (for example, `models/recommendableAction/`), with just the symbol name in the title. The project label, current symbol repetition, and kind prefixes such as `Function:` are omitted. Module IDs and signatures are unchanged.
+
+When a module exports exactly one class and has no additional exports or attached documents, its overview, class description, and methods render on the module page. The sidebar links directly to that combined page without an extra Classes branch. Class links resolve to an anchor on the module page; the former separate `classes/ClassName.html` page is no longer generated. Modules with multiple exports keep their index and separate symbol pages.
+
+Nested sidebar entries use compact indentation and row spacing, with a wider desktop sidebar so symbol names stay on one line. On narrow screens or for unusually long names, the navigation scrolls horizontally rather than splitting or clipping identifiers.
+
+Examples are authored in source comments as simple stories explaining what an artifact does and why. Model stories are part of the opening summary; other examples may use `@example`. Prose renders as regular paragraphs, while only actual code uses fenced blocks. TypeDoc's `jsDocCompatibility.exampleTag` is disabled to prevent automatic code formatting of prose-only examples. The [example policy](documentation-conventions.md#example-policy) keeps stories approachable for non-technical readers; examples are not created dynamically during builds.
+
 ## Tooling maintenance
 
 The portal commands use [a small CLI wrapper](../scripts/docs.mjs) that canonicalizes both the repository's working directory and the VitePress CLI module URL using Node's native filesystem realpath function. The non-native realpath function can retain a lowercase drive letter on Windows, and changing the working directory alone does not normalize module imports inherited from a lowercase entry-script path. Starting VitePress 1.x with those mismatched paths can fail during page rendering with `Cannot read properties of undefined (reading 'imports')`: its page lookup compares canonical filesystem paths with differently cased Vite module IDs. Use the npm commands rather than invoking VitePress directly. The chunk-size advisory is separate from this error and does not fail the build.

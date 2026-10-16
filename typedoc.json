@@ -8,10 +8,17 @@
     "src/routes/recommendableActionRoutes.ts"
   ],
   "tsconfig": "tsconfig.json",
-  "plugin": ["typedoc-plugin-markdown", "typedoc-vitepress-theme"],
+  "plugin": ["typedoc-plugin-markdown", "typedoc-vitepress-theme", "./scripts/typedoc-theme.mjs"],
+  "theme": "portal",
+  "router": "portal",
+  "useCustomAnchors": true,
+  "customAnchorsFormat": "curlyBrace",
   "out": "docs/reference",
   "docsRoot": "docs",
   "readme": "none",
+  "jsDocCompatibility": {
+    "exampleTag": false
+  },
   "highlightLanguages": [
     "bash", "console", "css", "html", "javascript", "json", "jsonc", "json5",
     "yaml", "tsx", "typescript", "powershell"

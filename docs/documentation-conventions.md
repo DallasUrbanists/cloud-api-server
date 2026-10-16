@@ -37,14 +37,26 @@ Prefer a small vocabulary:
 | `@param name - ...` | Meaning or preconditions not already expressed by the type. |
 | `@returns` | Semantic result, including null, empty, unchanged, or partial outcomes. |
 | `@throws` | Meaningful thrown errors or promise rejections; omit when failure is returned as data. |
-| `@example` | Small, deterministic examples where they clarify behavior. |
+| `@example` | Simple conceptual stories in normal prose; model examples belong in their opening summary instead. Fence only actual code. |
 | `{@link Symbol}` | Cross-reference a resolvable code symbol. |
 | `@see` | Related symbol or relative Markdown link to a source/overview page. |
 | `@module` | File-level documentation for the generated module reference. |
 
 Do not repeat TypeScript type annotations in comment tags, list every obvious parameter, copy secrets or production records into examples, or assert unverified guarantees. Prefer semantic explanations over copied numeric limits and configuration defaults.
 
-### Example
+### Example policy
+
+Provide examples liberally for modules, domain concepts, and functions whenever they help readers understand purpose or usage. Skip an example only when it would not add useful meaning or would repeat another example already rendered on the same page (for example, an obvious controller wrapper around a service scenario). Do not require meaningless examples on every property or constant.
+
+- Write examples for non-technical readers, as if explaining to a child what the artifact does and why it helps. Use familiar stories and plain language, not implementation instructions, constraints, restrictions, or failure-handling guidance. Keep those technical details in remarks, parameters, and other developer-facing sections.
+- Begin imagined situations naturally: "Let's imagine there's a city webpage inviting neighbors to share ideas for a park." This sets an honest tone without repeatedly calling the story "fictional", "hypothetical", or "illustrative". Do not present imagined events as real announcements or claim sources have been verified.
+- For model module overviews and model types, put the story in the opening summary before `@remarks`. It should read as part of the introduction, not under a separate Example heading. Use `@example` for function and other examples where a separate section helps.
+- Render example prose as ordinary paragraphs, never inside code fences. TypeDoc's `jsDocCompatibility.exampleTag` is disabled so prose-only `@example` blocks are not automatically treated as code. Fence only actual code and specify its programming language.
+- Describe real-world concepts rather than IDs in prose: "The action applies to Downtown and Uptown", not "boundary IDs 10 and 20". For scope, say that an action can apply to particular neighborhoods or anywhere. Avoid database and AI-provider terminology in conceptual stories.
+- Optional code snippets may illustrate the story, but are not a substitute for readable prose. Keep values natural (`sourceEvidence: 'Invitation to share park feedback.'`), without self-aware disclaimers. Use reserved example domains for sample URLs, and keep runnable snippets deterministic and free of network, database, credentials, or provider dependencies. Include imports for independently runnable snippets; short reference snippets may assume the documented function is in scope.
+- Validate code examples against implementation and relevant tests. Keep technical edge cases in tests or developer-facing sections rather than burdening the story. Do not promise a model judgment or stronger behavior than the implementation provides. Do not hand-edit generated Markdown or generate new AI prose during builds.
+
+### Comment example
 
 ```typescript
 /**
