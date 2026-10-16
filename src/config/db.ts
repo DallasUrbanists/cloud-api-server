@@ -16,7 +16,9 @@ interface DBConfig {
   max?: number;
 }
 
-const isCloudRun = process.env.K_SERVICE !== undefined;
+const isCloudRun = process.env.K_SERVICE !== undefined
+  || process.env.CLOUD_RUN_JOB !== undefined
+  || process.env.CLOUD_RUN_WORKER_POOL !== undefined;
 
 const poolConfig: DBConfig = {
   user: process.env.DB_USER,

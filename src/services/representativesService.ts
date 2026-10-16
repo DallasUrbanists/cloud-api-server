@@ -1,83 +1,33 @@
 import { pool } from '../config/db.js';
+import { BoundaryError, boundaryFromRow, timestampString } from '../models/boundary.js';
+import { AddressGeocodingError, BoundaryService, boundaryConditions, matchesLocation } from './boundaryService.js';
+export { AddressGeocodingError };
+
 import { Representative, RepresentativeResponse, RepresentativeSearch } from '../models/representative.js';
 
-const GEOCODING_TIMEOUT_MS = 10_000;
-
-export class AddressGeocodingError extends Error {
-  constructor(
-    message: string,
-    readonly status: 404 | 502 | 503,
-  ) {
-    super(message);
-    this.name = 'AddressGeocodingError';
-  }
-}
-
-interface GeoJsonPolygon {
-  type: 'Polygon';
-  coordinates: number[][][];
-}
-
-function isPolygon(value: unknown): value is GeoJsonPolygon {
-  if (!value || typeof value !== 'object') return false;
-  const polygon = value as { type?: unknown; coordinates?: unknown };
-  return polygon.type === 'Polygon' && Array.isArray(polygon.coordinates)
-    && polygon.coordinates.every((ring) => Array.isArray(ring));
-}
-
-function pointOnSegment(
-  longitude: number,
-  latitude: number,
-  start: number[],
-  end: number[],
-): boolean {
-  const cross = (longitude - start[0]) * (end[1] - start[1])
-    - (latitude - start[1]) * (end[0] - start[0]);
-  if (Math.abs(cross) > 1e-10) return false;
-  return longitude >= Math.min(start[0], end[0]) - 1e-10
-    && longitude <= Math.max(start[0], end[0]) + 1e-10
-    && latitude >= Math.min(start[1], end[1]) - 1e-10
-    && latitude <= Math.max(start[1], end[1]) + 1e-10;
-}
-
-function pointInRing(longitude: number, latitude: number, ring: number[][]): boolean {
-  let inside = false;
-  for (let index = 0, previous = ring.length - 1; index < ring.length; previous = index++) {
-    const start = ring[previous];
-    const end = ring[index];
-    if (pointOnSegment(longitude, latitude, start, end)) return true;
-
-    const crossesLatitude = (start[1] > latitude) !== (end[1] > latitude);
-    if (crossesLatitude
-      && longitude < ((end[0] - start[0]) * (latitude - start[1])) / (end[1] - start[1]) + start[0]) {
-      inside = !inside;
-    }
-  }
-  return inside;
-}
-
-function pointInPolygon(longitude: number, latitude: number, value: unknown): boolean {
-  if (!isPolygon(value) || value.coordinates.length === 0) return false;
-  const [outerRing, ...holes] = value.coordinates;
-  if (!pointInRing(longitude, latitude, outerRing)) return false;
-  return !holes.some((hole) => pointInRing(longitude, latitude, hole));
+export function representativeFromRow(row: Record<string, any>): Representative {
+  return {
+    id: row.id, boundaryId: row.boundary_id, boundary: boundaryFromRow(row.boundary),
+    researchService: row.research_service, lastResearchSync: timestampString(row.last_research_sync),
+    researchSyncTTL: row.research_sync_ttl,
+    title: row.title, name: row.name, bio: row.bio, webpage_url: row.webpage_url,
+    photo_url: row.photo_url, emails: row.emails, phones: row.phones,
+    social_accounts: row.social_accounts, elections: row.elections,
+    start: timestampString(row.start), end: timestampString(row.end),
+  };
 }
 
 export class RepresentativesService {
   static async findAll(search: RepresentativeSearch): Promise<RepresentativeResponse[]> {
-    const conditions: string[] = [];
     const values: unknown[] = [];
+    const conditions = boundaryConditions({ ...search, asOf: search.servingAsOf ?? search.asOf }, 'b', values);
     const addParameter = (value: unknown): string => {
       values.push(value);
       return `$${values.length}`;
     };
 
-    for (const field of ['entity', 'body', 'title', 'district'] as const) {
-      const value = search[field];
-      if (value !== undefined) {
-        conditions.push(`LOWER(${field}) = LOWER(${addParameter(value)})`);
-      }
-    }
+    if (search.title !== undefined) conditions.push(`lower(r.title) = lower(${addParameter(search.title)})`);
+    if (search.boundaryId !== undefined) conditions.push(`r.boundary_id = ${addParameter(search.boundaryId)}`);
 
     if (search.servingAsOf === undefined) {
       conditions.push('("start" IS NULL OR "start" <= CURRENT_TIMESTAMP)');
@@ -98,51 +48,21 @@ export class RepresentativesService {
       )`);
     }
 
-    const { rows } = await pool.query<Representative>(
-      `SELECT * FROM representatives WHERE ${conditions.join(' AND ')} ORDER BY id`,
-      values,
+    const { rows } = await pool.query(
+      `SELECT r.*, row_to_json(b) AS boundary FROM representatives r
+       JOIN boundaries b ON b.id = r.boundary_id WHERE ${conditions.join(' AND ')} ORDER BY r.id`, values,
     );
-
-    const matches = search.latitude === undefined || search.longitude === undefined
-      ? rows
-      : rows.filter((representative) =>
-        pointInPolygon(search.longitude!, search.latitude!, representative.district_bounds));
-    return matches.map(({ district_bounds: _districtBounds, ...representative }) => representative);
+    return rows.map(representativeFromRow).filter(row => matchesLocation(row.boundary, search))
+      .slice(search.offset ?? 0, (search.offset ?? 0) + (search.limit ?? 100));
   }
 
-  static async geocodeAddress(address: string): Promise<{ latitude: number; longitude: number }> {
-    const apiKey = process.env.GOOGLE_MAPS_API_KEY;
-    if (!apiKey) {
-      throw new AddressGeocodingError('Address search is not configured on this server.', 503);
-    }
+  static geocodeAddress(address: string) { return BoundaryService.geocodeAddress(address); }
 
-    const url = new URL('https://maps.googleapis.com/maps/api/geocode/json');
-    url.searchParams.set('address', address);
-    url.searchParams.set('key', apiKey);
-
-    try {
-      const response = await fetch(url, { signal: AbortSignal.timeout(GEOCODING_TIMEOUT_MS) });
-      if (!response.ok) {
-        throw new AddressGeocodingError('The address lookup service is unavailable.', 502);
-      }
-
-      const result = await response.json() as {
-        status?: string;
-        results?: Array<{ geometry?: { location?: { lat?: number; lng?: number } } }>;
-      };
-      if (result.status === 'ZERO_RESULTS') {
-        throw new AddressGeocodingError('The address could not be located.', 404);
-      }
-
-      const location = result.results?.[0]?.geometry?.location;
-      if (result.status !== 'OK' || typeof location?.lat !== 'number' || typeof location.lng !== 'number') {
-        throw new AddressGeocodingError('The address lookup service could not process this request.', 502);
-      }
-
-      return { latitude: location.lat, longitude: location.lng };
-    } catch (error) {
-      if (error instanceof AddressGeocodingError) throw error;
-      throw new AddressGeocodingError('The address lookup service is unavailable.', 502);
-    }
+  static async findById(id: number): Promise<Representative> {
+    const { rows } = await pool.query(
+      'SELECT r.*, row_to_json(b) AS boundary FROM representatives r JOIN boundaries b ON b.id = r.boundary_id WHERE r.id = $1', [id],
+    );
+    if (!rows[0]) throw new BoundaryError(404, 'NOT_FOUND', 'Representative not found.');
+    return representativeFromRow(rows[0]);
   }
 }

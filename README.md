@@ -40,7 +40,83 @@ After the schema migration, apply [005_seed_dallas_city_council.sql](migrations/
 
 The seed runs transactionally and serializes writes to `representatives`. Reruns skip rows matching entity, body, district, and name; they do not overwrite locally maintained records or remove former representatives. `start` uses the first verified inauguration date, falling back to the earliest **past** date in that member's recorded `elections` array when inauguration is unverified. Past means strictly before PostgreSQL `CURRENT_DATE` when the seed is applied; today's and future elections are excluded. Election-date fallbacks are approximate tenure starts and may be later than the actual first election because the recorded history is incomplete. `start` remains `NULL` if neither an inauguration date nor a past election is available; `end` remains `NULL` while a member is serving. Elections contain verified events, not a guaranteed complete history. Empty social-account arrays indicate no account was verified, and `can_sms: false` means SMS capability was not verified. Office phone numbers are stored as ten-digit strings. The script does not modify the live database until explicitly applied.
 
-The public `GET /api/representatives` endpoint searches the table by `entity`, `body`, `title`, `district`, serving date, election period, and/or location. All supplied filters are combined. `servingAsOf` defaults to today; `electionAsOf` matches dates from an election's early-voting start through election day. Supply both `lat` and `lon` for a boundary search; otherwise, an optional `address` is geocoded and checked against district polygons, including polygon holes. `GET /api/dallascitycouncil` uses the same search, with entity, body, and title fixed to the Dallas City Council values. Both endpoints are public and require neither an API key nor user authentication. Address search requires `GOOGLE_MAPS_API_KEY` with the Google Maps Geocoding API enabled; direct coordinate searches do not.
+The public `GET /api/representatives` endpoint searches by linked boundary `entity`, `body`, `district`, `boundaryId`, representative `title`, serving date, election period, and/or location. Responses now contain `boundaryId`, nested `boundary`, `researchService`, `lastResearchSync`, and `researchSyncTTL`; the former top-level entity/body/district fields are removed. All supplied filters are combined. `servingAsOf` defaults to currently serving; `electionAsOf` matches early-voting start through election day. Linked boundaries must be in effect on the serving date, using Dallas time for today's boundary date. `GET /api/dallascitycouncil` retains the same fixed City of Dallas / City Council / Council member filters and excludes the mayor. Both endpoints remain public.
+
+### Boundaries, migration, and synchronization
+
+Use Node.js **22.13+** (Node 24 recommended). On a fresh database apply [004](migrations/004_representatives.sql), [005](migrations/005_seed_dallas_city_council.sql), [006_boundaries.sql](migrations/006_boundaries.sql), then [007_seed_boundaries.sql](migrations/007_seed_boundaries.sql). On an existing database already at 005, back up and rehearse 006/007 before applying them. The server never applies migrations automatically. Do **not** rerun 005 after 006: its legacy columns have been removed.
+
+Migration 006 requires no PostgreSQL extensions. Generated native PostgreSQL bounding boxes and a GiST index shortlist spatial candidates before exact Turf membership checks; normalized administrative arrays also shortlist in SQL. It moves jurisdiction geometry/descriptions to `boundaries`, preserves representative IDs and contact/election history, creates required foreign keys, and refuses conflicting descriptions or geometry within one jurisdiction. Null legacy geometry is marked `shapePending`, not converted into a membership rule. It also creates durable jobs, distributed budgets, and research evidence tables. Sync timestamps use `timestamptz`; boundary calendar dates use `date`. Existing representative tenure timestamps retain their original schema.
+
+Migration 007 contains **284 boundaries**, discovered by exact intersection with Dallas city limits from official public ArcGIS/Census sources on October 14, 2026: Texas U.S. Senate (1), congressional districts (9 for the 119th Congress and 9 future 120th-Congress districts), Texas Senate (5), Texas House (20), SBOE (5), Dallas County Judge (1), county commissioners (4), council/CPC/Park Board districts (14 each), DISD trustees (9), PIDs (16), and confirmed registered neighborhood associations (163). Geometry is embedded without simplification; the SQL file is approximately 16 MB and needs no source downloads when applied. Full district geometry is retained, not clipped to Dallas. Current congressional boundaries expire exclusively on January 3, 2027; future ones become effective that day. Source layers and keys are in [boundarySources.ts](src/services/boundarySources.ts). The expired South Dallas-Fair Park PID is excluded; year-only charter information is not converted into an invented expiration date.
+
+**Source limitations:** the verified city neighborhood layer currently contains no HOA polygons. No HOA boundaries or board contacts are fabricated, and DCAD subdivision geometry is not treated as HOA jurisdiction. The tourism PID's hotel points are not substituted for a polygon. Supply verified HOA GeoJSON (each feature requires `properties.name`, `properties.sourceUrl`, and Polygon/MultiPolygon geometry) to the seed generator when those records become available. Newly downloaded GIS sources may contain stale information despite being official; research does not silently infer effective dates from dataset names.
+
+```powershell
+npm run seed:boundaries -- --output additional-boundaries.sql
+npm run seed:boundaries -- --hoa-file verified-hoas.geojson --output additional-boundaries-with-hoas.sql
+```
+
+Generation performs public GIS reads but **no database writes**; output must be a new file. Omit `--output` for a dry run. `--metadata-only` omits geometry and marks districts `shapePending` until successfully synchronized. Seed reruns preserve locally maintained shapes, descriptions, and configured services, adopt matching legacy council boundaries, and do not duplicate source keys. Do not reapply migration 006; it is a forward migration, not an idempotent setup script.
+
+#### Public search
+
+- `GET /api/boundaries`: `entity`, `body`, `district`, `lat`/`lon`, `address`, `city`, `county`, `state`, `zip`, `asOf`, `limit`, `offset`.
+- `GET /api/boundary/{id}`: includes expired/future records and derived `isInEffect`.
+- Boundary and representative lists default to `limit=100`, permit up to 500, and paginate **after** geometry filtering.
+- Supply **both** coordinates or neither; a partial pair returns 400. Coordinates override `address`. Geometry uses WGS84 longitude/latitude, honors holes and MultiPolygons, includes exterior edges, and excludes hole edges to preserve legacy representative-search behavior.
+- Address lookup requires `GOOGLE_MAPS_API_KEY`; direct polygon queries do not. Geocoding derives city, county, state, and ZIP. Supplied metadata is retained as an additional filter.
+- Arrays shortlist polygon boundaries; metadata-only searches return candidates, not proof of point membership. Empty arrays impose no restriction.
+- For an intentional null shape, membership is OR within each populated array and AND across populated arrays. Missing required metadata cannot prove membership; null geometry with no rules never matches a location. `shapePending` is unknown geometry, never an address-only match.
+- Texas U.S. Senate uses null shape and `states: ["TX"]`. Coordinate-only searches cannot establish this state-only membership; also supply `state=TX`, or use an address. County suffixes and ZIP+4 are normalized; `Texas` and `TX` are equivalent.
+- `effectiveDate` is inclusive, `expirationDate` exclusive; a null date imposes no restriction. Today's date is evaluated in `America/Chicago`.
+
+```powershell
+curl.exe "http://localhost:8080/api/boundaries?state=TX&entity=United%20States&body=Senate"
+curl.exe "http://localhost:8080/api/boundaries?lat=32.78&lon=-96.8&state=TX"
+curl.exe "http://localhost:8080/api/representatives?boundaryId=1"
+```
+
+#### Sync routes and durable worker
+
+Public, bodyless GET routes require neither an API key nor user authentication:
+
+- `/api/tick/boundaries/shape`: select one due idle boundary for shape refresh.
+- `/api/tick/boundaries/research`: select one due idle boundary for research.
+- `/api/tick/boundary/{id}`: shape and research, only when due.
+- `/api/tick/representatives`: select one due current representative for research.
+- `/api/tick/representative/{id}`: research only when due.
+- `/api/tick/jobs/{id}`: poll sanitized durable job status; successful jobs include the current target model.
+
+No eligible idle batch target returns `{ "syncCount": 0 }`; an ID tick with no work returns its model. Research is queued immediately with **202**, `{ jobId, status, statusUrl }`, `Location`, and `Retry-After`. Shape-only ticks attempt up to eight seconds synchronously; on deadline they return 202 and leave durable work for the worker. A completed synchronous shape tick returns the boundary. Job IDs are strings. A busy explicit target reuses its own job; if another target in the same boundary owns the lease, it returns the requested current model instead. A batch skips busy boundaries. Source failures are not disguised as syncCount zero. HEAD/prefetch cannot trigger work; all tick responses are `no-store`.
+
+`POST /api/tick/boundary/{id}` and `POST /api/tick/representative/{id}` force configured services regardless of TTL/backoff. They require `X-API-Key`, a Firebase bearer token with canonical `staff:true`, and **Firebase App Check in production**. A busy forced target returns 409; retry after the job completes. Null services are skipped. An out-of-term congressional boundary cannot be researched by the live-member adapter; historical/future membership is not invented.
+
+**Deploy a worker before enabling public ticks.** The web server never leaves untracked work running after responding. Run `npm run worker:boundaries` locally or `node dist/scripts/boundaryWorker.js` as a continuously CPU-allocated worker with the same database and provider configuration. Alternatively use a scheduled Cloud Run Job invoking `node dist/scripts/boundaryWorker.js --once`; it drains available work and exits. A request-driven Cloud Run service with background CPU throttling is not a reliable worker. Cloud Scheduler should invoke the Cloud Run Job with authenticated IAM access, not a public force endpoint.
+
+```powershell
+$env:BOUNDARY_SYNC_ENABLED = "true"
+npm run worker:boundaries
+# In a separate terminal:
+curl.exe "http://localhost:8080/api/tick/boundaries/research"
+curl.exe "http://localhost:8080/api/tick/jobs/1"
+```
+
+PostgreSQL short transactions, `FOR UPDATE SKIP LOCKED`, one active job per boundary, five-minute fenced leases, and a three-minute execution deadline prevent overlapping boundary/representative writes across instances. External calls occur outside database transactions. A crashed job can be reclaimed; stale claim tokens cannot commit. Each applied phase clears its requested flag in the same transaction, so a crash after commit does not replay that completed phase. Database statements have a 15-second deadline and lock waits a five-second deadline; result commits recheck the lease against the actual database clock. Claims are retried at most three times after lease expiry; provider failures receive one-hour backoff. Last invocation timestamps include failures; separate successful-sync timestamps schedule TTL (shape default 365 days, research 60 days). Shape and research phases commit separately, so successful geometry is retained if subsequent research fails.
+
+Default distributed limits: 30 scheduling requests per client/minute, 10 executions/minute, 100/day, and two simultaneous jobs across workers. These count jobs, not individual provider calls. Configure `BOUNDARY_SYNC_CLIENT_PER_MINUTE`, `BOUNDARY_SYNC_GLOBAL_PER_MINUTE`, `BOUNDARY_SYNC_GLOBAL_PER_DAY`, and `BOUNDARY_SYNC_CONCURRENCY`. Global caps protect against rotating clients; add edge/IP controls (for example Cloud Armor) for public reads/geocoding and DDoS protection. Client buckets use hashed Express `req.ip`; do not trust arbitrary forwarded headers. Configure trusted proxies only for the deployment's actual proxy chain. Monitor and periodically retain/prune completed jobs and evidence according to operational retention policy.
+
+#### Research providers and evidence
+
+Acquire **`CONGRESS_GOV_API_KEY`**, **`OPEN_STATES_API_KEY`**, and **`GEMINI_API_KEY`**; optionally retain the existing Maps key. Public GIS needs no API key. Store keys in Secret Manager/environment variables, **never** service descriptor params. Cloud Run API/worker identities need their existing Cloud SQL connection and Secret Manager secret-access permissions; staff verification needs existing Firebase Authentication permissions. A Scheduler identity needs permission to execute the selected Cloud Run Job.
+
+The existing GoogleGenAI SDK is sufficient. Research defaults to `gemini-3.8-flash`, configurable through `BOUNDARY_RESEARCH_MODEL`, independently of assistService. Official Google documentation checked October 14, 2026 lists this model with Google Search grounding. Grounded discovery and structured extraction are separate calls; downloaded documents are untrusted data, not instructions. No Brave/Tavily key or browser automation is required. Cheerio parses HTML, PDF.js extracts bounded PDFs, and Turf handles geographic matching.
+
+Congress.gov/Open States adapters apply complete validated current rosters and can create representatives or mark former members ended. No new tenure-start date is guessed; an observed replacement end timestamp records the discovery, not necessarily the legal last day in office. Reappointments after an ended tenure create a new record. Official-directory AI research applies names only with matching source quotes and district evidence; email/phone quotes must also name the person. It can update original boundary summaries and contact guidance when supported by a quote naming the entity. It **never** trusts LLM claims of completeness. A server-configured singleton office can replace an incumbent only when exactly one verified current holder comes from its approved primary roster and the document supports that body/office. Ambiguous or secondary-source transitions require review instead of creating competing incumbents. A representative tick using a verified complete roster may refresh related holders and end its departed target while preserving that target's historical ID. Unsupported proposals are saved to `boundary_research_evidence` for staff review, not silently applied. Review through trusted database tooling; no public proposal-approval endpoint exists. Existing verified fields are not cleared merely because a source omitted them.
+
+Approved files/exports are statically registered in [boundaryAdapters.ts](src/services/boundaryAdapters.ts); no arbitrary import or executable configuration is allowed. Official website hosts are allowlisted, and redirects must remain approved. For a verified neighborhood/HOA organization's website, staff may add exact reviewed HTTPS hostnames to `BOUNDARY_RESEARCH_ALLOWED_HOSTS`; the seeder retains municipal `Asso_WEB` links as candidate sources, ignored until approved. No wildcard/private/IP hosts are accepted. The registered organization directory and HOA management certificates are not guaranteed to provide public board-member contacts.
+
+Validation uses fixture-only provider calls, migration/backfill/seed tests, geometry/date/filter tests, queue/lease/budget tests, and staff/App Check authorization tests. Run `npm run build` and `node --import tsx --test tests\boundaries.test.ts tests\boundaryMigration.test.ts tests\boundaryAdapters.test.ts tests\representatives.test.ts`. No paid live provider calls are made by these tests. For real multi-connection locking tests, securely set `BOUNDARY_TEST_DATABASE_URL` to a **dedicated test database** and run `node --import tsx --test tests\boundaryConcurrency.test.ts`; it creates and removes a uniquely named temporary schema. Include `tests\boundaryWorkerConfig.test.ts` to validate Cloud Run service/job/worker-pool socket configuration.
 
 ### Authentication configuration
 
@@ -225,7 +301,7 @@ If the dry run fails, the CLI prints the underlying error code/message. Check Ap
 4. Confirm a fresh **full** dry run reports zero changes. Before cutover, require every existing staff client to force-refresh its Firebase ID token (`getIdToken(true)`) or sign in again and verify `getIdTokenResult(true).claims.staff === true`. Old ID tokens retain legacy-only claims until refreshed; otherwise these clients lose staff access after deployment. Migration deliberately does not revoke tokens. Ensure at least one refreshed canonical staff administrator is available before deploying.
 5. Deploy canonical-only authorization and these administration endpoints; smoke-test using the refreshed staff account and a separate target. Resume claim writers only once cutover is verified. Roll back the authorization deployment if refresh readiness cannot be confirmed; do not restore legacy staff authorization through API claims.
 
-Apply migrations `001_add_firebase_uid.sql`, `002_event_id_bigint_foreign_key.sql`, and `003_operation_groups.sql` before deploying this version. Rehearse against the actual schema in a non-production database; resolve duplicate contact/event check-ins before migration 003.
+Apply migrations `001_add_firebase_uid.sql`, `002_event_id_bigint_foreign_key.sql`, and `003_operation_groups.sql` before deploying this version. Representative/boundary endpoints additionally require migrations 004–007 in the order documented above. Rehearse against the actual schema in a non-production database; resolve duplicate contact/event check-ins before migration 003.
 
 ### Atomic changes, history, and Undo
 

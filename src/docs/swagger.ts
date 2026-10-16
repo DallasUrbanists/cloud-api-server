@@ -2,19 +2,22 @@ import { createRequire } from 'module';
 import { JsonObject } from 'swagger-ui-express';
 import { operationPaths, operationSchemas, stagingParameters, stagingResponses } from './operations.js';
 import { DEFAULT_SUMMARY_OPTIONS, GRAMMAR_OUTPUT_LIMIT, SUMMARY_SENTENCE_TYPES } from '../models/assist.js';
+import { boundaryPaths, boundarySchemas, boundarySearchParameters } from './boundaries.js';
 
 const require = createRequire(import.meta.url);
 const pkg = require('../../package.json');
 
 const representativeSearchParameters = [
-  { name: 'entity', in: 'query', description: 'Match the representative entity (case-insensitive exact match).', schema: { type: 'string', example: 'City of Dallas' } },
-  { name: 'body', in: 'query', description: 'Match the representative body (case-insensitive exact match).', schema: { type: 'string', example: 'City Council' } },
+  ...boundarySearchParameters.filter(parameter => !['asOf', 'entity', 'body', 'district', 'lat', 'lon', 'address'].includes(parameter.name)),
+  { name: 'boundaryId', in: 'query', description: 'Match the linked boundary ID.', schema: { type: 'integer', minimum: 1 } },
+  { name: 'entity', in: 'query', description: 'Match the linked boundary entity (case-insensitive exact match).', schema: { type: 'string', example: 'City of Dallas' } },
+  { name: 'body', in: 'query', description: 'Match the linked boundary body (case-insensitive exact match).', schema: { type: 'string', example: 'City Council' } },
   { name: 'title', in: 'query', description: 'Match the representative title (case-insensitive exact match).', schema: { type: 'string', example: 'Council member' } },
   { name: 'district', in: 'query', description: 'Match the district (case-insensitive exact match).', schema: { type: 'string', example: 'District 1' } },
   { name: 'servingAsOf', in: 'query', description: 'Return representatives serving on this date; defaults to the current date.', schema: { type: 'string', format: 'date', example: '2026-10-09' } },
   { name: 'electionAsOf', in: 'query', description: 'Keep representatives with an election period containing this date (from early voting start through election day).', schema: { type: 'string', format: 'date', example: '2025-04-25' } },
-  { name: 'lat', in: 'query', description: 'Latitude; used for district-boundary search only when lon is also provided.', schema: { type: 'number', minimum: -90, maximum: 90, example: 32.78 } },
-  { name: 'lon', in: 'query', description: 'Longitude; used for district-boundary search only when lat is also provided.', schema: { type: 'number', minimum: -180, maximum: 180, example: -96.8 } },
+  { name: 'lat', in: 'query', description: 'Latitude; lon must also be supplied. Membership uses the linked boundary.', schema: { type: 'number', minimum: -90, maximum: 90, example: 32.78 } },
+  { name: 'lon', in: 'query', description: 'Longitude; lat must also be supplied.', schema: { type: 'number', minimum: -180, maximum: 180, example: -96.8 } },
   { name: 'address', in: 'query', description: 'Address to geocode and search within district boundaries. Ignored when both lat and lon are provided.', schema: { type: 'string', example: '1500 Marilla St, Dallas, TX' } },
 ].map((parameter) => ({ ...parameter, required: false }));
 
@@ -36,7 +39,8 @@ Endpoint policies:
 - Check-ins: GET/list and GET/{id} are REQUIRED/PARTIAL; POST is OPTIONAL/PUBLIC; PUT and DELETE are REQUIRED/PRIVATE. include_contact accepts false, partial, or full.
 - Suggestions: reads, creation, and upload URLs are REQUIRED/PUBLIC; update and delete are REQUIRED/PRIVATE for the author or staff.
 - Events and calendar reads are OPTIONAL/PUBLIC; event creation, updates, deletion, and iCal imports are REQUIRED/PRIVATE for staff or system roles.
-- Representatives, including the Dallas City Council shortcut, are public and require no API key or user authentication.
+- Representatives, including the Dallas City Council shortcut, and boundary reads/TTL ticks/job status are public and require no API key or user authentication.
+- Forced boundary/representative tick POSTs require an API key, canonical staff user authorization, and production App Check; due research uses a separately deployed durable worker.
 - Grammar, clarity, and summary assistance are REQUIRED/PUBLIC: API key and production App Check are required; user sign-in is optional.`,
     contact: {
       name: 'DallasUrbanists.org',
@@ -71,6 +75,8 @@ Endpoint policies:
       name: 'Representatives',
       description: 'Public representative search by office, term, election period, and district geography.',
     },
+    { name: 'Boundaries', description: 'Public jurisdiction geometry, administrative membership, and effective dates.' },
+    { name: 'Boundary synchronization', description: 'Public TTL ticks, staff force ticks, and durable job status.' },
     {
       name: 'System',
       description: 'Health checks and server operational metadata.',
@@ -86,6 +92,7 @@ Endpoint policies:
   ],
   paths: {
       ...operationPaths,
+      ...boundaryPaths,
       '/api/health': {
       get: {
         summary: 'Server Health Check',
@@ -108,7 +115,7 @@ Endpoint policies:
     '/api/representatives': {
       get: {
         summary: 'Search Representatives',
-        description: 'Returns representatives matching every supplied filter. Without servingAsOf, representatives serving today are returned. Spatial search uses lat and lon together; address is geocoded only when that coordinate pair is absent. This endpoint is public and requires no API key or user token.',
+        description: 'Returns representatives matching every supplied filter, with boundaryId and nested boundary information instead of the former entity/body/district fields. Without servingAsOf, currently serving representatives are returned. Linked boundaries must be in effect on the serving date (today in Dallas by default). Spatial search requires lat and lon together; address is geocoded only when that pair is absent. City/county/state/ZIP filters and null-shape membership follow /api/boundaries semantics. Public; no API key or user token required.',
         tags: ['Representatives'],
         security: [],
         parameters: representativeSearchParameters,
@@ -1471,13 +1478,17 @@ Endpoint policies:
     },
     schemas: {
           ...operationSchemas,
+          ...boundarySchemas,
       Representative: {
         type: 'object',
-        required: ['id'],
+        required: ['id', 'boundaryId', 'boundary', 'researchService', 'lastResearchSync', 'researchSyncTTL'],
         properties: {
           id: { type: 'integer', example: 1 },
-          entity: { type: 'string', nullable: true, example: 'City of Dallas' },
-          body: { type: 'string', nullable: true, example: 'City Council' },
+          boundaryId: { type: 'integer' },
+          boundary: { $ref: '#/components/schemas/Boundary' },
+          researchService: { $ref: '#/components/schemas/ServiceDescriptor' },
+          lastResearchSync: { type: 'string', format: 'date-time', nullable: true },
+          researchSyncTTL: { type: 'integer', minimum: 1, default: 60 },
           title: { type: 'string', nullable: true, example: 'Council member' },
           name: { type: 'string', nullable: true, example: 'Jane Doe' },
           bio: { type: 'string', nullable: true },
@@ -1502,8 +1513,6 @@ Endpoint policies:
           },
           start: { type: 'string', format: 'date-time', nullable: true },
           end: { type: 'string', format: 'date-time', nullable: true           },
-          district: { type: 'string', nullable: true, example: 'District 1' },
-          district_description: { type: 'string', nullable: true },
         },
       },
       Contact: {

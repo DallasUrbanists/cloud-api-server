@@ -6,10 +6,15 @@ export interface RepresentativeElection {
   status: string;
 }
 
+import type { Boundary, ServiceDescriptor, BoundarySearch } from './boundary.js';
+
 export interface Representative {
   id: number;
-  entity: string | null;
-  body: string | null;
+  boundaryId: number;
+  boundary: Boundary;
+  researchService: ServiceDescriptor | null;
+  lastResearchSync: string | null;
+  researchSyncTTL: number;
   title: string | null;
   name: string | null;
   bio: string | null;
@@ -21,20 +26,13 @@ export interface Representative {
   elections: RepresentativeElection[] | null;
   start: string | null;
   end: string | null;
-  district: string | null;
-  district_description: string | null;
-  district_bounds: unknown;
 }
 
-export type RepresentativeResponse = Omit<Representative, 'district_bounds'>;
+export type RepresentativeResponse = Representative;
 
-export interface RepresentativeSearch {
-  entity?: string;
-  body?: string;
+export interface RepresentativeSearch extends BoundarySearch {
   title?: string;
-  district?: string;
+  boundaryId?: number;
   servingAsOf?: string;
   electionAsOf?: string;
-  latitude?: number;
-  longitude?: number;
 }

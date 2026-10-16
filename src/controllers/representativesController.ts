@@ -1,6 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
 import { AddressGeocodingError, RepresentativesService } from '../services/representativesService.js';
 import { RepresentativeSearch } from '../models/representative.js';
+import { BoundaryError } from '../models/boundary.js';
+import { parseBoundarySearch, positiveId } from '../utils/boundaryQuery.js';
 
 class QueryValidationError extends Error {}
 
@@ -17,14 +19,6 @@ function isDate(value: string): boolean {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(value) || value.startsWith('0000-')) return false;
   const date = new Date(`${value}T00:00:00.000Z`);
   return Number.isFinite(date.getTime()) && date.toISOString().slice(0, 10) === value;
-}
-
-function coordinate(value: string, name: 'lat' | 'lon', minimum: number, maximum: number): number {
-  const parsed = Number(value);
-  if (!Number.isFinite(parsed) || parsed < minimum || parsed > maximum) {
-    throw new QueryValidationError(`Query parameter '${name}' must be a number between ${minimum} and ${maximum}.`);
-  }
-  return parsed;
 }
 
 export class RepresentativesController {
@@ -47,32 +41,16 @@ export class RepresentativesController {
         throw new QueryValidationError("Query parameter 'electionAsOf' must be a valid YYYY-MM-DD date.");
       }
 
-      const lat = queryString(req, 'lat');
-      const lon = queryString(req, 'lon');
-      let latitude: number | undefined;
-      let longitude: number | undefined;
-      if (lat !== undefined && lon !== undefined) {
-        latitude = coordinate(lat, 'lat', -90, 90);
-        longitude = coordinate(lon, 'lon', -180, 180);
-      }
-
       const search: RepresentativeSearch = {
+        ...await parseBoundarySearch(req, dallasCityCouncil ? { entity: 'City of Dallas', body: 'City Council' } : {}),
         entity: dallasCityCouncil ? 'City of Dallas' : queryString(req, 'entity'),
         body: dallasCityCouncil ? 'City Council' : queryString(req, 'body'),
         title: dallasCityCouncil ? 'Council member' : queryString(req, 'title'),
         district: queryString(req, 'district'),
         servingAsOf,
         electionAsOf,
-        latitude,
-        longitude,
+        boundaryId: req.query.boundaryId === undefined ? undefined : positiveId(req.query.boundaryId),
       };
-
-      const address = latitude !== undefined && longitude !== undefined ? undefined : queryString(req, 'address');
-      if (address !== undefined) {
-        const location = await RepresentativesService.geocodeAddress(address);
-        search.latitude = location.latitude;
-        search.longitude = location.longitude;
-      }
 
       res.status(200).json(await RepresentativesService.findAll(search));
     } catch (error) {
@@ -86,6 +64,10 @@ export class RepresentativesController {
         return;
       }
 
+      if (error instanceof BoundaryError) {
+        res.status(error.status).json({ error: error.code, message: error.message });
+        return;
+      }
       console.error('Error searching representatives:', error);
       res.status(500).json({
         error: 'Internal Server Error',

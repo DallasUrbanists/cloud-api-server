@@ -11,6 +11,8 @@ import userRoutes from './routes/userRoutes.js';
 import representativesRoutes from './routes/representativesRoutes.js';
 import dallasCityCouncilRoutes from './routes/dallasCityCouncilRoutes.js';
 import assistRoutes from './routes/assistRoutes.js';
+import boundariesRoutes from './routes/boundariesRoutes.js';
+import boundaryTickRoutes from './routes/boundaryTickRoutes.js';
 import { swaggerDocument } from './docs/swagger.js';
 import { HomeController } from './controllers/homeController.js';
 import { formatResponseIntegers } from './utils/responseFormatting.js';
@@ -766,6 +768,8 @@ export function createApp(): Express {
   app.use('/api/operation-groups', operationGroupRoutes);
   app.use('/api/events', eventsRoutes);
   app.use('/api/users', userRoutes);
+  app.use('/api', boundariesRoutes);
+  app.use('/api/tick', boundaryTickRoutes);
   app.use('/api/representatives', representativesRoutes);
   app.use('/api/dallascitycouncil', dallasCityCouncilRoutes);
   app.use('/api/assist', assistRoutes);

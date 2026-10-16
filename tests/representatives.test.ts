@@ -71,6 +71,7 @@ before(async () => {
   await insertRepresentative({ name: 'Expired Earlier Today', end: `${dateOffset(0)}T00:00:00`, district: 'District 4', bounds: polygon });
   await insertRepresentative({ name: 'Future Member', start: dateOffset(1), district: 'District 3', bounds: polygon });
   await insertRepresentative({ name: 'Other Office', entity: 'Other Entity', body: 'Other Body', title: 'Other Title', bounds: polygon });
+  await db.exec(await readFile(new URL('../migrations/006_boundaries.sql', import.meta.url), 'utf8'));
   server = createApp().listen(0, '127.0.0.1');
   await once(server, 'listening');
   const address = server.address() as { port: number };
@@ -95,7 +96,10 @@ test('representative searches are public and combine text and date filters', asy
   assert.equal(response.status, 200);
   const filteredRepresentatives = await response.json();
   assert.deepEqual(filteredRepresentatives.map((row: { name: string }) => row.name), ['Current Member']);
-  assert.equal('district_bounds' in filteredRepresentatives[0], false);
+  for (const field of ['entity', 'body', 'district', 'district_description', 'district_bounds']) assert.equal(field in filteredRepresentatives[0], false);
+  assert.equal(filteredRepresentatives[0].boundary.entityName, 'City of Dallas');
+  assert.equal(filteredRepresentatives[0].boundary.districtName, 'District 1');
+  assert.equal(filteredRepresentatives[0].boundaryId, filteredRepresentatives[0].boundary.id);
 
   const current = await get('/api/representatives');
   assert.deepEqual((await current.json()).map((row: { name: string }) => row.name), ['Current Member', 'Other Office']);
@@ -123,7 +127,7 @@ test('coordinates use district polygons and address lookups are skipped when coo
   assert.deepEqual(await inHole.json(), []);
 
   const partialCoordinates = await get('/api/representatives?lat=2');
-  assert.equal((await partialCoordinates.json()).length, 2);
+  assert.equal(partialCoordinates.status, 400);
 
   process.env.GOOGLE_MAPS_API_KEY = 'test-geocoding-key';
   let geocodeCalls = 0;
