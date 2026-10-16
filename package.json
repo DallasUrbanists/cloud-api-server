@@ -9,6 +9,11 @@
     "auth": "gcloud auth application-default login && gcloud config set project urbanists-mixer-slides-helper",
     "dev": "tsx watch src/index.ts",
     "build": "rimraf dist && tsc",
+    "docs:dev": "npm run docs:reference && node scripts/docs.mjs dev docs",
+    "docs:reference": "typedoc --options typedoc.json",
+    "docs:build": "npm run docs:reference && node scripts/docs.mjs build docs",
+    "docs:check": "typedoc --options typedoc.json --emit none",
+    "docs:preview": "node scripts/docs.mjs preview docs",
     "test": "tsx --test tests/*.test.ts",
     "migrate:staff-claims": "tsx src/scripts/migrateStaffClaims.ts",
     "start": "node dist/index.js",
@@ -47,9 +52,20 @@
     "@types/node": "^22.20.4",
     "@types/pg": "^8.23.1",
     "@types/swagger-ui-express": "^4.1.8",
+    "mermaid": "^12.2.0",
     "rimraf": "^6.0.1",
     "tsx": "^4.19.3",
-    "typescript": "^5.9.3"
+    "typedoc": "^0.28.20",
+    "typedoc-plugin-markdown": "^4.14.0",
+    "typedoc-vitepress-theme": "^1.1.4",
+    "typescript": "^5.9.3",
+    "vitepress": "^1.6.4",
+    "vue": "^3.5.0"
+  },
+  "overrides": {
+    "vitepress": {
+      "vite": "^6.4.3"
+    }
   },
   "allowScripts": {
     "protobufjs@7.6.6": true

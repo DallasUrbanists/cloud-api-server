@@ -1,5 +1,9 @@
 node_modules/
 dist/
+docs-site/
+/.vitepress/cache/
+docs/.vitepress/cache/
+docs/reference/
 *.log
 .env
 .env.local

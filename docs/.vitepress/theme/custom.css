@@ -1,0 +1,21 @@
+@media (min-width: 960px) {
+  :root {
+    --vp-sidebar-width: 320px;
+  }
+}
+
+@media (min-width: 1440px) {
+  :root {
+    --vp-sidebar-width: 360px;
+  }
+}
+
+/* Allow long generated symbol names to shrink within nested flex rows and wrap. */
+.VPSidebarItem .link,
+.VPSidebarItem .text {
+  min-width: 0;
+}
+
+.VPSidebarItem .text {
+  overflow-wrap: anywhere;
+}

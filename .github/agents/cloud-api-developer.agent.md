@@ -24,6 +24,7 @@ You are an expert Cloud API Developer specializing in Node.js, TypeScript, Expre
 - **Error Handling**: Never leak raw internal error stack traces to API consumers; return structured JSON error payloads with meaningful HTTP status codes (400, 401, 403, 404, 409, 500).
 - **Environment & Secrets**: Use `process.env` managed via `dotenv`. Avoid hardcoding credentials, bucket names, or database secrets.
 - **Swagger Updates**: Whenever an endpoint is added, modified, or deleted, update the OpenAPI definition in `src/docs/swagger.ts` to reflect parameters, request bodies, and response schemas.
+- **Code Documentation**: Follow [documentation conventions](../../docs/documentation-conventions.md) and the [TypeScript documentation instructions](../instructions/typescript-documentation.instructions.md). Explain module responsibilities and non-obvious function behavior using TSDoc-style blocks; link to OpenAPI instead of duplicating HTTP contracts. Use the [Recommendable Actions pilot](../../docs/recommendable-actions.md) as the reference.
 
 ## Workflow
 1. **Analyze Requirements**: Understand endpoint contract, request/response models, and cloud resource dependencies.

@@ -1,0 +1,36 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "name": "Dallas Urbanists Cloud API — Developer Reference",
+  "entryPoints": [
+    "src/models/recommendableAction.ts",
+    "src/controllers/recommendableActionController.ts",
+    "src/services/recommendableActionService.ts",
+    "src/routes/recommendableActionRoutes.ts"
+  ],
+  "tsconfig": "tsconfig.json",
+  "plugin": ["typedoc-plugin-markdown", "typedoc-vitepress-theme"],
+  "out": "docs/reference",
+  "docsRoot": "docs",
+  "readme": "none",
+  "highlightLanguages": [
+    "bash", "console", "css", "html", "javascript", "json", "jsonc", "json5",
+    "yaml", "tsx", "typescript", "powershell"
+  ],
+  "ignoredHighlightLanguages": ["mermaid"],
+  "excludeExternals": true,
+  "excludePrivate": true,
+  "excludeProtected": true,
+  "gitRevision": "main",
+  "sidebar": {
+    "collapsed": false,
+    "pretty": true
+  },
+  "validation": {
+    "invalidLink": true,
+    "invalidPath": true,
+    "rewrittenLink": true,
+    "notExported": false,
+    "notDocumented": false
+  },
+  "treatWarningsAsErrors": true
+}

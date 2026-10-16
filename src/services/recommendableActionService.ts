@@ -1,3 +1,14 @@
+/**
+ * Source extraction, candidate review, catalog versioning, and suggestion matching.
+ *
+ * @remarks
+ * Coordinates official-document retrieval, Gemini extraction, PostgreSQL boundary
+ * lookups, Firestore persistence, and Jev relevance judgments. Review candidates
+ * stay separate from the approved catalog and from suggestion-specific actions.
+ *
+ * @see [Feature overview](../../docs/recommendable-actions.md)
+ * @module
+ */
 import { GoogleGenAI } from '@google/genai';
 import { getPublicImprovementsDb } from '../config/firestore.js';
 import { BoundaryService } from './boundaryService.js';
@@ -9,13 +20,31 @@ import { anyBoundaryOverlap, type RecommendableAction, type RecommendableInput, 
 const CANDIDATES = 'recommendableActionCandidates';
 const CATALOG = 'recommendableActions';
 const cityHosts = new Set(['dallascityhall.com', 'www.dallascityhall.com']);
+/** Projects stored data into the domain shape, supplying defaults for missing legacy fields. */
 const mapDoc = (data: any, id: string): RecommendableAction => ({
   id, summary: data.summary, instructions: data.instructions, reason: data.reason, boundaries: Array.isArray(data.boundaries) ? data.boundaries : [],
   sourceUrl: data.sourceUrl, sourceEvidence: data.sourceEvidence, sourceDescription: data.sourceDescription, status: data.status,
   version: data.version ?? 1, confidence: data.confidence ?? null, createdAt: data.createdAt, updatedAt: data.updatedAt,
 });
 
+/** Coordinates reusable-action workflows; callers supply authorization and input validation. */
 export class RecommendableActionService {
+  /**
+   * Retrieves an official City source and extracts an evidence-backed action proposal.
+   *
+   * @remarks
+   * Checks the initial and final City host, requests structured Gemini output, and
+   * requires the evidence excerpt to occur in the source after whitespace/case
+   * normalization. This verifies textual support, not the truth of every extracted claim.
+   * No candidate is persisted; callers supply boundaries and validate before saving.
+   *
+   * @param sourceUrl - Source location to retrieve through the official-document reader.
+   * @param description - Untrusted user or registry context for the extraction.
+   * @param signal - Cancellation shared by document retrieval and the model request.
+   * @returns Proposed content without geographic restrictions or persistence metadata.
+   * @throws Errors for disallowed hosts, unavailable configuration, unverifiable output,
+   * or retrieval/model failures; cancellation also rejects the operation.
+   */
   static async extractCandidate(sourceUrl: string, description: string, signal: AbortSignal): Promise<Omit<RecommendableInput, 'boundaries'>> {
     const url = new URL(sourceUrl);
     if (!cityHosts.has(url.hostname.toLowerCase())) throw Object.assign(new Error('Only official City of Dallas websites are accepted in v1.'), { status: 400 });
@@ -44,6 +73,20 @@ export class RecommendableActionService {
     return { summary: result.summary.trim(), instructions: result.instructions.trim(), reason: result.reason.trim(), sourceUrl: page.url, sourceEvidence: evidence, sourceDescription: description.trim(), confidence: null };
   }
 
+  /**
+   * Checks referenced boundaries and creates a review record without publishing it.
+   *
+   * @remarks
+   * Does not invoke model validation. An existing supplied ID returns its stored
+   * record without overwriting it; the preliminary read is not an atomic upsert,
+   * so concurrent creates can still fail. Metadata is intended for trusted callers.
+   *
+   * @param input - Candidate content already prepared by the caller.
+   * @param candidateId - Optional stable ID used by discovery to avoid overwrites on reruns.
+   * @param metadata - Internal source identity/fingerprint fields for discovery.
+   * @returns The newly created candidate or the record already stored at that ID.
+   * @throws Boundary lookup or Firestore failures.
+   */
   static async createCandidate(input: RecommendableInput, candidateId?: string, metadata: Record<string, unknown> = {}): Promise<RecommendableAction> {
     for (const boundaryId of input.boundaries) await BoundaryService.findById(boundaryId);
     const now = new Date().toISOString();
@@ -56,16 +99,34 @@ export class RecommendableActionService {
     return mapDoc(data, ref.id);
   }
 
+  /**
+   * Reads the newest review records, including previously approved or rejected candidates.
+   * @returns A bounded, newest-first list, not a pending-only queue or paginated result.
+   */
   static async listCandidates(): Promise<RecommendableAction[]> {
     const snapshot = await getPublicImprovementsDb().collection(CANDIDATES).orderBy('createdAt', 'desc').limit(200).get();
     return snapshot.docs.map(doc => mapDoc(doc.data(), doc.id));
   }
 
+  /** Returns a bounded approved-only catalog view for readers and suggestion matching. */
   static async listApproved(): Promise<RecommendableAction[]> {
     const snapshot = await getPublicImprovementsDb().collection(CATALOG).where('status', '==', 'approved').limit(500).get();
     return snapshot.docs.map(doc => mapDoc(doc.data(), doc.id));
   }
 
+  /**
+   * Records rejection or publishes a candidate as a versioned catalog entry.
+   *
+   * @remarks
+   * Rejection changes only the candidate, not any existing catalog entry. Approval
+   * rechecks boundaries and uses a registry source key as catalog identity when present.
+   * A transaction writes the catalog, version snapshot, and candidate approval together.
+   * An already-approved candidate returns the current catalog record when available;
+   * the initial candidate read is outside the transaction, not a concurrent-review lock.
+   *
+   * @returns The reviewed record, or null when the candidate does not exist.
+   * @throws Boundary lookup or Firestore failures.
+   */
   static async reviewCandidate(id: string, decision: 'approve' | 'reject'): Promise<RecommendableAction | null> {
     const db = getPublicImprovementsDb();
     const candidateRef = db.collection(CANDIDATES).doc(id);
@@ -97,6 +158,16 @@ export class RecommendableActionService {
     return mapDoc(approved, targetId);
   }
 
+  /**
+   * Changes catalog eligibility and writes a revision snapshot in the same transaction.
+   *
+   * @remarks
+   * Every call for an existing entry increments its version, even if the status
+   * is unchanged. Does not modify candidate records or existing suggestion actions.
+   *
+   * @returns The updated catalog entry, or null if it does not exist.
+   * @throws Firestore read or transaction failures.
+   */
   static async setCatalogStatus(id: string, status: 'approved' | 'closed' | 'uncertain'): Promise<RecommendableAction | null> {
     const db = getPublicImprovementsDb();
     const ref = db.collection(CATALOG).doc(id);
@@ -114,6 +185,20 @@ export class RecommendableActionService {
     return updated ? mapDoc(updated, id) : null;
   }
 
+  /**
+   * Filters approved actions geographically, judges relevance, and creates linked actions.
+   *
+   * @remarks
+   * Global entries need no resolved boundaries; restricted entries need any overlap.
+   * Eligible entries are judged in batches, with finite scores at or above the configured
+   * threshold accepted. Existing links are skipped and deterministic action IDs are
+   * passed to the creation service. Writes are incremental, not one atomic batch:
+   * a later failure can occur after earlier suggestion actions have been persisted.
+   *
+   * @param suggestion - Persisted suggestion whose location and content drive matching.
+   * @returns Catalog entries accepted and passed to action creation in this invocation.
+   * @throws Configuration, boundary lookup, relevance service, or persistence failures.
+   */
   static async matchSuggestion(suggestion: Suggestion): Promise<RecommendableAction[]> {
     const approved = await this.listApproved();
     if (!approved.length) return [];
