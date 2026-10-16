@@ -70,6 +70,13 @@ Update `src/docs/swagger.ts`:
 - Add endpoint paths under `/api/<entities>` and `/api/<entities>/{id}`.
 - Include query parameters (pagination, foreign key filters), request bodies with example values, and responses (`200`, `201`, `400`, `404`, `500`).
 
-### 7. Verification & Build Check
+### 7. Document Generated Code
+- Follow the [documentation conventions](../../../docs/documentation-conventions.md) and [TypeScript documentation instructions](../../instructions/typescript-documentation.instructions.md) while generating modules and declarations, rather than leaving documentation as a later backfill.
+- Explain responsibilities, meaningful behavior, and side effects. Include approachable conceptual examples where useful; model stories belong in the opening summary and prose must not be fenced as code.
+- Keep HTTP schemas, authentication, and status-code contracts in OpenAPI; link rather than duplicate them in comments. Use [Synchronize Documentation](../documentation-sync/SKILL.md) to check the generated feature against comments, OpenAPI, and affected guides.
+- Expand TypeDoc coverage and portal navigation only for the requested feature; never edit generated reference files.
+
+### 8. Verification & Build Check
 - Run `npm run build` to verify TypeScript type checking and module resolution.
+- Run the smallest relevant existing tests and `npm run docs:build` when comments, guides, or reference coverage change.
 - Ensure all relative imports have `.js` extensions per ESM requirements.

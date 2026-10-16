@@ -36,6 +36,15 @@ The build fails on TypeDoc warnings (including invalid symbol references), TypeS
 
 The workflow has read-only repository permissions, requires no application secrets, and neither deploys nor publishes documentation. After committing and pushing it, review the first GitHub Actions run. To block merging on failures, a repository administrator must add `Documentation build (ubuntu-latest)` and `Documentation build (windows-latest)` as required checks in the branch ruleset; adding the workflow alone does not change branch protection.
 
+## Documentation skills
+
+Use the shared repository workflows for future documentation work:
+
+- [Document Existing Code](../.github/skills/document-existing-code/SKILL.md) (`/document-existing-code`): provide a feature or file scope to backfill comments, approachable examples, and a feature overview without changing behavior. For example: "Document the existing Assist feature using our documentation conventions; do not change runtime behavior."
+- [Synchronize Documentation](../.github/skills/documentation-sync/SKILL.md) (`/documentation-sync`): provide changed paths or a Git comparison to reconcile comments, OpenAPI, and feature overviews. With no comparison it inspects current staged/unstaged work and relevant untracked files. Ask for review-only mode when findings are desired without edits.
+
+The skills are local, team-shared instructions, not installed third-party packages or a new automated enforcement mechanism. They require the agent to inspect evidence and report uncertainty rather than inventing behavior. A subsequent task can use them on one approved feature beyond the pilot; adding the workflows does not itself broaden reference coverage.
+
 ## Reference presentation
 
 The [local TypeDoc theme](../scripts/typedoc-theme.mjs) uses the Markdown generator's theme API to simplify reference headers. Module breadcrumbs contain only the containing folder path (for example, `models/`), and the page title contains only the module name (`recommendableAction`). Interface, type alias, variable, function, and class pages show linked ancestors only in the breadcrumb (for example, `models/recommendableAction/`), with just the symbol name in the title. The project label, current symbol repetition, and kind prefixes such as `Function:` are omitted. Module IDs and signatures are unchanged.

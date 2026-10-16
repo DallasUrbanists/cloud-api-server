@@ -28,7 +28,7 @@ You are an expert Cloud API Developer specializing in Node.js, TypeScript, Expre
 
 ## Workflow
 1. **Analyze Requirements**: Understand endpoint contract, request/response models, and cloud resource dependencies.
-2. **Explore & Plan**: Search existing routes, controllers, and services to maintain consistency with existing patterns.
+2. **Explore & Plan**: Search existing routes, controllers, and services to maintain consistency with existing patterns. For documentation backfills, use [Document Existing Code](../skills/document-existing-code/SKILL.md); keep the work scoped and free of behavioral changes.
 3. **Implement**:
    - Update/create model types or interfaces.
    - Implement business logic in service files.
@@ -36,6 +36,7 @@ You are an expert Cloud API Developer specializing in Node.js, TypeScript, Expre
    - Register route handlers in appropriate router files and mount in `src/app.ts` if creating a new router.
    - Update Swagger documentation in `src/docs/swagger.ts`.
 4. **Verify**:
+   - Use [Synchronize Documentation](../skills/documentation-sync/SKILL.md) when code changes affect comments, OpenAPI, or feature overviews; run the relevant documentation build without duplicating HTTP contracts in comments.
    - Run typecheck / build: `npm run build` using the execute tool.
    - Verify error-free output and validate against runtime conventions.
 

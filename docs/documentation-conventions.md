@@ -4,7 +4,7 @@
 
 Use these conventions for new or changed TypeScript behavior. The first pilot is the [Recommendable Actions feature](recommendable-actions.md): its model, controller, service, and router. Other existing files can be documented incrementally when touched; this is not a requirement to rewrite the entire repository.
 
-The pilot establishes source comments and a curated feature overview. The [VitePress portal](index.md) renders these guides with graphical Mermaid diagrams alongside TypeDoc-generated Markdown reference for the four pilot modules. Guides and reference share the same navigation, theme, layout, and search. The [Documentation workflow](index.md#automated-checks) now validates the build on pull requests and `main` pushes. Required-check branch rules, publication, and dedicated backfill skills remain separate steps.
+The pilot establishes source comments and a curated feature overview. The [VitePress portal](index.md) renders these guides with graphical Mermaid diagrams alongside TypeDoc-generated Markdown reference for the four pilot modules. Guides and reference share the same navigation, theme, layout, and search. The [Documentation workflow](index.md#automated-checks) validates the build on pull requests and `main` pushes. Repository skills now guide bounded backfills and documentation synchronization; required-check branch rules and publication remain separate steps.
 
 ## One authority per concern
 
@@ -68,6 +68,13 @@ Provide examples liberally for modules, domain concepts, and functions whenever 
  * @returns Whether geographic scope matches, not whether the action is relevant.
  */
 ```
+
+## Reusable documentation workflows
+
+- [Document Existing Code](../.github/skills/document-existing-code/SKILL.md): use for a bounded backfill of existing modules or one feature. It traces implementation, callers, middleware, and tests before adding explanations and approachable examples without changing executable behavior.
+- [Synchronize Documentation](../.github/skills/documentation-sync/SKILL.md): use alongside code changes or for a documentation-drift review. It checks the affected comments, HTTP contract, feature overview, and reference coverage. Review-only requests produce findings without edits; uncertain contract mismatches require a decision rather than a silent behavior change.
+
+The [Cloud API Developer agent](../.github/agents/cloud-api-developer.agent.md) links to both workflows, and the [SQL CRUD generator](../.github/skills/sql-table-crud/SKILL.md) applies the same conventions to new code. Skills guide the agent; they do not automatically scan the repository, enforce prose quality, or replace CI and review. The standards above remain authoritative rather than being redefined in each skill.
 
 ## Updating or backfilling documentation
 
