@@ -870,6 +870,35 @@ Endpoint policies:
         },
       },
     },
+    '/api/suggestions/{suggestionId}/boundaries': {
+      get: {
+        summary: 'List Suggestion Boundaries', tags: ['Suggestions'], security: [{ ApiKeyAuth: [] }],
+        description: 'Returns the boundary records associated with the suggestion when it was created.',
+        parameters: [{ name: 'suggestionId', in: 'path', required: true, schema: { type: 'integer', minimum: 1 } }],
+        responses: {
+          200: { description: 'Boundaries returned.', content: { 'application/json': { schema: { type: 'object', properties: { data: { type: 'array', items: { $ref: '#/components/schemas/Boundary' } }, count: { type: 'integer' } } } } } },
+          400: { $ref: '#/components/responses/BadRequestError' },
+          404: { $ref: '#/components/responses/NotFoundError' },
+        },
+      },
+    },
+    '/api/suggestions/{suggestionId}/representatives': {
+      get: {
+        summary: 'List Suggestion Representatives', tags: ['Suggestions'], security: [{ ApiKeyAuth: [] }],
+        description: 'Returns representatives linked to the suggestion’s stored boundaries. Currently serving representatives are returned by default; servingAsOf selects a date.',
+        parameters: [
+          { name: 'suggestionId', in: 'path', required: true, schema: { type: 'integer', minimum: 1 } },
+          { name: 'servingAsOf', in: 'query', description: 'Return representatives serving on this date; defaults to currently serving.', schema: { type: 'string', format: 'date' } },
+          { name: 'limit', in: 'query', schema: { type: 'integer', minimum: 1, maximum: 500, default: 100 } },
+          { name: 'offset', in: 'query', schema: { type: 'integer', minimum: 0, maximum: 100000, default: 0 } },
+        ],
+        responses: {
+          200: { description: 'Representatives returned.', content: { 'application/json': { schema: { type: 'array', items: { $ref: '#/components/schemas/Representative' } } } } },
+          400: { $ref: '#/components/responses/BadRequestError' },
+          404: { $ref: '#/components/responses/NotFoundError' },
+        },
+      },
+    },
     '/api/suggestions/{suggestionId}/recommended-actions': {
       get: {
         summary: 'List Recommended Actions', tags: ['Suggestions'], security: [{ ApiKeyAuth: [] }],

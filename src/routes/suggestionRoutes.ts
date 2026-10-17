@@ -19,6 +19,8 @@ router.post('/upload-url', apiAccess({ apiKey: 'required' }), userAuth('public')
 
 // CRUD Endpoints for Suggestion
 router.get('/', apiAccess({ apiKey: 'required' }), userAuth('public'), SuggestionController.list);
+router.get('/:suggestionId/boundaries', apiAccess({ apiKey: 'required' }), userAuth('public'), SuggestionController.getBoundaries);
+router.get('/:suggestionId/representatives', apiAccess({ apiKey: 'required' }), userAuth('public'), SuggestionController.getRepresentatives);
 router.get('/:suggestionId/recommended-actions', apiAccess({ apiKey: 'required' }), userAuth('public'), RecommendedActionController.list);
 router.post('/:suggestionId/recommended-actions', apiAccess({ apiKey: 'required' }), userAuth('private', ['staff']), RecommendedActionController.create);
 router.get('/:suggestionId/recommended-actions/:actionId', apiAccess({ apiKey: 'required' }), userAuth('public'), RecommendedActionController.get);

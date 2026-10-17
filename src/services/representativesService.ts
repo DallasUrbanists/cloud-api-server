@@ -48,6 +48,9 @@ export class RepresentativesService {
 
     if (search.title !== undefined) conditions.push(`lower(r.title) = lower(${addParameter(search.title)})`);
     if (search.boundaryId !== undefined) conditions.push(`r.boundary_id = ${addParameter(search.boundaryId)}`);
+    if (search.boundaryIds !== undefined) {
+      conditions.push(search.boundaryIds.length ? `r.boundary_id = ANY(${addParameter(search.boundaryIds)}::int[])` : 'FALSE');
+    }
 
     if (search.servingAsOf === undefined) {
       conditions.push('("start" IS NULL OR "start" <= CURRENT_TIMESTAMP)');

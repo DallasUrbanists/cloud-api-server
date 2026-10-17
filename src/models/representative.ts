@@ -52,6 +52,7 @@ export type RepresentativeResponse = Representative;
 export interface RepresentativeSearch extends BoundarySearch {
   title?: string;
   boundaryId?: number;
+  boundaryIds?: number[];
   servingAsOf?: string;
   electionAsOf?: string;
 }

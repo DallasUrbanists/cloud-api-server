@@ -11,6 +11,9 @@ import { SuggestionService } from '../services/suggestionService.js';
 import { RecommendedActionService } from '../services/recommendedActionService.js';
 import { RecommendableActionService } from '../services/recommendableActionService.js';
 import { StorageService } from '../services/storageService.js';
+import { BoundaryService } from '../services/boundaryService.js';
+import { RepresentativesService } from '../services/representativesService.js';
+import { validDate } from '../utils/boundaryQuery.js';
 import { hasRole } from '../middleware/auth.js';
 import {
   validateCreateSuggestion,
@@ -21,6 +24,76 @@ import {
 
 /** Coordinates base persistence, optional next-step matching, and safe authorization checks. */
 export class SuggestionController {
+  /** Returns the boundary records associated with a persisted suggestion. */
+  static async getBoundaries(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const id = Number(req.params.suggestionId);
+      if (!Number.isInteger(id) || id < 1) {
+        res.status(400).json({ error: 'Bad Request', message: 'The suggestionId parameter must be a positive integer.' });
+        return;
+      }
+
+      const suggestion = await SuggestionService.getById(id);
+      if (!suggestion) {
+        res.status(404).json({ error: 'Not Found', message: `Suggestion with ID ${id} was not found.` });
+        return;
+      }
+
+      const boundaries = await Promise.all(suggestion.boundaryIds.map(boundaryId => BoundaryService.findById(boundaryId)));
+      res.status(200).json({ data: boundaries, count: boundaries.length });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /** Returns current representatives for a suggestion's stored boundaries, optionally as of a date. */
+  static async getRepresentatives(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const rawId = req.params.suggestionId;
+      const id = Number(rawId);
+      if (!/^\d+$/.test(rawId) || !Number.isSafeInteger(id) || id < 1) {
+        res.status(400).json({ error: 'Bad Request', message: 'The suggestionId parameter must be a positive integer.' });
+        return;
+      }
+
+      const servingAsOf = req.query.servingAsOf;
+      if (servingAsOf !== undefined && (typeof servingAsOf !== 'string' || !validDate(servingAsOf))) {
+        res.status(400).json({ error: 'Bad Request', message: "Query parameter 'servingAsOf' must be a valid YYYY-MM-DD date." });
+        return;
+      }
+
+      const parsePage = (name: 'limit' | 'offset', fallback: number, min: number, max: number): number | null => {
+        const value = req.query[name];
+        if (value === undefined) return fallback;
+        if (typeof value !== 'string' || !/^\d+$/.test(value)) return null;
+        const parsed = Number(value);
+        return Number.isSafeInteger(parsed) && parsed >= min && parsed <= max ? parsed : null;
+      };
+      const limit = parsePage('limit', 100, 1, 500);
+      const offset = parsePage('offset', 0, 0, 100000);
+      if (limit === null || offset === null) {
+        res.status(400).json({ error: 'Bad Request', message: 'limit must be 1–500 and offset must be 0–100000.' });
+        return;
+      }
+
+      const suggestion = await SuggestionService.getById(id);
+      if (!suggestion) {
+        res.status(404).json({ error: 'Not Found', message: `Suggestion with ID ${id} was not found.` });
+        return;
+      }
+
+      const representatives = await RepresentativesService.findAll({
+        boundaryIds: suggestion.boundaryIds,
+        servingAsOf: servingAsOf as string | undefined,
+        limit,
+        offset,
+      });
+      res.status(200).json(representatives);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   /**
    * Delegates signed image-upload URL generation without receiving or storing the file itself.
    */
