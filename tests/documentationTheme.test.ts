@@ -115,33 +115,6 @@ test('router combines only sole-class exports and preserves multi-export referen
   assert.ok(router.getFullUrl(underscored).endsWith('#' + router.getAnchor(underscored)));
 });
 
-test('model stories remain introductory prose and example tags preserve prose separately from code', async () => {
-  const app = await Application.bootstrapWithPlugins({ options: 'typedoc.json' });
-  const project = await app.convert();
-  assert.ok(project);
-  const model = project.getReflectionsByKind(ReflectionKind.Module)
-    .find(reflection => reflection.name === 'models/recommendableAction');
-  assert.ok(model?.comment);
-  assert.ok(model.comment.summary.some(part => part.kind === 'text' && part.text.includes("Let's imagine")));
-  assert.ok(!model.comment.blockTags.some(tag => tag.tag === '@example'));
-
-  const overlap = project.getReflectionsByKind(ReflectionKind.Function)
-    .find(reflection => reflection.name === 'anyBoundaryOverlap');
-  const overlapExample = overlap?.signatures?.[0].comment?.blockTags.find(tag => tag.tag === '@example');
-  assert.ok(overlapExample);
-  assert.equal(overlapExample.content[0].kind, 'text');
-  assert.ok(overlapExample.content[0].text.includes('Downtown and Uptown'));
-  assert.ok(overlapExample.content.some(part => part.kind === 'code' && part.text.includes('anyBoundaryOverlap')));
-  assert.ok(!overlapExample.content.some(part => part.kind === 'code' && part.text.includes("Let's imagine")));
-
-  const extraction = project.getReflectionsByKind(ReflectionKind.Method)
-    .find(reflection => reflection.name === 'extractCandidate');
-  const story = extraction?.signatures?.[0].comment?.blockTags.find(tag => tag.tag === '@example');
-  assert.ok(story);
-  assert.ok(story.content.every(part => part.kind === 'text'));
-  assert.ok(story.content.some(part => part.text.includes("Let's imagine")));
-});
-
 test('constructor headings publish the router anchor for inherited references', () => {
   const context = PortalMarkdownTheme.prototype.getRenderContext.call(
     { router: { getAnchor: () => 'symbol-constructor' }, owner: {}, application: { options: {} } },

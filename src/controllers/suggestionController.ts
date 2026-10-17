@@ -49,7 +49,7 @@ export class SuggestionController {
   /** Returns current representatives for a suggestion's stored boundaries, optionally as of a date. */
   static async getRepresentatives(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const rawId = req.params.suggestionId;
+      const rawId = String(req.params.suggestionId);
       const id = Number(rawId);
       if (!/^\d+$/.test(rawId) || !Number.isSafeInteger(id) || id < 1) {
         res.status(400).json({ error: 'Bad Request', message: 'The suggestionId parameter must be a positive integer.' });
