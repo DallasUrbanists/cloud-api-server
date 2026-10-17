@@ -78,7 +78,7 @@ Matching persists incrementally rather than atomically across all matches. If a 
 
 The [scanner](../src/scripts/recommendableWorker.ts) reads the [source registry](../src/data/recommendableSources.ts), compares content fingerprints, and skips unchanged pages. Changed pages produce stable candidate IDs derived from source identity and fingerprint. A supplied candidate ID avoids overwriting an existing record, but the read-before-create sequence is not an atomic upsert.
 
-When extraction reports no verifiable opportunity, the scanner attempts to mark the associated catalog entry uncertain and stores the new source fingerprint. Other failures are logged per source. Scheduling and deployment are separate from serving HTTP requests.
+When extraction reports no verifiable opportunity, the scanner attempts to mark the associated catalog entry uncertain and stores the new source fingerprint. Other failures are logged per source. In production, the `recommendable-worker` Cloud Run Job runs `dist/scripts/recommendableWorker.js` once daily at midnight America/Chicago, triggered by the `recommendable-worker-daily` Cloud Scheduler job. It uses the API runtime identity and the public-improvements Firestore database; the job image is independently deployed and does not automatically follow later API revisions.
 
 ## Configuration and operational context
 

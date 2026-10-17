@@ -15,6 +15,7 @@ service="urbanists-cloud-api-server"
 instance="contacts-relationships-db"
 connection="${project}:us-south1:${instance}"
 job="boundary-sync-worker"
+# Retained Cloud Scheduler resource name; the job now runs daily.
 schedule="boundary-sync-worker-every-minute"
 worker_name="boundary-sync-worker"
 scheduler_name="boundary-sync-scheduler"
@@ -189,7 +190,7 @@ gcloud run jobs add-iam-policy-binding "$job" --region="$region" \
   --role=roles/run.invoker
 
 gcloud scheduler jobs create http "$schedule" --location="$region" \
-  --project="$project" --schedule='* * * * *' --time-zone=America/Chicago \
+  --project="$project" --schedule='0 0 * * *' --time-zone=America/Chicago \
   --uri="https://run.googleapis.com/v2/projects/$project/locations/$region/jobs/$job:run" \
   --http-method=POST --oauth-service-account-email="$scheduler_sa" \
   --oauth-token-scope=https://www.googleapis.com/auth/cloud-platform \
@@ -199,7 +200,7 @@ gcloud scheduler jobs create http "$schedule" --location="$region" \
 
 For an existing schedule, use `gcloud scheduler jobs update http` instead of `create`. This Google API call uses **OAuth**, not an OIDC token and not an application API key. The Cloud Scheduler service agent needs its standard service-agent role; do not substitute the scheduler caller for that service agent. A successful Scheduler delivery means execution was requested, not that research succeeded.
 
-Minute-by-minute execution trades queue latency for job-start costs. Adjust the schedule for your budget. A longer-lived, always-CPU worker is an alternative; ordinary request-throttled HTTP background execution is not.
+The job runs once daily at midnight America/Chicago. This trades queue latency for lower job-start frequency; adjust the schedule if a different daily time is needed. A longer-lived, always-CPU worker is an alternative; ordinary request-throttled HTTP background execution is not.
 
 ## 8. Enable public ticks and smoke-test
 
