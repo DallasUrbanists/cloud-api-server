@@ -920,13 +920,24 @@ Endpoint policies:
     },
     '/api/recommendables': {
       get: {
-        summary: 'List approved Recommendable Actions', tags: ['Suggestions'], security: [{ ApiKeyAuth: [] }],
-        responses: { 200: { description: 'Approved catalog entries.', content: { 'application/json': { schema: {
-          type: 'object', properties: { data: { type: 'array', items: { $ref: '#/components/schemas/RecommendableAction' } }, count: { type: 'integer' } },
-        } } } } },
+        summary: 'List or search approved Recommendable Actions', tags: ['Suggestions'], security: [],
+        description: 'Public endpoint. An optional search term performs a case-insensitive substring match across summary, instructions, and reason. Results are bounded to 500 approved catalog entries.',
+        parameters: [{ name: 'search', in: 'query', required: false, schema: { type: 'string' } }],
+        responses: {
+          200: { description: 'Approved catalog entries.', content: { 'application/json': { schema: {
+            type: 'object', properties: { data: { type: 'array', items: { $ref: '#/components/schemas/RecommendableAction' } }, count: { type: 'integer' } },
+          } } } },
+          400: { $ref: '#/components/responses/BadRequestError' },
+        },
       },
     },
     '/api/recommendables/{id}': {
+      get: {
+        summary: 'Get an approved Recommendable Action', tags: ['Suggestions'], security: [],
+        description: 'Public endpoint. Returns only approved catalog entries.',
+        parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
+        responses: { 200: { description: 'Approved catalog entry.', content: { 'application/json': { schema: { $ref: '#/components/schemas/RecommendableActionEnvelope' } } } }, 404: { $ref: '#/components/responses/NotFoundError' } },
+      },
       patch: {
         summary: 'Update Recommendable Action status', tags: ['Suggestions'], security: [{ ApiKeyAuth: [], BearerAuth: [] }], description: 'Staff only. Creates a versioned status snapshot; uncertain and closed entries are excluded from matching.',
         parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
@@ -1996,6 +2007,7 @@ Endpoint policies:
       },
       RecommendedActionStatus: { type: 'string', enum: ['open', 'ignored', 'started', 'paused', 'cancelled', 'finished'] },
       RecommendableAction: { type: 'object', required: ['id', 'summary', 'instructions', 'reason', 'boundaries', 'sourceUrl', 'sourceEvidence', 'sourceDescription', 'status', 'version'], properties: { id: { type: 'string' }, summary: { type: 'string' }, instructions: { type: 'string' }, reason: { type: 'string' }, boundaries: { type: 'array', description: 'Empty means unrestricted; any one matching suggestion boundary is sufficient.', items: { type: 'integer' } }, sourceUrl: { type: 'string', format: 'uri' }, sourceEvidence: { type: 'string' }, sourceDescription: { type: 'string' }, status: { type: 'string', enum: ['candidate', 'approved', 'closed', 'uncertain', 'rejected'] }, version: { type: 'integer' }, confidence: { type: 'number', nullable: true }, createdAt: { type: 'string', format: 'date-time' }, updatedAt: { type: 'string', format: 'date-time' } } },
+      RecommendableActionEnvelope: { type: 'object', required: ['data'], properties: { data: { $ref: '#/components/schemas/RecommendableAction' } } },
       RecommendedAction: { type: 'object', required: ['id', 'summary', 'instructions', 'representativeId', 'reason', 'expirationDate', 'status', 'creationDate', 'modificationDate'], properties: { id: { type: 'string' }, summary: { type: 'string' }, instructions: { type: 'string' }, representativeId: { type: 'integer', nullable: true }, reason: { type: 'string' }, expirationDate: { type: 'string', format: 'date-time', nullable: true }, status: { $ref: '#/components/schemas/RecommendedActionStatus' }, recommendableId: { type: 'string' }, matchProbability: { type: 'number', minimum: 0, maximum: 1 }, creationDate: { type: 'string', format: 'date-time' }, modificationDate: { type: 'string', format: 'date-time' } } },
       CreateRecommendedActionDTO: { type: 'object', required: ['summary', 'instructions', 'reason'], properties: { summary: { type: 'string' }, instructions: { type: 'string' }, representativeId: { type: 'integer', nullable: true }, reason: { type: 'string' }, expirationDate: { type: 'string', format: 'date-time', nullable: true }, status: { $ref: '#/components/schemas/RecommendedActionStatus' } } },
       UpdateRecommendedActionDTO: { type: 'object', minProperties: 1, properties: { summary: { type: 'string' }, instructions: { type: 'string' }, representativeId: { type: 'integer', nullable: true }, reason: { type: 'string' }, expirationDate: { type: 'string', format: 'date-time', nullable: true }, status: { $ref: '#/components/schemas/RecommendedActionStatus' } }, description: 'Partial update; id and dates are server managed.' },

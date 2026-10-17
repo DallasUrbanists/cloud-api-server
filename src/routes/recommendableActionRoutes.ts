@@ -18,5 +18,6 @@ router.post('/candidates', apiAccess({ apiKey: 'required' }), userAuth('private'
 router.get('/candidates', apiAccess({ apiKey: 'required' }), userAuth('private', ['staff']), RecommendableActionController.candidates);
 router.patch('/candidates/:id', apiAccess({ apiKey: 'required' }), userAuth('private', ['staff']), RecommendableActionController.review);
 router.patch('/:id', apiAccess({ apiKey: 'required' }), userAuth('private', ['staff']), RecommendableActionController.updateStatus);
-router.get('/', apiAccess({ apiKey: 'required' }), userAuth('public'), RecommendableActionController.approved);
+router.get('/', apiAccess({ apiKey: 'optional' }), userAuth('public'), RecommendableActionController.approved);
+router.get('/:id', apiAccess({ apiKey: 'optional' }), userAuth('public'), RecommendableActionController.getApproved);
 export default router;

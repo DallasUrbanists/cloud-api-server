@@ -51,9 +51,22 @@ export class RecommendableActionController {
   }
 
   /** Returns approved catalog entries, excluding closed and uncertain entries from this view. */
-  static async approved(_req: Request, res: Response, next: NextFunction): Promise<void> {
-    try { const data = await RecommendableActionService.listApproved(); res.json({ data, count: data.length }); }
+  static async approved(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const search = req.query.search;
+    if (search !== undefined && typeof search !== 'string') {
+      res.status(400).json({ error: 'Bad Request', message: 'search must be a string.' }); return;
+    }
+    try { const data = await RecommendableActionService.listApproved(search as string | undefined); res.json({ data, count: data.length }); }
     catch (error) { next(error); }
+  }
+
+  /** Returns one approved catalog entry; hidden catalog states share the not-found response. */
+  static async getApproved(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const data = await RecommendableActionService.getApproved(String(req.params.id));
+      if (!data) { res.status(404).json({ error: 'Not Found', message: 'Recommendable Action not found.' }); return; }
+      res.json({ data });
+    } catch (error) { next(error); }
   }
 
   /**

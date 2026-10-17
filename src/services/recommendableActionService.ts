@@ -131,9 +131,20 @@ export class RecommendableActionService {
    * This function gathers the actions staff have approved, such as sharing ideas
    * for a park, so people can find a useful next step.
    */
-  static async listApproved(): Promise<RecommendableAction[]> {
+  static async listApproved(search?: string): Promise<RecommendableAction[]> {
     const snapshot = await getPublicImprovementsDb().collection(CATALOG).where('status', '==', 'approved').limit(500).get();
-    return snapshot.docs.map(doc => mapDoc(doc.data(), doc.id));
+    const actions = snapshot.docs.map(doc => mapDoc(doc.data(), doc.id));
+    const term = search?.trim().toLocaleLowerCase();
+    if (!term) return actions;
+    return actions.filter(action => [action.summary, action.instructions, action.reason]
+      .some(value => value.toLocaleLowerCase().includes(term)));
+  }
+
+  /** Returns one catalog entry only when its current state is approved. */
+  static async getApproved(id: string): Promise<RecommendableAction | null> {
+    const doc = await getPublicImprovementsDb().collection(CATALOG).doc(id).get();
+    if (!doc.exists || doc.data()?.status !== 'approved') return null;
+    return mapDoc(doc.data(), doc.id);
   }
 
   /**

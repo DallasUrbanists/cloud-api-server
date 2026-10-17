@@ -44,6 +44,8 @@ This is a responsibility/dependency map, not a call sequence: different service 
 
 ## Workflows and invariants
 
+The approved catalog is publicly readable without an API key through `GET /api/recommendables`; an optional `search` query performs case-insensitive substring matching across summary, instructions, and reason. `GET /api/recommendables/:id` returns an entry only while it is approved. The collection response remains bounded to 500 entries.
+
 ### Submission and extraction
 
 1. The controller checks the submission shape and connects response closure to an abort signal.
