@@ -100,6 +100,18 @@ export function boundaryConditions(search: BoundarySearch, alias = 'b', values: 
 }
 /** Reads jurisdiction records and delegates address-to-location lookup to Google Maps. */
 export class BoundaryService {
+  /** Resolves all currently applicable boundaries for a suggestion location. */
+  static async findApplicableToLocation(location: { latitude?: number; longitude?: number; address?: string }): Promise<Boundary[]> {
+    let search: BoundarySearch;
+    if (location.latitude !== undefined && location.longitude !== undefined) {
+      search = { latitude: location.latitude, longitude: location.longitude, limit: 500 };
+    } else if (location.address?.trim()) {
+      search = { ...await this.geocodeAddress(location.address), limit: 500 };
+    } else {
+      return [];
+    }
+    return this.findAll(search);
+  }
   /** Reads storage metadata even outside the effective window; throws NOT_FOUND if absent. */
   static async getRow(id: number): Promise<BoundaryRow> {
     const { rows } = await pool.query<BoundaryRow>('SELECT b.*, b.effective_date::text AS effective_date, b.expiration_date::text AS expiration_date FROM boundaries b WHERE b.id = $1', [id]);

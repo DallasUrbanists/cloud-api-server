@@ -8,6 +8,7 @@
  */
 import { Timestamp, FieldValue } from '@google-cloud/firestore';
 import { getPublicImprovementsDb } from '../config/firestore.js';
+import { BoundaryService } from './boundaryService.js';
 import {
   Suggestion,
   CreateSuggestionDTO,
@@ -57,6 +58,7 @@ function mapDocToSuggestion(docData: any, docId: string): Suggestion {
 
   return {
     id: idNumber,
+    boundaryIds: Array.isArray(docData.boundaryIds) ? docData.boundaryIds : [],
     creationDate: toIsoDateString(docData.creationDate),
     modificationDate: toIsoDateString(docData.modificationDate),
     status: docData.status as SuggestionStatus,
@@ -152,7 +154,7 @@ export class SuggestionService {
   /**
    * Allocates or accepts an identifier, normalizes attribution, and writes the new base record.
    * @remarks Explicit-ID existence checking is read-before-set, not an atomic create;
-   * auto-number allocation can leave gaps if the subsequent write fails. Does not run matching.
+   * auto-number allocation can leave gaps if the subsequent write fails. Resolves location boundaries before saving.
    * @example
    * Let's imagine a neighbor shares a wish for a bench. This saves the idea as a
    * new page in the community's notebook so it can be read later.
@@ -173,6 +175,7 @@ export class SuggestionService {
     const now = new Date();
     const docData = {
       id: nextId,
+      boundaryIds: (await BoundaryService.findApplicableToLocation(dto.location ?? {})).map(boundary => boundary.id),
       creationDate: now.toISOString(),
       modificationDate: now.toISOString(),
       status: dto.status || 'new',
