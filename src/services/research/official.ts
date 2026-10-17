@@ -1,3 +1,12 @@
+/**
+ * Approved official-document retrieval and evidence-screened roster proposals using Gemini.
+ *
+ * @remarks
+ * Host/syntax restrictions are not DNS/private-network resolution checks. Search is
+ * discovery only: publication relies on retrieved-text evidence. Original descriptions
+ * require boundary evidence; complete-roster retirement is deliberately limited to verified singleton offices.
+ * @module
+ */
 import { GoogleGenAI } from '@google/genai';
 import { load } from 'cheerio';
 import { BoundaryError } from '../../models/boundary.js';
@@ -5,11 +14,14 @@ import { boundedFetch } from '../boundaryHttp.js';
 import { officialResearchHosts } from '../boundarySources.js';
 import type { ResearchContext, ResearchPerson, ResearchResult } from './types.js';
 
+/** Provider construction seam shared by official-roster research and its tests. */
 export class OfficialResearchProvider {
+  /** Builds the bounded API-key client; configuration does not prove an upstream request will succeed. */
   static createClient(apiKey: string): GoogleGenAI {
     return new GoogleGenAI({ apiKey, vertexai: false, httpOptions: { baseUrl: 'https://generativelanguage.googleapis.com', timeout: 60000, retryOptions: { attempts: 1 } } });
   }
 }
+/** Approves HTTPS host syntax against static/operator host lists, without resolving DNS addresses. */
 function officialUrl(value: unknown): URL | undefined {
   if (typeof value !== 'string') return undefined;
   try {
@@ -20,7 +32,13 @@ function officialUrl(value: unknown): URL | undefined {
       && (officialResearchHosts.has(url.hostname) || approvedHosts.includes(url.hostname)) ? url : undefined;
   } catch { return undefined; }
 }
+/** Normalizes whitespace/case for source-evidence comparisons, not semantic verification. */
 function normalize(value: string): string { return value.replace(/\s+/g, ' ').trim().toLowerCase(); }
+/**
+ * Retrieves an approved page/PDF with bounded bytes/pages/text and redirect checks.
+ * @remarks Removes HTML navigation/script content and returns approved links for bounded follow-up.
+ * PDF extraction uses no OCR; returned text remains untrusted source data.
+ */
 export async function readOfficialDocument(value: string, signal: AbortSignal): Promise<{ url: string; text: string; links: string[] }> {
   let url = officialUrl(value);
   if (!url) throw new BoundaryError(503, 'SERVICE_INVALID', 'Research source is not an approved official website.');
@@ -52,6 +70,16 @@ export async function readOfficialDocument(value: string, signal: AbortSignal): 
   const main = $('main, [role="main"], #contentBox, #main-content, #fsPageContent').first();
   return { url: url.toString(), text: (main.length ? main : $('body')).text().replace(/\s+/g, ' ').trim().slice(0, 80000), links };
 }
+/**
+ * Collects bounded approved sources, requests roster proposals, and keeps supported people/contact facts.
+ * @remarks
+ * Discovery may use search, but evidence must occur in fetched text with matching
+ * person/scope. Partial or rejected proposals remain available for review; an empty
+ * result is not evidence that all current representatives should be retired.
+ * @example
+ * Let's imagine a school board changes its members. This helper reads the official
+ * pages and gathers the names it can support so the community directory can be reviewed.
+ */
 export async function researchRoster(params: Record<string, unknown>, context: ResearchContext): Promise<ResearchResult> {
   const key = process.env.GEMINI_API_KEY?.trim();
   if (!key) throw new BoundaryError(503, 'PROVIDER_NOT_CONFIGURED', 'Official-directory research is not configured.');

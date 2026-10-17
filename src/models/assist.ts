@@ -1,12 +1,33 @@
+/**
+ * Prose screening, summary options, sentence splitting, and output-shape validation.
+ *
+ * Let's imagine writing a note about a broken sidewalk. These helpers check that it
+ * is a message people can read and describe how short a helpful summary should be.
+ *
+ * @remarks
+ * Pure local validation does not execute submitted text or contact the model. Code
+ * detection is heuristic screening, not a general proof that text is safe or faithful.
+ * @module
+ */
 import { parse } from 'acorn';
 import { DefaultAbbrMarkerOptions, split } from 'sentence-splitter';
 
+/** Maximum input length in Unicode code points for all assistance modes. */
 export const GRAMMAR_INPUT_LIMIT = 5000;
+/** Shared returned-prose code-point ceiling, also bounding individual summary option values. */
 export const GRAMMAR_OUTPUT_LIMIT = 10000;
 
+/** Allowed final-sentence styles; auto is an input choice, never an output sentence label. */
 export const SUMMARY_SENTENCE_TYPES = ['declarative', 'imperative', 'interrogative', 'exclamatory', 'auto'] as const;
+/** Requested final-sentence style, distinct from the style of every sentence in a summary. */
 export type SummarySentenceType = typeof SUMMARY_SENTENCE_TYPES[number];
 
+/**
+ * Summary goals: hard upper limits and a soft sentence-count target.
+ *
+ * Let's imagine asking a friend to turn a long note into one short sentence.
+ * These choices describe how small that note should be and how it should sound.
+ */
 export interface SummaryOptions {
   type: SummarySentenceType;
   max_sentences: number;
@@ -14,10 +35,12 @@ export interface SummaryOptions {
   max_characters: number;
 }
 
+/** Validated prose together with fully populated summary settings. */
 export interface SummaryInput extends SummaryOptions {
   text: string;
 }
 
+/** Server defaults copied before request-specific options are applied. */
 export const DEFAULT_SUMMARY_OPTIONS: Readonly<SummaryOptions> = {
   type: 'auto', max_sentences: 1, target_sentences: 1, max_characters: 140,
 };
@@ -30,10 +53,12 @@ const sentenceParserOptions = {
   SeparatorParser: { separatorCharacters: ['.', '!', '?', '\u3002', '\uFF01', '\uFF1F', '\u061F', '\u0964', '\u0965'] },
 };
 
+/** Splits prose using abbreviation-aware punctuation rules shared by summary-output checks. */
 export function summarySentences(text: string): string[] {
   return split(text, sentenceParserOptions).filter((part) => part.type === 'Sentence').map((part) => part.raw.trim()).filter(Boolean);
 }
 
+/** A screening reason and one-based source line to help locate rejected content. */
 export interface CodeFeedback {
   reason: string;
   line: number;
@@ -48,6 +73,11 @@ const codePatterns: Array<{ reason: string; pattern: RegExp }> = [
   { reason: 'SQL-like statement', pattern: /\bselect\s+(?:\*|[\w".]+(?:\s*,\s*[\w".]+)*)\s+from\s+[\w"]+|\binsert\s+into\s+|\bdelete\s+from\s+|\b(?:drop|alter|create)\s+(?:table|database)\s+|\bupdate\s+\w+\s+set\s+/i },
 ];
 
+/**
+ * Screens normalized text for recognizable code/markup/control characters without executing it.
+ * @remarks Pattern checks precede a parser fallback; quoted code can still be flagged.
+ * An empty result is a heuristic decision, not a sandbox or semantic safety guarantee.
+ */
 export function findExecutableContent(text: string): CodeFeedback[] {
   const scanned = text.normalize('NFKC');
   const feedback: CodeFeedback[] = [];
@@ -81,6 +111,13 @@ export function findExecutableContent(text: string): CodeFeedback[] {
   return feedback;
 }
 
+/**
+ * Accepts only nonblank Unicode prose while preserving the original whitespace.
+ * @returns Input data, a shape/length error, or screening feedback; failures are returned, not thrown.
+ * @example
+ * Let's imagine a neighbor writes a note about a sidewalk. This checks that there
+ * is a message to work on before the writing helper starts reading it.
+ */
 export function validateGrammarInput(body: unknown): { data?: { text: string }; error?: string; feedback?: CodeFeedback[] } {
   if (!body || typeof body !== 'object' || Array.isArray(body)) return { error: 'Request body must be a JSON object.' };
   const input = body as Record<string, unknown>;
@@ -93,6 +130,7 @@ export function validateGrammarInput(body: unknown): { data?: { text: string }; 
   return { data: { text: input.text } };
 }
 
+/** Combines prose screening with copied defaults and compatible summary goals, returning the first failure. */
 export function validateSummaryInput(body: unknown): { data?: SummaryInput; error?: string; feedback?: CodeFeedback[] } {
   if (!body || typeof body !== 'object' || Array.isArray(body)) return { error: 'Request body must be a JSON object.' };
   const input = body as Record<string, unknown>;
@@ -120,6 +158,11 @@ export function validateSummaryInput(body: unknown): { data?: SummaryInput; erro
   return { data: { text: textValidation.data.text, ...options } };
 }
 
+/**
+ * Joins structured summary sentences only after shape, count, Unicode, and final-style checks.
+ * @remarks target_sentences is not a minimum. This verifies mechanical constraints,
+ * not that the summary is faithful; service-level code screening is a separate final check.
+ */
 export function validateSummaryOutput(body: unknown, options: SummaryOptions): { data?: string; error?: string } {
   const invalid = { error: 'Summary output does not satisfy the requested constraints.' };
   if (!body || typeof body !== 'object' || Array.isArray(body) || Object.keys(body).length !== 1) return invalid;

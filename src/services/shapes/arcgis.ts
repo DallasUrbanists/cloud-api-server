@@ -1,9 +1,16 @@
+/**
+ * Official ArcGIS geometry retrieval, pagination, shape validation, and district identity checks.
+ * Source names resolve through the version-controlled boundary source registry.
+ * @module
+ */
 import booleanIntersects from '@turf/boolean-intersects';
 import { BoundaryError, type BoundaryShape } from '../../models/boundary.js';
 import { fetchJson } from '../boundaryHttp.js';
 import { DALLAS_CITY_LAYER, shapeSources } from '../boundarySources.js';
 
+/** Retrieved polygon feature with source attributes used to verify district/organization identity. */
 export interface ShapeFeature { type: 'Feature'; geometry: BoundaryShape; properties: Record<string, any>; }
+/** Checks supported geometry structure, closed finite rings, consistent dimensions, and coordinate ranges; not topology. */
 export function validShape(value: unknown): value is BoundaryShape {
   if (!value || typeof value !== 'object') return false;
   const shape = value as BoundaryShape;
@@ -14,6 +21,11 @@ export function validShape(value: unknown): value is BoundaryShape {
       && position.every(Number.isFinite) && Math.abs(position[0]) <= 180 && Math.abs(position[1]) <= 90)
     && JSON.stringify(ring[0]) === JSON.stringify(ring.at(-1))));
 }
+/**
+ * Pages a trusted polygon layer into validated WGS84 features with optional exact intersection filtering.
+ * @remarks The where expression/layer are internal configuration, not public SQL-like input.
+ * Full intersecting geometry is retained rather than clipped to the search shape.
+ */
 export async function queryFeatures(layer: string, where: string, signal: AbortSignal, intersects?: BoundaryShape): Promise<ShapeFeature[]> {
   const metadata = await fetchJson(`${layer}?f=json`, signal);
   if (metadata.error || metadata.geometryType !== 'esriGeometryPolygon') throw new BoundaryError(502, 'SOURCE_INVALID', 'Expected a polygon GIS layer.');
@@ -41,6 +53,12 @@ export async function queryFeatures(layer: string, where: string, signal: AbortS
   }
   throw new BoundaryError(502, 'SOURCE_TOO_LARGE', 'GIS result exceeds the maximum feature count.');
 }
+/**
+ * Resolves a registered district, verifies source identity, and combines pieces into one shape.
+ * @example
+ * Let's imagine a district's outline has changed. This fetches its map from the
+ * registered source so the stored outline can be brought up to date.
+ */
 export async function fetchShape(params: Record<string, unknown>, signal: AbortSignal): Promise<BoundaryShape> {
   const source = typeof params.source === 'string' && Object.hasOwn(shapeSources, params.source) ? shapeSources[params.source] : undefined;
   const key = params.key;
@@ -60,6 +78,7 @@ export async function fetchShape(params: Record<string, unknown>, signal: AbortS
   if (features.length === 1) return features[0].geometry;
   return { type: 'MultiPolygon', coordinates: features.flatMap(feature => feature.geometry.type === 'Polygon' ? [feature.geometry.coordinates] : feature.geometry.coordinates) };
 }
+/** Retrieves all Dallas city-limit pieces as a MultiPolygon for discovery/intersection tasks. */
 export async function dallasCityShape(signal: AbortSignal): Promise<BoundaryShape> {
   const features = await queryFeatures(DALLAS_CITY_LAYER, '1=1', signal);
   if (!features.length) throw new BoundaryError(502, 'SHAPE_NOT_FOUND', 'Dallas city limits were not found.');

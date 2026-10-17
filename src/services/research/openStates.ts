@@ -1,7 +1,13 @@
+/**
+ * Open States adapter for a current Texas legislative district's representative.
+ * Filters current office, normalizes public contacts, and requires one matching person.
+ * @module
+ */
 import { BoundaryError } from '../../models/boundary.js';
 import { fetchJson } from '../boundaryHttp.js';
 import type { ResearchContext, ResearchPerson, ResearchResult } from './types.js';
 
+/** Reads a complete current district roster, requiring one matching legislator before publication is permitted. */
 export async function researchLegislators(params: Record<string, unknown>, context: ResearchContext): Promise<ResearchResult> {
   const key = process.env.OPEN_STATES_API_KEY?.trim();
   if (!key) throw new BoundaryError(503, 'PROVIDER_NOT_CONFIGURED', 'Open States research is not configured.');

@@ -1,5 +1,20 @@
+/**
+ * Civic suggestion content, authorship, locations, and create/update normalization.
+ *
+ * Let's imagine a neighbor wants a shady place to sit at a bus stop. A suggestion
+ * brings their idea, a nearby place, and any photos together so others can understand it.
+ *
+ * @remarks
+ * Validators prepare known fields without persistence or authorization. They are
+ * not general schema validators: unknown fields may be ignored and coordinate checks
+ * verify JavaScript number types, not finiteness, paired values, or geographic ranges.
+ * @module
+ */
+
+/** Workflow state of a suggestion, independent of any attached action's status. */
 export type SuggestionStatus = 'new' | 'inprogress' | 'stalled' | 'withdrawn' | 'completed';
 
+/** Allowed suggestion states reused by validators and list filtering. */
 export const VALID_SUGGESTION_STATUSES: readonly SuggestionStatus[] = [
   'new',
   'inprogress',
@@ -8,23 +23,27 @@ export const VALID_SUGGESTION_STATUSES: readonly SuggestionStatus[] = [
   'completed',
 ] as const;
 
+/** Public attribution supplied with a suggestion; mutation authorization checks authenticated emails separately. */
 export interface SuggestionAuthor {
   email: string;
   name: string;
 }
 
+/** A referenced image with caption and normalized timestamp, not uploaded image bytes. */
 export interface SuggestionPhoto {
   url: string;
   caption: string;
   timestamp: string; // ISO 8601 string representation
 }
 
+/** The short idea, longer explanation, and optional photos that readers see. */
 export interface SuggestionContent {
   summary: string;
   details: string;
   photos?: SuggestionPhoto[];
 }
 
+/** Place hints supplied by the author; storing an address does not automatically geocode it. */
 export interface SuggestionLocation {
   latitude?: number;
   longitude?: number;
@@ -32,6 +51,12 @@ export interface SuggestionLocation {
   address: string;
 }
 
+/**
+ * A persisted civic idea with public attribution and server-managed modification dates.
+ *
+ * Let's imagine a shared notebook where neighbors describe improvements to their
+ * streets. Each suggestion is one page, keeping the idea and its place together.
+ */
 export interface Suggestion {
   id: number;
   creationDate: string; // ISO 8601 string representation for API responses & JSON
@@ -42,10 +67,12 @@ export interface Suggestion {
   location: SuggestionLocation;
 }
 
+/** Detail view enriched with a recent activity page; list responses deliberately omit this log. */
 export interface SuggestionDetail extends Suggestion {
   log: import('./recommendedAction.js').LoggedAction[];
 }
 
+/** Author-supplied creation content before the service assigns persistence dates and a default identifier. */
 export interface CreateSuggestionDTO {
   id?: number;
   status?: SuggestionStatus;
@@ -66,6 +93,7 @@ export interface CreateSuggestionDTO {
   };
 }
 
+/** Partial changes to known fields; nested objects merge and supplied photo arrays replace the prior array. */
 export interface UpdateSuggestionDTO {
   status?: SuggestionStatus;
   author?: {
@@ -86,7 +114,11 @@ export interface UpdateSuggestionDTO {
 }
 
 /**
- * Validates an array of suggestion photos. Maximum 10 photos allowed.
+ * Normalizes photo references, trims captions, and supplies missing timestamps using the current clock.
+ * @remarks Does not fetch images or verify URL reachability; rejects the first invalid photo.
+ * @example
+ * Let's imagine adding a photo of a bus stop so neighbors can see where shade is
+ * needed. This keeps the photo's address and a short caption together.
  */
 export function validatePhotos(photos: any): { error?: string; data?: SuggestionPhoto[] } {
   if (!Array.isArray(photos)) {
@@ -132,7 +164,11 @@ export function validatePhotos(photos: any): { error?: string; data?: Suggestion
 }
 
 /**
- * Validates input for creating a Suggestion.
+ * Prepares a new suggestion, trimming known text and supplying initial status/location defaults.
+ * @returns Normalized data or the first validation error; no record is created here.
+ * @example
+ * Let's imagine someone sends in the idea "Add a bench by the bus stop." This helps
+ * organize their name, idea, and place into a suggestion ready to be saved.
  */
 export function validateCreateSuggestion(body: any): { error?: string; data?: CreateSuggestionDTO } {
   if (!body || typeof body !== 'object') {
@@ -216,7 +252,12 @@ export function validateCreateSuggestion(body: any): { error?: string; data?: Cr
 }
 
 /**
- * Validates input for updating a Suggestion.
+ * Prepares only supplied recognized changes while preserving omitted fields for service merging.
+ * @remarks A nonempty object with only unknown properties can produce an empty update;
+ * this is not a strict rejection of unsupported keys or an ownership check.
+ * @example
+ * Let's imagine the bench idea now has a better photo. This prepares that change
+ * without making the neighbor write the whole suggestion again.
  */
 export function validateUpdateSuggestion(body: any): { error?: string; data?: UpdateSuggestionDTO } {
   if (!body || typeof body !== 'object' || Object.keys(body).length === 0) {

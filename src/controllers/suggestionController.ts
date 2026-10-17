@@ -1,3 +1,11 @@
+/**
+ * Suggestion CRUD, upload-link delegation, and detail/activity enrichment for both route aliases.
+ *
+ * @remarks
+ * Routes apply application/user access; update/delete also compare verified emails
+ * with stored attribution or accept canonical staff. OpenAPI owns HTTP contracts.
+ * @module
+ */
 import { Request, Response, NextFunction } from 'express';
 import { SuggestionService } from '../services/suggestionService.js';
 import { RecommendedActionService } from '../services/recommendedActionService.js';
@@ -11,9 +19,10 @@ import {
   VALID_SUGGESTION_STATUSES,
 } from '../models/suggestion.js';
 
+/** Coordinates base persistence, optional next-step matching, and safe authorization checks. */
 export class SuggestionController {
   /**
-   * POST /api/public-improvements/suggestions/upload-url
+   * Delegates signed image-upload URL generation without receiving or storing the file itself.
    */
   static async getUploadUrl(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
@@ -40,7 +49,7 @@ export class SuggestionController {
     }
   }
   /**
-   * GET /api/public-improvements/suggestions
+   * Parses optional list filters and returns base records with a result count, without activity logs.
    */
   static async list(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
@@ -90,7 +99,7 @@ export class SuggestionController {
   }
 
   /**
-   * GET /api/public-improvements/suggestions/:id
+   * Reads the suggestion and newest activity page, exposing cursor metadata for additional history.
    */
   static async getById(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
@@ -120,7 +129,11 @@ export class SuggestionController {
   }
 
   /**
-   * POST /api/public-improvements/suggestions
+   * Validates and saves the idea before attempting reusable-action matching.
+   * @remarks Matcher failures are logged but do not undo successful suggestion creation.
+   * @example
+   * Let's imagine sharing an idea for shade by a bus stop. The idea is saved first;
+   * a helper then looks for useful ways the neighbor might move it forward.
    */
   static async create(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
@@ -154,7 +167,9 @@ export class SuggestionController {
   }
 
   /**
-   * PUT /api/public-improvements/suggestions/:id
+   * Requires author-email ownership or staff before preparing a partial update.
+   * @remarks A missing record fails the initial authorization check as forbidden;
+   * null returned after that check is handled as not found.
    */
   static async update(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
@@ -202,7 +217,8 @@ export class SuggestionController {
   }
 
   /**
-   * DELETE /api/public-improvements/suggestions/:id
+   * Requires author-email ownership or staff, then delegates parent/child cleanup.
+   * @remarks Authorization uses the existing stored author, not a supplied replacement.
    */
   static async delete(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {

@@ -1,5 +1,15 @@
+/**
+ * Bounded external response retrieval shared by geometry and research adapters.
+ * Callers own initial-URL approval; redirects require an explicit allowlist predicate.
+ * @module
+ */
 import { BoundaryError } from '../models/boundary.js';
 
+/**
+ * Reads bytes under caller cancellation and size limits, approving every redirect before following it.
+ * @remarks Initial URLs/headers are trusted caller inputs; this is not a standalone SSRF guard.
+ * @throws BoundaryError for rejected redirects, unsuccessful responses, missing bodies, or excess size.
+ */
 export async function boundedFetch(url: URL | string, signal: AbortSignal, maximumBytes = 12_000_000, headers?: Record<string, string>, allowRedirect?: (url: URL) => boolean): Promise<{ bytes: Uint8Array; contentType: string; url: string }> {
   let current = new URL(url);
   let response: Response;
@@ -29,6 +39,7 @@ export async function boundedFetch(url: URL | string, signal: AbortSignal, maxim
   } finally { await reader.cancel().catch(() => {}); }
   return { bytes: Buffer.concat(chunks), contentType: response.headers.get('content-type') ?? '', url: current.toString() };
 }
+/** Parses a bounded UTF-8 JSON response; redirects are not allowed and malformed JSON becomes a safe source error. */
 export async function fetchJson(url: URL | string, signal: AbortSignal, headers?: Record<string, string>): Promise<any> {
   const { bytes } = await boundedFetch(url, signal, 20_000_000, headers);
   try { return JSON.parse(Buffer.from(bytes).toString('utf8')); }

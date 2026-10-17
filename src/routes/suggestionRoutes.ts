@@ -1,3 +1,12 @@
+/**
+ * Suggestion, per-suggestion action, activity, and image-upload routing for both app aliases.
+ *
+ * @remarks
+ * Every route requires application access. Reads/creation allow optional user identity;
+ * private mutations use user/staff middleware plus ownership checks in controllers.
+ * Nested action/log routes precede the base identifier route. OpenAPI owns contracts.
+ * @module
+ */
 import { Router } from 'express';
 import { SuggestionController } from '../controllers/suggestionController.js';
 import { RecommendedActionController } from '../controllers/recommendedActionController.js';

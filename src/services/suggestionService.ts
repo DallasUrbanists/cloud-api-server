@@ -1,3 +1,11 @@
+/**
+ * Firestore persistence and normalization for civic suggestions in public-improvements.
+ *
+ * @remarks
+ * Counter allocation is transactional, but allocation and document creation are
+ * separate writes. Nested action/log lifecycles live in RecommendedActionService.
+ * @module
+ */
 import { Timestamp, FieldValue } from '@google-cloud/firestore';
 import { getPublicImprovementsDb } from '../config/firestore.js';
 import {
@@ -12,7 +20,7 @@ const COLLECTION_NAME = 'suggestion';
 const COUNTER_DOC_PATH = '_metadata/counters';
 
 /**
- * Helper to convert Firestore timestamp or string to ISO string.
+ * Converts known timestamp forms; missing values use now, while other values are stringified rather than validated.
  */
 function toIsoDateString(val: any): string {
   if (!val) return new Date().toISOString();
@@ -29,7 +37,7 @@ function toIsoDateString(val: any): string {
 }
 
 /**
- * Maps raw Firestore document data to the typed Suggestion model.
+ * Projects stored fields with legacy defaults; does not validate persisted status or coordinate values.
  */
 function mapDocToSuggestion(docData: any, docId: string): Suggestion {
   const idNumber = typeof docData.id === 'number' ? docData.id : parseInt(docId, 10) || 0;
@@ -66,6 +74,7 @@ function mapDocToSuggestion(docData: any, docId: string): Suggestion {
   };
 }
 
+/** Stores base suggestions; callers perform input validation and mutation authorization. */
 export class SuggestionService {
   /**
    * Generates the next sequential integer ID atomically using Firestore transactions.
@@ -97,7 +106,11 @@ export class SuggestionService {
   }
 
   /**
-   * Retrieves all suggestions with optional filtering.
+   * Reads suggestions ordered by stored identifier, with optional status/normalized-author filters and limit.
+   * @remarks Returns base records only, not nested actions or activity; no implicit limit is added.
+   * @example
+   * Let's imagine browsing neighbors' ideas for improving streets. This brings back
+   * the suggestion cards, or just the ones at a particular stage of progress.
    */
   static async getAll(filters?: {
     status?: SuggestionStatus;
@@ -122,7 +135,7 @@ export class SuggestionService {
   }
 
   /**
-   * Retrieves a single suggestion by its integer ID.
+   * Reads one base record, returning null when absent; activity enrichment is a controller concern.
    */
   static async getById(id: number): Promise<Suggestion | null> {
     const db = getPublicImprovementsDb();
@@ -137,7 +150,12 @@ export class SuggestionService {
   }
 
   /**
-   * Creates a new suggestion.
+   * Allocates or accepts an identifier, normalizes attribution, and writes the new base record.
+   * @remarks Explicit-ID existence checking is read-before-set, not an atomic create;
+   * auto-number allocation can leave gaps if the subsequent write fails. Does not run matching.
+   * @example
+   * Let's imagine a neighbor shares a wish for a bench. This saves the idea as a
+   * new page in the community's notebook so it can be read later.
    */
   static async create(dto: CreateSuggestionDTO): Promise<Suggestion> {
     const db = getPublicImprovementsDb();
@@ -181,7 +199,9 @@ export class SuggestionService {
   }
 
   /**
-   * Updates an existing suggestion by ID.
+   * Merges supplied nested fields and advances modification time, returning null when absent.
+   * @remarks This read/merge/write is not a transaction or deletion fence; callers must
+   * not infer lost-update prevention from nested merging. Matching is not rerun here.
    */
   static async update(id: number, dto: UpdateSuggestionDTO): Promise<Suggestion | null> {
     const db = getPublicImprovementsDb();
@@ -237,7 +257,10 @@ export class SuggestionService {
   }
 
   /**
-   * Deletes a suggestion by ID.
+   * Marks deletion in a transaction, recursively removes actions/logs, then deletes the parent.
+   * @remarks Cleanup spans multiple operations; failure can leave partial child cleanup
+   * and attempts to reopen the deletion flag for retry. Image objects are not deleted here.
+   * @returns False for a missing parent; concurrent deletion or storage failures reject.
    */
   static async delete(id: number): Promise<boolean> {
     const db = getPublicImprovementsDb();

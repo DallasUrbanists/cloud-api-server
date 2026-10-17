@@ -1,3 +1,11 @@
+/**
+ * PostgreSQL representative searches joined to shared boundary geography.
+ *
+ * @remarks
+ * Reuses boundary normalization and exact location checks before pagination.
+ * Current/historical tenure filtering belongs here; research publication belongs to sync.
+ * @module
+ */
 import { pool } from '../config/db.js';
 import { BoundaryError, boundaryFromRow, timestampString } from '../models/boundary.js';
 import { AddressGeocodingError, BoundaryService, boundaryConditions, matchesLocation } from './boundaryService.js';
@@ -5,6 +13,7 @@ export { AddressGeocodingError };
 
 import { Representative, RepresentativeResponse, RepresentativeSearch } from '../models/representative.js';
 
+/** Projects a joined row into the public directory shape, retaining contacts/elections and UTC timestamps. */
 export function representativeFromRow(row: Record<string, any>): Representative {
   return {
     id: row.id, boundaryId: row.boundary_id, boundary: boundaryFromRow(row.boundary),
@@ -17,7 +26,18 @@ export function representativeFromRow(row: Record<string, any>): Representative 
   };
 }
 
+/** Reads representatives without performing refreshes or applying user authorization. */
 export class RepresentativesService {
+  /**
+   * Combines office/term/election predicates with boundary membership and then paginates.
+   * @remarks
+   * Tenure end and election-day comparisons are inclusive, unlike boundary expiration.
+   * Without servingAsOf, tenure uses the database's current timestamp. Nested boundary
+   * isInEffect describes today even when the search asks for a historical serving date.
+   * @example
+   * Let's imagine finding the council member for your neighborhood, or checking who
+   * represented it last year. This gathers the matching contact cards.
+   */
   static async findAll(search: RepresentativeSearch): Promise<RepresentativeResponse[]> {
     const values: unknown[] = [];
     const conditions = boundaryConditions({ ...search, asOf: search.servingAsOf ?? search.asOf }, 'b', values);
@@ -56,8 +76,10 @@ export class RepresentativesService {
       .slice(search.offset ?? 0, (search.offset ?? 0) + (search.limit ?? 100));
   }
 
+  /** Shares the boundary address resolver so directory and map searches use the same location hints. */
   static geocodeAddress(address: string) { return BoundaryService.geocodeAddress(address); }
 
+  /** Fetches a joined record without tenure filtering; absent records throw an expected NOT_FOUND error. */
   static async findById(id: number): Promise<Representative> {
     const { rows } = await pool.query(
       'SELECT r.*, row_to_json(b) AS boundary FROM representatives r JOIN boundaries b ON b.id = r.boundary_id WHERE r.id = $1', [id],

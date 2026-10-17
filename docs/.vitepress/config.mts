@@ -13,7 +13,14 @@ export default defineConfig({
   srcExclude: ['operation-groups.md', 'public/**', 'reference/_media/**'],
   themeConfig: {
     nav: [
-      { text: 'System view', link: '/recommendable-actions' },
+      { text: 'Feature guides', items: [
+        { text: 'Boundaries', link: '/boundaries' },
+        { text: 'Boundary synchronization', link: '/boundary-synchronization' },
+        { text: 'Assist', link: '/assist' },
+        { text: 'Representatives', link: '/representatives' },
+        { text: 'Suggestions', link: '/suggestions' },
+        { text: 'Recommendable Actions', link: '/recommendable-actions' },
+      ] },
       { text: 'Code reference', link: '/reference/' },
       { text: 'Repository', link: repository },
     ],
@@ -22,6 +29,11 @@ export default defineConfig({
         text: 'Developer documentation',
         items: [
           { text: 'Overview and local setup', link: '/' },
+          { text: 'Boundaries', link: '/boundaries' },
+          { text: 'Boundary synchronization', link: '/boundary-synchronization' },
+          { text: 'Assist', link: '/assist' },
+          { text: 'Representatives', link: '/representatives' },
+          { text: 'Suggestions', link: '/suggestions' },
           { text: 'Recommendable Actions', link: '/recommendable-actions' },
           { text: 'Documentation conventions', link: '/documentation-conventions' },
           { text: 'Generated code reference', link: '/reference/' },

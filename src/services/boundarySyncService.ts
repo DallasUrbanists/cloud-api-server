@@ -1,3 +1,12 @@
+/**
+ * Durable PostgreSQL refresh scheduling, distributed budgets, leases, and fenced persistence.
+ *
+ * @remarks
+ * One boundary scope admits one active job. Shape and research progress commit
+ * separately; a later research failure does not roll back a successful shape update.
+ * The worker executes research outside HTTP request lifetimes.
+ * @module
+ */
 import { createHash, randomUUID } from 'node:crypto';
 import type { PoolClient } from 'pg';
 import { pool } from '../config/db.js';
@@ -7,6 +16,7 @@ import { RepresentativesService } from './representativesService.js';
 import { ensureProvider, runResearch, runShape } from './boundaryAdapters.js';
 import type { ResearchResult } from './research/types.js';
 
+/** Storage-facing durable task; the lease token fences writes and bigint identity remains text. */
 export interface SyncJob {
   id: string;
   scope_id: number;
@@ -20,21 +30,31 @@ export interface SyncJob {
   attempts: number;
   error_code: string | null;
 }
+/** Reads a bounded positive integer setting, rejecting invalid configuration as an expected service failure. */
 export function syncLimit(name: string, fallback: number, maximum = 10000): number {
   const raw = process.env[name];
   const value = raw === undefined ? fallback : Number(raw);
   if (!Number.isSafeInteger(value) || value < 1 || value > maximum) throw new BoundaryError(503, 'SYNC_CONFIGURATION_INVALID', 'Sync limits are not configured correctly.');
   return value;
 }
+/**
+ * Checks successful-refresh age in days while respecting retry backoff.
+ * @remarks Attempt timestamps do not extend freshness; TTL expiry is inclusive.
+ * @example
+ * Let's imagine a noticeboard is checked regularly for new information. A failed
+ * visit does not make its old information fresh again; it still needs another check.
+ */
 export function isDue(row: BoundaryRow, kind: 'shape' | 'research', now = Date.now()): boolean {
   const retry = row[`${kind}_retry_after`];
   if (retry && new Date(retry).getTime() > now) return false;
   const last = row[`last_${kind}_success`];
   return !last || new Date(last).getTime() + row[`${kind}_sync_ttl`] * 86400000 <= now;
 }
+/** SQL equivalent of success-based freshness and retry gating for trusted table aliases. */
 const due = (alias: string, kind: 'shape' | 'research') =>
   `(${alias}.last_${kind}_success IS NULL OR CURRENT_TIMESTAMP - ${alias}.last_${kind}_success >= ${alias}.${kind}_sync_ttl * INTERVAL '1 day')
    AND (${alias}.${kind}_retry_after IS NULL OR ${alias}.${kind}_retry_after <= CURRENT_TIMESTAMP)`;
+/** Runs a short SQL transaction with lock/statement deadlines and always releases its connection. */
 async function transaction<T>(fn: (client: PoolClient) => Promise<T>): Promise<T> {
   const client = await pool.connect();
   try {
@@ -48,6 +68,7 @@ async function transaction<T>(fn: (client: PoolClient) => Promise<T>): Promise<T
   catch (error) { await client.query('ROLLBACK'); throw error; }
   finally { client.release(); }
 }
+/** Atomically consumes a distributed fixed-window allowance; a rejected transaction rolls its increment back. */
 async function consumeBucket(client: PoolClient, bucket: string, window: string, limit: number) {
   const { rows } = await client.query(
     `INSERT INTO boundary_sync_budgets(bucket, window_start, requests) VALUES ($1, date_trunc($2, CURRENT_TIMESTAMP), 1)
@@ -58,12 +79,20 @@ async function consumeBucket(client: PoolClient, bucket: string, window: string,
   );
   if (!rows.length) throw new BoundaryError(429, 'SYNC_RATE_LIMITED', 'The sync request budget has been exhausted.');
 }
+/** Locks and verifies the running lease before publishing changes, rejecting stale workers. */
 async function fenced(client: PoolClient, job: SyncJob) {
   const { rows } = await client.query(
     `SELECT id FROM boundary_sync_jobs WHERE id = $1 AND status = 'running' AND lease_token = $2 AND lease_until > clock_timestamp() FOR UPDATE`, [job.id, job.lease_token],
   );
   if (!rows.length) throw new BoundaryError(409, 'SYNC_LEASE_LOST', 'The sync job lease is no longer valid.');
 }
+/**
+ * Applies verified people and evidence inside the caller's fenced transaction.
+ * @remarks
+ * Only authoritative, complete, nonempty rosters can retire absent incumbents.
+ * Undefined fields preserve stored values. Targeted research reports whether the
+ * requested person was updated or validly retired; unresolved proposals retain evidence for review.
+ */
 async function saveResearch(client: PoolClient, job: SyncJob, result: ResearchResult, descriptor: ServiceDescriptor) {
   const target = job.target_type === 'representative'
     ? (await client.query('SELECT r.*, (r."start" IS NULL OR r."start" <= CURRENT_TIMESTAMP) AS has_started FROM representatives r WHERE r.id = $1 FOR UPDATE', [job.target_id])).rows[0]
@@ -126,7 +155,19 @@ async function saveResearch(client: PoolClient, job: SyncJob, result: ResearchRe
   }
   return !target || targetSeen || retired;
 }
+/** Coordinates due-work selection and durable execution independently of a particular HTTP caller. */
 export class BoundarySyncService {
+  /**
+   * Applies client budgets and selects/reuses one boundary-scoped task when work is due.
+   * @remarks
+   * Client-budget consumption commits separately from selection. Explicit IDs can
+   * target historical records; forced requests bypass freshness but not active-job exclusion.
+   * @returns A queued/existing job, or null when no requested adapter is due.
+   * @throws BoundaryError for disabled sync, missing targets, conflicts, configuration, or budgets.
+   * @example
+   * Let's imagine a resident asks whether the district map needs an update. This
+   * adds the work to a shared to-do list instead of starting the same task repeatedly.
+   */
   static async enqueue(options: { target: 'boundary' | 'representative'; id?: number; kind?: 'shape' | 'research'; force?: boolean; clientAddress: string }): Promise<SyncJob | null> {
     if (process.env.BOUNDARY_SYNC_ENABLED !== 'true') throw new BoundaryError(503, 'SYNC_DISABLED', 'Boundary synchronization is not enabled.');
     await transaction(async client => {
@@ -181,6 +222,11 @@ export class BoundarySyncService {
       return queued[0];
     });
   }
+  /**
+   * Leases the next eligible task, reclaiming expired work under global concurrency/budget limits.
+   * @remarks Expired jobs exhausting crash attempts fail with backoff; lease identity changes on every claim.
+   * @returns A leased job or null when none is eligible or concurrency is full.
+   */
   static async claim(id?: string): Promise<SyncJob | null> {
     return transaction(async client => {
       await client.query('SELECT pg_advisory_xact_lock(734211)');
@@ -212,6 +258,17 @@ export class BoundarySyncService {
       return claimed.rows[0];
     });
   }
+  /**
+   * Executes allowlisted adapters under a deadline, persisting progress only while the lease is valid.
+   * @remarks
+   * Short HTTP deadlines requeue without charging a crash attempt. Other failures
+   * record a safe code and retry backoff, retaining previously good data. Database
+   * errors during failure recording can still reject instead of returning an outcome.
+   * @returns Execution outcome; shape and research are not one atomic publication.
+   * @example
+   * Let's imagine a helper works through an update list: redraw the district map,
+   * then check who represents it. Each completed part can be saved as the helper goes.
+   */
   static async execute(job: SyncJob, milliseconds = 180000): Promise<'succeeded' | 'queued' | 'failed'> {
     const signal = AbortSignal.timeout(milliseconds);
     let kind: 'shape' | 'research' = job.shape_requested ? 'shape' : 'research';
@@ -280,6 +337,7 @@ export class BoundarySyncService {
       return 'failed';
     }
   }
+  /** Reads public job progress and sanitized failure code; missing jobs throw NOT_FOUND. */
   static async status(id: string) {
     const { rows } = await pool.query('SELECT id, target_type, target_id, status, created_at, completed_at, error_code FROM boundary_sync_jobs WHERE id = $1', [id]);
     if (!rows[0]) throw new BoundaryError(404, 'NOT_FOUND', 'Sync job not found.');

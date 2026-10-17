@@ -70,7 +70,7 @@ test('single-class modules render class details without an extra Classes index',
   const onlyClass = { kind: ReflectionKind.Class, name: 'ExampleController' };
   const module = { kind: ReflectionKind.Module, name: 'controllers/example', children: [onlyClass] };
   const context = PortalMarkdownTheme.prototype.getRenderContext.call(
-    { router: {}, owner: {}, application: { options: {} } },
+    { router: { getAnchor: () => 'symbol-examplecontroller' }, owner: {}, application: { options: {} } },
     { model: module },
   );
   context.partials.memberWithGroups = (model, options) => {
@@ -78,7 +78,7 @@ test('single-class modules render class details without an extra Classes index',
     assert.equal(options.headingLevel, 2);
     return 'Class description and methods';
   };
-  assert.equal(context.partials.body(module, { headingLevel: 2 }), '## ExampleController\n\nClass description and methods');
+  assert.equal(context.partials.body(module, { headingLevel: 2 }), '## ExampleController {#symbol-examplecontroller}\n\nClass description and methods');
 });
 
 test('router combines only sole-class exports and preserves multi-export reference pages', async () => {
@@ -96,6 +96,8 @@ test('router combines only sole-class exports and preserves multi-export referen
   const multi = add(project, 'models/example', ReflectionKind.Module);
   const separateClass = add(multi, 'ExampleModel', ReflectionKind.Class);
   const separateType = add(multi, 'ExampleInput', ReflectionKind.Interface);
+  const underscored = add(separateType, 'max_characters', ReflectionKind.Property);
+  const hyphenated = add(separateType, 'max-characters', ReflectionKind.Property);
   const routes = add(project, 'routes/example', ReflectionKind.Module);
   const route = add(routes, 'default', ReflectionKind.Variable);
   const router = new PortalMarkdownRouter(app);
@@ -107,6 +109,10 @@ test('router combines only sole-class exports and preserves multi-export referen
   assert.ok(pages.some(page => page.model === separateClass));
   assert.ok(pages.some(page => page.model === separateType));
   assert.ok(pages.some(page => page.model === route));
+  assert.ok(router.getAnchor(underscored).includes('symbol-max-characters'));
+  assert.ok(!router.getAnchor(underscored).includes('_'));
+  assert.notEqual(router.getAnchor(underscored), router.getAnchor(hyphenated));
+  assert.ok(router.getFullUrl(underscored).endsWith('#' + router.getAnchor(underscored)));
 });
 
 test('model stories remain introductory prose and example tags preserve prose separately from code', async () => {
@@ -134,6 +140,16 @@ test('model stories remain introductory prose and example tags preserve prose se
   assert.ok(story);
   assert.ok(story.content.every(part => part.kind === 'text'));
   assert.ok(story.content.some(part => part.text.includes("Let's imagine")));
+});
+
+test('constructor headings publish the router anchor for inherited references', () => {
+  const context = PortalMarkdownTheme.prototype.getRenderContext.call(
+    { router: { getAnchor: () => 'symbol-constructor' }, owner: {}, application: { options: {} } },
+    { model: { kind: ReflectionKind.Class, name: 'Example' } },
+  );
+  context.partials.signature = () => 'Constructor signature';
+  assert.equal(context.partials.constructor({ signatures: [{}] }, { headingLevel: 3 }),
+    '### Constructor {#symbol-constructor}\n\nConstructor signature');
 });
 
 test('other page kinds retain the Markdown theme partials', () => {

@@ -1,3 +1,12 @@
+/**
+ * Public boundary reads, tick orchestration, and durable job polling.
+ *
+ * @remarks
+ * Expected BoundaryError failures are translated locally; unexpected details stay
+ * server-side. Tick routes own force authorization and prefetch protection.
+ * HTTP contracts are maintained in src/docs/boundaries.ts.
+ * @module
+ */
 import type { NextFunction, Request, Response } from 'express';
 import { BoundaryError } from '../models/boundary.js';
 import { BoundaryService } from '../services/boundaryService.js';
@@ -5,6 +14,7 @@ import { BoundarySyncService } from '../services/boundarySyncService.js';
 import { RepresentativesService } from '../services/representativesService.js';
 import { parseBoundarySearch, positiveId } from '../utils/boundaryQuery.js';
 
+/** Wraps async handlers with no-store headers and safe, consistent boundary-error translation. */
 export function boundaryHandler(handler: (req: Request, res: Response) => Promise<void>) {
   return async (req: Request, res: Response, _next: NextFunction): Promise<void> => {
     res.setHeader('Cache-Control', 'no-store');
@@ -20,12 +30,24 @@ export function boundaryHandler(handler: (req: Request, res: Response) => Promis
     }
   };
 }
+/** Parses optional filters/geocoding and returns the service's paginated boundary matches. */
 export const listBoundaries = boundaryHandler(async (req, res) => {
   res.json(await BoundaryService.findAll(await parseBoundarySearch(req)));
 });
+/** Validates the identifier and reads a boundary without restricting it to currently effective records. */
 export const getBoundary = boundaryHandler(async (req, res) => {
   res.json(await BoundaryService.findById(positiveId(req.params.id)));
 });
+/**
+ * Creates a handler for due/forced refresh of a chosen target or one eligible record.
+ * @remarks
+ * No-work responses return current data or an empty count. Short shape-only work
+ * may complete inline; research and unfinished work return a pollable durable job.
+ * A reused job for a different target within the same boundary returns current data.
+ * @example
+ * Let's imagine the map's district outline needs refreshing. A quick update can
+ * finish right away; a longer update gives the caller a way to check back later.
+ */
 export function tick(target: 'boundary' | 'representative', kind?: 'shape' | 'research', byId = false, force = false) {
   return boundaryHandler(async (req, res) => {
     const id = byId ? positiveId(req.params.id) : undefined;
@@ -55,6 +77,7 @@ export function tick(target: 'boundary' | 'representative', kind?: 'shape' | 're
     res.status(202).json({ jobId: String(job.id), status: job.status === 'running' ? 'running' : 'queued', statusUrl });
   });
 }
+/** Polls a bigint job identifier and attaches the current target model after success, not a historical snapshot. */
 export const getSyncJob = boundaryHandler(async (req, res) => {
   const id = req.params.id;
   if (typeof id !== 'string' || !/^[1-9]\d{0,18}$/.test(id) || BigInt(id) > 9223372036854775807n) throw new BoundaryError(400, 'INVALID_ID', 'Job ID must be a positive PostgreSQL bigint.');

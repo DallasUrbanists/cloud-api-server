@@ -1,9 +1,16 @@
+/**
+ * Per-suggestion action and activity orchestration, with authenticated actor attribution.
+ * Routes enforce staff-only action mutations; manual activity also checks author ownership.
+ * OpenAPI owns the request/response and authentication contracts.
+ * @module
+ */
 import { NextFunction, Request, Response } from 'express';
 import { hasRole } from '../middleware/auth.js';
 import { RECOMMENDED_ACTION_STATUSES, validateActionInput, validateLogInput } from '../models/recommendedAction.js';
 import { RecommendedActionService } from '../services/recommendedActionService.js';
 import { SuggestionService } from '../services/suggestionService.js';
 
+/** Parses nested identifiers and sends validation failures before service calls. */
 function ids(req: Request, res: Response): { suggestionId: number; actionId?: string } | null {
   const suggestionId = Number(req.params.suggestionId);
   const rawActionId = req.params.actionId;
@@ -19,6 +26,7 @@ function ids(req: Request, res: Response): { suggestionId: number; actionId?: st
   return { suggestionId, actionId };
 }
 
+/** Derives log attribution from verified request identity, never from submitted actor fields. */
 function actor(req: Request, res: Response): { name: string; email: string } | null {
   const email = req.user?.email?.trim();
   if (!email) {
@@ -29,13 +37,16 @@ function actor(req: Request, res: Response): { name: string; email: string } | n
   return { name: tokenName || email, email };
 }
 
+/** Handles expected service errors locally and forwards other failures to Express. */
 function sendError(error: any, res: Response, next: NextFunction): void {
   if ([400, 404, 409].includes(error?.status)) {
     res.status(error.status).json({ error: error.status === 404 ? 'Not Found' : error.status === 400 ? 'Bad Request' : 'Conflict', message: error.message });
   } else next(error);
 }
 
+/** Adapts nested HTTP operations to action/history services with explicit public-field validation. */
 export class RecommendedActionController {
+  /** Validates list choices, hiding expired actions unless explicitly requested. */
   static async list(req: Request, res: Response, next: NextFunction): Promise<void> {
     const parsed = ids(req, res); if (!parsed) return;
     const status = req.query.status; const include = req.query.includeExpired;
@@ -43,15 +54,18 @@ export class RecommendedActionController {
     if (include !== undefined && include !== 'true' && include !== 'false') { res.status(400).json({ error: 'Bad Request', message: 'includeExpired must be true or false.' }); return; }
     try { const data = await RecommendedActionService.list(parsed.suggestionId, { status: status as any, includeExpired: include === 'true' }); res.json({ data, count: data.length }); } catch (error) { sendError(error, res, next); }
   }
+  /** Reads one action, distinguishing missing children from service failures. */
   static async get(req: Request, res: Response, next: NextFunction): Promise<void> {
     const parsed = ids(req, res); if (!parsed?.actionId) return;
     try { const data = await RecommendedActionService.get(parsed.suggestionId, parsed.actionId); if (!data) { res.status(404).json({ error: 'Not Found', message: 'Recommended Action not found.' }); return; } res.json({ data }); } catch (error) { sendError(error, res, next); }
   }
+  /** Validates staff-submitted action content, excluding internal matcher linkage. */
   static async create(req: Request, res: Response, next: NextFunction): Promise<void> {
     const parsed = ids(req, res); if (!parsed) return;
     const validation = validateActionInput(req.body); if (validation.error || !validation.data) { res.status(400).json({ error: 'Bad Request', message: validation.error }); return; }
     try { const data = await RecommendedActionService.create(parsed.suggestionId, validation.data as any); res.status(201).json({ message: 'Recommended Action created successfully.', data }); } catch (error) { sendError(error, res, next); }
   }
+  /** Applies partial action changes and supplies verified actor details for any status-transition log. */
   static async update(req: Request, res: Response, next: NextFunction): Promise<void> {
     const parsed = ids(req, res); if (!parsed?.actionId) return;
     const validation = validateActionInput(req.body, true); if (validation.error || !validation.data) { res.status(400).json({ error: 'Bad Request', message: validation.error }); return; }
@@ -62,10 +76,12 @@ export class RecommendedActionController {
       res.json({ message: result.noOp ? 'Recommended Action status is unchanged.' : 'Recommended Action updated successfully.', data: result.action, ...(result.noOp ? { noOp: true } : {}) });
     } catch (error) { sendError(error, res, next); }
   }
+  /** Delegates removal of a staff-selected child while retaining its activity history. */
   static async delete(req: Request, res: Response, next: NextFunction): Promise<void> {
     const parsed = ids(req, res); if (!parsed?.actionId) return;
     try { if (!await RecommendedActionService.delete(parsed.suggestionId, parsed.actionId)) { res.status(404).json({ error: 'Not Found', message: 'Recommended Action not found.' }); return; } res.json({ message: 'Recommended Action deleted successfully.' }); } catch (error) { sendError(error, res, next); }
   }
+  /** Validates activity pagination before retrieving a newest-first page. */
   static async getLog(req: Request, res: Response, next: NextFunction): Promise<void> {
     const parsed = ids(req, res); if (!parsed) return;
     const rawLimit = req.query.limit; const limit = rawLimit === undefined ? 50 : Number(rawLimit);
@@ -73,6 +89,7 @@ export class RecommendedActionController {
     if (req.query.cursor !== undefined && typeof req.query.cursor !== 'string') { res.status(400).json({ error: 'Bad Request', message: 'cursor must be a string.' }); return; }
     try { res.json(await RecommendedActionService.getLog(parsed.suggestionId, limit, req.query.cursor as string | undefined)); } catch (error) { sendError(error, res, next); }
   }
+  /** Authorizes the suggestion's author or staff, then appends text with server-derived actor/time. */
   static async appendLog(req: Request, res: Response, next: NextFunction): Promise<void> {
     const parsed = ids(req, res); if (!parsed) return;
     const validation = validateLogInput(req.body); if (validation.error || !validation.data) { res.status(400).json({ error: 'Bad Request', message: validation.error }); return; }

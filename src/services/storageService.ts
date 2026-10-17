@@ -1,11 +1,18 @@
+/**
+ * Direct-to-Cloud-Storage image upload signing for suggestion photos.
+ * No bytes pass through this service and signing does not verify the future file's contents.
+ * @module
+ */
 import crypto from 'crypto';
 import { getStorage, getSuggestionPhotosBucketName } from '../config/storage.js';
 
+/** Optional image type/filename hints; the signer selects the bucket and unique path. */
 export interface GenerateUploadUrlOptions {
   contentType?: string;
   filename?: string;
 }
 
+/** Expiring write capability plus the intended public object address; not proof an upload has completed. */
 export interface UploadUrlResult {
   uploadUrl: string;
   publicUrl: string;
@@ -28,7 +35,12 @@ const ALLOWED_CONTENT_TYPES = [
  */
 export class StorageService {
   /**
-   * Generates a V4 signed PUT URL for uploading an image directly to GCS.
+   * Signs an expiring write URL with a unique object path after checking the declared image type.
+   * @remarks A provided filename only influences its extension. Public readability depends
+   * on bucket policy; this does not upload, inspect, sanitize, or delete image bytes.
+   * @example
+   * Let's imagine adding a photo of the bus stop to a suggestion. This gives the
+   * browser a temporary delivery address so it can send the picture to storage.
    */
   static async generateUploadUrl(options: GenerateUploadUrlOptions = {}): Promise<UploadUrlResult> {
     const contentType = (options.contentType || 'image/webp').toLowerCase().trim();

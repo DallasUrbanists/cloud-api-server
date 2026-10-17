@@ -1,3 +1,12 @@
+/**
+ * Public due-work ticks/job polling and staff-authorized forced synchronization.
+ *
+ * @remarks
+ * Mounted at /api/tick. Non-polling HEAD/prefetch requests cannot schedule work;
+ * no-store headers prevent caching. Force POSTs use API access and canonical staff checks.
+ * HTTP contracts live in src/docs/boundaries.ts, not in these wiring comments.
+ * @module
+ */
 import { Router } from 'express';
 import { getSyncJob, tick } from '../controllers/boundariesController.js';
 import { apiAccess, userAuth } from '../middleware/auth.js';

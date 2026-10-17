@@ -1,3 +1,12 @@
+/**
+ * Standalone durable-job worker, intentionally separate from the HTTP server.
+ *
+ * @remarks
+ * Requires explicit enablement and migrated PostgreSQL tables. Polls claim/execute
+ * until shutdown and closes the pool. --once exits on an idle/error pass, not after
+ * every successful job; this entrypoint must never be imported to start API work.
+ * @module
+ */
 import 'dotenv/config';
 import { setTimeout as sleep } from 'node:timers/promises';
 import { pool } from '../config/db.js';

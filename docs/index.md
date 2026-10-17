@@ -1,11 +1,21 @@
 # Developer documentation
 
-Start with the [Recommendable Actions system view](recommendable-actions.md), then explore the [generated module and symbol reference](reference/index.md). Both use the same portal navigation, theme, layout, and local search. The [documentation conventions](documentation-conventions.md) describe what belongs in comments, OpenAPI, and architecture pages.
+Start with a feature guide below, then explore the [generated module and symbol reference](reference/index.md). Both use the same portal navigation, theme, layout, and local search. The [documentation conventions](documentation-conventions.md) describe what belongs in comments, OpenAPI, and architecture pages.
+
+## Feature guides
+
+- [Boundaries](boundaries.md): jurisdiction membership, map geometry, dates, and address lookup.
+- [Boundary synchronization](boundary-synchronization.md): durable jobs, leases, providers, and evidence-backed refresh.
+- [Boundary sync deployment](boundary-sync-deployment.md): provider secrets, scheduled Cloud Run worker, and production enablement using Bash.
+- [Assist](assist.md): grammar, clarity, summaries, validation, and shared quota accounting.
+- [Representatives](representatives.md): public office/contact lookup using shared geography and tenure history.
+- [Suggestions](suggestions.md): civic ideas, photos, next steps, and activity.
+- [Recommendable Actions](recommendable-actions.md): the original reusable-action documentation pilot.
 
 ## Documentation layers
 
 - **Feature overview:** responsibilities, dependencies, and workflows, maintained as Markdown.
-- **Code reference:** generated from TypeScript declarations and TSDoc-style comments. Currently limited to the four Recommendable Actions pilot modules; this is not yet a reference for the entire system.
+- **Code reference:** generated from TypeScript declarations and TSDoc-style comments. Covers the Recommendable Actions pilot plus the selected boundary, synchronization, Assist, representative, and suggestion layers and their immediate helpers. It is not yet a reference for the entire system; migrations, seed registries, unrelated features, and shared application/configuration code are linked as context.
 - **HTTP reference:** the existing Swagger UI at `/docs` on a running API server. The [OpenAPI source](../src/docs/swagger.ts) remains authoritative for HTTP contracts. This static site does not start the API or duplicate its schemas.
 
 ## Build and read locally
@@ -18,7 +28,7 @@ npm run docs:preview
 
 Open the localhost URL printed by the preview command (normally `http://localhost:4173`). Serve the site over HTTP rather than opening HTML directly, since the portal and diagrams use JavaScript modules.
 
-`docs:check` converts and validates the TypeDoc pilot without emitting files; it does not validate portal pages. `docs:reference` uses TypeDoc, the Markdown plugin, and its VitePress integration to generate Markdown and sidebar data in `docs/reference`. `docs:build` regenerates that reference, then renders guides and code reference together through VitePress with dead-link checking. Both reject TypeDoc warnings. No database, API keys, cloud access, or CDN scripts are needed. Generated Markdown and HTML are ignored by Git; edit source comments and authored guides, not generated reference pages.
+`docs:check` converts and validates the configured TypeDoc reference without emitting files; it does not validate portal pages. `docs:reference` uses TypeDoc, the Markdown plugin, and its VitePress integration to generate Markdown and sidebar data in `docs/reference`. `docs:build` regenerates that reference, then renders guides and code reference together through VitePress with dead-link checking. Both reject TypeDoc warnings. No database, API keys, cloud access, or CDN scripts are needed. Generated Markdown and HTML are ignored by Git; edit source comments and authored guides, not generated reference pages.
 
 For live guide editing, use `npm run docs:dev` (normally `http://localhost:5173`). It generates TypeDoc once before starting VitePress. After changing TypeScript comments, run `npm run docs:reference` again. Restart `docs:dev` after adding or removing symbols so the generated sidebar is reloaded.
 
@@ -43,11 +53,11 @@ Use the shared repository workflows for future documentation work:
 - [Document Existing Code](../.github/skills/document-existing-code/SKILL.md) (`/document-existing-code`): provide a feature or file scope to backfill comments, approachable examples, and a feature overview without changing behavior. For example: "Document the existing Assist feature using our documentation conventions; do not change runtime behavior."
 - [Synchronize Documentation](../.github/skills/documentation-sync/SKILL.md) (`/documentation-sync`): provide changed paths or a Git comparison to reconcile comments, OpenAPI, and feature overviews. With no comparison it inspects current staged/unstaged work and relevant untracked files. Ask for review-only mode when findings are desired without edits.
 
-The skills are local, team-shared instructions, not installed third-party packages or a new automated enforcement mechanism. They require the agent to inspect evidence and report uncertainty rather than inventing behavior. A subsequent task can use them on one approved feature beyond the pilot; adding the workflows does not itself broaden reference coverage.
+The skills are local, team-shared instructions, not installed third-party packages or a new automated enforcement mechanism. They require the agent to inspect evidence and report uncertainty rather than inventing behavior. The five feature guides above are the first multi-feature backfill using these workflows; further expansion remains scoped to explicitly selected features.
 
 ## Reference presentation
 
-The [local TypeDoc theme](../scripts/typedoc-theme.mjs) uses the Markdown generator's theme API to simplify reference headers. Module breadcrumbs contain only the containing folder path (for example, `models/`), and the page title contains only the module name (`recommendableAction`). Interface, type alias, variable, function, and class pages show linked ancestors only in the breadcrumb (for example, `models/recommendableAction/`), with just the symbol name in the title. The project label, current symbol repetition, and kind prefixes such as `Function:` are omitted. Module IDs and signatures are unchanged.
+The [local TypeDoc theme](../scripts/typedoc-theme.mjs) uses the Markdown generator's theme API to simplify reference headers. Module breadcrumbs contain only the containing folder path (for example, `models/`), and the page title contains only the module name (`recommendableAction`). Interface, type alias, variable, function, and class pages show linked ancestors only in the breadcrumb (for example, `models/recommendableAction/`), with just the symbol name in the title. The project label, current symbol repetition, and kind prefixes such as `Function:` are omitted. Module IDs and signatures are unchanged. Generated symbol anchors use a `symbol-` prefix to avoid collisions with ordinary headings such as Properties or constructor parameter names. Generated cross-references use the same prefix; older unprefixed symbol fragment bookmarks need updating.
 
 When a module exports exactly one class and has no additional exports or attached documents, its overview, class description, and methods render on the module page. The sidebar links directly to that combined page without an extra Classes branch. Class links resolve to an anchor on the module page; the former separate `classes/ClassName.html` page is no longer generated. Modules with multiple exports keep their index and separate symbol pages.
 

@@ -20,12 +20,12 @@ This backend API server powers the following client-side applications:
 ## Developer Documentation
 
 - [Documentation conventions](docs/documentation-conventions.md): comment format, ownership, and incremental rollout.
-- [Recommendable Actions pilot](docs/recommendable-actions.md): cross-layer system view and workflows, with links to source and OpenAPI.
+- [Feature guides](docs/index.md#feature-guides): Boundaries, Boundary synchronization, Assist, Representatives, Suggestions, and the Recommendable Actions pilot, with system views and links to source/OpenAPI.
 
 - [Generated-reference guide](docs/index.md): build and read the pilot TypeDoc site locally.
 - [Documentation skills](docs/index.md#documentation-skills): bounded existing-code backfills and documentation synchronization alongside changes.
 
-Run `npm run docs:build` to generate the VitePress portal and TypeDoc reference in the Git-ignored `docs-site` directory. Use `npm run docs:preview` and open its printed localhost URL; direct HTML file opening is not supported. TypeDoc generates Markdown for the four pilot modules' source-comment reference; VitePress renders it alongside the graphical Mermaid system view and conventions. Guides and reference share navigation, styling, theme, layout, and local search. `npm run docs:dev` supports live guide editing. `npm run docs:check` validates TypeDoc conversion only; the full build also checks portal links. The [Documentation workflow](.github/workflows/documentation.yml) validates the build on pull requests and `main` pushes using Ubuntu and Windows with Node 24. See [automated-check details](docs/index.md#automated-checks) for scope and required-check setup. Publication and broader feature backfill remain follow-up steps.
+Run `npm run docs:build` to generate the VitePress portal and TypeDoc reference in the Git-ignored `docs-site` directory. Use `npm run docs:preview` and open its printed localhost URL; direct HTML file opening is not supported. TypeDoc generates Markdown for the pilot and selected feature layers' source-comment reference; VitePress renders it alongside the graphical Mermaid system view and conventions. Guides and reference share navigation, styling, theme, layout, and local search. `npm run docs:dev` supports live guide editing. `npm run docs:check` validates TypeDoc conversion only; the full build also checks portal links. The [Documentation workflow](.github/workflows/documentation.yml) validates the build on pull requests and `main` pushes using Ubuntu and Windows with Node 24. See [automated-check details](docs/index.md#automated-checks) for scope and required-check setup. Publication and broader feature backfill remain follow-up steps.
 
 ## 🛠️ Tech Stack
 

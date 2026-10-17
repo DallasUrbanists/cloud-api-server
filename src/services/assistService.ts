@@ -1,3 +1,12 @@
+/**
+ * Gemini grammar/clarity/summary calls with shared Firestore quota accounting.
+ *
+ * @remarks
+ * Source text is data, never a tool instruction. Returned structure and prose are
+ * screened locally, but semantic fidelity and reading level remain model-directed goals.
+ * No tools or automatic function calls are enabled on model requests.
+ * @module
+ */
 import crypto from 'node:crypto';
 import { GoogleGenAI, type GenerateContentResponse } from '@google/genai';
 import { getFirestoreDb } from '../config/firestore.js';
@@ -39,12 +48,15 @@ The type setting controls ONLY the final sentence. For declarative, end with a s
 Return only a JSON object with a sentences array. Each item must contain exactly one sentence in text and its grammatical type in type. The type of each item must be declarative, imperative, interrogative, or exclamatory, never auto. Do not place multiple sentences in a single item.
 The final public text is formed by joining sentence texts with one space; account for these spaces when applying max_characters.`;
 
+/** Expected text-assistance failure with a safe code and optional retry guidance. */
 export class AssistError extends Error {
+  /** Carries deliberate public text rather than raw SDK diagnostics. */
   constructor(public readonly status: number, public readonly code: string, message: string, public readonly retryAfter?: number) {
     super(message);
   }
 }
 
+/** Reads a bounded decimal-integer setting; malformed configured values fail closed. */
 export function assistLimit(name: string, fallback: number, maximum = 10000): number {
   const raw = process.env[name];
   if (raw === undefined) return fallback;
@@ -55,7 +67,9 @@ export function assistLimit(name: string, fallback: number, maximum = 10000): nu
   return value;
 }
 
+/** Shared provider and quota implementation; direct service callers must validate input themselves. */
 export class AssistService {
+  /** Creates an API-key Gemini client with bounded transport settings; does not validate connectivity. */
   static createClient(): GoogleGenAI {
     const apiKey = process.env.GEMINI_API_KEY?.trim();
     if (!apiKey) throw new AssistError(503, 'ASSIST_UNAVAILABLE', 'Text assistance is not configured.');
@@ -66,6 +80,13 @@ export class AssistService {
     });
   }
 
+  /**
+   * Atomically charges global, hashed-application, and optional hashed-user minute buckets in Firestore.
+   * @remarks
+   * Stores counters, not source text or raw credentials. The caller's five-second wait
+   * races the transaction but does not cancel it, so a late commit can still consume quota.
+   * @throws AssistError for exhausted budgets or unavailable/corrupt quota storage.
+   */
   static async consumeQuota(apiKey: string, uid?: string): Promise<void> {
     const now = Date.now();
     const window = Math.floor(now / 60000);
@@ -109,19 +130,43 @@ export class AssistService {
     }
   }
 
+  /**
+   * Requests minimal grammar/spelling corrections and rejects invalid returned prose.
+   * @example
+   * Let's imagine a neighbor writes, "The benches is broken." This helper aims to
+   * polish the sentence while keeping the neighbor's message the same.
+   */
   static async correctGrammar(text: string, signal?: AbortSignal): Promise<string> {
     return this.editText(text, 'grammar', signal);
   }
 
+  /**
+   * Requests a clearer full-document rewrite while instructing the model to preserve intent.
+   * @example
+   * Let's imagine a long note repeats the same park idea several times. This helper
+   * aims to make the note easier to follow, like a friend helping arrange its thoughts.
+   */
   static async improveClarity(text: string, signal?: AbortSignal): Promise<string> {
     return this.editText(text, 'clarity', signal);
   }
 
+  /**
+   * Requests a short summary, passing only known settings into the shared editing pipeline.
+   * @remarks Length and final-sentence style are mechanically checked; factual fidelity is not proven.
+   * @example
+   * Let's imagine a neighbor wrote a whole page about adding shade to a park. This
+   * helper aims to turn its main idea into a short note others can quickly understand.
+   */
   static async summarize(text: string, options: SummaryOptions = DEFAULT_SUMMARY_OPTIONS, signal?: AbortSignal): Promise<string> {
     const { type, max_sentences, target_sentences, max_characters } = options;
     return this.editText(text, 'summarize', signal, { type, max_sentences, target_sentences, max_characters });
   }
 
+  /**
+   * Calls one fixed model with data-only source text, combines cancellation/deadlines,
+   * and sanitizes upstream failures before enforcing returned structure and prose checks.
+   * Invalid responses are rejected rather than partially returned or silently retried.
+   */
   private static async editText(text: string, mode: 'grammar' | 'clarity' | 'summarize', signal?: AbortSignal, summaryOptions?: SummaryOptions): Promise<string> {
     const label = mode === 'grammar' ? 'Grammar' : mode === 'clarity' ? 'Clarity' : 'Summarization';
     const instruction = mode === 'grammar' ? grammarSystemInstruction : mode === 'clarity' ? claritySystemInstruction

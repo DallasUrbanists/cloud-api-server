@@ -4,7 +4,7 @@
 
 Use these conventions for new or changed TypeScript behavior. The first pilot is the [Recommendable Actions feature](recommendable-actions.md): its model, controller, service, and router. Other existing files can be documented incrementally when touched; this is not a requirement to rewrite the entire repository.
 
-The pilot establishes source comments and a curated feature overview. The [VitePress portal](index.md) renders these guides with graphical Mermaid diagrams alongside TypeDoc-generated Markdown reference for the four pilot modules. Guides and reference share the same navigation, theme, layout, and search. The [Documentation workflow](index.md#automated-checks) validates the build on pull requests and `main` pushes. Repository skills now guide bounded backfills and documentation synchronization; required-check branch rules and publication remain separate steps.
+The pilot establishes source comments and a curated feature overview. Coverage now also includes Boundaries, Boundary synchronization, Assist, Representatives, and Suggestions with their immediate helpers. The [VitePress portal](index.md) renders the selected feature guides with graphical Mermaid diagrams alongside TypeDoc-generated Markdown reference; unrelated legacy modules remain outside this backfill. Guides and reference share the same navigation, theme, layout, and search. The [Documentation workflow](index.md#automated-checks) validates the build on pull requests and `main` pushes. Repository skills now guide bounded backfills and documentation synchronization; required-check branch rules and publication remain separate steps.
 
 ## One authority per concern
 

@@ -1,7 +1,17 @@
+/**
+ * Congress.gov current Texas delegation research with chamber, session, and roster-size checks.
+ * Produces evidence-backed people for the sync publisher without writing directory records itself.
+ * @module
+ */
 import { BoundaryError, dallasDate } from '../../models/boundary.js';
 import { fetchJson } from '../boundaryHttp.js';
 import type { ResearchContext, ResearchPerson, ResearchResult } from './types.js';
 
+/**
+ * Verifies current chamber membership through roster/detail calls before returning a complete scoped result.
+ * @remarks Rejects incomplete pagination, unavailable configured sessions, and unexpected roster sizes.
+ * Contact fields are populated only when the response supports the expected format.
+ */
 export async function researchMembers(params: Record<string, unknown>, context: ResearchContext): Promise<ResearchResult> {
   const key = process.env.CONGRESS_GOV_API_KEY?.trim();
   if (!key) throw new BoundaryError(503, 'PROVIDER_NOT_CONFIGURED', 'Congress.gov research is not configured.');

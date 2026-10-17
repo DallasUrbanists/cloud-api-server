@@ -1,6 +1,24 @@
+/**
+ * Suggestion-specific next steps and append-only activity shapes with local validation.
+ *
+ * Let's imagine a neighbor's park idea comes with a next step: share it at a meeting.
+ * An action keeps track of that task, while the activity log tells the story of progress.
+ *
+ * @remarks Reusable catalog actions are distinct; these records belong to one suggestion.
+ * @module
+ */
+
+/** Allowed task states, independent of expiration and the parent suggestion's state. */
 export const RECOMMENDED_ACTION_STATUSES = ['open', 'ignored', 'started', 'paused', 'cancelled', 'finished'] as const;
+/** Lifecycle state for an individual next step. */
 export type RecommendedActionStatus = typeof RECOMMENDED_ACTION_STATUSES[number];
 
+/**
+ * A next step attached to one suggestion, optionally linked to a reusable catalog entry.
+ *
+ * Let's imagine "Share the park idea at a meeting" on a neighbor's to-do list.
+ * The action holds that task and its progress so the neighbor can keep moving forward.
+ */
 export interface RecommendedAction {
   id: string;
   summary: string;
@@ -15,6 +33,7 @@ export interface RecommendedAction {
   matchProbability?: number;
 }
 
+/** A server-attributed activity entry with immutable history semantics at the service boundary. */
 export interface LoggedAction {
   id: string;
   summary: string;
@@ -23,6 +42,7 @@ export interface LoggedAction {
   timestamp: string;
 }
 
+/** Prepared service input; internal matcher linkage is deliberately excluded from public validator fields. */
 export interface ActionInput {
   summary: string;
   instructions: string;
@@ -35,6 +55,11 @@ export interface ActionInput {
   matchProbability?: number;
 }
 
+/**
+ * Validates complete/partial public action content and normalizes timezone-qualified expirations.
+ * @remarks Does not apply persistence defaults, check representative existence, or accept internal matcher fields.
+ * @returns Known normalized fields or the first validation error, without performing I/O.
+ */
 export function validateActionInput(body: any, partial = false): { error?: string; data?: Partial<ActionInput> } {
   if (!body || typeof body !== 'object' || Array.isArray(body)) return { error: 'Request body must be an object.' };
   const allowed = ['summary', 'instructions', 'representativeId', 'reason', 'expirationDate', 'status'];
@@ -64,6 +89,7 @@ export function validateActionInput(body: any, partial = false): { error?: strin
   return { data };
 }
 
+/** Prepares manual activity text; actor identity and timestamp are intentionally server supplied. */
 export function validateLogInput(body: any): { error?: string; data?: { summary: string; description: string } } {
   if (!body || typeof body !== 'object' || Array.isArray(body)) return { error: 'Request body must be an object.' };
   if (Object.keys(body).some((key) => !['summary', 'description'].includes(key))) return { error: 'Only summary and description may be supplied.' };

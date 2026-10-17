@@ -1,7 +1,13 @@
+/**
+ * Shared boundary/representative HTTP query parsing and optional address resolution.
+ * Parsing delegates geography to BoundaryService; OpenAPI owns the external contract.
+ * @module
+ */
 import type { Request } from 'express';
 import { BoundaryError, type BoundarySearch } from '../models/boundary.js';
 import { BoundaryService } from '../services/boundaryService.js';
 
+/** Accepts a single nonblank bounded query string, returning trimmed text or an expected query error. */
 export function queryText(req: Request, name: string): string | undefined {
   const value = req.query[name];
   if (value === undefined) return undefined;
@@ -10,17 +16,24 @@ export function queryText(req: Request, name: string): string | undefined {
   }
   return value.trim();
 }
+/** Checks both date syntax and calendar validity by round-tripping a UTC day. */
 export function validDate(value: string): boolean {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(value) || value.startsWith('0000-')) return false;
   const date = new Date(`${value}T00:00:00Z`);
   return Number.isFinite(date.getTime()) && date.toISOString().slice(0, 10) === value;
 }
+/** Parses an unambiguous positive PostgreSQL integer identifier, rejecting partial numeric strings. */
 export function positiveId(value: unknown): number {
   if (typeof value !== 'string' || !/^[1-9]\d*$/.test(value) || !Number.isSafeInteger(Number(value)) || Number(value) > 2147483647) {
     throw new BoundaryError(400, 'INVALID_ID', 'ID must be a positive PostgreSQL integer.');
   }
   return Number(value);
 }
+/**
+ * Validates shared filters, gives coordinate pairs precedence over addresses, and supplies pagination.
+ * @remarks Fixed metadata overrides query values; geocoding fills only missing administrative hints.
+ * @throws BoundaryError or an address-lookup failure before any boundary query runs.
+ */
 export async function parseBoundarySearch(req: Request, fixed: Partial<BoundarySearch> = {}): Promise<BoundarySearch> {
   const search: BoundarySearch = {};
   for (const field of ['entity', 'body', 'district', 'city', 'county', 'state', 'zip', 'asOf'] as const) search[field] = fixed[field] ?? queryText(req, field);
