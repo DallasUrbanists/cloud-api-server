@@ -931,25 +931,65 @@ Endpoint policies:
         },
       },
     },
+    '/api/recommendables/locations': {
+      get: {
+        summary: 'Autocomplete an address or resolve a selected Google place', tags: ['Suggestions'], security: [],
+        description: 'Public server-side Places API (New) proxy for the playground. Supply input for predictions or placeId for location details, with the same sessionToken for a search/selection session. Requires GOOGLE_MAPS_API_KEY with Places API (New) enabled. Responses are not cached; credentials remain server-side.',
+        parameters: [
+          { name: 'input', in: 'query', schema: { type: 'string', minLength: 3, maxLength: 200 }, description: 'Address text. Required unless placeId is supplied. Predictions are biased toward Dallas.' },
+          { name: 'placeId', in: 'query', schema: { type: 'string', maxLength: 300 }, description: 'Selected place ID; returns numeric coordinates and formatted address.' },
+          { name: 'sessionToken', in: 'query', required: true, schema: { type: 'string', pattern: '^[a-zA-Z0-9_-]{16,64}$' } },
+        ],
+        responses: {
+          200: { description: 'Address predictions or selected location.', content: { 'application/json': { schema: { oneOf: [
+            { type: 'object', required: ['suggestions'], properties: { suggestions: { type: 'array', maxItems: 5, items: { type: 'object', required: ['placeId', 'text'], properties: { placeId: { type: 'string' }, text: { type: 'string' } } } } } },
+            { type: 'object', required: ['latitude', 'longitude', 'address'], properties: { latitude: { type: 'number' }, longitude: { type: 'number' }, address: { type: 'string' } } },
+          ] } } } },
+          400: { $ref: '#/components/responses/BadRequestError' },
+          503: { description: 'Address search is unconfigured, unavailable or timed out. Coordinates/current location remain available.' },
+        },
+      },
+    },
     '/api/recommendables/match': {
       post: {
         summary: 'Match free text to approved Recommendable Actions', tags: ['Suggestions'], security: [],
-        description: 'Read-only matching with no suggestion record. Optional coordinates must be supplied together; without them only unrestricted actions participate. Uses the entire approved catalog.',
+        description: 'Read-only matching with no suggestion record. Optional coordinates must be supplied together; without them only unrestricted actions participate. Uses the entire approved catalog. Actions scoring strictly above 20% are compared for the same practical next step for this description; redundancy probabilities strictly above 90% remove the lower-scoring alternative. Complementary actions remain. Failed comparisons keep both actions. Diagnostics report each pair decision, failures, cache use and timings.',
         requestBody: { required: true, content: { 'application/json': { schema: {
           type: 'object', required: ['text'], properties: {
             text: { type: 'string', minLength: 1, maxLength: 10000 },
             latitude: { type: 'number', minimum: -90, maximum: 90, example: 32.7767 },
             longitude: { type: 'number', minimum: -180, maximum: 180, example: -96.7970 },
+            bypassJevCache: { type: 'boolean', default: false, description: 'Bypass both relevance and comparison cache reads and writes for this run. Boundary caching is unaffected.' },
           },
         } } } },
         responses: {
           200: { description: 'Matches sorted by descending probability; nothing is persisted.', content: { 'application/json': { schema: {
             type: 'object', required: ['data', 'eligibleActions', 'count', 'diagnostics'], properties: {
               data: { type: 'array', items: { allOf: [{ $ref: '#/components/schemas/RecommendableAction' }, { type: 'object', required: ['matchProbability'], properties: { matchProbability: { type: 'number', minimum: 0, maximum: 1 } } }] } },
-              eligibleActions: { type: 'array', description: 'All geographically eligible actions, including scores below the threshold, sorted highest first.', items: { allOf: [{ $ref: '#/components/schemas/RecommendableAction' }, { type: 'object', required: ['matchProbability'], properties: { matchProbability: { type: 'number', minimum: 0, maximum: 1 } } }] } },
+              eligibleActions: { type: 'array', description: 'Geographically eligible actions remaining after redundancy filtering, including scores below the acceptance threshold, sorted highest first. diagnostics.eligibleCount counts actions before this filtering.', items: { allOf: [{ $ref: '#/components/schemas/RecommendableAction' }, { type: 'object', required: ['matchProbability'], properties: { matchProbability: { type: 'number', minimum: 0, maximum: 1 } } }] } },
               count: { type: 'integer' },
-              diagnostics: { type: 'object', required: ['catalogCount', 'eligibleCount', 'threshold', 'boundaries'], properties: {
+              diagnostics: { type: 'object', required: ['catalogCount', 'eligibleCount', 'threshold', 'boundaries', 'model', 'bypassJevCache', 'totalDurationMs', 'relevance', 'comparisons'], properties: {
                 catalogCount: { type: 'integer' }, eligibleCount: { type: 'integer' }, threshold: { type: 'number' },
+                model: { type: 'string' }, bypassJevCache: { type: 'boolean' }, totalDurationMs: { type: 'number', minimum: 0 },
+                relevance: { type: 'object', required: ['durationMs', 'cacheHit', 'networkRequestCount'], properties: {
+                  durationMs: { type: 'number', minimum: 0 }, cacheHit: { type: 'boolean' }, networkRequestCount: { type: 'integer', minimum: 0 },
+                } },
+                comparisons: { type: 'object', required: ['policyVersion', 'question', 'candidateMinimumProbability', 'removalThreshold', 'durationMs', 'candidateCount', 'pairCount', 'cacheHits', 'networkRequestCount', 'failures', 'removedActionCount', 'actions', 'pairs'], properties: {
+                  policyVersion: { type: 'string', example: 'same-practical-next-step-v2' }, question: { type: 'string' },
+                  candidateMinimumProbability: { type: 'number', example: .2, description: 'Exclusive relevance cutoff for comparison candidates.' },
+                  removalThreshold: { type: 'number', example: .9, description: 'Exclusive redundancy cutoff for removal.' },
+                  durationMs: { type: 'number', minimum: 0 }, candidateCount: { type: 'integer', minimum: 0 }, pairCount: { type: 'integer', minimum: 0 },
+                  cacheHits: { type: 'integer', minimum: 0 }, networkRequestCount: { type: 'integer', minimum: 0 }, failures: { type: 'integer', minimum: 0, description: 'Number of pairs kept because evaluation failed.' }, removedActionCount: { type: 'integer', minimum: 0 },
+                  actions: { type: 'array', description: 'Comparison candidates with their original classification text and relevance scores, including removed actions.', items: { type: 'object', required: ['id', 'summary', 'instructions', 'why', 'whyNot', 'matchProbability'], properties: {
+                    id: { type: 'string' }, summary: { type: 'string' }, instructions: { type: 'string' }, why: { type: 'string' }, whyNot: { type: 'string' }, matchProbability: { type: 'number', minimum: 0, maximum: 1 },
+                  } } },
+                  pairs: { type: 'array', description: 'Evaluated pairs in deterministic matchup order, including cached and failed judgments. Removed actions have no later matchups.', items: { type: 'object', required: ['actionIds', 'probability', 'cacheHit', 'decision'], properties: {
+                    actionIds: { type: 'array', minItems: 2, maxItems: 2, items: { type: 'string' }, description: 'Higher-ranked action first.' },
+                    probability: { type: 'number', nullable: true, minimum: 0, maximum: 1 }, cacheHit: { type: 'boolean' },
+                    decision: { type: 'string', enum: ['keep_both', 'remove_lower', 'keep_on_failure'] }, removedActionId: { type: 'string' },
+                    failureCode: { type: 'string', enum: ['timeout', 'network', 'http', 'malformed_response', 'invalid_answer'] },
+                  } } },
+                } },
                 boundaries: { type: 'array', items: { type: 'object', required: ['id', 'name'], properties: {
                   id: { type: 'integer' }, name: { type: 'string' },
                   representatives: { type: 'array', description: 'Currently serving representatives for this boundary, with stored contact labels and reasons.', items: { type: 'object', properties: {

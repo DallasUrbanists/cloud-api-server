@@ -47,11 +47,13 @@ function catalog(t: any, rows: ReturnType<typeof action>[], links: string[] = []
 function jev(t: any, probability: (id: string) => number = () => .95) {
   return t.mock.method(globalThis, 'fetch', async (_url: string, init: any) => {
     const body = JSON.parse(init.body);
-    return new Response(JSON.stringify({ answers: Object.fromEntries(Object.keys(body.questions).map(id => [id, { type: 'noul', noul: probability(id.slice(7)) }])) }));
+    return new Response(JSON.stringify({ answers: Object.fromEntries(Object.keys(body.questions).map(id => [id, { type: 'noul', noul: id.startsWith('pair_') ? 0 : probability(id.slice(7)) }])) }));
   });
 }
 
 test('matching validation accepts paired coordinates including zero; rejects invalid input', () => {
+  for (const bypassJevCache of ['true', 1, null, {}, []]) assert.equal(validateMatchInput({ text: 'x', bypassJevCache }).error, 'bypassJevCache must be a boolean.');
+  for (const bypassJevCache of [true, false]) assert.deepEqual(validateMatchInput({ text: 'x', bypassJevCache }).data, { text: 'x', bypassJevCache });
   for (const input of [null, [], {}, { text: ' ' }, { text: 'a'.repeat(10001) }, { text: 'x', latitude: 32 }, { text: 'x', latitude: null, longitude: null }, { text: 'x', latitude: '32', longitude: -96 }, { text: 'x', latitude: 91, longitude: 0 }, { text: 'x', latitude: 0, longitude: -181 }, { text: 'x', latitude: NaN, longitude: Infinity }]) assert.ok(validateMatchInput(input).error);
   assert.deepEqual(validateMatchInput({ text: 'x', latitude: 0, longitude: 0 }).data, { text: 'x', latitude: 0, longitude: 0 });
   assert.deepEqual(validateMatchInput({ text: 'x' }).data, { text: 'x' });
@@ -63,10 +65,10 @@ test('full catalog pagination, approved-only filtering, batches and bounded conc
   let active = 0, peak = 0;
   t.mock.method(globalThis, 'fetch', async (_url, init: any) => {
     const body = JSON.parse(init.body); const keys = Object.keys(body.questions);
-    assert.ok(keys.length <= 40); assert.equal(body.state.text, 'Raw text');
+    assert.ok(keys.length <= 40); if (keys[0].startsWith('action_')) assert.equal(body.state.text, 'Raw text');
     peak = Math.max(peak, ++active);
     await new Promise(resolve => setTimeout(resolve, 1)); --active;
-    return new Response(JSON.stringify({ answers: Object.fromEntries(keys.map(id => [id, { type: 'noul', noul: .95 }])) }));
+    return new Response(JSON.stringify({ answers: Object.fromEntries(keys.map(id => [id, { type: 'noul', noul: id.startsWith('pair_') ? 0 : .95 }])) }));
   });
   const result = await Service.findMatches({ text: 'Raw text' });
   assert.deepEqual(pages.map(p => p.length), [500, 21]);
@@ -170,6 +172,50 @@ test('JEV cache expires after one hour without extending on access', async t => 
   assert.equal(fetch.mock.callCount(), 2);
 });
 
+test('fresh runs bypass both caches without overwriting them, and diagnostic counts and timings are exposed', async t => {
+  let score = .95;
+  catalog(t, [action('a'), action('b')]); const fetch = jev(t, () => score);
+  const input = { text: 'Issue', latitude: 32.7767, longitude: -96.797 };
+  const boundaries = t.mock.method(BoundaryService, 'findAll', async () => []);
+  const first = await Service.findMatches(input);
+  assert.equal(first.diagnostics.relevance.cacheHit, false);
+  assert.equal(first.diagnostics.relevance.networkRequestCount, 1);
+  assert.equal(first.diagnostics.comparisons.networkRequestCount, 1);
+  assert.equal(fetch.mock.callCount(), 2);
+  const cached = await Service.findMatches(input);
+  assert.equal(cached.diagnostics.relevance.cacheHit, true);
+  assert.equal(cached.diagnostics.comparisons.cacheHits, 1);
+  assert.equal(fetch.mock.callCount(), 2);
+  score = .85;
+  const fresh = await Service.findMatches({ ...input, bypassJevCache: true });
+  assert.equal(fresh.count, 0);
+  assert.equal(fresh.diagnostics.bypassJevCache, true);
+  assert.equal(fresh.diagnostics.relevance.cacheHit, false);
+  assert.equal(fresh.diagnostics.comparisons.cacheHits, 0);
+  assert.equal(fetch.mock.callCount(), 4);
+  assert.equal((await Service.findMatches(input)).count, 2); assert.equal(fetch.mock.callCount(), 4);
+  assert.equal(boundaries.mock.callCount(), 4);
+  await Service.findMatches({ text: 'Other issue', bypassJevCache: true });
+  await Service.findMatches({ text: 'Other issue' }); assert.equal(fetch.mock.callCount(), 8);
+  assert.ok(first.diagnostics.totalDurationMs >= first.diagnostics.relevance.durationMs + first.diagnostics.comparisons.durationMs);
+  assert.equal(first.diagnostics.comparisons.candidateCount, 2);
+  assert.equal(first.diagnostics.comparisons.pairCount, 1);
+  assert.equal(first.diagnostics.comparisons.removedActionCount, 0);
+});
+
+test('empty and single-candidate runs have zero comparison counts', async t => {
+  catalog(t, []);
+  const empty = await Service.findMatches({ text: 'Issue' });
+  assert.equal(empty.diagnostics.comparisons.pairCount, 0);
+  assert.equal(empty.diagnostics.comparisons.networkRequestCount, 0);
+  assert.equal(empty.diagnostics.relevance.networkRequestCount, 0);
+  catalog(t, [action('a')]); jev(t);
+  const single = await Service.findMatches({ text: 'Issue' });
+  assert.equal(single.diagnostics.comparisons.candidateCount, 1);
+  assert.equal(single.diagnostics.comparisons.pairCount, 0);
+  assert.equal(single.diagnostics.comparisons.networkRequestCount, 0);
+});
+
 test('catalog content, eligibility, and model changes invalidate JEV cache; threshold and photos stay fresh', async t => {
   const rows = [{ ...action('a'), photos: ['https://example.org/old.jpg'] }];
   catalog(t, rows); const fetch = jev(t, () => .85);
@@ -182,12 +228,12 @@ test('catalog content, eligibility, and model changes invalidate JEV cache; thre
   await Service.findMatches({ text: 'x' }); assert.equal(fetch.mock.callCount(), 2);
   rows.push({ ...action('b'), photos: [] });
   assert.equal((await Service.findMatches({ text: 'x' })).eligibleActions.length, 2);
-  assert.equal(fetch.mock.callCount(), 3);
+  assert.equal(fetch.mock.callCount(), 4);
   rows[0].status = 'closed';
   assert.deepEqual((await Service.findMatches({ text: 'x' })).eligibleActions.map(a => a.id), ['b']);
-  assert.equal(fetch.mock.callCount(), 4);
+  assert.equal(fetch.mock.callCount(), 5);
   process.env.TYPESAFE_MODEL = 'another-model';
-  await Service.findMatches({ text: 'x' }); assert.equal(fetch.mock.callCount(), 5);
+  await Service.findMatches({ text: 'x' }); assert.equal(fetch.mock.callCount(), 6);
 });
 
 test('JEV cache reuses below-threshold scores and evicts least recently used entries', async t => {
@@ -234,6 +280,46 @@ test('120 second overall deadline covers stalled database reads', async t => {
   await assert.rejects(pending, (e: any) => e.status === 504);
 });
 
+test('shared matching removes encapsulated actions from playground results and saved recommendations', async t => {
+  catalog(t, [action('b'), action('c'), action('a')]);
+  const comparisons: string[] = [];
+  t.mock.method(globalThis, 'fetch', async (_url, init: any) => {
+    const body = JSON.parse(init.body);
+    return new Response(JSON.stringify({ answers: Object.fromEntries(Object.entries(body.questions).map(([id, q]: [string, any]) => {
+      const pair = id.startsWith('pair_');
+      if (pair) comparisons.push(`${body.state.action.id}:${q.instructions.other_action.id}`);
+      return [id, { type: 'noul', noul: pair ? (q.instructions.other_action.id === 'b' ? .99 : .1) : .95 }];
+    })) }));
+  });
+  const result = await Service.findMatches({ text: 'Issue' });
+  assert.deepEqual(result.data.map(a => a.id), ['a', 'c']);
+  assert.deepEqual(result.eligibleActions.map(a => a.id), ['a', 'c']);
+  assert.equal(result.count, 2); assert.equal(result.diagnostics.eligibleCount, 3);
+  assert.deepEqual(comparisons, ['a:b', 'a:c']);
+  const create = t.mock.method(RecommendedActionService, 'create', async () => ({} as any));
+  const saved = await Service.matchSuggestion({ id: 7, content: { summary: 'Issue' }, location: {} } as any);
+  assert.deepEqual(saved.map(a => a.id), ['a', 'c']);
+  assert.deepEqual(create.mock.calls.map(call => call.arguments[2]), ['recommendable-a', 'recommendable-c']);
+  assert.deepEqual(comparisons, ['a:b', 'a:c']);
+});
+
+test('a failed comparison retries on a relevance cache hit without caching the failed exclusion', async t => {
+  catalog(t, [action('a'), action('b')]);
+  let relevanceCalls = 0, comparisonCalls = 0;
+  t.mock.method(globalThis, 'fetch', async (_url, init: any) => {
+    const body = JSON.parse(init.body); const ids = Object.keys(body.questions);
+    if (ids[0].startsWith('pair_')) {
+      comparisonCalls++;
+      return new Response(JSON.stringify(comparisonCalls === 1 ? {} : { answers: { pair_0: { type: 'noul', noul: .99 } } }));
+    }
+    relevanceCalls++;
+    return new Response(JSON.stringify({ answers: Object.fromEntries(ids.map(id => [id, { type: 'noul', noul: .95 }])) }));
+  });
+  assert.equal((await Service.findMatches({ text: 'Issue' })).count, 2);
+  assert.equal((await Service.findMatches({ text: 'ISSUE!' })).count, 1);
+  assert.equal(relevanceCalls, 1); assert.equal(comparisonCalls, 2);
+});
+
 test('saved-suggestion wrapper skips existing links and returns only newly created entries', async t => {
   catalog(t, [], ['old']);
   t.mock.method(Service, 'findMatches', async input => {
@@ -255,7 +341,8 @@ test('public page and API validate requests and cancel classification on disconn
   t.after(() => new Promise<void>(resolve => { server.closeAllConnections(); server.close(() => resolve()); }));
   const base = `http://127.0.0.1:${(server.address() as any).port}`;
   const page = await fetch(base + '/playground/recommendables'); assert.equal(page.status, 200);
-  const html = await page.text(); assert.match(html, /value="32.7767"/); assert.match(html, /value="-96.7970"/);
+  const html = await page.text(); assert.match(html, /value="32.781162"/); assert.match(html, /value="-96.794861"/);
+  assert.match(html, /value="1902 Main St, Dallas, TX 75201"/);
   for (const asset of ['marked.js', 'purify.js']) {
     const script = await fetch(base + '/playground/recommendables/' + asset);
     assert.equal(script.status, 200); assert.match(script.headers.get('content-type') ?? '', /javascript/);
@@ -264,9 +351,11 @@ test('public page and API validate requests and cancel classification on disconn
   const url = base + '/api/recommendables/match';
   assert.equal((await fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: 'x' })).status, 415);
   assert.equal((await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' })).status, 400);
-  const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: 'x', latitude: 32.7767, longitude: -96.797 }) });
+  assert.equal((await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{"text":"x","bypassJevCache":"true"}' })).status, 400);
+  assert.equal((await fetch(base + '/api/recommendables/locations?input=ab&sessionToken=test-session-1234')).status, 400);
+  const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: 'x', latitude: 32.7767, longitude: -96.797, bypassJevCache: true }) });
   assert.equal(response.status, 200); assert.equal(response.headers.get('cache-control'), 'no-store');
-  assert.deepEqual(calls, [{ text: 'x', latitude: 32.7767, longitude: -96.797 }]);
+  assert.deepEqual(calls, [{ text: 'x', latitude: 32.7767, longitude: -96.797, bypassJevCache: true }]);
   let began!: () => void; const started = new Promise<void>(r => began = r);
   let cancelled!: () => void; const stopped = new Promise<void>(r => cancelled = r);
   match.mock.restore();
@@ -278,64 +367,248 @@ test('public page and API validate requests and cancel classification on disconn
 
 // Execute the actual page script against a minimal DOM to exercise submissions and safe rendering.
 test('playground script sends numeric Dallas coordinates, omits cleared inputs, handles states and safe text', async () => {
+  let reducedMotion = true;
+  const animations: Array<{ node: Element; options: any; finish: () => void }> = [];
   class Element {
     value = ''; hidden = true; checked = false; disabled = false; textContent = ''; className = ''; children: Element[] = []; attrs: any = {}; handler: any;
+    style: any = {}; scrollHeight = 110; handlers: Record<string, any> = {}; open = false;
+    focus() {} showModal() { this.open = true; } close() { this.open = false; }
     append(node: Element) { this.children.push(node); }
     replaceChildren() { this.children = []; }
     setAttribute(key: string, value: string) { this.attrs[key] = value; }
-    addEventListener(_name: string, fn: any) { this.handler = fn; }
+    querySelectorAll() { return Array.from(((this as any).innerHTML ?? '').matchAll(/<a href="([^"]+)"/g), (match: any) => ({ getAttribute: () => match[1] })); }
+    addEventListener(name: string, fn: any) { this.handler = fn; this.handlers[name] = fn; }
+    getBoundingClientRect() { return { height: 200 }; }
+    animate(_frames: any, options: any) {
+      let finish!: () => void, cancel!: (error: Error) => void;
+      const finished = new Promise<void>((resolve, reject) => { finish = resolve; cancel = reject; });
+      animations.push({ node: this, options, finish });
+      return { finished, cancel: () => cancel(new Error('Animation cancelled')) };
+    }
   }
-  const ids = Object.fromEntries(['match-form', 'submit', 'status', 'output', 'results', 'text', 'latitude', 'longitude', 'show-all', 'random-description', 'low-toggle'].map(id => [id, new Element()]));
+  const ids = Object.fromEntries(['match-form', 'submit', 'status', 'output', 'results', 'text', 'latitude', 'longitude', 'show-all', 'random-description', 'low-toggle', 'results-heading', 'form-controls', 'bypass-jev-cache', 'address', 'address-options', 'location-status', 'maps-attribution', 'sample-dialog', 'choose-sample', 'sample-filter', 'sample-list', 'sample-count', 'close-samples', 'testing-options', 'testing-options-button', 'testing-options-panel', 'set-location', 'set-location-button', 'set-location-options', 'current-location', 'default-location', 'clear-location', 'location-mode', 'coordinate-fields', 'address-fields'].map(id => [id, new Element()]));
   ids.text.value = 'Street improvements'; ids.latitude.value = '32.7767'; ids.longitude.value = '-96.7970';
-  let sent: any; let failure = false; let eligible = 4; let count = 1; let requests = 0; let withLow = true;
+  let sent: any; let failure = false; let eligible = 4; let count = 1; let requests = 0; let withLow = true; let customActions: any[] | undefined; let customBoundaries: any[] | undefined;
   const hostile = '<img src=x onerror=alert(1)>';
   let sanitized = '';
-  vm.runInNewContext(playgroundHtml.match(/<script>([\s\S]*?)<\/script>/)![1], { URL, marked, DOMPurify: { sanitize: (html: string, options: any) => { assert.ok(options.ALLOWED_TAGS.includes('ol')); assert.ok(!options.ALLOWED_TAGS.includes('script')); assert.ok(!options.ALLOWED_ATTR.includes('onclick')); sanitized = html; return html; } }, document: { getElementById: (id: string) => ids[id], createElement: () => new Element() }, fetch: async (_url: string, init: any) => {
-    assert.equal(ids.submit.disabled, true); assert.equal(ids.results.attrs['aria-busy'], 'true'); sent = JSON.parse(init.body); requests++;
+  let geoSuccess: any, geoError: any;
+  const addressCalls: URL[] = []; let delayedAddress: ((value: any) => void) | undefined; let delayAddress = false;
+  vm.runInNewContext(playgroundHtml.match(/<script>([\s\S]*?)<\/script>/)![1], { URL, URLSearchParams, AbortController, setTimeout, clearTimeout, crypto: { randomUUID: () => 'a'.repeat(32) }, navigator: { geolocation: { getCurrentPosition(success: any, error: any) { geoSuccess = success; geoError = error; } } }, getComputedStyle: () => ({ paddingTop: '24px', paddingBottom: '24px', marginTop: '16px', marginBottom: '16px', borderTopWidth: '1px', borderBottomWidth: '1px' }), window: { addEventListener() {}, matchMedia: () => ({ matches: reducedMotion }) }, marked, DOMPurify: { sanitize: (html: string, options: any) => { assert.ok(options.ALLOWED_TAGS.includes('ol')); assert.ok(!options.ALLOWED_TAGS.includes('script')); assert.ok(!options.ALLOWED_ATTR.includes('onclick')); sanitized = html; return html; } }, document: { getElementById: (id: string) => ids[id], createElement: () => new Element() }, fetch: async (_url: string, init: any) => {
+    if (_url.startsWith('/api/recommendables/locations?')) {
+      const url = new URL(_url, 'http://localhost'); addressCalls.push(url);
+      if (delayAddress) return new Promise(resolve => { delayedAddress = resolve; });
+      return { ok: true, json: async () => url.searchParams.has('placeId') ? { address: 'Dallas City Hall', latitude: 32.7767, longitude: -96.797 } : { suggestions: [{ placeId: 'city-hall', text: 'Dallas City Hall' }] } };
+    }
+    assert.equal(ids.submit.disabled, true); assert.equal(ids['form-controls'].disabled, true); assert.equal(ids.submit.children[0].className, 'spinner'); assert.equal(ids.results.attrs['aria-busy'], 'true'); sent = JSON.parse(init.body); requests++;
     const high = { ...action('a'), photos: ['https://example.org/photo.jpg', 'javascript:alert(1)', 'https://example.org/photo.jpg'], instructions: '1. [Go to Dallas 311](https://dallascrm.my.site.com/public/s/)\n2. Choose **Street**', summary: hostile, matchProbability: .8, sourceUrl: 'javascript:alert(1)' };
-    return { ok: !failure, json: async () => failure ? { message: 'Try again' } : { data: count ? [high] : [], eligibleActions: eligible ? (count ? [high, { ...high, id: 'b', matchProbability: .5, photos: [] }, { ...high, id: 'c', matchProbability: .49999 }, { ...high, id: 'd', matchProbability: .2 }, { ...high, id: 'e', matchProbability: .19999 }, { ...high, id: 'f', matchProbability: .1 }].filter(action => withLow || action.matchProbability >= .5) : [{ ...high, matchProbability: .1 }]) : [], count, diagnostics: { catalogCount: 4, eligibleCount: eligible, threshold: .9, boundaries: [{ id: 20, name: 'Dallas', representatives: [{ name: 'Jane Doe', title: 'Council Member', phones: [{ label: 'Office', phone: '2145551234', when_to_use: 'Neighborhood concerns' }], emails: [{ label: 'Staff', email: 'office@example.org', when_to_use: 'Written requests' }] }] }] } } };
+    return { ok: !failure, json: async () => failure ? { message: 'Try again' } : { data: count ? [high] : [], eligibleActions: customActions ?? (eligible ? (count ? [high, { ...high, id: 'b', matchProbability: .5, photos: [], whyNot: '  ', sourceUrl: 'https://dallascrm.my.site.com/public/s/#top' }, { ...high, id: 'c', matchProbability: .49999, sourceUrl: 'https://example.org/source' }, { ...high, id: 'd', matchProbability: .2 }, { ...high, id: 'e', matchProbability: .19999 }, { ...high, id: 'f', matchProbability: .1 }].filter(action => withLow || action.matchProbability >= .5) : [{ ...high, matchProbability: .1 }]) : []), count, diagnostics: { catalogCount: 4, eligibleCount: eligible, threshold: .9, boundaries: customBoundaries ?? [{ id: 20, name: 'Dallas / Council', representatives: [{ name: 'Jane Doe', title: 'Council Member', phones: [{ label: 'Alex Staff — Council Liaison', phone: '2145559999', when_to_use: 'Staff assistance' }, { label: 'Council Member Jane Doe', phone: '2145551234', when_to_use: 'Neighborhood concerns' }], emails: [{ label: 'JANE DOE - Council member', email: 'office@example.org', when_to_use: 'Written requests for neighborhood concerns' }] }] }] } } };
   } });
   const submit = () => ids['match-form'].handler({ preventDefault() {} });
-  await submit(); assert.deepEqual(sent, { text: 'Street improvements', latitude: 32.7767, longitude: -96.797 });
-  assert.equal(ids.submit.disabled, false); assert.equal(ids.results.attrs['aria-busy'], 'false');
-  const card = ids.output.children[0]; assert.equal(card.children[0].textContent, hostile); assert.equal(card.children.length, 6);
-  const gallery = card.children[2];
+  assert.equal(ids['show-all'].disabled, true); assert.equal(ids['show-all'].checked, false);
+  assert.match(playgroundHtml, /id="low-toggle" class="result-toggle"><input id="show-all" type="checkbox" disabled>/);
+  assert.equal(ids['location-mode'].value, 'address'); assert.equal(ids['coordinate-fields'].hidden, true);
+  assert.equal(ids['set-location-options'].hidden, true);
+  ids['set-location-button'].handler(); assert.equal(ids['set-location-options'].hidden, false);
+  assert.equal(ids['set-location-button'].attrs['aria-expanded'], 'true');
+  ids['set-location'].handlers.keydown({ key: 'Escape', preventDefault() {} });
+  assert.equal(ids['set-location-options'].hidden, true);
+  ids['set-location-button'].handler(); ids['default-location'].handler();
+  assert.equal(ids['set-location-options'].hidden, true);
+  ids['location-mode'].handler({ target: { value: 'coordinates' } });
+  assert.equal(ids['coordinate-fields'].hidden, false); assert.equal(ids.latitude.disabled, false);
+  assert.equal(ids['address-fields'].hidden, true);
+  ids['location-mode'].handler({ target: { value: 'address' } });
+  assert.equal(ids['coordinate-fields'].hidden, true); assert.equal(ids.latitude.disabled, true);
+  assert.equal(ids.address.value, '1902 Main St, Dallas, TX 75201');
+  await submit(); assert.deepEqual(sent, { text: 'Street improvements', bypassJevCache: false, latitude: 32.781162, longitude: -96.794861 });
+  assert.equal(ids.submit.disabled, false); assert.equal(ids['form-controls'].disabled, false); assert.equal(ids.submit.textContent, 'Search'); assert.equal(ids.results.attrs['aria-busy'], 'false');
+  assert.equal(ids['results-heading'].hidden, false);
+  const card = ids.output.children[0]; assert.equal(card.children[0].textContent, hostile + ' '); assert.equal(card.children.length, 5);
+  const gallery = card.children[1];
   assert.equal(gallery.className, 'match-photos');
   assert.equal(gallery.children.length, 1);
   assert.equal(gallery.children[0].href, 'https://example.org/photo.jpg');
   assert.equal(gallery.children[0].children[0].src, 'https://example.org/photo.jpg');
   assert.equal(gallery.children[0].children[0].loading, 'lazy');
-  assert.equal(ids.output.children[1].children.length, 5);
+  assert.equal(ids.output.children[1].children.length, 3);
+  assert.equal(card.children[0].children[0].textContent, '80% match');
+  assert.match(playgroundHtml, /\.probability\{white-space:nowrap\}/);
+  assert.equal(card.children[3].children[0].textContent, 'Why: ');
+  assert.equal(card.children[4].children[0].textContent, 'Why not: ');
+  assert.equal(ids.output.children[1].children[2].children.length, 1);
+  assert.equal(ids.output.children[1].children[2].children[0].textContent, 'Helps');
   assert.equal(card.className, 'card match-primary');
   assert.equal(ids.output.children[1].className, 'card match-secondary');
-  assert.equal(ids.output.children.length, 4);
-  assert.equal(ids.output.children[2], ids['low-toggle']);
-  assert.equal(ids['low-toggle'].hidden, false);
+  assert.equal(ids.output.children.length, 3);
+  assert.ok(!ids.output.children.includes(ids['low-toggle']));
+  assert.match(playgroundHtml, /<details id="testing-options" class="testing-options">[\s\S]*?id="low-toggle"[\s\S]*?<\/details>/);
+  assert.equal(ids['show-all'].disabled, false);
   assert.match(sanitized, /<ol>/); assert.match(sanitized, /<a href="https:\/\/dallascrm.my.site.com\/public\/s\/">Go to Dallas 311<\/a>/); assert.match(sanitized, /<strong>Street<\/strong>/);
-  const table = ids.output.children[3].children[0];
-  assert.deepEqual(table.children[1].children[0].children.map(c => c.textContent), ['Boundary', 'Representative']);
+  const table = ids.output.children[2].children[0];
+  assert.equal(table.children[0].textContent, 'Boundary matches');
+  assert.deepEqual(table.children[1].children[0].children.map(c => c.textContent), ['Representative', 'Contact']);
+  const identity = table.children[2].children[0].children[0];
+  assert.equal(identity.children[0].textContent, 'Jane Doe — Council Member');
+  assert.deepEqual(identity.children[1].children.map(level => level.textContent), ['Dallas', ' › Council']);
   const representative = table.children[2].children[0].children[1].children[0];
-  assert.equal(representative.children[0].textContent, 'Jane Doe — Council Member');
-  assert.equal(representative.children[1].children[0].textContent, 'Office: ');
-  assert.equal(representative.children[1].children[2].textContent, 'Neighborhood concerns');
-  assert.equal(representative.children[2].children[1].textContent, 'office@example.org');
+  assert.equal(representative.children[0].children[0].textContent, 'Phone: ');
+  assert.equal(representative.children.length, 3);
+  assert.equal(representative.children[2].textContent, 'Written requests for neighborhood concerns');
+  assert.equal(representative.children[1].children[1].textContent, 'office@example.org');
+  assert.equal(table.children[2].children[0].children[1].children[1].children[0].textContent, 'Alex Staff — Council Liaison');
   ids['show-all'].checked = true; ids['show-all'].handler();
   assert.equal(requests, 1); assert.equal(ids.output.children.length, 6);
   assert.equal(ids.status.textContent, '');
   assert.equal(ids.output.children[5].className, 'boundaries');
   assert.equal(ids.output.children[3].className, 'card match-tertiary');
-  assert.match(ids.output.children[4].children[1].textContent, /20.0% · Tertiary/);
+  assert.equal(ids.output.children[4].children[0].children[0].textContent, '20% match');
+  assert.equal(ids.output.children[3].children.at(-1)?.textContent, 'View source');
+  const more311 = ids.output.children[2];
+  assert.equal(more311.textContent, 'Show more');
+  assert.equal(more311.attrs['aria-expanded'], 'false');
+  assert.equal(ids.output.children[3].hidden, true); assert.equal(ids.output.children[4].hidden, true);
+  more311.handler(); assert.equal(more311.textContent, 'Show less');
+  assert.equal(ids.output.children[3].hidden, false); assert.equal(ids.output.children[4].hidden, false);
+  more311.handler(); assert.equal(more311.textContent, 'Show more'); assert.equal(ids.output.children[3].hidden, true);
+  assert.equal(requests, 1);
   ids['show-all'].checked = false; ids['show-all'].handler();
-  assert.equal(requests, 1); assert.equal(ids.output.children.length, 4);
+  assert.equal(requests, 1); assert.equal(ids.output.children.length, 3);
+  ids['show-all'].checked = true;
   withLow = false; await submit();
-  assert.equal(ids['low-toggle'].hidden, true);
+  assert.equal(ids['show-all'].disabled, true); assert.equal(ids['show-all'].checked, false);
   assert.equal(ids.output.children.length, 3);
   withLow = true;
-  ids.latitude.value = ''; ids.longitude.value = ''; count = 0;
-  await submit(); assert.deepEqual(sent, { text: 'Street improvements' }); assert.match(ids.status.textContent, /No actions reached 20%/);
-  assert.equal(ids['low-toggle'].hidden, true);
+  ids['clear-location'].handler(); count = 0;
+  await submit(); assert.deepEqual(sent, { text: 'Street improvements', bypassJevCache: false }); assert.match(ids.status.textContent, /No actions reached 20%/);
+  assert.equal(ids['show-all'].disabled, true); assert.equal(ids['show-all'].checked, false);
   eligible = 0; await submit(); assert.match(ids.status.textContent, /geographically eligible/);
   failure = true; await submit(); assert.equal(ids.status.textContent, 'Try again'); assert.equal(ids.output.children.length, 0);
+  assert.equal(ids['results-heading'].hidden, true);
   assert.equal(ids.text.value, 'Street improvements');
   ids.latitude.value = '1'; await submit(); assert.match(ids.status.textContent, /both coordinates/);
+  ids.text.value = ''; ids.text.scrollHeight = 450; ids.text.handler();
+  assert.equal(ids.submit.disabled, true); assert.equal(ids.text.style.height, '452px');
+  ids['random-description'].handler(); assert.ok(ids.text.value.length); assert.equal(ids.submit.disabled, false);
+  ids['choose-sample'].handler(); assert.equal(ids['sample-dialog'].open, true); assert.ok(ids['sample-list'].children.length > 100);
+  ids['sample-filter'].value = 'gas'; ids['sample-filter'].handler();
+  const choice = ids['sample-list'].children[0].children[0]; choice.handler();
+  assert.equal(ids.text.value, choice.textContent); assert.equal(ids['sample-dialog'].open, false);
+  ids['location-mode'].handler({ target: { value: 'address' } }); assert.equal(ids['coordinate-fields'].hidden, true);
+  ids['current-location'].handler(); assert.equal(ids.submit.disabled, true);
+  geoSuccess({ coords: { latitude: 32.8, longitude: -96.8 } });
+  assert.equal(ids.latitude.value, '32.8'); assert.match(ids.address.value, /Current location/);
+  assert.equal(ids.submit.disabled, false);
+  ids['current-location'].handler(); ids['clear-location'].handler();
+  geoSuccess({ coords: { latitude: 5, longitude: 6 } });
+  assert.equal(ids.latitude.value, ''); assert.equal(ids.address.value, '');
+  assert.match(ids['location-status'].textContent, /unrestricted/);
+  ids['current-location'].handler(); geoError({ code: 1 });
+  assert.match(ids['location-status'].textContent, /denied/); assert.equal(ids.submit.disabled, false);
+  ids.address.value = 'Dallas'; ids.address.handlers.input();
+  await new Promise(resolve => setTimeout(resolve, 300));
+  assert.equal(addressCalls.length, 1); assert.equal(ids['address-options'].children[0].children[0].textContent, 'Dallas City Hall');
+  await ids['address-options'].children[0].children[0].handler();
+  assert.equal(addressCalls[1].searchParams.get('sessionToken'), addressCalls[0].searchParams.get('sessionToken'));
+  assert.equal(ids.latitude.value, '32.7767'); assert.equal(ids.address.value, 'Dallas City Hall');
+  assert.equal(ids['location-status'].textContent, '');
+  failure = false; eligible = count = 1; await submit();
+  assert.equal(sent.latitude, 32.7767); assert.equal(sent.longitude, -96.797);
+  delayAddress = true; ids.address.value = 'another address'; ids.address.handlers.input();
+  await new Promise(resolve => setTimeout(resolve, 300));
+  ids['clear-location'].handler();
+  delayedAddress!({ ok: true, json: async () => ({ suggestions: [{ placeId: 'old', text: 'Stale response' }] }) });
+  await new Promise(resolve => setTimeout(resolve, 0));
+  assert.equal(ids['address-options'].children.length, 0); assert.equal(ids.latitude.value, '');
+  await submit(); assert.deepEqual(sent, { text: ids.text.value, bypassJevCache: false });
+  ids['bypass-jev-cache'].checked = true; await submit(); assert.equal(sent.bypassJevCache, true);
+  assert.equal(ids['bypass-jev-cache'].checked, true);
+  ids['current-location'].handler(); ids['default-location'].handler();
+  geoSuccess({ coords: { latitude: 5, longitude: 6 } });
+  assert.equal(ids.latitude.value, '32.781162'); assert.equal(ids.longitude.value, '-96.794861');
+  assert.equal(ids.address.value, '1902 Main St, Dallas, TX 75201');
+  await submit(); assert.equal(sent.latitude, 32.781162); assert.equal(sent.longitude, -96.794861);
+  customActions = ['311 first', 'Contact Atmos', '311 second', '311 third', 'Contact council', '311 fourth'].map((summary, i) => ({ ...action(String(i)), summary, matchProbability: .95 - i * .01 }));
+  await submit();
+  assert.equal(ids.output.children[3].textContent, 'Show more');
+  assert.equal(ids.output.children[4].hidden, true); assert.equal(ids.output.children[6].hidden, true);
+  assert.equal(ids.output.children[1].hidden, false); assert.equal(ids.output.children[5].hidden, false);
+  const requestsBeforeToggle = requests;
+  ids.output.children[3].handler();
+  assert.equal(ids.output.children[4].hidden, false); assert.equal(ids.output.children[6].hidden, false);
+  assert.equal(requests, requestsBeforeToggle);
+  customActions = customActions.slice(0, 3); await submit();
+  assert.ok(ids.output.children.every(child => child.className !== 'secondary-button more-311'));
+  assert.equal(animations.length, 0);
+  reducedMotion = false;
+  customActions.push({ ...action('extra'), summary: 'Submit another 311 request', matchProbability: .8 });
+  await submit();
+  assert.equal(animations.filter(animation => animation.node === ids.submit).length, 2);
+  assert.ok(animations.some(animation => animation.options.delay === 35));
+  const animatedToggle = ids.output.children[3], animatedCard = ids.output.children[4];
+  animatedToggle.handler(); assert.equal(animatedCard.hidden, false);
+  animations.at(-1)!.finish(); await Promise.resolve();
+  animatedToggle.handler(); assert.equal(animatedCard.hidden, false);
+  animations.at(-1)!.finish(); await Promise.resolve(); assert.equal(animatedCard.hidden, true);
+  animatedToggle.handler(); animatedToggle.handler(); animatedToggle.handler();
+  animations.at(-1)!.finish(); await Promise.resolve(); assert.equal(animatedCard.hidden, false);
+  reducedMotion = true; const animationCount = animations.length;
+  animatedToggle.handler(); assert.equal(animatedCard.hidden, true); assert.equal(animations.length, animationCount);
+  reducedMotion = false;
+  ids['choose-sample'].handler(); assert.equal(ids['sample-dialog'].open, true);
+  ids['close-samples'].handler(); assert.equal(ids['sample-dialog'].open, true);
+  animations.at(-1)!.finish(); await Promise.resolve(); assert.equal(ids['sample-dialog'].open, false);
+  ids['choose-sample'].handler(); let prevented = false;
+  ids['sample-dialog'].handlers.cancel({ preventDefault() { prevented = true; } });
+  assert.equal(prevented, true);
+  animations.at(-1)!.finish(); await Promise.resolve(); assert.equal(ids['sample-dialog'].open, false);
+  const requestsBeforeRandomize = requests;
+  ids['random-description'].handler();
+  assert.ok(ids.text.value.length); assert.equal(animations.at(-1)!.node, ids.text);
+  assert.equal(animations.at(-1)!.options.duration, 360);
+  ids['random-description'].handler();
+  ids.text.value = 'My own description'; ids.text.handler();
+  assert.equal(ids.text.value, 'My own description'); assert.equal(requests, requestsBeforeRandomize);
+  reducedMotion = true; const countBeforeRandomize = animations.length;
+  ids['random-description'].handler(); assert.equal(animations.length, countBeforeRandomize);
+  customBoundaries = [
+    { id: 1, name: 'No representative', representatives: [] },
+    { id: 2, name: 'Empty contacts', representatives: [{ name: 'No Contacts', title: 'Member', phones: [{ label: 'Office', phone: ' ' }], emails: [] }] },
+    { id: 3, name: 'Has contacts', representatives: [{ name: 'Office Member', title: 'Member', phones: [{ label: 'Office', phone: '2145551111' }], emails: [{ label: 'Office', email: 'office@example.org' }] }] },
+    { id: 4, name: 'Also empty', representatives: [{ name: 'Also No Contacts', title: 'Member', phones: [], emails: [] }] },
+  ];
+  await submit();
+  const sortedRows = ids.output.children.find(child => child.className === 'boundaries')!.children[0].children[2].children;
+  assert.deepEqual(sortedRows.slice(0, 3).map(row => row.children[0].children[0].textContent), ['Office Member — Member', 'No Contacts — Member', 'Also No Contacts — Member']);
+  const singleGroup = sortedRows[0].children[1].children[0];
+  assert.equal(singleGroup.children.length, 2);
+  assert.equal(singleGroup.children[0].children[0].textContent, 'Phone: ');
+  assert.equal(singleGroup.children[1].children[0].textContent, 'Email: ');
+  assert.equal(sortedRows[1].children[1].children[0].className, 'empty-contact');
+  assert.equal(sortedRows[3].children[1].children[0].textContent, 'No current representative on file.');
+  reducedMotion = false;
+  ids['set-location-button'].handler();
+  assert.equal(ids['set-location-options'].hidden, false);
+  ids['set-location'].handlers.keydown({ key: 'Escape', preventDefault() {} });
+  assert.equal(ids['set-location-options'].hidden, false);
+  assert.equal((ids['set-location-options'] as any).inert, true);
+  animations.at(-1)!.finish(); await Promise.resolve();
+  assert.equal(ids['set-location-options'].hidden, true);
+  ids['set-location-button'].handler(); ids['set-location-button'].handler(); ids['set-location-button'].handler();
+  animations.at(-1)!.finish(); await Promise.resolve();
+  assert.equal(ids['set-location-button'].attrs['aria-expanded'], 'true');
+  assert.equal(ids['set-location-options'].hidden, false);
+  const clickTesting = () => ids['testing-options-button'].handler({ preventDefault() {} });
+  clickTesting(); assert.equal(ids['testing-options'].open, true);
+  clickTesting(); assert.equal(ids['testing-options'].open, true);
+  assert.equal(ids['testing-options-button'].attrs['aria-expanded'], 'false');
+  animations.at(-1)!.finish(); await Promise.resolve();
+  assert.equal(ids['testing-options'].open, false);
+  clickTesting(); clickTesting(); clickTesting();
+  animations.at(-1)!.finish(); await Promise.resolve();
+  assert.equal(ids['testing-options'].open, true);
+  reducedMotion = true; const beforeClosing = animations.length;
+  clickTesting(); ids['set-location-button'].handler();
+  assert.equal(ids['testing-options'].open, false);
+  assert.equal(ids['set-location-options'].hidden, true);
+  assert.equal(animations.length, beforeClosing);
 });

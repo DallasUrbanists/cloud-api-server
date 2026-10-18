@@ -104,7 +104,7 @@ async function saveResearch(client: PoolClient, job: SyncJob, result: ResearchRe
     const matchesTarget = !!target && (target.source_key === person.sourceKey || target.name?.trim().toLowerCase() === person.name.trim().toLowerCase());
     if (target && !matchesTarget && !result.completeRoster) continue;
     const existing = await client.query(
-      `SELECT id FROM representatives WHERE boundary_id = $1 AND "end" IS NULL
+      `SELECT id, emails, phones FROM representatives WHERE boundary_id = $1 AND "end" IS NULL
        AND (source_key = $2 OR lower(name) = lower($3)) ORDER BY (source_key = $2) DESC NULLS LAST, id LIMIT 1 FOR UPDATE`, [job.scope_id, person.sourceKey, person.name],
     );
     const researchService = person.researchService ?? descriptor;
@@ -124,7 +124,16 @@ async function saveResearch(client: PoolClient, job: SyncJob, result: ResearchRe
     const updates = ['source_key = $2', 'name = $3', 'title = $4', 'research_service = $5::jsonb', 'last_research_sync = CURRENT_TIMESTAMP', 'last_research_success = CURRENT_TIMESTAMP', 'research_retry_after = NULL'];
     for (const field of ['webpage_url', 'photo_url', 'bio', 'emails', 'phones', 'start', 'end'] as const) {
       if (person[field] === undefined) continue;
-      values.push(['emails', 'phones'].includes(field) ? JSON.stringify(person[field]) : person[field]);
+      let value: unknown = person[field];
+      if (field === 'emails' || field === 'phones') {
+        // A partial contact search is not proof that previously verified contacts disappeared.
+        const stored = matchesTarget ? target : existing.rows[0];
+        const key = field === 'emails' ? 'email' : 'phone';
+        const merged = new Map<string, unknown>();
+        for (const contact of [...(stored?.[field] ?? []), ...person[field]!]) merged.set(String(contact[key]).toLowerCase(), contact);
+        value = JSON.stringify([...merged.values()]);
+      }
+      values.push(value);
       updates.push(`"${field}" = $${values.length}${['emails', 'phones'].includes(field) ? '::jsonb' : ''}`);
     }
     await client.query(`UPDATE representatives SET ${updates.join(', ')} WHERE id = $1`, values);
@@ -157,6 +166,52 @@ async function saveResearch(client: PoolClient, job: SyncJob, result: ResearchRe
 }
 /** Coordinates due-work selection and durable execution independently of a particular HTTP caller. */
 export class BoundarySyncService {
+  /**
+   * Queues due boundary research for a trusted worker without consuming HTTP-client budgets.
+   * @remarks
+   * Pages current boundaries under the same selection lock as public ticks. Successful
+   * TTLs, retry backoff, active scopes and provider configuration gate eligibility.
+   * Claims still enforce distributed execution budgets and concurrency limits.
+   * Missing/invalid adapters are reported and skipped so other providers can proceed.
+   */
+  static async enqueueDueResearch(): Promise<{ queued: number; skipped: Array<{ boundaryId: number; code: string }> }> {
+    if (process.env.BOUNDARY_SYNC_ENABLED !== 'true') throw new BoundaryError(503, 'SYNC_DISABLED', 'Boundary synchronization is not enabled.');
+    const limit = syncLimit('BOUNDARY_SYNC_RESEARCH_ENQUEUE_LIMIT', 100);
+    return transaction(async client => {
+      await client.query('SELECT pg_advisory_xact_lock(734210)');
+      const result = { queued: 0, skipped: [] as Array<{ boundaryId: number; code: string }> };
+      let after = 0;
+      while (result.queued < limit) {
+        const { rows } = await client.query<BoundaryRow>(
+          `SELECT b.* FROM boundaries b WHERE b.id > $2
+           AND (b.effective_date IS NULL OR b.effective_date <= $1::date)
+           AND (b.expiration_date IS NULL OR b.expiration_date > $1::date)
+           AND b.research_service IS NOT NULL AND ${due('b', 'research')}
+           AND NOT EXISTS (SELECT 1 FROM boundary_sync_jobs j WHERE j.scope_id = b.id AND j.status IN ('queued', 'running'))
+           ORDER BY b.id LIMIT 100 FOR UPDATE OF b SKIP LOCKED`, [dallasDate(), after],
+        );
+        for (const row of rows) {
+          after = row.id;
+          try { ensureProvider(row.research_service!, 'research'); }
+          catch (error) {
+            if (!(error instanceof BoundaryError) || !['PROVIDER_NOT_CONFIGURED', 'SERVICE_INVALID'].includes(error.code)) throw error;
+            result.skipped.push({ boundaryId: row.id, code: error.code });
+            continue;
+          }
+          const inserted = await client.query(
+            `INSERT INTO boundary_sync_jobs(scope_id, target_type, target_id, shape_requested, research_requested, force_sync)
+             VALUES ($1, 'boundary', $1, false, true, false)
+             ON CONFLICT (scope_id) WHERE status IN ('queued', 'running') DO NOTHING RETURNING id`, [row.id],
+          );
+          result.queued += inserted.rows.length;
+          if (result.queued >= limit) break;
+        }
+        if (rows.length < 100) break;
+      }
+      return result;
+    });
+  }
+
   /**
    * Applies client budgets and selects/reuses one boundary-scoped task when work is due.
    * @remarks

@@ -11,9 +11,11 @@
  */
 import { Router } from 'express';
 import { RecommendableActionController } from '../controllers/recommendableActionController.js';
+import { PlaygroundLocationController } from '../controllers/playgroundLocationController.js';
 import { apiAccess, userAuth } from '../middleware/auth.js';
 
 const router = Router();
+router.get('/locations', apiAccess({ apiKey: 'optional' }), userAuth('public'), PlaygroundLocationController.search);
 router.post('/match', apiAccess({ apiKey: 'optional' }), userAuth('public'), RecommendableActionController.match);
 router.post('/candidates', apiAccess({ apiKey: 'required' }), userAuth('private'), RecommendableActionController.submit);
 router.get('/candidates', apiAccess({ apiKey: 'required' }), userAuth('private', ['staff']), RecommendableActionController.candidates);

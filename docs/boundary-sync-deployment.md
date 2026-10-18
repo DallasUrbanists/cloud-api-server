@@ -157,7 +157,7 @@ Stop if any value is empty or the ready revision is not your successful deployme
 
 ## 6. Deploy and verify the Cloud Run Job
 
-The job supplies CPU throughout execution. `--once` drains claimable work and exits when idle or after a claim/execution error pass. It does **not** enqueue work or scan for fresh tasks on its own.
+The job supplies CPU throughout execution. At startup it enqueues due research for current boundaries, then drains claimable work. It rescans at most once per minute while running; `--once` exits when idle or after a claim-error pass. `BOUNDARY_SYNC_RESEARCH_ENQUEUE_LIMIT` bounds new research jobs per scan (default 100). Existing execution budgets still apply, so a large initial hydration can span multiple scheduled runs. No separate research-enqueue scheduler is required.
 
 ```bash
 gcloud run jobs deploy "$job" --image="$image" \
@@ -166,7 +166,7 @@ gcloud run jobs deploy "$job" --image="$image" \
   --command=node --args=dist/scripts/boundaryWorker.js,--once \
   --tasks=1 --parallelism=1 --cpu=1 --memory=1Gi \
   --task-timeout=1800s --max-retries=0 \
-  --set-env-vars="NODE_ENV=production,DB_USER=$db_user,DB_NAME=$db_name,INSTANCE_CONNECTION_NAME=$connection,BOUNDARY_SYNC_ENABLED=true,BOUNDARY_RESEARCH_MODEL=$research_model,BOUNDARY_SYNC_CLIENT_PER_MINUTE=30,BOUNDARY_SYNC_GLOBAL_PER_MINUTE=10,BOUNDARY_SYNC_GLOBAL_PER_DAY=100,BOUNDARY_SYNC_CONCURRENCY=2" \
+  --set-env-vars="NODE_ENV=production,DB_USER=$db_user,DB_NAME=$db_name,INSTANCE_CONNECTION_NAME=$connection,BOUNDARY_SYNC_ENABLED=true,BOUNDARY_RESEARCH_MODEL=$research_model,BOUNDARY_SYNC_CLIENT_PER_MINUTE=30,BOUNDARY_SYNC_GLOBAL_PER_MINUTE=10,BOUNDARY_SYNC_GLOBAL_PER_DAY=100,BOUNDARY_SYNC_CONCURRENCY=2,BOUNDARY_SYNC_RESEARCH_ENQUEUE_LIMIT=100" \
   --set-secrets="DB_PASSWORD=$db_password_secret:latest,CONGRESS_GOV_API_KEY=congress-gov-api-key:latest,OPEN_STATES_API_KEY=open-states-api-key:latest,GEMINI_API_KEY=gemini-api-key:latest"
 
 gcloud run jobs execute "$job" --region="$region" --project="$project" --wait
@@ -176,7 +176,7 @@ gcloud logging read \
   --project="$project" --limit=30 --format='value(timestamp,textPayload)'
 ```
 
-Expect `Boundary worker connected; polling durable PostgreSQL jobs.` An empty queue means a quick successful exit. This verifies startup/database access, **not provider credentials**. A job can also exit successfully after recording a provider failure; verify individual job status in the smoke test below.
+Expect `Boundary worker connected; enqueueing due research and processing durable PostgreSQL jobs.` Inspect `boundary_research_enqueued` for queued/skipped counts and `boundary_research_enqueue_skipped` for boundary IDs and configuration errors. Missing provider keys or unapproved adapters are skipped, so startup alone does not verify provider readiness. Discovery/claim failures and failed research executions yield a nonzero exit code; also inspect individual job status and representative records in the smoke test below. No due work means a quick successful exit.
 
 The 30-minute task limit bounds an invocation, not a guarantee the queue drains. PostgreSQL leases, retry limits, and publication fences coordinate overlapping executions. Work interrupted by a task timeout becomes reclaimable after its lease expires. Provider failures have retry backoff; Cloud Run task retries are disabled here to avoid an extra immediate retry layer.
 
@@ -231,7 +231,7 @@ curl --fail-with-body "$api_url$status_path"
 
 Poll until `succeeded` or `failed`. Inspect the returned sanitized error code and worker logs on failure. Verify representative/boundary data, not merely HTTP acceptance. Check at least one due boundary for each configured research adapter (Congress, Open States, official/Gemini); one successful research job does not validate all providers. Choose explicit IDs from the boundary list and request `/api/tick/boundary/ID` when due. Each such tick may also refresh geometry. Fresh TTLs or null service descriptors can produce a current model without invoking a provider. Do not use public GETs to force a fresh record; protected force POSTs retain staff, application-key, and production App Check requirements.
 
-Enabling the flag **does not schedule discovery**. The worker schedule drains queued work; an application or separate scheduler must call public due-tick routes to enqueue it. Each batch tick selects at most one target, so choose a controlled trigger cadence. Do not place force endpoints on a public cron. Future/expired congressional records cannot be researched as current officeholders by the live adapter.
+Each scheduled worker execution now discovers due boundary research before draining the queue, so scheduling the updated job is sufficient to trigger initial representative hydration and TTL-based refresh when adapters/credentials are configured. Public ticks remain useful for inspecting or requesting one specific scope; each batch tick selects at most one target. Automatic discovery skips future/expired boundaries and respects backoff and freshness. Do not place force endpoints on a public cron. Future/expired congressional records cannot be researched as current officeholders by the live adapter.
 
 ## 9. Monitoring, rotation, and pause
 

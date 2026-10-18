@@ -12,13 +12,14 @@
 import { FieldPath } from '@google-cloud/firestore';
 import { createHash } from 'node:crypto';
 import { isDeepStrictEqual } from 'node:util';
-import { validateMatchInput, type MatchInput, type MatchResult } from '../models/recommendableMatch.js';
+import { validateMatchInput, matchCacheContext, type MatchInput, type MatchResult } from '../models/recommendableMatch.js';
 import { GoogleGenAI } from '@google/genai';
 import { getPublicImprovementsDb } from '../config/firestore.js';
 import { BoundaryService } from './boundaryService.js';
 import { RepresentativesService } from './representativesService.js';
 import { readOfficialDocument } from './research/official.js';
 import { RecommendedActionService } from './recommendedActionService.js';
+import { RecommendableComparisonService } from './recommendableComparisonService.js';
 import type { Suggestion } from '../models/suggestion.js';
 import { anyBoundaryOverlap, type RecommendableAction, type RecommendableInput, type RecommendableStatus } from '../models/recommendableAction.js';
 
@@ -42,6 +43,7 @@ export class RecommendableActionService {
   static clearRelevanceCache(): void {
     this.relevanceCache.clear();
     this.relevanceCacheBytes = 0;
+    RecommendableComparisonService.clearCache();
   }
 
   private static deleteRelevanceCache(key: string): void {
@@ -282,6 +284,7 @@ export class RecommendableActionService {
 
   /** Read-only classification over the complete approved catalog. No suggestion is needed. */
   static async findMatches(input: MatchInput, signal?: AbortSignal): Promise<MatchResult> {
+    const started = performance.now();
     const validation = validateMatchInput(input);
     if (validation.error) throw Object.assign(new Error(validation.error), { status: 400 });
     const abort = new AbortController();
@@ -315,7 +318,13 @@ export class RecommendableActionService {
         after = page.docs[page.docs.length - 1].id;
       }
       const boundaries: MatchResult['diagnostics']['boundaries'] = [];
-      if (!approved.length) return { data: [], eligibleActions: [], count: 0, diagnostics: { catalogCount: 0, eligibleCount: 0, threshold, boundaries } };
+      const model = process.env.TYPESAFE_MODEL ?? 'jev-latest';
+      const result: MatchResult = { data: [], eligibleActions: [], count: 0, diagnostics: {
+        catalogCount: approved.length, eligibleCount: 0, threshold, boundaries, model, bypassJevCache: input.bypassJevCache ?? false,
+        totalDurationMs: 0, relevance: { durationMs: 0, cacheHit: false, networkRequestCount: 0 }, comparisons: RecommendableComparisonService.emptyDiagnostics(),
+      } };
+      const finish = () => { result.diagnostics.totalDurationMs = performance.now() - started; return result; };
+      if (!approved.length) return finish();
       if (input.latitude !== undefined) {
         for (let offset = 0; ; offset += 1000) {
           combined.throwIfAborted();
@@ -349,21 +358,18 @@ export class RecommendableActionService {
         }
       }
       const eligible = approved.filter(a => anyBoundaryOverlap(a.boundaries, ids));
-      const result: MatchResult = { data: [], eligibleActions: [], count: 0, diagnostics: { catalogCount: approved.length, eligibleCount: eligible.length, threshold, boundaries } };
-      if (!eligible.length) return result;
+      result.diagnostics.eligibleCount = eligible.length;
+      if (!eligible.length) return finish();
       const apiKey = process.env.TYPESAFE_API_KEY?.trim();
       if (!apiKey) throw Object.assign(new Error('Jev matching is not configured. Set TYPESAFE_API_KEY on the server.'), { status: 503 });
-      const model = process.env.TYPESAFE_MODEL ?? 'jev-latest';
-      const cacheKey = createHash('sha256').update(JSON.stringify([
-        input.text.toUpperCase().replace(/[^A-Z0-9]/g, ''),
-        input.latitude === undefined ? null : Number(input.latitude.toFixed(4)),
-        input.longitude === undefined ? null : Number(input.longitude.toFixed(4)),
-      ])).digest('hex');
+      const relevanceStarted = performance.now();
+      const cacheKey = createHash('sha256').update(JSON.stringify(matchCacheContext(input))).digest('hex');
       const fingerprint = createHash('sha256').update(JSON.stringify([model,
         eligible.map(action => [action.id, action.summary, action.instructions, action.why, action.whyNot])
           .sort((a, b) => a[0].localeCompare(b[0])),
       ])).digest('hex');
-      const cached = this.getRelevanceCache(cacheKey, fingerprint);
+      const cached = input.bypassJevCache ? undefined : this.getRelevanceCache(cacheKey, fingerprint);
+      result.diagnostics.relevance.cacheHit = !!cached;
       if (cached) {
         // Rebuild from current records so photos, contacts, and acceptance thresholds stay fresh.
         result.eligibleActions = eligible.map(action => ({ ...action, matchProbability: cached.get(action.id)! }));
@@ -375,6 +381,7 @@ export class RecommendableActionService {
             const offset = nextOffset; nextOffset += 40;
             const batch = eligible.slice(offset, offset + 40);
             const batchSignal = AbortSignal.any([combined, AbortSignal.timeout(20000)]);
+            result.diagnostics.relevance.networkRequestCount++;
             const response = await fetch('https://api.typesafe.ai/v1/systemone', {
               method: 'POST', signal: batchSignal, headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
               body: JSON.stringify({ model, state: { text: input.text },
@@ -397,13 +404,17 @@ export class RecommendableActionService {
         try { await Promise.all(workers); }
         catch (error) { abort.abort(error); await Promise.allSettled(workers); throw error; }
         combined.throwIfAborted();
-        this.cacheRelevance(cacheKey, fingerprint, result.eligibleActions);
+        if (!input.bypassJevCache) this.cacheRelevance(cacheKey, fingerprint, result.eligibleActions);
       }
       combined.throwIfAborted();
+      result.diagnostics.relevance.durationMs = performance.now() - relevanceStarted;
       result.eligibleActions.sort((a, b) => b.matchProbability - a.matchProbability || a.id.localeCompare(b.id));
+      const compared = await RecommendableComparisonService.filter(result.eligibleActions, input, model, apiKey, combined);
+      result.eligibleActions = compared.actions;
+      result.diagnostics.comparisons = compared.diagnostics;
       result.data = result.eligibleActions.filter(action => action.matchProbability >= threshold);
       result.count = result.data.length;
-      return result;
+      return finish();
     } catch (error) {
       if (error instanceof Error && error.name === 'TimeoutError') throw Object.assign(new Error('Matching timed out. Please try again.'), { status: 504 });
       if (error instanceof TypeError) throw Object.assign(new Error('Jev matching could not connect. Please try again later.'), { status: 503 });
