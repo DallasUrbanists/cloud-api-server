@@ -54,7 +54,8 @@ test('park-feedback documentation example normalizes without persisting', () => 
   const result = validateRecommendableInput({
     summary: ' Share park feedback ',
     instructions: 'Use the feedback channel described by the source.',
-    reason: 'Help shape the proposed park redesign.',
+    why: 'The city is collecting ideas for the proposed park redesign.',
+    whyNot: 'This opportunity does not apply to unrelated topics.',
     boundaries: [20, 10, 20],
     sourceUrl: 'https://example.org/park-feedback',
     sourceEvidence: 'Invitation to share park feedback.',
@@ -67,9 +68,17 @@ test('park-feedback documentation example normalizes without persisting', () => 
 });
 
 test('Recommendable Action input normalizes boundary IDs and rejects invalid source URLs or boundary IDs', () => {
-  const base = { summary: ' Call 311 ', instructions: ' Report the issue ', reason: ' City service request ', boundaries: [20, 10, 20], sourceUrl: 'https://dallascityhall.com/service', sourceEvidence: 'Submit a service request.', sourceDescription: 'A Dallas 311 path.' };
+  const base = { summary: ' Call 311 ', instructions: ' Report the issue ', why: ' City service request ', whyNot: ' Not for unrelated requests. ', boundaries: [20, 10, 20], sourceUrl: 'https://dallascityhall.com/service', sourceEvidence: 'Submit a service request.', sourceDescription: 'A Dallas 311 path.' };
   const result = validateRecommendableInput(base);
   assert.deepEqual(result.data?.boundaries, [10, 20]);
   assert.equal(validateRecommendableInput({ ...base, sourceUrl: 'http://dallascityhall.com/service' }).error, 'sourceUrl must be a public HTTPS URL.');
   assert.ok(validateRecommendableInput({ ...base, boundaries: [0] }).error);
+});
+
+test('Recommendable Action accepts empty whyNot but rejects null and non-string exclusions', () => {
+  const base = { summary: 'Report issue', instructions: 'Call 311.', why: 'Relevant issue', whyNot: '', boundaries: [], sourceUrl: 'https://dallascityhall.com/', sourceEvidence: 'Call 311.', sourceDescription: 'City source' };
+  assert.equal(validateRecommendableInput(base).data?.whyNot, '');
+  assert.equal(validateRecommendableInput({ ...base, whyNot: '  ' }).data?.whyNot, '');
+  for (const whyNot of [null, undefined, 1, []]) assert.ok(validateRecommendableInput({ ...base, whyNot }).error);
+  assert.ok(validateRecommendableInput({ ...base, whyNot: 'x'.repeat(4001) }).error);
 });

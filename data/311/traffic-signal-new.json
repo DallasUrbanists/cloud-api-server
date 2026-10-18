@@ -1,0 +1,124 @@
+{
+  "title": "Traffic Signal - New",
+  "categories": [
+    "Traffic Signs and Signals"
+  ],
+  "description": "Use this service request to request the installation of a brand new traffic signal where one has never existed or to request a current traffic signal be removed. The evaluation to determine addition or removal of the traffic signal is a multi-step process and may take several weeks to complete. **A name, address and daytime phone number is required. ** The estimated response time (ERT) for this service request is 35 business days.",
+  "photoUrls": [],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "65 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "intro": "VERIFY this is for a Traffic Signal, not a street light. Street lights - use - Street Light - Maintenance/New SR. *** ENTER location as an Intersection in alpha order i.e. Akard @ Young ***",
+    "observedQuestions": [
+      {
+        "question": "Is the request for a sign or signal?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Sign",
+          "Signal"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Sign",
+            "suggestedService": "Traffic Sign - New"
+          },
+          {
+            "when": "Signal",
+            "reveals": "What type of signal is being requested?"
+          }
+        ]
+      },
+      {
+        "question": "What type of signal is being requested?",
+        "required": true,
+        "type": "single_choice",
+        "when": "Request = Signal",
+        "options": [
+          "Left Turn signal",
+          "Pedestrian signal",
+          "Traffic signal",
+          "Warning signal flasher"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Warning signal flasher",
+            "instruction": "If request is for a School Flasher sign - Use Traffic Sign - New"
+          }
+        ]
+      },
+      {
+        "question": "What is the reason for the request?",
+        "required": false,
+        "type": "free_text",
+        "when": "Request = Signal"
+      },
+      {
+        "question": "What time of day is the traffic problem occurring?",
+        "required": false,
+        "type": "select",
+        "when": "Request = Signal",
+        "options": [
+          "Now",
+          "Morning",
+          "Morning rush hour 7-9",
+          "Afternoon",
+          "Evening",
+          "Evening rush hour 4-7",
+          "All the time",
+          "Am & pm rush hours",
+          "Weekends"
+        ]
+      },
+      {
+        "question": "Would you like to be contacted?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ]
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Request = Signal; type = Warning signal flasher; reason supplied; time = Weekends; contact = No; Details Continue reached Contact",
+    "contactStepObservation": "First Name, Last Name, and Phone Number marked required",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request for a new or removed traffic signal.",
+      "why": "For installation of a signal where none existed or removal of an existing traffic signal. The 311 request form offers traffic, pedestrian, left-turn, and warning-flasher signal types and asks for the reason, time of day, and intersection; the service description says a name, address, and daytime phone number are required.",
+      "why_not": "The online form for \"Traffic Signal - New\" requests does not apply to a school-flasher sign or street light; it suggests a different service for a new traffic sign. If a school-flasher sign is needed, then submit a \"Traffic Sign - New\" 311 request instead. If a new traffic sign is needed, then consider submitting a \"Traffic Sign - New\" 311 request.",
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Traffic Signs and Signals\" > Choose \"Traffic Signal - New\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Traffic Signs and Signals\" > Choose \"Traffic Signal - New\""
+    },
+    {
+      "tagline": "Consider submitting a 311 request for a new traffic sign.",
+      "why": "For a request that is for a sign rather than a traffic signal. The Traffic Signal - New form suggests \"Traffic Sign - New\" when Sign is selected.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Traffic Signs and Signals\" > Choose \"Traffic Sign - New\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Traffic Signs and Signals\" > Choose \"Traffic Sign - New\""
+    },
+    {
+      "tagline": "Submit a 311 request for a new school-flasher sign.",
+      "why": "For a school-flasher sign. The Traffic Signal - New form directly instructs people requesting that item to use \"Traffic Sign - New\".",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Traffic Signs and Signals\" > Choose \"Traffic Sign - New\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Traffic Signs and Signals\" > Choose \"Traffic Sign - New\""
+    }
+  ]
+}

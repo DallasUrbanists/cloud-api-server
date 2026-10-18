@@ -1,0 +1,81 @@
+{
+  "title": "Storm Sewer Line Locate",
+  "categories": [
+    "Creeks, Streams, Storm Drains, and Waterways"
+  ],
+  "description": "Use this service request to request a storm line-locate. A storm line-locate is most often needed when construction requires a vertical bore or a horizontal bore. Any activity that requires digging near a street or easement should have a line-locate prior to digging. Line-locates are occasionally requested so that construction can plan where to connect a storm drain.The estimated response time for this service request is 5 business days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/acfb6f10-5e39-11ee-b65c-c33ce0246595.png"
+  ],
+  "department": "Dallas Water Utilities",
+  "resolutionEstimate": "10 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "Do you need the depth of the line?",
+        "type": "single_select",
+        "required": false,
+        "options": [
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "question": "Do you need a drawing map?",
+        "type": "single_select",
+        "required": false,
+        "options": [
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "question": "Do you need an inspector on-site?",
+        "type": "single_select",
+        "required": false,
+        "options": [
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "question": "Would you like to be contacted?",
+        "type": "single_select",
+        "required": false,
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ]
+      },
+      {
+        "question": "Additional Information",
+        "type": "text",
+        "required": false
+      }
+    ],
+    "pathCoverage": [
+      "Yes and No tried for depth, drawing map, and inspector; no additional questions revealed.",
+      "All three contact-preference answers tried.",
+      "Continue advanced to Contact. No contact data entered."
+    ],
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request to locate a storm sewer line before digging.",
+      "why": "For a storm sewer line locate before construction or excavation near a street or drainage easement, including vertical or horizontal boring or planning a storm-drain connection. The 311 request form asks whether line depth, a drawing, or an on-site inspector is needed.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Dallas Water Utilities",
+      "how": "Go to Dallas 311 > Choose \"Creeks, Streams, Storm Drains, and Waterways\" > Choose \"Storm Sewer Line Locate\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Creeks, Streams, Storm Drains, and Waterways\" > Choose \"Storm Sewer Line Locate\""
+    }
+  ]
+}

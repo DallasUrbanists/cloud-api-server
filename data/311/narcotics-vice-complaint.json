@@ -1,0 +1,85 @@
+{
+  "title": "Narcotics/Vice Complaint",
+  "categories": [
+    "Non-Emergency Police and Fire Services"
+  ],
+  "description": "Use this service request to report possible drug houses/locations where drugs are being sold, prostitution and illegal gambling complaints. Information regarding the time of day activity occurs, actual day(s) it occurs, location and persons involved is required to investigate. Contact information for further questions is recommended to process request. The estimated response time (ERT) for this service request is 3 business days.",
+  "photoUrls": [],
+  "department": "Dallas Police",
+  "resolutionEstimate": "14 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "intro": "***Be advised that this service request is not monitored on a 24-hour basis. If you have an emergency and require immediate assistance, please call 911.***",
+    "observedQuestions": [
+      {
+        "question": "What would you like to report?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Suspected drug sales",
+          "Suspected gambling or illegal gambling",
+          "Suspected prostitution",
+          "People using drugs"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "People using drugs",
+            "suggestedService": "Increased Criminal Activities"
+          }
+        ]
+      },
+      {
+        "question": "Give any additional information regarding individuals, vehicles, times or days of occurrence:",
+        "required": false,
+        "type": "free_text"
+      },
+      {
+        "question": "Would you like to be contacted?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ]
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Report = Suspected drug sales; additional details supplied; contact = No; Details Continue reached Contact",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request about suspected drug sales, prostitution, or illegal gambling.",
+      "why": "For a suspected drug house or location where drugs are sold, suspected prostitution, or suspected illegal gambling. The description asks for days and times of activity, location, and people involved; contact information is recommended for follow-up. The 311 request form also offers People using drugs as an answer.",
+      "why_not": "The online form for \"Narcotics/Vice Complaint\" requests does not apply to an emergency requiring immediate assistance. If immediate assistance is needed for an emergency, then call 911.",
+      "what": "Submit 311 request",
+      "who": "Dallas Police",
+      "how": "Go to Dallas 311 > Choose \"Non-Emergency Police and Fire Services\" > Choose \"Narcotics/Vice Complaint\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Non-Emergency Police and Fire Services\" > Choose \"Narcotics/Vice Complaint\""
+    },
+    {
+      "tagline": "Call 911 for an emergency requiring immediate assistance involving narcotics or vice activity.",
+      "why": "For an emergency requiring immediate assistance; the 311 request form says this service is not monitored around the clock.",
+      "why_not": null,
+      "what": "Call",
+      "who": "Emergency dispatch",
+      "how": "Call 911",
+      "how_formatted": "Call [911](tel:911)"
+    },
+    {
+      "tagline": "Consider submitting a 311 request about recurring criminal activity involving drug use.",
+      "why": "For people using drugs when the activity is recurring and has been reported. The Narcotics/Vice Complaint request form suggests \"Increased Criminal Activities\" for the People using drugs answer; that target service describes recurring reported criminal offenses and asks for days, times, location, and people involved.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Dallas Police",
+      "how": "Go to Dallas 311 > Choose \"Non-Emergency Police and Fire Services\" > Choose \"Increased Criminal Activities\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Non-Emergency Police and Fire Services\" > Choose \"Increased Criminal Activities\""
+    }
+  ]
+}

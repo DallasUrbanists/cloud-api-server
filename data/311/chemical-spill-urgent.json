@@ -1,0 +1,33 @@
+{
+  "title": "Chemical Spill Urgent",
+  "categories": [
+    "Environmental Quality Concerns"
+  ],
+  "description": "This request must be dispatched. Please call 311 to report a chemical spill that has entered or has the potential to enter the street, alley, ditch, creek/creek channel, lake, river or storm drain/inlet. The estimated response time (ERT) for this service request is 3 business days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/6c1d0490-5f1f-11ee-8932-8b0765cde3fc.jpg"
+  ],
+  "department": "Dallas Water Utilities",
+  "resolutionEstimate": "3 Business Days",
+  "requestThisService": false,
+  "instructions": "This request must be dispatched. Please call 311 to report a chemical spill that has entered or has the potential to enter the street, alley, ditch, creek/creek channel, lake, river or storm drain/inlet. Please call 311 for more information.",
+  "detailsForm": {
+    "status": "instructions_only",
+    "observedQuestions": [],
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "instructions_only",
+  "actions": [
+    {
+      "tagline": "Call Dallas 311 by phone about a chemical spill threatening a public waterway or drain.",
+      "why": "Report a chemical spill that entered or could enter a street, alley, ditch, creek or channel, lake, river, or storm drain or inlet. The description for \"Chemical Spill Urgent\" requests on the Dallas 311 website says this request must be dispatched by phone.",
+      "why_not": null,
+      "what": "Call 311 by phone",
+      "who": "Dallas 311",
+      "how": "Call 311",
+      "how_formatted": "Call [311](tel:311)"
+    }
+  ]
+}

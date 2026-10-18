@@ -1,0 +1,106 @@
+{
+  "title": "Handicap Parking Violation",
+  "categories": [
+    "Parking, Vehicle, Bicycle and Scooter Concerns"
+  ],
+  "description": "Use this service request to report handicap parking violations at a business. Not for use in requesting handicap parking signs. ** Vehicle information is required to complete SR ** The estimated response time (ERT) for this service request is 3 business days.",
+  "photoUrls": [],
+  "department": "Dallas Police",
+  "resolutionEstimate": "7 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "prompt": "What is the Make of the Vehicle?",
+        "type": "select",
+        "options": [
+          "Acura",
+          "Audi",
+          "BMW",
+          "Buick",
+          "Cadillac",
+          "Chevrolet",
+          "Chrysler",
+          "Dodge",
+          "Ford",
+          "Honda",
+          "GMC",
+          "Hyundai",
+          "Infiniti",
+          "Jaguar",
+          "Jeep",
+          "Kia",
+          "Land Rover",
+          "Lexus",
+          "Lincoln",
+          "Mazda",
+          "Mercedes-Benz",
+          "Mercury",
+          "Mitsubishi",
+          "Nissan",
+          "Oldsmobile",
+          "Plymouth",
+          "Pontiac",
+          "Saturn",
+          "Subaru",
+          "Suzuki",
+          "Tesla",
+          "Toyota",
+          "Volkswagen",
+          "Other"
+        ],
+        "required": true,
+        "branchFinding": "Other showed no additional question"
+      },
+      {
+        "prompt": "Color of vehicle:",
+        "type": "text",
+        "required": true
+      },
+      {
+        "prompt": "License plate # and state:",
+        "type": "text",
+        "required": true
+      },
+      {
+        "prompt": "Would you like to be contacted?",
+        "type": "single_select",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ],
+        "required": false
+      }
+    ],
+    "staticMessage": "***Be advised that this service request is not monitored on a 24-hour basis. If you have an emergency and require immediate assistance, please call 911.***",
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Make = Other; color and plate supplied",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request for a handicap parking violation at a business.",
+      "why": "For a handicap parking violation at a business. The request form asks for the vehicle make, color, and license plate number and state.",
+      "why_not": "The online form for \"Handicap Parking Violation\" requests does not apply to requests for handicap parking signs or emergencies requiring immediate assistance. If immediate assistance is needed for an emergency, then call 911.",
+      "what": "Submit 311 request",
+      "who": "Dallas Police",
+      "how": "Go to Dallas 311 > Choose \"Parking, Vehicle, Bicycle and Scooter Concerns\" > Choose \"Handicap Parking Violation\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Parking, Vehicle, Bicycle and Scooter Concerns\" > Choose \"Handicap Parking Violation\""
+    },
+    {
+      "tagline": "Call 911 for an emergency requiring immediate assistance.",
+      "why": "For an emergency requiring immediate assistance related to a handicap parking violation; the Dallas 311 request form states this service is not monitored on a 24-hour basis.",
+      "why_not": null,
+      "what": "Call",
+      "who": "Emergency dispatch",
+      "how": "Call 911",
+      "how_formatted": "Call [911](tel:911)"
+    }
+  ]
+}

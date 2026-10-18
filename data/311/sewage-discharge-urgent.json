@@ -1,0 +1,35 @@
+{
+  "title": "Sewage Discharge Urgent",
+  "categories": [
+    "Creeks, Streams, Storm Drains, and Waterways",
+    "Environmental Quality Concerns",
+    "Water Inquiries and Line Locates"
+  ],
+  "description": "This request must be dispatched. Please call 311 to report sewage discharging into the street, alley, ditch, creek/creek channel, lake, river or storm drain/inlet. The estimated response time (ERT) for this service request is 3 business days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/827d78f0-5f1f-11ee-b5ea-bf93c94ffce7.png"
+  ],
+  "department": "Dallas Water Utilities",
+  "resolutionEstimate": "3 Business Days",
+  "requestThisService": false,
+  "instructions": "This request must be dispatched. Please call 311 to report sewage discharging into the street, alley, ditch, creek/creek channel, lake, river or storm drain/inlet. Please call 311 for more information.",
+  "detailsForm": {
+    "status": "instructions_only",
+    "observedQuestions": [],
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "instructions_only",
+  "actions": [
+    {
+      "tagline": "Call Dallas 311 by phone about sewage discharging into a street or waterway.",
+      "why": "For sewage discharging into a street, alley, ditch, creek or creek channel, lake, river, or storm drain or inlet. The request must be dispatched and its description directs people to call 311.",
+      "why_not": null,
+      "what": "Call 311 by phone",
+      "who": "Dallas 311",
+      "how": "Call 311",
+      "how_formatted": "Call [311](tel:311)"
+    }
+  ]
+}

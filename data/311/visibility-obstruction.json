@@ -1,0 +1,123 @@
+{
+  "title": "Visibility Obstruction",
+  "categories": [
+    "Streets, Medians, Sidewalks and Alleys"
+  ],
+  "description": "Use this service request to report any visibility obstructions that are caused when a vehicle cannot see oncoming traffic due to overgrown vegetation, shrubs, grass or low hanging limbs within a street median. Use Code Concern for alleys or sidewalks. ** If a traffic sign or signal is obstructed please Call 3-1-1 for assistance. ** The estimated response time (ERT) for this service request is 3 business days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/985855e0-4210-11ee-99c9-0f6c9bc743cc.JPG"
+  ],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "5 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "What type of obstruction is it?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Sign",
+          "Vegetation",
+          "Other"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Sign",
+            "suggestedService": "Traffic Sign - Visibility Obstruction"
+          },
+          {
+            "when": "Other",
+            "reveals": "If Other, please describe:"
+          }
+        ]
+      },
+      {
+        "question": "If Other, please describe:",
+        "required": true,
+        "type": "free_text",
+        "when": "Obstruction type = Other"
+      },
+      {
+        "question": "Where is the obstruction located?",
+        "required": true,
+        "type": "select",
+        "options": [
+          "Alley",
+          "Easement",
+          "Median",
+          "Private property",
+          "Right of way(Street)",
+          "Sidewalks",
+          "Stop signs"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Private property",
+            "suggestedService": "Code Concerns"
+          },
+          {
+            "when": "Stop signs",
+            "suggestedService": "Traffic Sign - Visibility Obstruction"
+          }
+        ]
+      },
+      {
+        "question": "Would you like to be contacted?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ]
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Obstruction = Vegetation; location = Median; contact = No; Details Continue reached Contact",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request for vegetation in a street median that blocks drivers' view of oncoming traffic.",
+      "why": "Report overgrown vegetation, shrubs, grass, or low-hanging limbs within a street median when they prevent a vehicle from seeing oncoming traffic. The 311 request form asks whether the obstruction is a sign, vegetation, or another type, and where it is located.",
+      "why_not": "The online form for \"Visibility Obstruction\" requests does not apply to vegetation obstructions on private property, in alleys, or on sidewalks, or to obstructed traffic signs or signals. If vegetation is in an alley or on a sidewalk, then submit a \"Code Concerns\" 311 request instead. If vegetation is on private property, then consider the \"Code Concerns\" 311 request suggested by the Dallas 311 website. If a traffic sign or signal is obstructed, then call 311 by phone instead of submitting a 311 request online.",
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Visibility Obstruction\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Visibility Obstruction\""
+    },
+    {
+      "tagline": "Submit a 311 request for vegetation obstructions on private property, in alleys, or on sidewalks.",
+      "why": "For vegetation obstruction concerns located on private property, in an alley, or on a sidewalk. The description for \"Visibility Obstruction\" requests on the Dallas 311 website directs alley and sidewalk concerns to Code Concern; the request form suggests \"Code Concerns\" for private-property locations. The public \"Code Concerns\" service covers code violations such as high weeds.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Code Compliance",
+      "how": "Go to Dallas 311 > Choose \"City Code Violations\" > Choose \"Code Concerns\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"City Code Violations\" > Choose \"Code Concerns\""
+    },
+    {
+      "tagline": "Call Dallas 311 by phone about an obstructed traffic sign.",
+      "why": "For an obstructed traffic sign, including a stop, yield, or one-way sign. The description for \"Visibility Obstruction\" requests on the Dallas 311 website directs people with any obstructed traffic sign to call 311. For stop, yield, or one-way signs, the saved \"Traffic Sign - Visibility Obstruction\" instructions also require a call to 311.",
+      "why_not": null,
+      "what": "Call 311 by phone",
+      "who": "Dallas 311",
+      "how": "Call 311",
+      "how_formatted": "Call [311](tel:311)"
+    },
+    {
+      "tagline": "Call Dallas 311 by phone about an obstructed traffic signal.",
+      "why": "For a traffic signal whose visibility is obstructed. The description for \"Visibility Obstruction\" requests on the Dallas 311 website directs people with an obstructed traffic sign or signal to call 311.",
+      "why_not": null,
+      "what": "Call 311 by phone",
+      "who": "Dallas 311",
+      "how": "Call 311",
+      "how_formatted": "Call [311](tel:311)"
+    }
+  ]
+}

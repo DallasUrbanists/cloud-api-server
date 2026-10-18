@@ -1,0 +1,81 @@
+{
+  "title": "File a Complaint or Commendation – Community Police Oversight",
+  "categories": [
+    "Non-Emergency Police and Fire Services"
+  ],
+  "description": "Use this 311 service request to submit a complaint or commendation regarding a member of the Dallas Police Department (DPD). *** FILE A COMPLAINT: If you wish to file a complaint against a DPD employee, please complete the complaint form HERE. If you are unsure of the officer’s name or badge number, please provide the date, time, and details of the incident so we can identify the officer(s) involved. *** COMMEND AN OFFICER: If you would like to recognize a DPD employee for outstanding service, please complete the commendation form HERE. NOTE: Criminal complaints against individuals who are not part of the Dallas Police Department must be filed directly with the Dallas Police Department. For those who would like to file a commendation or complaint in person or by mail, additional information is available on the OCPO website.",
+  "photoUrls": [],
+  "department": "Office of Community Police Oversight",
+  "resolutionEstimate": "30 Business Days",
+  "requestThisService": false,
+  "instructions": "Use this 311 service request to submit a complaint or commendation regarding a member of the Dallas Police Department (DPD). *** FILE A COMPLAINT: If you wish to file a complaint against a DPD employee, please complete the complaint form HERE. If you are unsure of the officer’s name or badge number, please provide the date, time, and details of the incident so we can identify the officer(s) involved. *** COMMEND AN OFFICER: If you would like to recognize a DPD employee for outstanding service, please complete the commendation form HERE. NOTE: Criminal complaints against individuals who are not part of the Dallas Police Department must be filed directly with the Dallas Police Department. For those who would like to file a commendation or complaint in person or by mail, additional information is available on the OCPO website. Please call 311 for more information",
+  "detailsForm": {
+    "status": "instructions_only",
+    "observedQuestions": [],
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "instructions_only",
+  "instructionLinks": [
+    {
+      "purpose": "Complaint form",
+      "url": "https://app.keysurvey.com/f/41562786/47e5/"
+    },
+    {
+      "purpose": "Commendation form",
+      "url": "https://app.keysurvey.com/f/41548149/2dfd/"
+    },
+    {
+      "purpose": "OCPO website",
+      "url": "https://dallascityhall.com/departments/office-of-community-police-oversight/Pages/default.aspx"
+    }
+  ],
+  "actions": [
+    {
+      "tagline": "Contact the Office of Community Police Oversight to file a complaint about a DPD employee.",
+      "why": "For a complaint about a Dallas Police Department employee. If you do not know the officer name or badge number, the complaint form asks for the incident date, time, and details so the officer can be identified.",
+      "why_not": "This complaint route does not apply to criminal complaints against people who are not Dallas Police Department members. If the complaint is against someone who is not a DPD member, then file it directly with the Dallas Police Department.",
+      "what": "Contact",
+      "who": "Office of Community Police Oversight",
+      "how": "Complete the complaint form",
+      "how_formatted": "Complete the [complaint form](https://app.keysurvey.com/f/41562786/47e5/)"
+    },
+    {
+      "tagline": "Contact the Office of Community Police Oversight to commend a DPD employee.",
+      "why": "To recognize a Dallas Police Department employee for outstanding service by submitting a commendation.",
+      "why_not": null,
+      "what": "Contact",
+      "who": "Office of Community Police Oversight",
+      "how": "Complete the commendation form",
+      "how_formatted": "Complete the [commendation form](https://app.keysurvey.com/f/41548149/2dfd/)"
+    },
+    {
+      "tagline": "Call Dallas 311 by phone for more information about a DPD complaint or commendation.",
+      "why": "For more information about filing a complaint or commendation regarding a Dallas Police Department member; the saved instructions explicitly say to call 311 for more information.",
+      "why_not": null,
+      "what": "Call 311 by phone",
+      "who": "Dallas 311",
+      "how": "Call 311",
+      "how_formatted": "Call [311](tel:311)"
+    },
+    {
+      "tagline": "Visit the Office of Community Police Oversight website for in-person or mail filing information.",
+      "why": "For information about filing a Dallas Police Department complaint or commendation in person or by mail.",
+      "why_not": null,
+      "what": "Visit website",
+      "who": "Office of Community Police Oversight",
+      "how": "Visit the OCPO website",
+      "how_formatted": "Visit the [OCPO website](https://dallascityhall.com/departments/office-of-community-police-oversight/Pages/default.aspx)"
+    },
+    {
+      "tagline": "Contact the Dallas Police Department about a criminal complaint against a non-DPD member.",
+      "why": "For a criminal complaint against someone who is not a Dallas Police Department member. The description for \"File a Complaint or Commendation – Community Police Oversight\" requests on the Dallas 311 website directs those complaints to the Dallas Police Department.",
+      "why_not": null,
+      "what": "Contact",
+      "who": "Dallas Police Department",
+      "how": "File the criminal complaint directly with the Dallas Police Department",
+      "how_formatted": "File the criminal complaint directly with the Dallas Police Department"
+    }
+  ]
+}

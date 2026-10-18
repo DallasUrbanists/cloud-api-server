@@ -1,0 +1,109 @@
+{
+  "title": "Sanitation Helping Hands",
+  "categories": [
+    "Garbage, Recycle, and Brush/Bulky Item Collection"
+  ],
+  "description": "Use this request to Initiate/Cancel/Renew garbage and recycle collection assistance. A Helping Hands Program Application and Declaration of Special Need form must be completed, signed, and returned to Sanitation Headquarters for review and approval. Please note, all customers will continue to be charged the residential collection service rate and any other related sanitation fees. NOTE: Sanitation residential customers who are physically disabled and living without an able-bodied person that can relocate their roll cart(s) to the point of collection may be eligible for the Helping Hands Program at no additional cost. The estimated response time for a request of this nature is 5 business days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/f876dc10-5f22-11ee-8932-8b0765cde3fc.jpg"
+  ],
+  "department": "Sanitation Services",
+  "resolutionEstimate": "20 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "What is the Dallas Water Utilities account number?",
+        "type": "numeric_text",
+        "required": true
+      },
+      {
+        "question": "# of garbage roll carts currently on the property:",
+        "type": "numeric_text",
+        "required": true
+      },
+      {
+        "question": "# of RECYCLE ROLL CARTS currently on the property:",
+        "type": "numeric_text",
+        "required": true
+      },
+      {
+        "question": "Are you the account holder?",
+        "type": "single_select",
+        "required": true,
+        "options": [
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "question": "If no, do you have authority to make changes to the Dallas Water Utilities account?",
+        "type": "single_select",
+        "required": true,
+        "shownWhen": "Account holder = No",
+        "options": [
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "question": "If no, and you are renting, what is the property owners name?",
+        "type": "text",
+        "required": true,
+        "shownWhen": "Account holder = No and authority = No"
+      },
+      {
+        "question": "What is the name listed on the Dallas Water Utilities account?",
+        "type": "text",
+        "required": true,
+        "shownWhen": "Account holder = Yes or authority = Yes"
+      },
+      {
+        "question": "What is the nature of your request?",
+        "type": "single_select",
+        "required": true,
+        "options": [
+          "Initiate Service",
+          "Cancel Service",
+          "Renew Service"
+        ]
+      },
+      {
+        "question": "Provide location where the roll cart(s) will be placed for collection.",
+        "type": "text",
+        "required": true,
+        "shownWhen": "Account holder = Yes or authority = Yes"
+      },
+      {
+        "question": "Additional Information",
+        "type": "text",
+        "required": false
+      }
+    ],
+    "observedInstructions": [
+      "A Helping Hands Program Application and Declaration of Special Need form must be completed, signed, and returned to Sanitation Headquarters for review and approval.",
+      "In the event that we need additional information, the responsible department may contact you. Please provide your name and phone number."
+    ],
+    "pathCoverage": [
+      "Account holder Yes/No and authority Yes/No; three nature choices tried under account-holder path.",
+      "Valid account-holder path completed with mock values and advanced to Contact. Contact requires First Name, Last Name, Email, and Phone Number; no contact data entered."
+    ],
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request to start, renew, or cancel Helping Hands collection assistance.",
+      "why": "For a residential Sanitation customer who is physically disabled and has no able-bodied person living with them who can move roll carts to the collection point, or an existing participant seeking renewal or cancellation. The 311 request form asks for account number, cart counts, account authority, request type, and collection location. A signed Helping Hands application and Declaration of Special Need must be returned to Sanitation Headquarters for review; ordinary residential charges still apply.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Sanitation Services",
+      "how": "Go to Dallas 311 > Choose \"Garbage, Recycle, and Brush/Bulky Item Collection\" > Choose \"Sanitation Helping Hands\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Garbage, Recycle, and Brush/Bulky Item Collection\" > Choose \"Sanitation Helping Hands\""
+    }
+  ]
+}

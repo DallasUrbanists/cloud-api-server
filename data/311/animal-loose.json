@@ -1,0 +1,221 @@
+{
+  "title": "Animal Loose",
+  "categories": [
+    "Animal Care and Control"
+  ],
+  "description": "Use this service request to report animals that are unrestrained and currently beyond the boundaries of the property owned, leased or legally occupied by the animal’s owner. Service requests of this nature are dispatched and responded to based on priority. Priority 1: Instances in which an animal is located on a roadway will be responded to within 1 hour. Priority 6: Instances in which a non-aggressive animal of known ownership is loose will be responded to within 24 hours. Priority 8: Instances of non-aggressive stray animals will be responded to within 24 hours.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/3eb15140-4783-11ee-b03c-01efe55eb2e3.PNG"
+  ],
+  "department": "Dallas Animal Services",
+  "resolutionEstimate": "3 Calendar Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "options": [
+          "Cat",
+          "Dog",
+          "Small Farm Animal",
+          "Horse",
+          "Cow",
+          "Donkey",
+          "Wildlife",
+          "DAS Only"
+        ],
+        "prompt": "Type of animal?",
+        "type": "select",
+        "required": true
+      },
+      {
+        "tooltip": "size, color, breed, gender, markings",
+        "prompt": "Describe the animal:",
+        "type": "text",
+        "required": true
+      },
+      {
+        "prompt": "If other, please describe:",
+        "type": "text",
+        "required": false
+      },
+      {
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "prompt": "Is the animal owned?",
+        "type": "radio",
+        "required": true
+      },
+      {
+        "when": {
+          "equals": "Yes",
+          "field": "Is the animal owned?"
+        },
+        "prompt": "Where does the animal live? (Address, description of house, etc.)",
+        "type": "text",
+        "required": true
+      },
+      {
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "prompt": "Is the animal currently in the street? (If no, skip next question. The correct answer value is already populated in the field.)",
+        "type": "radio",
+        "required": true
+      },
+      {
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "prompt": "If the animal is in the street, is it physically capable of moving out of the street?",
+        "type": "radio",
+        "required": true
+      },
+      {
+        "prompt": "Additional Information",
+        "type": "text",
+        "required": false
+      }
+    ],
+    "unexplored": null,
+    "observedInstructions": [
+      {
+        "when": {
+          "equals": "Cat",
+          "field": "Type of animal?"
+        },
+        "text": "Dallas Animal Services does not pick up healthy loose, stray or free-roaming cats. Please use the Animal Community Cat Program - DAS SR Type for concerns regarding loose, stray cats.",
+        "kind": "validation_alert"
+      },
+      {
+        "when": {
+          "field": "Type of animal?",
+          "equalsAny": [
+            "Horse",
+            "Cow",
+            "Donkey"
+          ]
+        },
+        "text": "The Dallas County Sheriff's Department addresses all large, loose livestock calls. Please contact the SHERIFF'S OFFICE at: 214-749-8641",
+        "kind": "validation_alert"
+      },
+      {
+        "when": {
+          "equals": "Wildlife",
+          "field": "Type of animal?"
+        },
+        "text": "If you are reporting sick or injured wildlife, please use the service request \"Animal Lack of Care\". If you are reporting a wild animal that is a member of a rabies vector species (skunks, raccoons, foxes, bats) confined in the living space of your home, please use the service request \"Animal Confined\". For other wildlife confined in the living space of your home, please consult the FAQ section of BeDallas90.org/wildlife for removal instructions. To report coyotes in your area, please call 469-676-9813. For all other wildlife concerns, please visit the Dallas Animal Services website at BeDallas90.org/wildlife",
+        "kind": "validation_alert"
+      },
+      {
+        "when": {
+          "field": "Is the animal currently in the street?",
+          "field2": "If the animal is in the street, is it physically capable of moving out of the street?",
+          "equals2": "No",
+          "equals": "No"
+        },
+        "text": "If there is no animal currently in the street, please change the selected answer to YES to proceed with this call.",
+        "kind": "inline_alert"
+      }
+    ],
+    "pathCoverage": {
+      "streetOptionsTested": 2,
+      "mobilityOptionsTested": 2,
+      "contactStepReached": true,
+      "animalOwnedStreetMobilityCombinationsTested": 64,
+      "animalOptionsTested": 8,
+      "detailsContinueReached": true,
+      "contactDataEntered": false,
+      "requestSubmitted": false,
+      "ownedOptionsTested": 2
+    }
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "conditional_paths_explored",
+  "contactStep": {
+    "contactInformationOptional": true,
+    "fields": [
+      "First Name",
+      "Last Name",
+      "Email",
+      "Phone Number",
+      "Address"
+    ],
+    "disabled": [
+      "City",
+      "State",
+      "Zipcode"
+    ]
+  },
+  "actions": [
+    {
+      "tagline": "Submit a 311 request for a loose animal.",
+      "why": "Report an unrestrained animal currently beyond its owner’s property, including a loose dog or small farm animal on a roadway, a nonaggressive owned animal, or a stray animal. The 311 request form asks whether the animal is owned, where it was last seen, whether it is in the street, and whether it can move out of the street.",
+      "why_not": "The online form for \"Animal Loose\" requests is not the route the 311 request form gives for healthy loose cats, large loose livestock, sick or injured wildlife, a rabies-vector animal confined in a home, other wildlife confined in a home, or coyote sightings. If wildlife is sick or injured, then submit an \"Animal Lack of Care\" 311 request instead. If a bat, fox, raccoon, or skunk is confined in a home, then submit an \"Animal Confined\" 311 request instead. If a healthy loose cat is the concern, then view the \"Animal Community Cat Program - DAS\" guidance. If a horse, cow, or donkey is loose, then contact the Dallas County Sheriff’s Office. If a coyote is being sighted, then call the Coyote Hotline.",
+      "what": "Submit 311 request",
+      "who": "Dallas Animal Services",
+      "how": "Go to Dallas 311 > Choose \"Animal Care and Control\" > Choose \"Animal Loose\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Animal Care and Control\" > Choose \"Animal Loose\""
+    },
+    {
+      "tagline": "View Dallas 311 guidance for healthy loose community cats.",
+      "why": "For a healthy loose, stray, or free-roaming cat. The 311 request form for \"Animal Loose\" requests says Dallas Animal Services does not pick up these cats and directs people to the Animal Community Cat Program - DAS service type.",
+      "why_not": null,
+      "what": "View 311 guidance",
+      "who": "Dallas Animal Services",
+      "how": "Go to Dallas 311 > Choose \"Animal Care and Control\" > Choose \"Animal Loose\" > Select Cat in the 311 request form and read its Animal Community Cat Program - DAS guidance",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Animal Care and Control\" > Choose \"Animal Loose\" > Select Cat in the 311 request form and read its Animal Community Cat Program - DAS guidance"
+    },
+    {
+      "tagline": "Call the Dallas County Sheriff’s Office about a loose horse, cow, or donkey.",
+      "why": "For a large, loose livestock animal such as a horse, cow, or donkey. The 311 request form for \"Animal Loose\" requests assigns these calls to the Dallas County Sheriff’s Department.",
+      "why_not": null,
+      "what": "Call",
+      "who": "Dallas County Sheriff’s Office",
+      "how": "Call 214-749-8641",
+      "how_formatted": "Call [214-749-8641](tel:2147498641)"
+    },
+    {
+      "tagline": "Submit a 311 request for sick or injured wildlife.",
+      "why": "For a wild animal that is sick or injured. The 311 request form for \"Animal Loose\" requests directs this condition to Animal Lack of Care.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Dallas Animal Services",
+      "how": "Go to Dallas 311 > Choose \"Animal Care and Control\" > Choose \"Animal Lack of Care\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Animal Care and Control\" > Choose \"Animal Lack of Care\""
+    },
+    {
+      "tagline": "Submit a 311 request for a rabies-vector animal confined in a home.",
+      "why": "For a bat, fox, raccoon, or skunk confined in the living space of a home. The 311 request form for \"Animal Loose\" requests directs this situation to Animal Confined.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Dallas Animal Services",
+      "how": "Go to Dallas 311 > Choose \"Animal Care and Control\" > Choose \"Animal Confined\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Animal Care and Control\" > Choose \"Animal Confined\""
+    },
+    {
+      "tagline": "Visit Dallas Animal Services wildlife guidance for other wildlife concerns.",
+      "why": "For wildlife confined in a home that is not a bat, fox, raccoon, or skunk, consult removal instructions; for other wildlife concerns, consult Dallas Animal Services guidance. The 311 request form for \"Animal Loose\" requests names BeDallas90.org/wildlife for both purposes.",
+      "why_not": null,
+      "what": "Visit website",
+      "who": "Dallas Animal Services",
+      "how": "Visit BeDallas90.org/wildlife for wildlife guidance",
+      "how_formatted": "Visit BeDallas90.org/wildlife for wildlife guidance"
+    },
+    {
+      "tagline": "Call the Coyote Hotline about coyotes in your area.",
+      "why": "For a coyote sighting or coyotes in the area. The 311 request form for \"Animal Loose\" requests directs these reports to the Coyote Hotline.",
+      "why_not": null,
+      "what": "Call",
+      "who": "Coyote Hotline",
+      "how": "Call 469-676-9813",
+      "how_formatted": "Call [469-676-9813](tel:4696769813)"
+    }
+  ]
+}

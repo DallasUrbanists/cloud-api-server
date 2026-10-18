@@ -1,0 +1,70 @@
+{
+  "title": "Sanitation Annual 20 Cubic Yard Exemption",
+  "categories": [
+    "Garbage, Recycle, and Brush/Bulky Item Collection"
+  ],
+  "description": "Use this service request for residential customers to claim their annual oversized brush/bulk collection not to exceed 20 cubic yards. The service request must be submitted the week prior to the scheduled brush/bulk collection week (customers can not use this Service Request type to replace a Cost-Plus request). An excessive fee of $60 per five cubic yards will be directly billed to the customer's Dallas Water Utilities account if the debris set out is more than the monthly 10 cubic yards without the annual oversized exemption service request, or if the annual oversized exemption is more than 20 cubic yards. A resident is also subject to a Citation issued by Code Compliance for violating the limit size (City Code Sec. 18-4 (h)(3)). For more information on the new brush/bulk regulations, please Click Here.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/e72c21e0-5f22-11ee-8932-8b0765cde3fc.jpg"
+  ],
+  "department": "Sanitation Services",
+  "resolutionEstimate": "1 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedInstructions": [
+      "ATTENTION!! This service request can not be cancelled after it is submitted. If you do not use these services, you will not be able to resubmit until the next calendar year."
+    ],
+    "observedQuestions": [
+      {
+        "question": "Have you submitted an Annual 20 Cubic Yard Exemption service request this calendar year?",
+        "type": "single_select",
+        "required": true,
+        "options": [
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "question": "Additional Information",
+        "type": "text",
+        "required": false
+      }
+    ],
+    "conditionalInstructions": [
+      {
+        "when": "Submitted this calendar year = Yes",
+        "text": "Only one (1) Annual 20 Cubic Yard Exemption service request is allowed per calendar year. At this time you can not continue with this request. Please note Cost-Plus service is also still available. This request does not replace Cost-Plus services."
+      }
+    ],
+    "pathCoverage": [
+      "Both Yes and No tried; Yes displayed cannot-continue instruction.",
+      "With No, Continue advanced to Contact. Contact requires First Name, Last Name, and Phone Number; no contact data entered."
+    ],
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request for a one-time annual oversized brush or bulk collection exemption.",
+      "why": "For a residential Sanitation customer claiming the annual exemption for an oversized brush or bulk setout of no more than 20 cubic yards. The request must be submitted the week before the scheduled collection week. The 311 request form asks whether an exemption was submitted this calendar year; after submission it cannot be cancelled or resubmitted until the next calendar year.",
+      "why_not": "The online form for \"Sanitation Annual 20 Cubic Yard Exemption\" requests cannot continue when an exemption was already submitted this calendar year; it does not replace Cost-Plus service and does not authorize a setout over 20 cubic yards. If an exemption was already submitted this calendar year, then consider the separately available Cost-Plus service.",
+      "what": "Submit 311 request",
+      "who": "Sanitation Services",
+      "how": "Go to Dallas 311 > Choose \"Garbage, Recycle, and Brush/Bulky Item Collection\" > Choose \"Sanitation Annual 20 Cubic Yard Exemption\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Garbage, Recycle, and Brush/Bulky Item Collection\" > Choose \"Sanitation Annual 20 Cubic Yard Exemption\""
+    },
+    {
+      "tagline": "Visit the Sanitation Services website for brush and bulk regulations.",
+      "why": "For more information about brush and bulk collection regulations, including limits and excess fees. The description for \"Sanitation Annual 20 Cubic Yard Exemption\" requests on the Dallas 311 website points to a Click Here link for this purpose.",
+      "why_not": null,
+      "what": "Visit website",
+      "who": "Sanitation Services",
+      "how": "On the Dallas 311 page for \"Sanitation Annual 20 Cubic Yard Exemption\", choose the \"Click Here\" link for brush/bulk regulations",
+      "how_formatted": "On the Dallas 311 page for \"Sanitation Annual 20 Cubic Yard Exemption\", choose the \"Click Here\" link for brush/bulk regulations"
+    }
+  ]
+}

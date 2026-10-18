@@ -1,0 +1,338 @@
+{
+  "title": "Utility Complaint/Information",
+  "categories": [
+    "Other Requests"
+  ],
+  "description": "Use this service request for utility complaints or utility information. If request is related to an Out of Order Street Light, please use SR type \"Street Lighting - Maintenance.\" The estimated response time for a service request of this nature is 10 business days.",
+  "photoUrls": [],
+  "department": "Budget & Management Services",
+  "resolutionEstimate": "30 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "Is this complaint about your utility service or utility equipment located in the streets and alleys?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Service",
+          "Equipment in street/alley"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Service",
+            "reveals": "What is the nature of your concern? and Which utility service? appear."
+          },
+          {
+            "when": "Equipment in street/alley",
+            "reveals": "What is your concern regarding the utility equipment?, Describe what you see, and Where is it located? appear."
+          }
+        ]
+      },
+      {
+        "question": "What is the nature of your concern?",
+        "required": false,
+        "type": "single_choice",
+        "when": "Question 1 = Service",
+        "options": [
+          "High bill",
+          "Quality of service",
+          "Disconnected service",
+          "Unable to get service",
+          "Other"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Other",
+            "reveals": "Required question If other, please describe: appears."
+          },
+          {
+            "when": "High bill, Quality of service, Disconnected service, or Unable to get service",
+            "reveals": "No additional fields, instructions, alerts, or suggestions."
+          }
+        ]
+      },
+      {
+        "question": "If other, please describe:",
+        "required": true,
+        "type": "free_text",
+        "when": "Question 1 = Service and What is the nature of your concern? = Other"
+      },
+      {
+        "question": "Which utility service?",
+        "required": false,
+        "type": "single_choice",
+        "when": "Question 1 = Service",
+        "options": [
+          "Cable",
+          "Electric",
+          "Gas",
+          "Telephone"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Cable",
+            "reveals": "Cable Service Provider: and Type of cable service: appear."
+          },
+          {
+            "when": "Electric",
+            "reveals": "Who is your electric provider? appears."
+          },
+          {
+            "when": "Gas",
+            "reveals": "Who is your gas provider? appears."
+          },
+          {
+            "when": "Telephone",
+            "reveals": "Who is your telephone provider? appears."
+          }
+        ]
+      },
+      {
+        "question": "Cable Service Provider:",
+        "required": false,
+        "type": "single_choice",
+        "when": "Which utility service? = Cable",
+        "options": [
+          "AT&T U-verse",
+          "Grande Communications",
+          "Time Warner Cable",
+          "Verizon Fios"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Each listed provider",
+            "reveals": "No additional form content."
+          }
+        ]
+      },
+      {
+        "question": "Type of cable service:",
+        "required": false,
+        "type": "single_choice",
+        "when": "Which utility service? = Cable",
+        "options": [
+          "TV",
+          "Internet"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "TV or Internet",
+            "reveals": "No additional form content."
+          }
+        ]
+      },
+      {
+        "question": "Who is your electric provider?",
+        "required": false,
+        "type": "free_text",
+        "when": "Which utility service? = Electric"
+      },
+      {
+        "question": "Who is your gas provider?",
+        "required": false,
+        "type": "single_choice",
+        "when": "Which utility service? = Gas",
+        "options": [
+          "Atmos Energy",
+          "Other"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Other",
+            "reveals": "Question If Other, please describe: appears."
+          },
+          {
+            "when": "Atmos Energy",
+            "reveals": "No additional form content."
+          }
+        ]
+      },
+      {
+        "question": "If Other, please describe:",
+        "required": false,
+        "type": "free_text",
+        "when": "Which utility service? = Gas and Who is your gas provider? = Other"
+      },
+      {
+        "question": "Who is your telephone provider?",
+        "required": false,
+        "type": "free_text",
+        "when": "Which utility service? = Telephone"
+      },
+      {
+        "question": "What is your concern regarding the utility equipment?",
+        "required": false,
+        "type": "select",
+        "when": "Question 1 = Equipment in street/alley",
+        "options": [
+          "cables/wires on ground",
+          "Damage to utility pole",
+          "Damaged/open utility box",
+          "Debris left by utility work crew",
+          "Graffiti",
+          "Leaning pole",
+          "Low hanging wires",
+          "Open trench",
+          "Tree limbs growing into utility lines"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Damage to utility pole",
+            "reveals": "What is the pole number? appears."
+          },
+          {
+            "when": "Damaged/open utility box",
+            "reveals": "What does the box look like? appears."
+          },
+          {
+            "when": "Graffiti",
+            "reveals": "Where is the graffiti? appears."
+          },
+          {
+            "when": "Leaning pole",
+            "reveals": "What kind of pole is leaning? and What does the box look like? appear."
+          },
+          {
+            "when": "Open trench",
+            "reveals": "Which utility service does the trench belong to? and How long has the trench been open? appear."
+          },
+          {
+            "when": "cables/wires on ground, Debris left by utility work crew, Low hanging wires, or Tree limbs growing into utility lines",
+            "reveals": "Describe what you see and Where is it located? appear."
+          }
+        ]
+      },
+      {
+        "question": "What is the pole number?",
+        "required": false,
+        "type": "free_text",
+        "when": "Utility equipment concern = Damage to utility pole"
+      },
+      {
+        "question": "What does the box look like?",
+        "required": false,
+        "type": "free_text",
+        "when": "Utility equipment concern = Damaged/open utility box or Leaning pole"
+      },
+      {
+        "question": "Where is the graffiti?",
+        "required": false,
+        "type": "single_choice",
+        "when": "Utility equipment concern = Graffiti",
+        "options": [
+          "Utility box",
+          "Pole",
+          "Other"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Utility box, Pole, or Other",
+            "reveals": "No additional fields, instructions, alerts, or suggestions."
+          }
+        ]
+      },
+      {
+        "question": "What kind of pole is leaning?",
+        "required": false,
+        "type": "single_choice",
+        "when": "Utility equipment concern = Leaning pole",
+        "options": [
+          "Wood",
+          "Metal",
+          "Streetlight"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Wood, Metal, or Streetlight",
+            "reveals": "No additional fields, instructions, alerts, or suggestions."
+          }
+        ]
+      },
+      {
+        "question": "Which utility service does the trench belong to?",
+        "required": false,
+        "type": "free_text",
+        "when": "Utility equipment concern = Open trench"
+      },
+      {
+        "question": "How long has the trench been open?",
+        "required": false,
+        "type": "free_text",
+        "when": "Utility equipment concern = Open trench"
+      },
+      {
+        "question": "Describe what you see",
+        "required": false,
+        "type": "free_text",
+        "when": "Question 1 = Equipment in street/alley"
+      },
+      {
+        "question": "Where is it located?",
+        "required": false,
+        "type": "free_text",
+        "when": "Question 1 = Equipment in street/alley"
+      },
+      {
+        "question": "Would you like to be contacted?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Each contact preference",
+            "reveals": "No additional fields or suggestions."
+          }
+        ]
+      }
+    ],
+    "unexplored": null,
+    "conditionalPaths": [
+      {
+        "when": "Question 1 = Service or Equipment in street/alley",
+        "instruction": "In the event that we need additional information, the responsible department may contact you. Please provide your name and phone number."
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Selected the default location 2045 FEDERAL ST; selected Service, Other for nature of concern and entered a mock description, selected Electric, and continued to Contact. No Contact data entered.",
+    "contactStepObserved": "Contact step displayed How can we reach you? and an email verification instruction. Contact information is optional and may be enabled by a checkbox. Fields shown: First Name, Last Name, Email, Phone Number, Address, City, State, Zipcode."
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request about a utility service or equipment in a street or alley.",
+      "why": "For a utility-service complaint or information request, such as a high bill, service quality, disconnected or unavailable service, or another concern, or for utility equipment in a street or alley such as wires on the ground, damaged poles or boxes, work-crew debris, graffiti, leaning poles, low wires, open trenches, or tree limbs in utility lines. The request form distinguishes utility service from street/alley equipment and asks which utility, provider, equipment problem, and location; these fields collect details rather than establish additional eligibility limits.",
+      "why_not": "The online form for \"Utility Complaint/Information\" requests does not apply to an out-of-order street light. If a street light is mounted on a wooden pole, then report it directly to Oncor. If the street light is not mounted on a wooden pole, then submit a \"Street Lamp/Light Maintenance\" 311 request instead.",
+      "what": "Submit 311 request",
+      "who": "Budget & Management Services",
+      "how": "Go to Dallas 311 > Under \"Other Requests\", choose \"Utility Complaint/Information\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Under \"Other Requests\", choose \"Utility Complaint/Information\""
+    },
+    {
+      "tagline": "Submit a 311 request for an out-of-order street light.",
+      "why": "For an out-of-order street light. The description for \"Utility Complaint/Information\" requests on the Dallas 311 website directs this concern to \"Street Lighting - Maintenance\". The public \"Street Lamp/Light Maintenance\" service has an online request form for street, pedestrian, and highway or freeway lighting.",
+      "why_not": "The online form for \"Street Lamp/Light Maintenance\" requests is not the route for street lights mounted on wooden poles. If the street light is mounted on a wooden pole, then report it directly to Oncor.",
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Traffic Signs and Signals\" > Choose \"Street Lamp/Light Maintenance\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Traffic Signs and Signals\" > Choose \"Street Lamp/Light Maintenance\""
+    },
+    {
+      "tagline": "Contact Oncor about an out-of-order street light on a wooden pole.",
+      "why": "For an out-of-order street light mounted on a wooden pole. The description for \"Street Lamp/Light Maintenance\" requests on the Dallas 311 website directs this pole type to Oncor at 1-888-313-4747 or through its \"Click Here\" link.",
+      "why_not": null,
+      "what": "Contact",
+      "who": "Oncor",
+      "how": "Call 1-888-313-4747 or use the \"Click Here\" link in the \"Street Lamp/Light Maintenance\" description",
+      "how_formatted": "Call [1-888-313-4747](tel:18883134747) or use the \"Click Here\" link in the \"Street Lamp/Light Maintenance\" description"
+    }
+  ]
+}

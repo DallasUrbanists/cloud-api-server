@@ -1,0 +1,117 @@
+{
+  "title": "Animal Illegal Vending",
+  "categories": [
+    "Animal Care and Control"
+  ],
+  "description": "Use this service request to report the illegal sale of any animals on public property and the illegal sale of dogs, cats, or exotic animals on private property. Priority 8: Instances will be responded to within 18 business days.",
+  "photoUrls": [],
+  "department": "Dallas Animal Services",
+  "resolutionEstimate": "18 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "options": [
+          "Private Property",
+          "Public Property"
+        ],
+        "prompt": "What type of property is the sale taking place on?",
+        "type": "radio",
+        "required": true
+      },
+      {
+        "options": [
+          "Tenant occupied",
+          "Owner occupied"
+        ],
+        "when": {
+          "equals": "Private Property",
+          "field": "What type of property is the sale taking place on?"
+        },
+        "prompt": "Is the location tenant or owner occupied?",
+        "type": "radio",
+        "required": true
+      },
+      {
+        "when": {
+          "equals": "Public Property",
+          "field": "What type of property is the sale taking place on?"
+        },
+        "prompt": "Describe the area where animals are being sold:",
+        "type": "text",
+        "required": true
+      },
+      {
+        "optionsWhenPrivate": [
+          "Cat",
+          "Dog",
+          "Exotic"
+        ],
+        "optionsWhenPublic": [
+          "Cat",
+          "Dog",
+          "Exotic",
+          "Other"
+        ],
+        "prompt": "What kind of animal is being sold?",
+        "type": "radio",
+        "required": true
+      },
+      {
+        "when": {
+          "equals": "Other",
+          "field": "What kind of animal is being sold?"
+        },
+        "prompt": "If Other, Please Describe:",
+        "type": "text",
+        "required": true
+      },
+      {
+        "prompt": "Additional Information",
+        "type": "text",
+        "required": false
+      }
+    ],
+    "unexplored": null,
+    "pathCoverage": {
+      "contactStepReached": true,
+      "publicAnimalOptionsTested": 4,
+      "detailsContinueReached": true,
+      "privateOccupancyAnimalCombinationsTested": 6,
+      "contactDataEntered": false,
+      "requestSubmitted": false
+    }
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "conditional_paths_explored",
+  "contactStep": {
+    "disabled": [
+      "City",
+      "State",
+      "Zipcode"
+    ],
+    "optional": [
+      "Address"
+    ],
+    "required": [
+      "First Name",
+      "Last Name",
+      "Email",
+      "Phone Number"
+    ]
+  },
+  "actions": [
+    {
+      "tagline": "Submit a 311 request to report illegal animal sales.",
+      "why": "Report the illegal sale of any animal on public property, or the illegal sale of dogs, cats, or exotic animals on private property. The 311 request form asks whether the sale occurs on public or private property, whether a private location is tenant or owner occupied, what kind of animal is sold, and where on public property the sale occurs.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Dallas Animal Services",
+      "how": "Go to Dallas 311 > Choose \"Animal Care and Control\" > Choose \"Animal Illegal Vending\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Animal Care and Control\" > Choose \"Animal Illegal Vending\""
+    }
+  ]
+}

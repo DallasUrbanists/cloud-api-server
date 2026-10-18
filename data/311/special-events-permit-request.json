@@ -1,0 +1,137 @@
+{
+  "title": "Special Events Permit Request",
+  "categories": [
+    "Other Requests"
+  ],
+  "description": "Use this service request to request a permit for any outdoor special event, commercial filming activity in the City of Dallas, Dallas Street seats, and commercial promoter registration. This includes parades, foot races, street festivals and State Fair of Texas Parking licenses. ** Not for permits issued for garage sales, neighborhood block parties, animals, Dallas Convention Center events or Fair Park events. ** The estimated response time for this service request is 2 business days. To complete an application Click Here",
+  "photoUrls": [],
+  "department": "Convention & Event Services",
+  "resolutionEstimate": "2 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "What type of permit is being requested?",
+        "required": true,
+        "type": "select",
+        "options": [
+          "Dallas Seats",
+          "Commercial Promoter Registration",
+          "Film (movie/commercial)",
+          "Outdoor music/food/social event",
+          "Parade",
+          "Political event/rally",
+          "Walks/races",
+          "Other"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Other",
+            "reveals": "Required question If other, please describe: appears."
+          },
+          {
+            "when": "Any other permit type",
+            "reveals": "No additional questions, instructions, alerts, or service suggestions."
+          }
+        ]
+      },
+      {
+        "question": "If other, please describe:",
+        "required": true,
+        "type": "free_text",
+        "when": "What type of permit is being requested? = Other"
+      },
+      {
+        "question": "Which items will be part of your event?",
+        "required": true,
+        "type": "multi_choice",
+        "options": [
+          "Erection of a tent smaller than 400 sqft",
+          "Blocking or restriction of property",
+          "Closing of a street",
+          "Sale of merchandise/food/beverages",
+          "Trailer",
+          "Van",
+          "Temporary no-parking/directional signs or id signs/banners"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Each listed item selected alone",
+            "reveals": "No additional form content, alerts, instructions, or suggestions."
+          },
+          {
+            "when": "Blocking or restriction of property + Closing of a street",
+            "reveals": "No additional form content, alerts, instructions, or suggestions."
+          },
+          {
+            "when": "Erection of a tent smaller than 400 sqft + Sale of merchandise/food/beverages",
+            "reveals": "No additional form content, alerts, instructions, or suggestions."
+          },
+          {
+            "when": "Trailer + Van",
+            "reveals": "No additional form content, alerts, instructions, or suggestions."
+          },
+          {
+            "when": "Closing of a street + Temporary no-parking/directional signs or id signs/banners",
+            "reveals": "No additional form content, alerts, instructions, or suggestions."
+          }
+        ]
+      },
+      {
+        "question": "Would you like to be contacted?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Each contact preference",
+            "reveals": "No additional fields or suggestions."
+          }
+        ]
+      }
+    ],
+    "unexplored": null,
+    "conditionalPaths": [
+      {
+        "when": "Default map pin resolved to 2018 RANCH TRL",
+        "reveals": "The location you entered is outside the City's jurisdiction for this service type."
+      },
+      {
+        "when": "Question 1 = Other",
+        "reveals": "Required free-text question If other, please describe: appears."
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "After the default pin resolved to 2018 RANCH TRL and displayed an out-of-jurisdiction alert, selected 1500 MARILLA ST, DALLAS, TX, 75201; selected Other, entered mock text, selected event items, and continued to Contact. No Contact data entered.",
+    "contactStepObserved": "Contact step displayed How can we reach you? and an email verification instruction. Contact information is optional and may be enabled by a checkbox. Fields shown: First Name, Last Name, Email, Phone Number, Address, City, State, Zipcode."
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request for an outdoor event, filming activity, or commercial promoter registration permit.",
+      "why": "For a permit for an outdoor special event, commercial filming in Dallas, Dallas Street Seats, or commercial promoter registration, including a parade, foot race, street festival, political event, or State Fair of Texas parking license. The 311 request form asks the permit type and event items such as a tent under 400 square feet, street closure, merchandise or food sales, trailer, van, or temporary signs.",
+      "why_not": "The online form for \"Special Events Permit Request\" requests does not apply to garage sale, neighborhood block party, animal, Dallas Convention Center, or Fair Park permits, or to event locations outside the City of Dallas jurisdiction.",
+      "what": "Submit 311 request",
+      "who": "Convention & Event Services",
+      "how": "Go to Dallas 311 > Under \"Other Requests\", choose \"Special Events Permit Request\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Under \"Other Requests\", choose \"Special Events Permit Request\""
+    },
+    {
+      "tagline": "Visit the Convention & Event Services website to complete an event permit application.",
+      "why": "For completing an application for an outdoor special event, commercial filming activity, Dallas Street Seats, or commercial promoter registration permit. The description for \"Special Events Permit Request\" requests on the Dallas 311 website directs residents to a \"Click Here\" link, but no target URL is saved in the record.",
+      "why_not": null,
+      "what": "Visit website",
+      "who": "Convention & Event Services",
+      "how": "Use the \"Click Here\" link in the \"Special Events Permit Request\" description to complete an application",
+      "how_formatted": "Use the \"Click Here\" link in the \"Special Events Permit Request\" description to complete an application"
+    }
+  ]
+}

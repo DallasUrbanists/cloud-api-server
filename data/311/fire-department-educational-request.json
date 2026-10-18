@@ -1,0 +1,103 @@
+{
+  "title": "Fire Department Educational Request",
+  "categories": [
+    "Non-Emergency Police and Fire Services"
+  ],
+  "description": "Use this service request to request fire safety educational programs only. Requests to visit a fire station or to have an engine on location must be submitted to the following email address: dfrshowandtell@dallasfire.gov. The estimated response time for this service request is 2 business days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/040fb970-5e2e-11ee-bf7f-3de98a985773.jpg"
+  ],
+  "department": "Dallas Fire-Rescue",
+  "resolutionEstimate": "7 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "What kind of program or training are you requesting?",
+        "required": true,
+        "type": "select",
+        "options": [
+          "Fire safety house",
+          "Fire brigade training",
+          "High rise program",
+          "Home fire safety",
+          "Hospital/nursing home program",
+          "Hotel fire safety",
+          "Be safe/fema",
+          "Risk watch",
+          "Safety & health fair/career day",
+          "Senior fire safety talk",
+          "Sparky",
+          "Tubs and liquids (extinguisher training)"
+        ]
+      },
+      {
+        "question": "What is the occupancy location type?",
+        "required": false,
+        "type": "select",
+        "options": [
+          "Single family/duplex",
+          "Apartments/condos/townhouse",
+          "Hotels/motels",
+          "Business/store/office",
+          "Hospital/nursing home/jail",
+          "Industrial",
+          "Manufacturing",
+          "Nightclub/restaurant/public gathering area",
+          "School K-12/daycare",
+          "Special/construction site/vacant lot",
+          "Storage/warehouse/parking garage"
+        ]
+      },
+      {
+        "question": "What age group is the audience?",
+        "required": false,
+        "type": "free_text"
+      },
+      {
+        "question": "What is the preferred date and time for the program?",
+        "required": false,
+        "type": "free_text"
+      },
+      {
+        "question": "Would you like to be contacted?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ]
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Program = Tubs and liquids (extinguisher training); occupancy = Storage/warehouse/parking garage; age and date/time supplied; contact = No; Details Continue reached Contact",
+    "contactStepObservation": "First Name, Last Name, and Phone Number marked required",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request for a Dallas Fire-Rescue safety education program.",
+      "why": "To request a fire-safety educational program or training, such as a fire safety house, fire brigade training, high-rise or home fire safety, programs for hospitals, nursing homes, hotels or schools, safety fairs, senior talks, Sparky, or extinguisher training. The 311 request form asks for the program type and can collect occupancy type, audience age group, and preferred date and time.",
+      "why_not": "The online form for \"Fire Department Educational Request\" requests does not apply to a fire-station visit or having a fire engine at a location. If you want a station visit or an engine on location, then email Dallas Fire-Rescue at dfrshowandtell@dallasfire.gov.",
+      "what": "Submit 311 request",
+      "who": "Dallas Fire-Rescue",
+      "how": "Go to Dallas 311 > Choose \"Non-Emergency Police and Fire Services\" > Choose \"Fire Department Educational Request\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Non-Emergency Police and Fire Services\" > Choose \"Fire Department Educational Request\""
+    },
+    {
+      "tagline": "Email Dallas Fire-Rescue to request a fire-station visit or engine at a location.",
+      "why": "For a request to visit a fire station or have a fire engine on location; the service description directs these requests to Dallas Fire-Rescue by email.",
+      "why_not": null,
+      "what": "Contact",
+      "who": "Dallas Fire-Rescue",
+      "how": "Email dfrshowandtell@dallasfire.gov",
+      "how_formatted": "Email [dfrshowandtell@dallasfire.gov](mailto:dfrshowandtell@dallasfire.gov)"
+    }
+  ]
+}

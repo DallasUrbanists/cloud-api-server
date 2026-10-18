@@ -1,0 +1,92 @@
+{
+  "title": "Creek Bank Erosion",
+  "categories": [
+    "Creeks, Streams, Storm Drains, and Waterways"
+  ],
+  "description": "Use this service request if there is Erosion occurring on a creek bank, dam or retention wall threatening a property or structure. Erosion is the breakdown of land around you; causing the earth to wear away and dissolve...this is often caused by water, wind or ice. The estimated response time (ERT) for this request is 5 business days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/43987250-5ee5-11ee-b5ea-bf93c94ffce7.png"
+  ],
+  "department": "Dallas Water Utilities",
+  "resolutionEstimate": "30 Business Days",
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "label": "Type of erosion:",
+        "options": [
+          "Creek bank",
+          "Alley",
+          "Construction site",
+          "Roadway ditch/Other public right of way",
+          "Other"
+        ],
+        "type": "radio",
+        "required": false
+      },
+      {
+        "label": "If Other, please describe:",
+        "condition": "Type of erosion = Other",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "Are you in a designated floodplain area?",
+        "options": [
+          "Yes",
+          "No",
+          "Unknown"
+        ],
+        "type": "radio",
+        "required": false
+      },
+      {
+        "label": "Do you know your panel #?",
+        "condition": "Floodplain = Yes",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "type": "radio",
+        "required": false
+      },
+      {
+        "label": "Provide panel #:",
+        "condition": "Floodplain = Yes and Do you know your panel # = Yes",
+        "type": "text",
+        "required": false
+      },
+      {
+        "label": "Would you like to be contacted?",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ],
+        "type": "radio",
+        "required": false
+      }
+    ],
+    "observedInstructions": [
+      "For erosion types Alley, Construction site, and Roadway ditch/Other public right of way, a New Service Type Suggestion popup recommended Creek Bank Erosion and displayed its drawer description. If erosion type is Other, the form adds a required description. Floodplain Yes adds Do you know your panel #? Yes adds Provide panel #; No does not. Floodplain No/Unknown adds no panel questions. Type and floodplain options were checked in combination."
+    ],
+    "contactStepObserved": "Contact step displayed optional consent checkbox; First Name, Last Name, Email, Phone Number, Address, City, State, Zipcode were disabled by default.",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "requestThisService": true,
+  "captureStatus": "conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request about erosion threatening property or a structure.",
+      "why": "Report erosion at a creek bank, dam, or retaining wall that threatens property or a structure. The 311 request form also asks whether the erosion is at an alley, construction site, roadway ditch, or other public right of way, and whether the location is in a designated floodplain. Erosion can involve land worn away by water, wind, or ice.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Dallas Water Utilities",
+      "how": "Go to Dallas 311 > Choose \"Creeks, Streams, Storm Drains, and Waterways\" > Choose \"Creek Bank Erosion\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Creeks, Streams, Storm Drains, and Waterways\" > Choose \"Creek Bank Erosion\""
+    }
+  ]
+}

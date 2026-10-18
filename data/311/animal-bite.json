@@ -1,0 +1,177 @@
+{
+  "title": "Animal Bite",
+  "categories": [
+    "Animal Care and Control"
+  ],
+  "description": "Use this service request to report that someone has been bitten or scratched by an animal. This service request can be entered whether or not the animal is owned. Veterinary clinics requesting rabies testing specimens may also enter their requests here due to them being bite related. Service requests of this nature are dispatched and responded to based on priority. Priority 3: Instances in which the biting animal remains loose will be responded to within 4 hours. Priority 3: Instances in which the biting animal has been contained will be responded to within 4 hours. Priority 5: Instances of rabies specimen pickups from Veterinary clinics will be responded to within 12 hours.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/420071b0-4782-11ee-b03c-01efe55eb2e3.PNG"
+  ],
+  "department": "Dallas Animal Services",
+  "resolutionEstimate": "1 Calendar Days",
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "label": "Are you reporting a bite, scratch, or exposure?",
+        "options": [
+          "Bite",
+          "Scratch",
+          "Exposure"
+        ],
+        "type": "radio",
+        "required": true
+      },
+      {
+        "label": "Are you a veterinary clinic requesting pickup?",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "type": "radio",
+        "required": true
+      },
+      {
+        "label": "What is the name of the person bitten/scratched?",
+        "condition": "Clinic pickup = Yes or No",
+        "type": "text",
+        "required": false
+      },
+      {
+        "label": "What is the address of the person bitten/scratched?",
+        "condition": "Clinic pickup = Yes or No",
+        "type": "text",
+        "required": false
+      },
+      {
+        "label": "What is the phone number of the person bitten/scratched?",
+        "condition": "Clinic pickup = Yes or No",
+        "type": "phone",
+        "required": false
+      },
+      {
+        "label": "What is the email address of the person bitten/scratched?",
+        "condition": "Clinic pickup = Yes or No",
+        "type": "text",
+        "required": false
+      },
+      {
+        "label": "If there are multiple victims, please enter name and contact information for each victim here:",
+        "condition": "Clinic pickup = Yes or No",
+        "type": "text",
+        "required": false
+      },
+      {
+        "label": "What is the gender of the person bitten?",
+        "condition": "Clinic pickup = No",
+        "options": [
+          "Female",
+          "Male"
+        ],
+        "type": "radio",
+        "required": true
+      },
+      {
+        "label": "Type of animal?",
+        "options": [
+          "Cat",
+          "Dog",
+          "Livestock",
+          "Wildlife",
+          "DAS Only"
+        ],
+        "type": "radio",
+        "required": false
+      },
+      {
+        "label": "Description of the animal:",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "Is the animal owned?",
+        "condition": "Clinic pickup = No",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "type": "radio",
+        "required": true
+      },
+      {
+        "label": "Where does the animal live? (Address, description of house, etc.)",
+        "condition": "Clinic pickup = No and owned = Yes",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "Where was the animal last seen?",
+        "condition": "Clinic pickup = No",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "When did the incident occur?",
+        "condition": "Clinic pickup = No",
+        "type": "date_time",
+        "required": true
+      },
+      {
+        "label": "Is the bite animal currently confined?",
+        "condition": "Clinic pickup = No",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "type": "radio",
+        "required": true
+      },
+      {
+        "label": "Is the animal deceased?",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "type": "radio",
+        "required": true
+      },
+      {
+        "label": "Is the deceased animal at a location for the animal services officer to pick up?",
+        "condition": "Deceased = Yes",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "type": "radio",
+        "required": true
+      },
+      {
+        "label": "Describe where the animal is located:",
+        "condition": "Deceased = Yes",
+        "type": "text",
+        "required": true
+      }
+    ],
+    "observedInstructions": [
+      "Clinic pickup = No adds gender, owned, where last seen, incident date/time, and current confinement questions; owned Yes adds where the animal lives. Clinic pickup = Yes hides gender, ownership, location last seen, incident time, confinement and location-of-animal questions, while retaining victim contact details, type of animal, animal description, and deceased question. Deceased Yes adds pickup-location yes/no and a required description of location; pickup-location Yes and No do not change the remaining fields. Scratch and Exposure showed the same form structure as Bite for both clinic answers. The page asks for requester name and phone for follow-up, but the Contact step specifically requires First Name, Last Name, and Email; Phone and Address were optional."
+    ],
+    "contactStepObserved": "For clinic pickup Yes and No, the Contact page required First Name, Last Name, and Email; Phone and Address were optional; City, State, and Zipcode were disabled.",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "requestThisService": true,
+  "captureStatus": "conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request about an animal bite, scratch, exposure, or rabies specimen pickup.",
+      "why": "Report a person bitten or scratched by an animal, an animal exposure, or a veterinary clinic request to pick up a bite-related rabies-testing specimen. The animal may be owned or unowned, loose or confined, and alive or deceased. The 311 request form asks for the victim, animal description, incident time and location, whether the biting animal is confined, and, for a deceased animal, its pickup location. Veterinary clinics use a distinct question path for specimen pickup.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Dallas Animal Services",
+      "how": "Go to Dallas 311 > Choose \"Animal Care and Control\" > Choose \"Animal Bite\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Animal Care and Control\" > Choose \"Animal Bite\""
+    }
+  ]
+}

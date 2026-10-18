@@ -1,0 +1,92 @@
+{
+  "title": "Alley Repair - Routine",
+  "categories": [
+    "Streets, Medians, Sidewalks and Alleys"
+  ],
+  "description": "Use this service request type to report alley conditions that are NOT hazardous, but still need repairs. Hazardous conditions could cause damage to a vehicle or bodily injury - please Call 3-1-1. The estimated response time (ERT) for this service request is 10 business days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/70d350a0-3230-11ee-8b8a-b1bf7ea1f0ca.JPG"
+  ],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "60 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "prompt": "What is the nature of the problem?",
+        "type": "single_select",
+        "options": [
+          "Breakdown in alley",
+          "Ruts in alley",
+          "Standing water in alley",
+          "Pothole in alley"
+        ],
+        "required": true,
+        "branches": {
+          "Ruts in alley": "Show validation alert and inline guidance about ruts on pavement versus dirt"
+        }
+      },
+      {
+        "prompt": "What is the surface type?",
+        "type": "single_select",
+        "options": [
+          "Asphalt",
+          "Concrete",
+          "Unpaved/unimproved"
+        ],
+        "required": true,
+        "branches": {
+          "Unpaved/unimproved": "New Service Type Suggestion popup displayed only the current Alley Repair - Routine type; Keep Current allowed proceeding"
+        }
+      },
+      {
+        "prompt": "Would you like to be contacted?",
+        "type": "single_select",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ],
+        "required": false
+      }
+    ],
+    "conditionalMessage": "If ruts/damage is on the alley pavement, continue with SR. If ruts are in the dirt off the pavement - use Sanitation Property Damage - SAN",
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Pothole in alley; Unpaved/unimproved",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request for a nonhazardous alley repair.",
+      "why": "Report a nonhazardous alley breakdown, rut in the paved alley, standing water, or pothole. The 311 request form asks whether the surface is asphalt, concrete, or unpaved; it says to continue with this request when ruts or damage are on the alley pavement.",
+      "why_not": "The online form for \"Alley Repair - Routine\" requests does not apply to hazardous conditions that could damage a vehicle or cause bodily injury, or to ruts in dirt off the pavement. If ruts are in dirt off the pavement and were caused by a Sanitation truck, then submit a \"Sanitation Property Damage\" 311 request instead. If the condition is hazardous, then call 311 by phone instead of submitting a 311 request online.",
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Alley Repair - Routine\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Alley Repair - Routine\""
+    },
+    {
+      "tagline": "Submit a 311 request for dirt-alley damage caused by a Sanitation truck.",
+      "why": "For ruts in dirt off the alley pavement when a Sanitation truck caused the property damage. The 311 request form for \"Alley Repair - Routine\" requests directs dirt ruts to Sanitation Property Damage, whose saved description limits it to damage caused by Sanitation trucks.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Sanitation Services",
+      "how": "Go to Dallas 311 > Choose \"Garbage, Recycle, and Brush/Bulky Item Collection\" > Choose \"Sanitation Property Damage\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Garbage, Recycle, and Brush/Bulky Item Collection\" > Choose \"Sanitation Property Damage\""
+    },
+    {
+      "tagline": "Call Dallas 311 by phone for a hazardous alley condition.",
+      "why": "For a hazardous alley condition that could cause vehicle damage or bodily injury. The description for \"Alley Repair - Routine\" requests on the Dallas 311 website directs residents to call 311 for hazardous conditions.",
+      "why_not": null,
+      "what": "Call 311 by phone",
+      "who": "Dallas 311",
+      "how": "Call 311",
+      "how_formatted": "Call [311](tel:311)"
+    }
+  ]
+}

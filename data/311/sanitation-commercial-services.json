@@ -1,0 +1,207 @@
+{
+  "title": "Sanitation Commercial Services",
+  "categories": [
+    "Garbage, Recycle, and Brush/Bulky Item Collection"
+  ],
+  "description": "Use to request new commercial roll cart and/or dumpster service, make changes to the existing commercial service, or cancel service. Businesses, City Facilities, and Multi-Family Properties can request commercial roll cart services. ONLY CITY FACILITIES can request Dumpster Service. If you live in a Multi-Family Property, i.e., apartment/condo/townhome, your service will be approved on a case-by-case basis. All service addresses considered business/commercial must have an active Dallas Water Utilities account with active water to proceed with this request. A signed Commercial Service Agreement must also be obtained to provide/continue service. The estimated response time for a request of this nature is 3 business days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/eca5f510-5f22-11ee-b5ea-bf93c94ffce7.jpg"
+  ],
+  "department": "Sanitation Services",
+  "resolutionEstimate": "10 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "What type of property is this?",
+        "type": "single_select",
+        "required": true,
+        "options": [
+          "Business/Commercial",
+          "City Facility",
+          "Single-Family Home",
+          "Multi-Family Complex"
+        ]
+      },
+      {
+        "question": "What is the Dallas Water Utilities account number?",
+        "type": "numeric_text",
+        "required": true
+      },
+      {
+        "question": "What is the nature of your commercial service request?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Dumpster Service",
+          "Pricing Information",
+          "Stop Roll Cart Service",
+          "New Roll Cart Service",
+          "Modify Exsisting Roll Cart Service",
+          "Repair Roll Cart",
+          "Replace Roll Cart",
+          "Onsite Visit - Application Needed - STAFF ONLY"
+        ]
+      },
+      {
+        "question": "Select the service your request is concerning.",
+        "type": "single_select",
+        "required": true,
+        "options": [
+          "Garbage",
+          "Recycling",
+          "Garbage and Recycling"
+        ]
+      },
+      {
+        "question": "# of garbage roll carts currently on the property:",
+        "type": "numeric_text",
+        "required": true
+      },
+      {
+        "question": "# of recycling roll carts currently on the property:",
+        "type": "numeric_text",
+        "required": true
+      },
+      {
+        "question": "Who is the legal owner or what is the entity name?",
+        "type": "text",
+        "required": true,
+        "shownWhen": "Business/Commercial"
+      },
+      {
+        "question": "What is the name of the business?",
+        "type": "text",
+        "required": true,
+        "shownWhen": "Business/Commercial"
+      },
+      {
+        "question": "Business Unit/Suite # (If none, type N/A):",
+        "type": "text",
+        "required": true,
+        "shownWhen": "Business/Commercial"
+      },
+      {
+        "question": "What is the City of Dallas Department name?",
+        "type": "text",
+        "required": true,
+        "shownWhen": "City Facility"
+      },
+      {
+        "question": "What is the City Facility property name?",
+        "type": "text",
+        "required": true,
+        "shownWhen": "City Facility"
+      },
+      {
+        "question": "What type of Multi-Family property is it?",
+        "type": "single_select",
+        "required": true,
+        "shownWhen": "Multi-Family Complex",
+        "options": [
+          "Apartment/Condo",
+          "Townhome",
+          "Mobile Home Park"
+        ]
+      },
+      {
+        "question": "What is the name of the Multi-Family Property?",
+        "type": "text",
+        "required": true,
+        "shownWhen": "Multi-Family Complex"
+      },
+      {
+        "question": "How many units does the Multi-Family Property have?",
+        "type": "numeric_text",
+        "required": true,
+        "shownWhen": "Multi-Family Complex"
+      },
+      {
+        "question": "Is the property in a gated or enclosed area?",
+        "type": "single_select",
+        "required": true,
+        "options": [
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "question": "Gate code/access code (if needed):",
+        "type": "text",
+        "required": true,
+        "shownWhen": "Gated = Yes"
+      },
+      {
+        "question": "Additional Information",
+        "type": "text",
+        "required": false
+      }
+    ],
+    "conditionalInstructions": [
+      {
+        "when": "Single-Family Home",
+        "text": "Requests of this nature cannot be submitted using this service request type. Please change the type to Sanitation Roll Cart Maintenance/Delivery - SAN to continue. New Service Type Suggestion offers Sanitation Roll Cart Maintenance/Delivery."
+      },
+      {
+        "when": "Dallas Water Utilities account number entered",
+        "text": "If an invalid account number is provided, the service request will be closed with no further action."
+      },
+      {
+        "when": "Repair Roll Cart or Replace Roll Cart",
+        "text": "Your roll-cart(s) must be empty and placed at the front curb of your property for repairs, replacements, exchanges, and removals."
+      }
+    ],
+    "observedInstructions": [
+      "In the event that we need additional information, the responsible department may contact you. Please provide your name and phone number."
+    ],
+    "pathCoverage": [
+      "All four property choices; all eight commercial request types under Business/Commercial, City Facility, and Multi-Family Complex.",
+      "All three service choices, all three multi-family subtypes, and both gated answers tried. Gated Yes revealed access-code field.",
+      "Business/Commercial, City Facility, and Multi-Family Complex paths completed with mock answers and advanced to Contact. Contact requires First Name, Last Name, Email, Phone Number; no contact data entered."
+    ],
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request to start, change, or stop commercial roll-cart service.",
+      "why": "For a business, City facility, or multifamily property seeking new commercial garbage or recycling roll carts, changes or repairs to existing commercial service, pricing information, or cancellation. Dumpster service is described as available only to City facilities. Commercial addresses need an active Dallas Water Utilities water account and a signed Commercial Service Agreement; multifamily requests are reviewed case by case.",
+      "why_not": "The online form for \"Sanitation Commercial Services\" requests cannot be used for a single-family home; its conditional guidance directs that answer to \"Sanitation Roll Cart Maintenance/Delivery\". If the property is a single-family home, then submit a \"Sanitation Roll Cart Maintenance/Delivery\" 311 request instead.",
+      "what": "Submit 311 request",
+      "who": "Sanitation Services",
+      "how": "Go to Dallas 311 > Choose \"Garbage, Recycle, and Brush/Bulky Item Collection\" > Choose \"Sanitation Commercial Services\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Garbage, Recycle, and Brush/Bulky Item Collection\" > Choose \"Sanitation Commercial Services\""
+    },
+    {
+      "tagline": "Submit a 311 request for dumpster service at a City facility.",
+      "why": "For a City of Dallas facility seeking new dumpster service or a change to it. The Sanitation Commercial Services description says only City facilities can request dumpster service, and the 311 request form asks for the department and facility names.",
+      "why_not": "The dumpster-service action does not apply to businesses or multifamily properties; the description for \"Sanitation Commercial Services\" requests on the Dallas 311 website limits dumpster requests to City facilities.",
+      "what": "Submit 311 request",
+      "who": "Sanitation Services",
+      "how": "Go to Dallas 311 > Choose \"Garbage, Recycle, and Brush/Bulky Item Collection\" > Choose \"Sanitation Commercial Services\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Garbage, Recycle, and Brush/Bulky Item Collection\" > Choose \"Sanitation Commercial Services\""
+    },
+    {
+      "tagline": "Submit a 311 request for residential roll-cart service.",
+      "why": "For a single-family home needing roll-cart delivery or maintenance. The Sanitation Commercial Services form directs that property answer to \"Sanitation Roll Cart Maintenance/Delivery\" and says the commercial request cannot continue.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Sanitation Services",
+      "how": "Go to Dallas 311 > Choose \"Garbage, Recycle, and Brush/Bulky Item Collection\" > Choose \"Sanitation Roll Cart Maintenance/Delivery\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Garbage, Recycle, and Brush/Bulky Item Collection\" > Choose \"Sanitation Roll Cart Maintenance/Delivery\""
+    },
+    {
+      "tagline": "Place commercial roll carts at the front curb for repair or replacement.",
+      "why": "For repair or replacement of a commercial roll cart. The Sanitation Commercial Services form says carts must be empty and at the front curb for repairs, replacements, exchanges, or removals.",
+      "why_not": null,
+      "what": "Place roll carts at curb",
+      "who": "Sanitation Services",
+      "how": "Empty the roll carts and place them at the front curb of the property",
+      "how_formatted": "Empty the roll carts and place them at the front curb of the property"
+    }
+  ]
+}

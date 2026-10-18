@@ -1,0 +1,75 @@
+{
+  "title": "Lock or Unlock Knox Lock/Box",
+  "categories": [
+    "Non-Emergency Police and Fire Services"
+  ],
+  "description": "Use this service request to request to have a Knox Company emergency lock or box opened or locked by Dallas Fire personnel. The estimated response time for this service request is 3 business days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/cd8e0500-5e2d-11ee-bf7f-3de98a985773.jpg"
+  ],
+  "department": "Dallas Fire-Rescue",
+  "resolutionEstimate": "7 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "What is the occupancy location type?",
+        "required": true,
+        "type": "select",
+        "options": [
+          "Single family/duplex",
+          "Apartments/condos/townhouse",
+          "Hotels/motels",
+          "Business/store/office",
+          "Hospital/nursing home/jail",
+          "Industrial",
+          "Manufacturing",
+          "Nightclub/restaurant/public gathering area",
+          "School K-12/daycare",
+          "Special/construction site/vacant lot",
+          "Storage/warehouse/parking garage"
+        ]
+      },
+      {
+        "question": "If this is a business, what is the name of the business/facility?",
+        "required": false,
+        "type": "free_text"
+      },
+      {
+        "question": "How many stories are in the building?",
+        "required": false,
+        "type": "numeric"
+      },
+      {
+        "question": "Would you like to be contacted?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ]
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Occupancy = Storage/warehouse/parking garage; business name and stories supplied; contact = No; Details Continue reached Contact",
+    "contactStepObservation": "First Name, Last Name, and Phone Number marked required",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request for Dallas Fire personnel to open or lock a Knox Company emergency lock or box.",
+      "why": "To request Dallas Fire personnel to open or lock a Knox Company emergency lock or box. The request form asks for the occupancy type, business or facility name when relevant, and building story count.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Dallas Fire-Rescue",
+      "how": "Go to Dallas 311 > Choose \"Non-Emergency Police and Fire Services\" > Choose \"Lock or Unlock Knox Lock/Box\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Non-Emergency Police and Fire Services\" > Choose \"Lock or Unlock Knox Lock/Box\""
+    }
+  ]
+}

@@ -1,0 +1,122 @@
+{
+  "title": "Street Repair",
+  "categories": [
+    "Streets, Medians, Sidewalks and Alleys"
+  ],
+  "description": "Use this service request to report minor street repairs such as pot holes, standing water, damaged surface, broken curbs and gutters. The estimated response time (ERT) for this service request is 5 business days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/65c4d9c0-3cb9-11ee-902e-4788c31e8f09.JPG"
+  ],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "60 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "Is it hazardous?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Yes",
+            "instruction": "If hazardous, please call 3-1-1"
+          },
+          {
+            "when": "No",
+            "reveals": [
+              "What street repair is needed?",
+              "Direction of Travel?",
+              "What is the closest business/intersection?"
+            ]
+          }
+        ]
+      },
+      {
+        "question": "What street repair is needed?",
+        "required": true,
+        "type": "select",
+        "when": "Is it hazardous? = No",
+        "options": [
+          "Bridge repair",
+          "Curb repair",
+          "Driveway culvert",
+          "Gutter repair",
+          "Pot hole",
+          "Retaining wall",
+          "Shoulder repair",
+          "Street repair",
+          "Street culvert",
+          "Street needs grading",
+          "Wheel chair ramp repair (on street)"
+        ]
+      },
+      {
+        "question": "Direction of Travel?",
+        "required": false,
+        "type": "select",
+        "when": "Is it hazardous? = No",
+        "options": [
+          "Eastbound and westbound",
+          "Eastbound",
+          "Left turn lane",
+          "North and southbound",
+          "Northbound",
+          "Northeast",
+          "Northwest",
+          "Southbound",
+          "Southeast",
+          "Southwest",
+          "Westbound"
+        ]
+      },
+      {
+        "question": "What is the closest business/intersection?",
+        "required": true,
+        "type": "free_text",
+        "when": "Is it hazardous? = No"
+      },
+      {
+        "question": "Would you like to be contacted?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ]
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Hazardous = No; repair = Wheel chair ramp repair (on street); direction = Westbound; intersection supplied; contact = No; Details Continue reached Contact",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request for minor nonhazardous street repair.",
+      "why": "For minor nonhazardous street repairs, including potholes, damaged pavement, standing water, broken curbs or gutters, bridge or shoulder repair, culverts, grading, retaining walls, or a street wheelchair ramp. The 311 request form asks whether the issue is hazardous, the repair type, direction of travel, and nearest business or intersection.",
+      "why_not": "The online form for \"Street Repair\" requests is not the directed route for a hazardous condition. If the condition is hazardous, then call 311 by phone instead of submitting a 311 request online.",
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Street Repair\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Street Repair\""
+    },
+    {
+      "tagline": "Call Dallas 311 by phone about a hazardous street-repair concern.",
+      "why": "For a hazardous street repair. The Street Repair request form directs people who answer Yes to its hazardous question to call 3-1-1.",
+      "why_not": null,
+      "what": "Call 311 by phone",
+      "who": "Dallas 311",
+      "how": "Call 311",
+      "how_formatted": "Call [311](tel:311)"
+    }
+  ]
+}

@@ -1,0 +1,127 @@
+{
+    "title":  "Landscaping Violation",
+    "categories":  [
+                       "City Code Violations"
+                   ],
+    "description":  "Use this service request to report landscaping violations of the Dallas City Code Landscaping Requirements (Article X). This service request routes to the Arborist Division of the Planning and Development Department. The estimated response time for a request of this nature is 5 business days. Visit Article X for more information: https://codelibrary.amlegal.com/codes/dallas/latest/dallas_tx/0-0-0-91946",
+    "photoUrls":  [
+
+                  ],
+    "department":  "Planning \u0026 Development Department",
+    "resolutionEstimate":  "10 Business Days",
+    "requestThisService":  true,
+    "instructions":  null,
+    "detailsForm":  {
+                        "status":  "conditional_paths_explored",
+                        "observedQuestions":  [
+                                                  {
+                                                      "options":  [
+                                                                      "High weeds",
+                                                                      "Noise Complaint - lawnmower, weedeater, trimmer, etc",
+                                                                      "No"
+                                                                  ],
+                                                      "prompt":  "Are you reporting any of the following concerns?",
+                                                      "type":  "radio",
+                                                      "required":  true
+                                                  },
+                                                  {
+                                                      "options":  [
+                                                                      "Residential",
+                                                                      "Commercial"
+                                                                  ],
+                                                      "prompt":  "Is the property residential or commercial?",
+                                                      "type":  "radio",
+                                                      "required":  true
+                                                  },
+                                                  {
+                                                      "options":  [
+                                                                      "Vacant",
+                                                                      "Occupied",
+                                                                      "Cannot determine"
+                                                                  ],
+                                                      "prompt":  "Is the property vacant or occupied?",
+                                                      "type":  "radio",
+                                                      "required":  true
+                                                  },
+                                                  {
+                                                      "options":  [
+                                                                      "Dead",
+                                                                      "Missing",
+                                                                      "Altered"
+                                                                  ],
+                                                      "prompt":  "Is the landscaping dead, missing, or altered?",
+                                                      "type":  "radio",
+                                                      "required":  true
+                                                  },
+                                                  {
+                                                      "options":  [
+                                                                      "Shrubs",
+                                                                      "Trees",
+                                                                      "Site change"
+                                                                  ],
+                                                      "when":  {
+                                                                   "field":  "Is the landscaping dead, missing, or altered?",
+                                                                   "equalsAny":  [
+                                                                                     "Dead",
+                                                                                     "Missing"
+                                                                                 ]
+                                                               },
+                                                      "prompt":  "What type of landscape is dead or missing?",
+                                                      "type":  "radio",
+                                                      "required":  true
+                                                  },
+                                                  {
+                                                      "prompt":  "Additional Information",
+                                                      "type":  "text",
+                                                      "required":  false
+                                                  }
+                                              ],
+                        "unexplored":  null,
+                        "pathCoverage":  {
+                                             "primaryCombinationsTested":  54,
+                                             "detailsContinueReached":  true,
+                                             "deadMissingLandscapeTypeCombinationsTested":  6,
+                                             "contactStepReached":  true,
+                                             "contactDataEntered":  false,
+                                             "requestSubmitted":  false
+                                         }
+                    },
+    "sourcePortalUrl":  "https://dallascrm.my.site.com/public/s/",
+    "serviceRequestUrl":  "https://dallascrm.my.site.com/public/s/",
+    "captureStatus":  "conditional_paths_explored",
+    "contactStep":  {
+                        "contactInformationOptional":  true,
+                        "fields":  [
+                                       "First Name",
+                                       "Last Name",
+                                       "Email",
+                                       "Phone Number",
+                                       "Address"
+                                   ],
+                        "disabled":  [
+                                         "City",
+                                         "State",
+                                         "Zipcode"
+                                     ]
+                    },
+    "actions":  [
+                    {
+                        "tagline":  "Submit a 311 request to report a Dallas City Code landscaping violation.",
+                        "why":  "To report landscaping violations of Dallas City Code Landscaping Requirements (Article X), which routes to the Arborist Division of the Planning and Development Department. The 311 request form asks about high weeds, lawnmower or weedeater noise, residential or commercial property, whether the property is vacant or occupied, and whether landscaping is dead, missing, or altered; if dead or missing, it asks whether the affected landscape is shrubs, trees, or a site change.",
+                        "why_not":  null,
+                        "what":  "Submit 311 request",
+                        "who":  "Planning \u0026 Development Department",
+                        "how":  "Go to Dallas 311 \u003e Choose \"City Code Violations\" \u003e Choose \"Landscaping Violation\"",
+                        "how_formatted":  "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) \u003e Choose \"City Code Violations\" \u003e Choose \"Landscaping Violation\""
+                    },
+                    {
+                        "tagline":  "Visit Article X of the Dallas City Code for landscaping requirements.",
+                        "why":  "For more information about the Dallas City Code Landscaping Requirements (Article X). The description for \"Landscaping Violation\" requests on the Dallas 311 website links directly to Article X.",
+                        "why_not":  null,
+                        "what":  "Visit website",
+                        "who":  "Dallas City Code",
+                        "how":  "Visit Article X for more information",
+                        "how_formatted":  "Visit [Article X](https://codelibrary.amlegal.com/codes/dallas/latest/dallas_tx/0-0-0-91946) for more information"
+                    }
+                ]
+}

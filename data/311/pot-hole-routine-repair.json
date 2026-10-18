@@ -1,0 +1,89 @@
+{
+  "title": "Pot Hole - Routine Repair",
+  "categories": [
+    "Streets, Medians, Sidewalks and Alleys"
+  ],
+  "description": "Use this service request to report routine pothole repairs. A routine pothole is a hole in the pavement that is 3 feet by 3 feet in diameter or less. Please indicate where the pothole is located - in the street or alley. The estimated response time (ERT) for this service request is 5 business days.",
+  "photoUrls": [],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "5 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "Is the pothole hazardous?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Yes",
+            "instruction": "If this is concerning a hazardous condition please call 3-1-1 for immediate assistance."
+          },
+          {
+            "when": "No",
+            "reveals": "Where is the pothole located?"
+          }
+        ]
+      },
+      {
+        "question": "Where is the pothole located?",
+        "required": true,
+        "type": "single_choice",
+        "when": "Is the pothole hazardous? = No",
+        "options": [
+          "Alley",
+          "Driveway approach",
+          "Street"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Driveway approach",
+            "instruction": "The Drive Approach is the Owner's Responsibility to repair."
+          }
+        ]
+      },
+      {
+        "question": "Would you like to be contacted?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ]
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Hazardous = No; location = Street; contact = No; Details Continue reached Contact",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request about a routine pothole in a street or alley.",
+      "why": "For a nonhazardous pavement hole no larger than about three feet by three feet in a street or alley. The 311 request form asks whether it is hazardous and where it is located.",
+      "why_not": "The online form for \"Pot Hole - Routine Repair\" requests is not the directed route for a hazardous pothole or a driveway approach that the owner is responsible for repairing. If the pothole is hazardous, then call 311 by phone instead of submitting a 311 request online.",
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Pot Hole - Routine Repair\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Pot Hole - Routine Repair\""
+    },
+    {
+      "tagline": "Call Dallas 311 by phone about a hazardous pothole.",
+      "why": "For a pothole that may cause serious vehicle damage or pedestrian injury. The Pot Hole - Routine Repair request form directs people who answer Yes to its hazardous question to call 311 for immediate assistance.",
+      "why_not": null,
+      "what": "Call 311 by phone",
+      "who": "Dallas 311",
+      "how": "Call 311",
+      "how_formatted": "Call [311](tel:311)"
+    }
+  ]
+}

@@ -1,0 +1,141 @@
+{
+  "title": "Construction Right of Way/Status Inquiry",
+  "categories": [
+    "Streets, Medians, Sidewalks and Alleys",
+    "Traffic Signs and Signals"
+  ],
+  "description": "Use this service request to inquire about the status of ongoing construction or to report concerns about ongoing construction in the public right of way (i.e. street, alley or sidewalk) by private contractors or by the City of Dallas. Construction should be actively in progress. The estimated response time (ERT) for this service request is 7 business days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/a8794ab0-3239-11ee-8b8a-b1bf7ea1f0ca.JPG"
+  ],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "14 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "prompt": "What are you requesting?",
+        "type": "single_select",
+        "options": [
+          "Request construction status",
+          "Report concerns about construction"
+        ],
+        "required": true,
+        "branches": {
+          "Request construction status": "Ask type of construction work",
+          "Report concerns about construction": "Ask type of work taking place"
+        }
+      },
+      {
+        "prompt": "Where is the construction taking place?",
+        "type": "single_select",
+        "options": [
+          "In the street",
+          "In the alley",
+          "On the sidewalk",
+          "On private property",
+          "Other"
+        ],
+        "required": true,
+        "branches": {
+          "Other": "Ask If Other, please describe:",
+          "On private property": "New Service Type Suggestion popup displayed only the current service type"
+        }
+      },
+      {
+        "prompt": "If Other, please describe:",
+        "type": "text",
+        "required": true,
+        "when": "construction location = Other"
+      },
+      {
+        "prompt": "Where is the construction project located (address/street block)?",
+        "type": "text",
+        "required": false
+      },
+      {
+        "prompt": "What type of construction work is taking place?",
+        "type": "single_select",
+        "options": [
+          "Alley construction",
+          "Sidewalk construction",
+          "Street repair construction",
+          "Utility construction",
+          "Other"
+        ],
+        "required": true,
+        "when": "request = Request construction status",
+        "branchFinding": "Other showed no extra question"
+      },
+      {
+        "prompt": "What type of work is taking place?",
+        "type": "select",
+        "options": [
+          "Digging a trench",
+          "Working on overhead wires",
+          "Laying cable",
+          "Laying pipes",
+          "Paving concrete",
+          "Paving/laying asphalt",
+          "Repairing potholes",
+          "Other"
+        ],
+        "required": true,
+        "when": "request = Report concerns about construction",
+        "branches": {
+          "Other": "Ask If other, please describe:"
+        }
+      },
+      {
+        "prompt": "If other, please describe:",
+        "type": "text",
+        "required": true,
+        "when": "concern work type = Other"
+      },
+      {
+        "prompt": "Who is performing the work?",
+        "type": "single_select",
+        "options": [
+          "City of Dallas Department",
+          "Utility Company",
+          "Private Contractor"
+        ],
+        "required": false
+      },
+      {
+        "prompt": "List the name of the city department, contractor name or utility company:",
+        "type": "text",
+        "required": false
+      },
+      {
+        "prompt": "Would you like to be contacted?",
+        "type": "single_select",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ],
+        "required": false
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Request construction status; location = Other; work type = Other",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request about active construction in a public right of way.",
+      "why": "Ask about the status of ongoing construction or report concerns about active work in a public street, alley, or sidewalk by the City, a utility company, or a private contractor. The 311 request form asks whether the person wants status or to report a concern, where work is occurring, what kind of work is underway, the project location, and who is performing it.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Construction Right of Way/Status Inquiry\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Construction Right of Way/Status Inquiry\""
+    }
+  ]
+}

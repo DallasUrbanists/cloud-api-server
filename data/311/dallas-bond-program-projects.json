@@ -1,0 +1,99 @@
+{
+  "title": "Dallas Bond Program Projects",
+  "categories": [
+    "Streets, Medians, Sidewalks and Alleys"
+  ],
+  "description": "Use this service request for general inquiries concerning Dallas Bond Program Projects. ** For questions regarding the 2017 Bond Program Click Here For updates on the upcoming 2024 Bond Projects Click Here ** The estimated response time (ERT) for this service request is 15 business days. Note: For construction concerns or construction site complaints, see Code Concern (Noise Complaint) or Construction Site Complaint.",
+  "photoUrls": [],
+  "department": "Office Bond & Construction Management",
+  "resolutionEstimate": "15 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "prompt": "What type of bond project do you have questions about?",
+        "type": "select",
+        "options": [
+          "Alleys",
+          "Drainage/erosion control",
+          "Sidewalks",
+          "Streets",
+          "Thoroughfares",
+          "Other"
+        ],
+        "required": true,
+        "branchFinding": "All options showed the same remaining questions"
+      },
+      {
+        "prompt": "If you have a project you would like to request for the bond program please list it and any details regarding it:",
+        "type": "text",
+        "required": true
+      },
+      {
+        "prompt": "Would you like to be contacted?",
+        "type": "single_select",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ],
+        "required": false
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Project type = Other; project details supplied",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request with a question or proposed Dallas Bond Program project.",
+      "why": "To make a general inquiry about Dallas Bond Program Projects or propose a project. The 311 request form asks whether the question concerns alleys, drainage or erosion control, sidewalks, streets, thoroughfares, or another bond project, and asks for project details.",
+      "why_not": "The online form for \"Dallas Bond Program Projects\" requests does not apply to construction concerns or construction-site complaints. If the concern is construction noise, then submit a \"Code Concerns\" 311 request instead. If the concern is a construction-site complaint, then submit a \"Construction Site Complaint\" 311 request instead.",
+      "what": "Submit 311 request",
+      "who": "Office Bond & Construction Management",
+      "how": "Go to Dallas 311 > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Dallas Bond Program Projects\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Dallas Bond Program Projects\""
+    },
+    {
+      "tagline": "Visit the City of Dallas Bond Program website for 2017 Bond Program information.",
+      "why": "For questions regarding the 2017 Dallas Bond Program. The description for \"Dallas Bond Program Projects\" requests on the Dallas 311 website points to a \"Click Here\" link for these questions.",
+      "why_not": null,
+      "what": "Visit website",
+      "who": "City of Dallas Bond Program",
+      "how": "Use the 2017 Bond Program \"Click Here\" link in the Dallas 311 service description",
+      "how_formatted": "Use the 2017 Bond Program \"Click Here\" link in the Dallas 311 service description"
+    },
+    {
+      "tagline": "Visit the City of Dallas Bond Program website for 2024 Bond Project updates.",
+      "why": "For updates on the upcoming 2024 Dallas Bond Projects. The description for \"Dallas Bond Program Projects\" requests on the Dallas 311 website points to a separate \"Click Here\" link for those updates.",
+      "why_not": null,
+      "what": "Visit website",
+      "who": "City of Dallas Bond Program",
+      "how": "Use the 2024 Bond Projects \"Click Here\" link in the Dallas 311 service description",
+      "how_formatted": "Use the 2024 Bond Projects \"Click Here\" link in the Dallas 311 service description"
+    },
+    {
+      "tagline": "Submit a 311 request about construction noise.",
+      "why": "For a construction noise concern. The description for \"Dallas Bond Program Projects\" requests on the Dallas 311 website directs construction concerns to Code Concern (Noise Complaint), and the saved \"Code Concerns\" 311 request form includes noise among its nuisance issue options.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Code Compliance",
+      "how": "Go to Dallas 311 > Choose \"City Code Violations\" > Choose \"Code Concerns\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"City Code Violations\" > Choose \"Code Concerns\""
+    },
+    {
+      "tagline": "Submit a 311 request about a construction-site complaint.",
+      "why": "For a construction-site concern such as trash or debris left by crews, missing erosion control, or mud tracked into the street. The description for \"Dallas Bond Program Projects\" requests on the Dallas 311 website directs construction-site complaints to this service.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Planning & Development Department",
+      "how": "Go to Dallas 311 > Under \"Other Requests\", choose \"Construction Site Complaint\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Under \"Other Requests\", choose \"Construction Site Complaint\""
+    }
+  ]
+}

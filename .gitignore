@@ -8,5 +8,25 @@ docs/reference/
 .env
 .env.local
 .DS_Store
+/.tmp/
+~$*
 staff-claims.checkpoint.json
 staff-claims.checkpoint.json.tmp
+
+# Historical Dallas 311 captures and review artifacts (retain locally).
+/data/311/*.json.bak
+/data/dallas311-service-request-inventory.json
+/data/dallas311-summary-review*.csv
+/data/dallas311-accessible-terminology.csv
+/data/dallas311-recommendable-action-candidates.json
+
+# Local Dallas 311 execution artifacts and database snapshots.
+/data/my-311-*.json
+/data/remaining-311-*.json
+/data/311-instructions-*.json
+/data/311-empty-exclusions-manifest.json
+/data/empty-exclusions-backfill.json
+/data/pilot-approval-*.json
+/data/recommendable-photos-*.json
+/data/recommendables-consolidation-backup.json
+/data/reviewed-candidates-*.json

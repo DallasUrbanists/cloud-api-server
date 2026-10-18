@@ -24,7 +24,10 @@ export interface RecommendableAction {
   id: string;
   summary: string;
   instructions: string;
-  reason: string;
+  /** Captured or attached photo URLs; empty when no photos are available. */
+  photos: string[];
+  why: string;
+  whyNot: string;
   /** Applicable boundary IDs; an empty list means geographically unrestricted. */
   boundaries: number[];
   sourceUrl: string;
@@ -45,12 +48,30 @@ export interface RecommendableAction {
 export interface RecommendableInput {
   summary: string;
   instructions: string;
-  reason: string;
+  /** Omission is accepted for older callers and normalized to an empty array. */
+  photos?: string[];
+  why: string;
+  whyNot: string;
   boundaries: number[];
   sourceUrl: string;
   sourceEvidence: string;
   sourceDescription: string;
   confidence?: number | null;
+}
+
+/** Validates attached image URLs without fetching remote images. */
+export function validateRecommendablePhotos(value: unknown): { photos?: string[]; error?: string } {
+  if (value === undefined) return { photos: [] };
+  if (!Array.isArray(value)) return { error: 'photos must be an array of photo URLs.' };
+  const photos: string[] = [];
+  for (const item of value) {
+    if (typeof item !== 'string' || !item.trim()) return { error: 'photos must contain non-empty HTTP or HTTPS URLs.' };
+    let url: URL;
+    try { url = new URL(item.trim()); } catch { return { error: 'photos must contain valid HTTP or HTTPS URLs.' }; }
+    if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password) return { error: 'photos must contain HTTP or HTTPS URLs without credentials.' };
+    photos.push(url.toString());
+  }
+  return { photos: [...new Set(photos)] };
 }
 
 /**
@@ -72,7 +93,8 @@ export interface RecommendableInput {
  * const result = validateRecommendableInput({
  *   summary: ' Share park feedback ',
  *   instructions: 'Use the feedback channel described by the source.',
- *   reason: 'Help shape the proposed park redesign.',
+ *   why: 'The city is collecting ideas for the proposed park redesign.',
+ *   whyNot: 'This opportunity does not apply to unrelated topics.',
  *   boundaries: [20, 10, 20],
  *   sourceUrl: 'https://example.org/park-feedback',
  *   sourceEvidence: 'Invitation to share park feedback.',
@@ -85,21 +107,25 @@ export interface RecommendableInput {
 export function validateRecommendableInput(body: unknown): { data?: RecommendableInput; error?: string } {
   if (!body || typeof body !== 'object' || Array.isArray(body)) return { error: 'Request body must be an object.' };
   const input = body as Record<string, unknown>;
-  const allowed = ['summary', 'instructions', 'reason', 'boundaries', 'sourceUrl', 'sourceEvidence', 'sourceDescription', 'confidence'];
+  const allowed = ['summary', 'instructions', 'photos', 'why', 'whyNot', 'boundaries', 'sourceUrl', 'sourceEvidence', 'sourceDescription', 'confidence'];
   if (Object.keys(input).some(key => !allowed.includes(key))) return { error: 'Request contains unsupported properties.' };
-  for (const key of ['summary', 'instructions', 'reason', 'sourceUrl', 'sourceEvidence', 'sourceDescription']) {
+  for (const key of ['summary', 'instructions', 'why', 'sourceUrl', 'sourceEvidence', 'sourceDescription']) {
     if (typeof input[key] !== 'string' || !(input[key] as string).trim()) return { error: `${key} must be a non-empty string.` };
     if ((input[key] as string).length > (key === 'sourceDescription' ? 5000 : 4000)) return { error: `${key} is too long.` };
   }
+  if (typeof input.whyNot !== 'string') return { error: 'whyNot must be a string; use an empty string when no exclusion is recorded.' };
+  if (input.whyNot.length > 4000) return { error: 'whyNot is too long.' };
   let source: URL;
   try { source = new URL(input.sourceUrl as string); } catch { return { error: 'sourceUrl must be a valid HTTPS URL.' }; }
   if (source.protocol !== 'https:' || source.username || source.password || source.port && source.port !== '443') return { error: 'sourceUrl must be a public HTTPS URL.' };
   if (!Array.isArray(input.boundaries) || input.boundaries.length > 50 || input.boundaries.some(id => !Number.isSafeInteger(id) || (id as number) < 1)) return { error: 'boundaries must be an array of up to 50 positive integer IDs.' };
   const confidence = input.confidence;
   if (confidence !== undefined && confidence !== null && (typeof confidence !== 'number' || confidence < 0 || confidence > 1)) return { error: 'confidence must be null or a number from 0 to 1.' };
+  const photoResult = validateRecommendablePhotos(input.photos);
+  if (photoResult.error) return { error: photoResult.error };
   return { data: {
-    summary: (input.summary as string).trim(), instructions: (input.instructions as string).trim(), reason: (input.reason as string).trim(),
-    boundaries: [...new Set(input.boundaries as number[])].sort((a, b) => a - b), sourceUrl: source.toString(),
+    summary: (input.summary as string).trim(), instructions: (input.instructions as string).trim(), why: (input.why as string).trim(), whyNot: (input.whyNot as string).trim(),
+    photos: photoResult.photos!, boundaries: [...new Set(input.boundaries as number[])].sort((a, b) => a - b), sourceUrl: source.toString(),
     sourceEvidence: (input.sourceEvidence as string).trim(), sourceDescription: (input.sourceDescription as string).trim(), confidence: confidence as number | null | undefined,
   } };
 }

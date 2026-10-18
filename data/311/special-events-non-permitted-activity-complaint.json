@@ -1,0 +1,109 @@
+{
+  "title": "Special Events Non-Permitted Activity Complaint",
+  "categories": [
+    "Other Requests"
+  ],
+  "description": "Use this service request to report someone selling merchandise, food/drink/alcohol, setting up tents, stages, bleachers, or projection technology, with street closures or activations/booths on sidewalks or on public streets that do not have a special event permit from the City's Office of Special Events (CES-OSE). ** Not for permits issued for garage sales, neighborhood block parties, animals, or Dallas Convention Center events. ** The estimated response time for this service request is 24 hours.",
+  "photoUrls": [],
+  "department": "Convention & Event Services",
+  "resolutionEstimate": "5 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "What was observed?",
+        "required": true,
+        "type": "select",
+        "options": [
+          "Closing/Blocking the Street",
+          "Setting up Tents/Stages",
+          "Setting up Booths on sidewalks",
+          "Selling Merchandise",
+          "Selling Food/Drinks (Alcohol)",
+          "Other"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Other",
+            "reveals": "Required question If Other, please describe: appears."
+          },
+          {
+            "when": "Closing/Blocking the Street, Setting up Tents/Stages, Setting up Booths on sidewalks, Selling Merchandise, or Selling Food/Drinks (Alcohol)",
+            "reveals": "No additional questions, instructions, alerts, or service suggestions."
+          }
+        ]
+      },
+      {
+        "question": "If Other, please describe:",
+        "required": true,
+        "type": "free_text",
+        "when": "What was observed? = Other"
+      },
+      {
+        "question": "When did you see the activity?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Now",
+          "Yesterday",
+          "Morning (7am-11am)",
+          "Afternoon (12pm-4pm)",
+          "Evening (5pm-11pm)"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Each time option",
+            "reveals": "No additional questions, instructions, alerts, or service suggestions."
+          }
+        ]
+      },
+      {
+        "question": "Where did you notice the activity occurring? (Nearest cross street or business)",
+        "required": true,
+        "type": "free_text"
+      },
+      {
+        "question": "Would you like to be contacted?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Each contact preference",
+            "reveals": "No additional fields or suggestions."
+          }
+        ]
+      }
+    ],
+    "unexplored": null,
+    "conditionalPaths": [
+      {
+        "when": "Would you like to be contacted? = any listed option",
+        "reveals": "No additional questions or suggestions."
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Selected 1500 MARILLA ST, DALLAS, TX, 75201; selected Other, entered a mock description, selected Now, entered a mock nearest cross street/business, selected No for contact preference, and continued to Contact. No Contact data entered.",
+    "contactStepObserved": "Contact step displayed How can we reach you? and an email verification instruction. Contact information is optional and may be enabled by a checkbox. Fields shown: First Name, Last Name, Email, Phone Number, Address, City, State, Zipcode."
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request about an unpermitted special-event activity.",
+      "why": "For suspected special-event activity without a City Office of Special Events permit, such as street closures, sidewalk booths, tents or stages, projection technology, or merchandise, food, drink, or alcohol sales. The 311 request form asks what was observed, when, and the nearest cross street or business.",
+      "why_not": "The online form for \"Special Events Non-Permitted Activity Complaint\" requests does not apply to garage-sale, neighborhood-block-party, animal, or Dallas Convention Center permits.",
+      "what": "Submit 311 request",
+      "who": "Convention & Event Services",
+      "how": "Go to Dallas 311 > Under \"Other Requests\", choose \"Special Events Non-Permitted Activity Complaint\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Under \"Other Requests\", choose \"Special Events Non-Permitted Activity Complaint\""
+    }
+  ]
+}

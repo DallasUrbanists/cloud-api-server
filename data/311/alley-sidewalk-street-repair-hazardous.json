@@ -1,0 +1,217 @@
+{
+  "title": "Alley/Sidewalk/Street Repair - Hazardous",
+  "categories": [
+    "Streets, Medians, Sidewalks and Alleys"
+  ],
+  "description": "Use this service request to report hazardous alley, sidewalk, and street conditions that could cause bodily injury or damage to a vehicle. The estimated response time (ERT) for this service request is 1 calendar day.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/1af474b0-addd-11ee-ad6d-455ad834804b.JPG"
+  ],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "1 Calendar Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "prompt": "Where is the hazard?",
+        "type": "single_select",
+        "options": [
+          "Alley",
+          "Sidewalk",
+          "Street"
+        ],
+        "required": true,
+        "branches": {
+          "Sidewalk": "Curb/sidewalk, location, problem, property owner",
+          "Alley": "Alley problem, surface, optional damage/injury question",
+          "Street": "Repair location, street repair type, optional direction of travel"
+        }
+      },
+      {
+        "prompt": "What is the nature of the problem?",
+        "type": "single_select",
+        "options": [
+          "Breakdown in alley",
+          "Ruts in alley",
+          "Standing water in alley",
+          "Pothole in alley"
+        ],
+        "required": true,
+        "when": "hazard = Alley",
+        "branches": {
+          "Ruts in alley": "Guidance: ruts on pavement continue; ruts in dirt off pavement use Sanitation Property Damage"
+        }
+      },
+      {
+        "prompt": "What is the surface type?",
+        "type": "single_select",
+        "options": [
+          "Asphalt",
+          "Concrete",
+          "Dirt",
+          "Gravel",
+          "Unknown"
+        ],
+        "required": true,
+        "when": "hazard = Alley"
+      },
+      {
+        "prompt": "Has there been any property damage or injury? (If yes, enter a notice of claim for Risk Management online)",
+        "type": "single_select",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "required": false,
+        "when": "hazard = Alley",
+        "branches": {
+          "Yes": "Validation Alert: If there is property damage - please visit Risk Management website to file a claim of notice"
+        }
+      },
+      {
+        "prompt": "Is the problem with the sidewalk or curb?",
+        "type": "single_select",
+        "options": [
+          "Hazardous curb",
+          "Hazardous sidewalk"
+        ],
+        "required": true,
+        "when": "hazard = Sidewalk"
+      },
+      {
+        "prompt": "Where is the sidewalk or curb located?",
+        "type": "single_select",
+        "options": [
+          "In front of location",
+          "On side of location"
+        ],
+        "required": true,
+        "when": "hazard = Sidewalk"
+      },
+      {
+        "prompt": "What is the problem with the sidewalk or curb?",
+        "type": "single_select",
+        "options": [
+          "Concrete broken",
+          "Concrete raised",
+          "Other",
+          "Sunken",
+          "Tree root raised sidewalk"
+        ],
+        "required": true,
+        "when": "hazard = Sidewalk",
+        "branches": {
+          "Other": "Ask If Other, please describe:"
+        }
+      },
+      {
+        "prompt": "If Other, please describe:",
+        "type": "text",
+        "required": true,
+        "when": "hazard = Sidewalk and problem = Other"
+      },
+      {
+        "prompt": "Are you the property owner?",
+        "type": "single_select",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "required": true,
+        "when": "hazard = Sidewalk"
+      },
+      {
+        "prompt": "Where is the repair needed?",
+        "type": "text",
+        "required": true,
+        "when": "hazard = Street"
+      },
+      {
+        "prompt": "What street repair is needed?",
+        "type": "select",
+        "options": [
+          "Bridge repair",
+          "Curb repair",
+          "Driveway culvert",
+          "Gutter repair",
+          "Pot hole",
+          "Retaining wall",
+          "Shoulder repair",
+          "Street repair",
+          "Street culvert",
+          "Street needs grading",
+          "Wheel chair ramp repair (on street)"
+        ],
+        "required": true,
+        "when": "hazard = Street"
+      },
+      {
+        "prompt": "Direction of Travel?",
+        "type": "select",
+        "options": [
+          "Eastbound and westbound",
+          "Eastbound",
+          "Left turn lane",
+          "North and southbound",
+          "Northbound",
+          "Northeast",
+          "Northwest",
+          "Southbound",
+          "Southeast",
+          "Southwest",
+          "Westbound"
+        ],
+        "required": false,
+        "when": "hazard = Street"
+      },
+      {
+        "prompt": "Would you like to be contacted?",
+        "type": "single_select",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ],
+        "required": false
+      }
+    ],
+    "riskManagementClaimUrl": "https://live.origamirisk.com/Origami/Incidents/New?_collectionLinkItemID=1&IncidentTypeID=10002",
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Street; Wheel chair ramp repair (on street)",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request for a hazardous alley, sidewalk, curb, or street repair.",
+      "why": "Report a hazardous alley, sidewalk, curb, or street condition that could cause bodily injury or vehicle damage. The 311 request form distinguishes alley breakdowns, ruts, standing water, and potholes; broken, raised, sunken, or root-damaged sidewalks and curbs; and street repairs such as potholes, bridges, gutters, culverts, shoulders, retaining walls, grading, and wheelchair ramps. It asks whether the person owns the property for sidewalk concerns.",
+      "why_not": "The online form for \"Alley/Sidewalk/Street Repair - Hazardous\" requests is not the route the 311 request form recommends for ruts in dirt off the alley pavement. If those dirt ruts were caused by a Sanitation truck, then submit a \"Sanitation Property Damage\" 311 request instead.",
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Alley/Sidewalk/Street Repair - Hazardous\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Alley/Sidewalk/Street Repair - Hazardous\""
+    },
+    {
+      "tagline": "Submit a 311 request for dirt-alley damage caused by a Sanitation truck.",
+      "why": "For hazardous ruts in dirt off the alley pavement when a Sanitation truck caused the property damage. The 311 request form for \"Alley/Sidewalk/Street Repair - Hazardous\" requests directs dirt ruts to Sanitation Property Damage, whose saved description limits it to damage caused by Sanitation trucks.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Sanitation Services",
+      "how": "Go to Dallas 311 > Choose \"Garbage, Recycle, and Brush/Bulky Item Collection\" > Choose \"Sanitation Property Damage\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Garbage, Recycle, and Brush/Bulky Item Collection\" > Choose \"Sanitation Property Damage\""
+    },
+    {
+      "tagline": "Visit the Risk Management website to file a notice of claim for damage or injury.",
+      "why": "For property damage or injury associated with a hazardous alley condition. The 311 request form asks whether there has been property damage or injury and directs people who answer Yes to enter a notice of claim for Risk Management online.",
+      "why_not": null,
+      "what": "Visit website",
+      "who": "City of Dallas Risk Management",
+      "how": "Visit the Risk Management website to file a notice of claim",
+      "how_formatted": "Visit the [Risk Management website](https://live.origamirisk.com/Origami/Incidents/New?_collectionLinkItemID=1&IncidentTypeID=10002) to file a notice of claim"
+    }
+  ]
+}

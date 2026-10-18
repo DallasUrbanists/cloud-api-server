@@ -1,0 +1,85 @@
+{
+  "title": "Lid Cover Broken/Missing (Storm Sewer Manhole) - Hazardous",
+  "categories": [
+    "Creeks, Streams, Storm Drains, and Waterways",
+    "Streets, Medians, Sidewalks and Alleys",
+    "Water Inquiries and Line Locates"
+  ],
+  "description": "Use this request type to report a broken or missing inlet cover, inlet grate, or storm sewer manhole cover that is broken, and may pose a potential hazard to pedestrian or vehicular traffic. The estimated response time (ERT) for this service request is 1 calendar day.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/4db83390-add9-11ee-8869-1b109fc174ca.JPG"
+  ],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "1 Calendar Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "What type of lid is it?",
+        "type": "single_select",
+        "required": true,
+        "options": [
+          "Inlet cover",
+          "Inlet grate",
+          "Storm sewer manhole"
+        ]
+      },
+      {
+        "question": "Where is it located?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Alley",
+          "Median",
+          "Other",
+          "Side of street",
+          "Sidewalk",
+          "In Street"
+        ]
+      },
+      {
+        "question": "If Other, please describe:",
+        "type": "text",
+        "required": true,
+        "shownWhen": "Where is it located? = Other"
+      },
+      {
+        "question": "Would you like to be contacted?",
+        "type": "single_select",
+        "required": false,
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ]
+      },
+      {
+        "question": "Additional Information",
+        "type": "text",
+        "required": false
+      }
+    ],
+    "pathCoverage": [
+      "All three lid types and all six location choices tried; Other revealed required description.",
+      "All three contact-preference answers tried.",
+      "Continue advanced to Contact. No contact data entered."
+    ],
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request for a broken or missing inlet cover, inlet grate, or storm sewer manhole cover that may pose a hazard to pedestrian or vehicular traffic.",
+      "why": "For a broken or missing inlet cover, inlet grate, or storm sewer manhole cover that may pose a hazard to pedestrian or vehicular traffic. The request form asks lid type and location, including alley, median, roadside, sidewalk, or in street.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Creeks, Streams, Storm Drains, and Waterways\" > Choose \"Lid Cover Broken/Missing (Storm Sewer Manhole) - Hazardous\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Creeks, Streams, Storm Drains, and Waterways\" > Choose \"Lid Cover Broken/Missing (Storm Sewer Manhole) - Hazardous\""
+    }
+  ]
+}

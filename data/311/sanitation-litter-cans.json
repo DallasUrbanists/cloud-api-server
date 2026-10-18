@@ -1,0 +1,132 @@
+{
+  "title": "Sanitation Litter Cans",
+  "categories": [
+    "Garbage, Recycle, and Brush/Bulky Item Collection"
+  ],
+  "description": "Use this service request for issues concerning the service of the litter can. These are the METAL containers found ON the median at a stop light or ON the sidewalk in front of a business. If the litter can is at a DART Station OR DART Bus Stop, contact DART at 214-749-3333. If your issue is with a grey garbage roll cart or a blue recycle roll cart, please use the Sanitation Roll Cart Maintenance/Delivery SR type. The estimated response time (ERT) for a request of this nature is 1 business day.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/00bf5fa0-5f23-11ee-8932-8b0765cde3fc.jpg"
+  ],
+  "department": "Sanitation Services",
+  "resolutionEstimate": "5 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "Where is the litter can located?",
+        "type": "select",
+        "required": false,
+        "options": [
+          "DART property/station/stop",
+          "City park",
+          "Service road",
+          "Median at a Stop Light",
+          "Sidewalk in front of Business",
+          "Other"
+        ]
+      },
+      {
+        "question": "If other, please describe:",
+        "type": "text",
+        "required": true,
+        "shownWhen": "Location = Other"
+      },
+      {
+        "question": "What is the litter can concern?",
+        "type": "single_select",
+        "required": false,
+        "options": [
+          "damaged can",
+          "liners required",
+          "needs emptying",
+          "other"
+        ]
+      },
+      {
+        "question": "If Other, please describe:",
+        "type": "text",
+        "required": true,
+        "shownWhen": "Concern = other"
+      },
+      {
+        "question": "Additional Information",
+        "type": "text",
+        "required": false
+      }
+    ],
+    "conditionalInstructions": [
+      {
+        "when": "Location = DART property/station/stop",
+        "text": "Report all DART litter can issues by calling 214-749-3333"
+      },
+      {
+        "when": "Location = City park",
+        "text": "New Service Type Suggestion offers Park Maintenance/Misc."
+      },
+      {
+        "when": "Location = Service road",
+        "text": "Report all service road litter can issues to the TxDOT by calling 214-320-6200"
+      }
+    ],
+    "observedInstructions": [
+      "In the event that we need additional information, the responsible department may contact you. Please provide your name and phone number."
+    ],
+    "pathCoverage": [
+      "All six location answers and all four concern answers tried; both Other descriptions revealed.",
+      "Mock descriptions supplied for both Other branches; Continue advanced to Contact. Contact requires First Name, Last Name, Email, and Phone Number; no contact data entered."
+    ],
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request for a City metal litter can needing service.",
+      "why": "Report a City metal litter can at a median stop light or on the sidewalk in front of a business that is damaged, needs a liner, needs emptying, or has another service problem. The 311 request form asks where the can is located and what kind of can problem is occurring.",
+      "why_not": "The online form for \"Sanitation Litter Cans\" requests is not the route for cans on DART property, in City parks, or on service roads, or for grey garbage or blue recycling roll carts. If the can is in a City park, then submit a \"Park Maintenance/Misc\" 311 request instead. If the item is a grey garbage cart or blue recycling cart, then submit a \"Sanitation Roll Cart Maintenance/Delivery\" 311 request instead. If the can is on a service road, then call TxDOT. If the can is at a DART property, station, or bus stop, then call DART.",
+      "what": "Submit 311 request",
+      "who": "Sanitation Services",
+      "how": "Go to Dallas 311 > Choose \"Garbage, Recycle, and Brush/Bulky Item Collection\" > Choose \"Sanitation Litter Cans\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Garbage, Recycle, and Brush/Bulky Item Collection\" > Choose \"Sanitation Litter Cans\""
+    },
+    {
+      "tagline": "Call DART about a litter can at a station or bus stop.",
+      "why": "For a litter can at a DART property, station, or bus stop. Both the description for \"Sanitation Litter Cans\" requests on the Dallas 311 website and the location-specific guidance on the Dallas 311 website direct these concerns to DART.",
+      "why_not": null,
+      "what": "Call",
+      "who": "DART",
+      "how": "Call 214-749-3333",
+      "how_formatted": "Call [214-749-3333](tel:2147493333)"
+    },
+    {
+      "tagline": "Submit a 311 request for a litter can in a City park.",
+      "why": "For a litter can located in a City park. People who select City park in the 311 request form see a Park Maintenance/Misc service suggestion on the Dallas 311 website.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Park & Recreation",
+      "how": "Go to Dallas 311 > Choose \"City Parks and Trails\" > Choose \"Park Maintenance/Misc\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"City Parks and Trails\" > Choose \"Park Maintenance/Misc\""
+    },
+    {
+      "tagline": "Call TxDOT about a litter can on a service road.",
+      "why": "For a litter can on a service road. The Dallas 311 website directs people who select Service road in the 311 request form to report the litter can to TxDOT at this number.",
+      "why_not": null,
+      "what": "Call",
+      "who": "TxDOT",
+      "how": "Call 214-320-6200",
+      "how_formatted": "Call [214-320-6200](tel:2143206200)"
+    },
+    {
+      "tagline": "Submit a 311 request for a garbage or recycling roll cart.",
+      "why": "For a grey garbage roll cart or blue recycling roll cart that needs maintenance or delivery, rather than a metal litter can. The description for \"Sanitation Litter Cans\" requests on the Dallas 311 website explicitly points roll-cart concerns to this service.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Sanitation Services",
+      "how": "Go to Dallas 311 > Choose \"Garbage, Recycle, and Brush/Bulky Item Collection\" > Choose \"Sanitation Roll Cart Maintenance/Delivery\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Garbage, Recycle, and Brush/Bulky Item Collection\" > Choose \"Sanitation Roll Cart Maintenance/Delivery\""
+    }
+  ]
+}

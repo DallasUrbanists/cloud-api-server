@@ -1,0 +1,82 @@
+{
+  "title": "Creek/Culvert Maintenance",
+  "categories": [
+    "Creeks, Streams, Storm Drains, and Waterways"
+  ],
+  "description": "Use this service request to report a concrete lined or earthen channel that has sediment and debris in it which can impede or block the flow of water (potential risk of flooding). The estimated response time (ERT) for this service request is 14 business days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/6bfc91e0-5e3b-11ee-bf7f-3de98a985773.png"
+  ],
+  "department": "Dallas Water Utilities",
+  "resolutionEstimate": "60 Business Days",
+  "instructions": null,
+  "detailsForm": {
+    "observedQuestions": [
+      {
+        "label": "What is the nature of your request?",
+        "options": [
+          "Creek bank/dam/retaining wall needs assessment",
+          "Creek needs cleaning",
+          "Concrete channel needs cleaning",
+          "Concrete channel needs replacement",
+          "Culvert needs replacement",
+          "Culvert needs cleaning",
+          "Debris hung on bridge culvert",
+          "Tree in creek"
+        ],
+        "type": "select",
+        "required": true
+      },
+      {
+        "label": "Where is the creek/culvert located?",
+        "options": [
+          "Behind property",
+          "Beside property",
+          "Culvert connected to creek",
+          "Under driveway",
+          "Under street",
+          "Other"
+        ],
+        "type": "select",
+        "required": true
+      },
+      {
+        "label": "If other, please describe:",
+        "condition": "Location Other",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "Would you like to be contacted?",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ],
+        "type": "radio",
+        "required": false
+      }
+    ],
+    "contactStepObserved": "Contact step showed optional consent; contact fields were disabled by default.",
+    "status": "conditional_paths_explored",
+    "observedInstructions": [
+      "Across all eight request-nature values paired with all six location values, a required If other, please describe field appeared only when location was Other. A New Service Type Suggestion popup appeared for the combination Creek bank/dam/retaining wall needs assessment + Behind property; it suggested Creek/Culvert Maintenance itself. No other combinations changed the form questions."
+    ],
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "requestThisService": true,
+  "captureStatus": "conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request for creek, channel, or culvert maintenance.",
+      "why": "Report sediment or debris in a concrete-lined or earthen channel that may block water flow or create flooding risk. The 311 request form also covers a creek, concrete channel, or culvert needing cleaning or replacement; debris caught on a bridge culvert; a tree in a creek; and an assessment of a creek bank, dam, or retaining wall. It asks whether the site is behind or beside property, under a driveway or street, or connected to a creek.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Dallas Water Utilities",
+      "how": "Go to Dallas 311 > Choose \"Creeks, Streams, Storm Drains, and Waterways\" > Choose \"Creek/Culvert Maintenance\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Creeks, Streams, Storm Drains, and Waterways\" > Choose \"Creek/Culvert Maintenance\""
+    }
+  ]
+}

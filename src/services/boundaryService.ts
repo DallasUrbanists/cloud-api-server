@@ -74,7 +74,7 @@ export function matchesLocation(boundary: Boundary, search: BoundarySearch): boo
  * Appends to the caller's values array so joined representative queries can add more
  * parameters. Alias is trusted internal SQL, not a user field. Geometry needs a later exact test.
  */
-export function boundaryConditions(search: BoundarySearch, alias = 'b', values: unknown[] = []): string[] {
+export function boundaryConditions(search: BoundarySearch, alias = 'b', values: unknown[] = [], includeDates = true): string[] {
   const conditions: string[] = [];
   const param = (value: unknown) => { values.push(value); return `$${values.length}`; };
   for (const [field, column] of [['entity', 'entity_name'], ['body', 'body_name'], ['district', 'district_name']] as const) {
@@ -93,13 +93,71 @@ export function boundaryConditions(search: BoundarySearch, alias = 'b', values: 
     const lat = param(search.latitude);
     conditions.push(`(${alias}.shape IS NULL OR ${alias}.shape_box @> point(${lon}::float8, ${lat}::float8))`);
   }
-  const asOf = `${param(search.asOf ?? dallasDate())}::date`;
-  conditions.push(`(${alias}.effective_date IS NULL OR ${alias}.effective_date <= ${asOf})`);
-  conditions.push(`(${alias}.expiration_date IS NULL OR ${alias}.expiration_date > ${asOf})`);
+  if (includeDates) {
+    const asOf = `${param(search.asOf ?? dallasDate())}::date`;
+    conditions.push(`(${alias}.effective_date IS NULL OR ${alias}.effective_date <= ${asOf})`);
+    conditions.push(`(${alias}.expiration_date IS NULL OR ${alias}.expiration_date > ${asOf})`);
+  }
   return conditions;
 }
 /** Reads jurisdiction records and delegates address-to-location lookup to Google Maps. */
 export class BoundaryService {
+  private static readonly searchCacheTTL = 30 * 24 * 60 * 60 * 1000;
+  private static readonly searchCacheMaxEntries = 128;
+  private static readonly searchCacheMaxBytes = 32 * 1024 * 1024;
+  private static readonly searchCache = new Map<string, { boundaries: Boundary[]; expiresAt: number; bytes: number }>();
+  private static readonly pendingSearches = new Map<string, Promise<Boundary[]>>();
+  private static searchCacheBytes = 0;
+  private static searchCacheGeneration = 0;
+
+  /** Invalidates this process's spatial searches after boundary data is refreshed. */
+  static clearSearchCache(): void {
+    this.searchCache.clear();
+    this.pendingSearches.clear();
+    this.searchCacheBytes = 0;
+    this.searchCacheGeneration++;
+  }
+
+  private static deleteCachedSearch(key: string): void {
+    const entry = this.searchCache.get(key);
+    if (entry) this.searchCacheBytes -= entry.bytes;
+    this.searchCache.delete(key);
+  }
+
+  /** Cache undated spatial results for rounded coordinates; callers apply current date rules. */
+  private static async cachedSpatialSearch(search: BoundarySearch, key: string): Promise<Boundary[]> {
+    const now = Date.now();
+    const cached = this.searchCache.get(key);
+    if (cached && cached.expiresAt > now) {
+      this.searchCache.delete(key);
+      this.searchCache.set(key, cached);
+      return cached.boundaries;
+    }
+    this.deleteCachedSearch(key);
+    const pending = this.pendingSearches.get(key);
+    if (pending) return pending;
+    const generation = this.searchCacheGeneration;
+    const request = this.readSearch(search, false).then(boundaries => {
+      if (generation !== this.searchCacheGeneration) return boundaries;
+      const bytes = Buffer.byteLength(JSON.stringify(boundaries), 'utf8');
+      if (bytes > this.searchCacheMaxBytes) return boundaries;
+      for (const [oldKey, entry] of this.searchCache) {
+        if (entry.expiresAt <= Date.now()) this.deleteCachedSearch(oldKey);
+      }
+      this.deleteCachedSearch(key);
+      while (this.searchCache.size >= this.searchCacheMaxEntries || this.searchCacheBytes + bytes > this.searchCacheMaxBytes) {
+        this.deleteCachedSearch(this.searchCache.keys().next().value!);
+      }
+      this.searchCache.set(key, { boundaries, bytes, expiresAt: Date.now() + this.searchCacheTTL });
+      this.searchCacheBytes += bytes;
+      return boundaries;
+    });
+    // Bound retained in-flight keys too; requests still execute if the cache is busy.
+    if (this.pendingSearches.size < this.searchCacheMaxEntries) this.pendingSearches.set(key, request);
+    try { return await request; }
+    finally { if (this.pendingSearches.get(key) === request) this.pendingSearches.delete(key); }
+  }
+
   /** Resolves all currently applicable boundaries for a suggestion location. */
   static async findApplicableToLocation(location: { latitude?: number; longitude?: number; address?: string }): Promise<Boundary[]> {
     let search: BoundarySearch;
@@ -128,11 +186,30 @@ export class BoundaryService {
    * the matching areas so you can see which groups serve your neighborhood.
    */
   static async findAll(search: BoundarySearch): Promise<Boundary[]> {
+    const today = dallasDate();
+    const snapshot = { ...search, asOf: search.asOf ?? today };
+    const spatial = Number.isFinite(search.latitude) && Number.isFinite(search.longitude);
+    if (spatial) {
+      snapshot.latitude = Number(search.latitude!.toFixed(4));
+      snapshot.longitude = Number(search.longitude!.toFixed(4));
+    }
+    const key = JSON.stringify([snapshot.latitude, snapshot.longitude, snapshot.entity, snapshot.body, snapshot.district,
+      snapshot.city, snapshot.county, snapshot.state, snapshot.zip, snapshot.address]);
+    const boundaries = spatial ? await this.cachedSpatialSearch(snapshot, key) : await this.readSearch(snapshot);
+    const effective = spatial ? boundaries.filter(boundary => (boundary.effectiveDate === null || boundary.effectiveDate <= snapshot.asOf)
+      && (boundary.expirationDate === null || boundary.expirationDate > snapshot.asOf)) : boundaries;
+    const page = effective.slice(snapshot.offset ?? 0, (snapshot.offset ?? 0) + (snapshot.limit ?? 100));
+    // Cached geometries and metadata must never be mutable through a caller's result.
+    return spatial ? structuredClone(page).map(boundary => ({ ...boundary,
+      isInEffect: (boundary.effectiveDate === null || boundary.effectiveDate <= today)
+        && (boundary.expirationDate === null || boundary.expirationDate > today) })) : page;
+  }
+
+  private static async readSearch(search: BoundarySearch, includeDates = true): Promise<Boundary[]> {
     const values: unknown[] = [];
-    const conditions = boundaryConditions(search, 'b', values);
+    const conditions = boundaryConditions(search, 'b', values, includeDates);
     const { rows } = await pool.query<BoundaryRow>(`SELECT b.*, b.effective_date::text AS effective_date, b.expiration_date::text AS expiration_date FROM boundaries b WHERE ${conditions.join(' AND ')} ORDER BY b.id`, values);
-    return rows.map(row => boundaryFromRow(row)).filter(row => matchesLocation(row, search))
-      .slice(search.offset ?? 0, (search.offset ?? 0) + (search.limit ?? 100));
+    return rows.map(row => boundaryFromRow(row)).filter(row => matchesLocation(row, search));
   }
   /**
    * Resolves the first Google Maps result into coordinates and administrative hints.

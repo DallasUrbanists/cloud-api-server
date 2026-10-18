@@ -1,0 +1,103 @@
+{
+  "title": "Clean Sweep! Litter Removal",
+  "categories": [
+    "Streets, Medians, Sidewalks and Alleys"
+  ],
+  "description": "Use this service request to ONLY request litter removal along streets, medians or public right of ways within the City of Dallas or external partner right of ways, i.e. TxDOT and North Texas Toll Authority. This excludes alley ways. The estimated response time (ERT) for this service request is 3 business days. Note: If litter is on private property create a Code Concern SR. If this is a homeless encampment create a Homeless Encampment SR.",
+  "photoUrls": [],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "5 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "prompt": "Is the litter on public or private property?",
+        "type": "single_select",
+        "options": [
+          "Private property",
+          "Public property"
+        ],
+        "required": true,
+        "branches": {
+          "Public property": "Warning about homeless encampment; ask litter location and direction",
+          "Private property": "Validation Alert: owner responsibility; create Code Concern for litter or Homeless Encampment SR"
+        }
+      },
+      {
+        "prompt": "Where is the litter?",
+        "type": "single_select",
+        "options": [
+          "Highway Right-of-Way",
+          "Median",
+          "Sidewalk",
+          "Street"
+        ],
+        "required": true,
+        "when": "Public property"
+      },
+      {
+        "prompt": "Direction of travel?",
+        "type": "single_select",
+        "options": [
+          "North",
+          "South",
+          "East",
+          "West",
+          "Other"
+        ],
+        "required": false,
+        "when": "Public property",
+        "branches": {
+          "Other": "Ask If Other, please describe:"
+        }
+      },
+      {
+        "prompt": "If Other, please describe:",
+        "type": "text",
+        "required": true,
+        "when": "direction = Other"
+      }
+    ],
+    "conditionalMessages": [
+      "Oops, private property is the owner's responsibility. Please create a Code Concern for Litter. If it's a homeless encampment - create a Homeless Encampment SR.",
+      "** If this is a homeless encampment - please create a Homeless Encampment SR **"
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Public property; Street; direction = Other",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request to report litter on public streets, medians, or rights of way.",
+      "why": "To request removal of litter along a street, median, sidewalk, or highway right-of-way on public property within Dallas or an external partner right-of-way such as TxDOT or the North Texas Toll Authority. The 311 request form asks whether the location is public or private, where litter is located, and its direction of travel; for an unlisted direction, it asks for a description.",
+      "why_not": "The online form for \"Clean Sweep! Litter Removal\" requests does not apply to alleyways, litter on private property, or homeless encampments. If litter is on private property, then submit a \"Code Concerns\" 311 request instead. If the concern is a homeless encampment, then submit a \"Homeless Encampment\" 311 request instead.",
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Clean Sweep! Litter Removal\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Clean Sweep! Litter Removal\""
+    },
+    {
+      "tagline": "Submit a 311 request about litter on private property.",
+      "why": "For litter on private property. The 311 request form for \"Clean Sweep! Litter Removal\" tells people who select Private property that the owner is responsible and directs them to create a Code Concern for litter.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Code Compliance",
+      "how": "Go to Dallas 311 > Choose \"City Code Violations\" > Choose \"Code Concerns\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"City Code Violations\" > Choose \"Code Concerns\""
+    },
+    {
+      "tagline": "Submit a 311 request about a homeless encampment.",
+      "why": "For a temporary structure used as an overnight shelter, or unsheltered people living or sleeping in vehicles, on sidewalks, or under bridges. The description and the 311 request form for \"Clean Sweep! Litter Removal\" requests direct homeless encampments to this service.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Office of Emergency Management and Crisis Response",
+      "how": "Go to Dallas 311 > Choose \"Homeless Outreach, and Encampments\" > Choose \"Homeless Encampment\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Homeless Outreach, and Encampments\" > Choose \"Homeless Encampment\""
+    }
+  ]
+}

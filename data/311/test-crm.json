@@ -1,0 +1,21 @@
+{
+  "title": "TEST CRM",
+  "categories": [
+    "Other Requests"
+  ],
+  "description": "Test 1 & Test 2",
+  "photoUrls": [],
+  "department": "Office of Communications & Customer Experience/311",
+  "resolutionEstimate": "10 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "partial",
+    "observedQuestions": [],
+    "unexplored": "Location blocked after clicking the map prompt Select a location. Nearest Valid Address displayed: Failed to detect valid address. Please try again. Selected Location did not appear and Continue remained disabled, so Details could not be reached."
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "location_blocked",
+  "actions": []
+}

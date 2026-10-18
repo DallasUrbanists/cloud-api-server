@@ -1,0 +1,140 @@
+{
+  "title": "New Alley/Sidewalk/Street Request",
+  "categories": [
+    "Streets, Medians, Sidewalks and Alleys"
+  ],
+  "description": "Use this service request to request concrete paving of an unimproved alley (made of gravel or dirt), an unimproved street (that does not have existing curbs and gutters) or the installation of sidewalks. The estimated response time (ERT) for this service request is 2 business days.",
+  "photoUrls": [],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "5 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "prompt": "What improvement are you requesting?",
+        "type": "single_select",
+        "options": [
+          "Alley",
+          "Sidewalk",
+          "Street"
+        ],
+        "required": true,
+        "branches": {
+          "Sidewalk": "Ask if sidewalks exist",
+          "Alley": "Ask existing surface",
+          "Street": "Ask if street has concrete curbs or gutters"
+        }
+      },
+      {
+        "prompt": "What is the existing surface type?",
+        "type": "single_select",
+        "options": [
+          "Asphalt/concrete",
+          "Dirt",
+          "Gravel"
+        ],
+        "required": true,
+        "when": "improvement = Alley",
+        "branches": {
+          "Asphalt/concrete": "Validation Alert: alley must be dirt or gravel; consider Alley Repair (Routine)"
+        }
+      },
+      {
+        "prompt": "Are there sidewalks at this location?",
+        "type": "single_select",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "required": true,
+        "when": "improvement = Sidewalk",
+        "branches": {
+          "Yes": "Validation Alert: consider Sidewalk Replacement Program if owner or Code Concern if not owner"
+        }
+      },
+      {
+        "prompt": "Does the street have existing concrete curbs or gutters?",
+        "type": "single_select",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "required": true,
+        "when": "improvement = Street",
+        "branches": {
+          "Yes": "Validation Alert: consider Street Repair (Routine)"
+        }
+      },
+      {
+        "prompt": "What are the nearest cross streets or block numbers?",
+        "type": "text",
+        "required": false
+      },
+      {
+        "prompt": "Would you like to be contacted?",
+        "type": "single_select",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ],
+        "required": false
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Alley; existing surface = Gravel",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request for paving an unimproved alley or street or installing a sidewalk.",
+      "why": "For concrete paving of a dirt or gravel alley, an unimproved street without existing concrete curbs or gutters, or installation of a sidewalk where none exists. The 311 request form asks which improvement is sought, existing surface or sidewalk condition, and nearby cross streets.",
+      "why_not": "The online form for \"New Alley/Sidewalk/Street Request\" does not describe repairing an existing paved alley, replacing an existing sidewalk, or repairing a street with existing curbs or gutters. If the existing alley is asphalt or concrete, then consider submitting an \"Alley Repair - Routine\" 311 request for nonhazardous damage. If an existing residential sidewalk needs replacement and the requester is the homeowner, then consider submitting a \"Sidewalk Replacement Program\" 311 request. If an existing sidewalk needs attention and the requester is not the owner, then consider submitting a \"Code Concerns\" 311 request. If a street with concrete curbs or gutters needs nonhazardous repair, then consider submitting a \"Street Repair\" 311 request.",
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"New Alley/Sidewalk/Street Request\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"New Alley/Sidewalk/Street Request\""
+    },
+    {
+      "tagline": "Consider submitting a 311 request for routine repair of a paved alley.",
+      "why": "For a nonhazardous existing asphalt or concrete alley that needs repair. The New Alley/Sidewalk/Street Request form suggests Alley Repair - Routine when the existing alley surface is asphalt or concrete.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Alley Repair - Routine\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Alley Repair - Routine\""
+    },
+    {
+      "tagline": "Consider submitting a 311 request for replacement of an existing residential sidewalk.",
+      "why": "For a homeowner seeking to replace an existing deteriorated residential sidewalk. The New Alley/Sidewalk/Street Request form suggests Sidewalk Replacement Program when sidewalks already exist; that program is a homeowner cost-share program and is not for businesses.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Sidewalk Replacement Program\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Sidewalk Replacement Program\""
+    },
+    {
+      "tagline": "Consider submitting a 311 request about an existing sidewalk when you are not its owner.",
+      "why": "For an existing sidewalk concern when the requester is not the homeowner. The New Alley/Sidewalk/Street Request form suggests Code Concern in this circumstance; the saved public service is titled \"Code Concerns\".",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Code Compliance",
+      "how": "Go to Dallas 311 > Choose \"City Code Violations\" > Choose \"Code Concerns\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"City Code Violations\" > Choose \"Code Concerns\""
+    },
+    {
+      "tagline": "Consider submitting a 311 request for routine repair of a street with concrete curbs or gutters.",
+      "why": "For a nonhazardous street repair where concrete curbs or gutters already exist. The New Alley/Sidewalk/Street Request form suggests Street Repair for this condition; that target form directs hazardous cases to call 311.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Street Repair\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Street Repair\""
+    }
+  ]
+}

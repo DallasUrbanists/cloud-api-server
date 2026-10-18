@@ -1,0 +1,122 @@
+{
+  "title": "Social Services Request",
+  "categories": [
+    "Non-Emergency Police and Fire Services"
+  ],
+  "description": "*** Use this service request to request social service assistance related to the structure fire at the 400 block of E 9th Street that occurred on May 28, 2026.*** You may also use this service type to request social service assistance – connection to the care or resources (includes but not limited to the connection to food banks, healthcare facilities, behavioral health clinics, service-based programming, and workforce assistance). The estimated response time for a service request of this nature is 1 business day. *** For rental assistance use - Housing & Neighborhood Revitalization Requests. Homeless concerns see - Homeless Encampments.",
+  "photoUrls": [],
+  "department": "Office of Emergency Management and Crisis Response",
+  "resolutionEstimate": "5 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "Is your request related to the structure fire at the 400 block of E 9th Street that occurred on May 28, 2026?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "question": "Is your need due to the recent storms?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "question": "What is your area of need or assistance?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Food Insecurity",
+          "Healthcare/Medical Assistance",
+          "Financial/Legal Assistance",
+          "Transportation",
+          "Other"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Financial/Legal Assistance",
+            "reveals": "What is your financial or legal need for:"
+          },
+          {
+            "when": "Other",
+            "reveals": "If Other, please describe:"
+          }
+        ]
+      },
+      {
+        "question": "What is your financial or legal need for:",
+        "required": true,
+        "type": "single_choice",
+        "when": "Area = Financial/Legal Assistance",
+        "options": [
+          "Workforce Assistance",
+          "Legal Aid",
+          "Other"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Other",
+            "reveals": "If Other, Please Describe:"
+          }
+        ]
+      },
+      {
+        "question": "If Other, please describe:",
+        "required": true,
+        "type": "free_text",
+        "when": "Area = Other"
+      },
+      {
+        "question": "If Other, Please Describe:",
+        "required": true,
+        "type": "free_text",
+        "when": "Financial/legal need = Other"
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Structure fire = No; storms = No; area = Financial/Legal Assistance; need = Other; description supplied; Details Continue reached Contact",
+    "contactStepObservation": "First Name, Last Name, Email, and Phone Number marked required",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request for social service assistance or a connection to resources.",
+      "why": "For social service assistance related to the May 28, 2026 structure fire at the 400 block of E 9th Street, or for connection to care and resources such as food banks, healthcare facilities, behavioral health clinics, service-based programs, or workforce assistance. The 311 request form asks whether the need relates to that fire or recent storms and whether the need is food, healthcare, financial or legal help, transportation, or another area.",
+      "why_not": "The online form for \"Social Services Request\" requests does not apply to rental assistance or homeless concerns. If you need help with a homeless concern, then submit a \"Homeless Encampment\" 311 request instead. If you need rental assistance, then view the \"Housing & Neighborhood Revitalization Requests\" 311 guidance.",
+      "what": "Submit 311 request",
+      "who": "Office of Emergency Management and Crisis Response",
+      "how": "Go to Dallas 311 > Choose \"Non-Emergency Police and Fire Services\" > Choose \"Social Services Request\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Non-Emergency Police and Fire Services\" > Choose \"Social Services Request\""
+    },
+    {
+      "tagline": "View Dallas 311 guidance for rental assistance.",
+      "why": "For rental assistance. The description for \"Social Services Request\" requests on the Dallas 311 website directs people to \"Housing & Neighborhood Revitalization Requests\" for this need.",
+      "why_not": null,
+      "what": "View 311 guidance",
+      "who": "Dallas 311",
+      "how": "Go to Dallas 311 and look for \"Housing & Neighborhood Revitalization Requests\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) and look for \"Housing & Neighborhood Revitalization Requests\""
+    },
+    {
+      "tagline": "Submit a 311 request about a temporary shelter or unsheltered person.",
+      "why": "For a temporary structure used as an overnight shelter, or an unsheltered person living or sleeping in a vehicle, on a sidewalk, or under a bridge. The description for \"Social Services Request\" requests on the Dallas 311 website directs homeless concerns to this service; the saved \"Homeless Encampment\" service covers these situations and has an online request button.",
+      "why_not": "The online form for \"Homeless Encampment\" requests is not for trespassing in abandoned buildings, panhandling, or squatting. If panhandling is recurring, then submit a \"Panhandling\" 311 request instead. If there is trespassing in an abandoned building, then call 911. If panhandling is aggressive, then call 911.",
+      "what": "Submit 311 request",
+      "who": "Office of Emergency Management and Crisis Response",
+      "how": "Go to Dallas 311 > Choose \"Homeless Outreach, and Encampments\" > Choose \"Homeless Encampment\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Homeless Outreach, and Encampments\" > Choose \"Homeless Encampment\""
+    }
+  ]
+}

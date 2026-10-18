@@ -1,0 +1,33 @@
+{
+  "title": "Utility Street Cuts - Hazardous",
+  "categories": [
+    "Streets, Medians, Sidewalks and Alleys"
+  ],
+  "description": "This request must be dispatched. Please call 311 to report concerns about cuts made in street, alley or sidewalk that are hazardous. A utility cut is when a contractor has cut an opening into the street and covers the hole up with a steel plate because work is not finished. ** Utility Cuts are generally - SQUARE, if other please complete a Street Repair - Routine SR. ** The estimated response time (ERT) for this service request is 1 calendar day.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/3aaa07d0-4207-11ee-bc29-f1f98f2cf413.JPG"
+  ],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "1 Calendar Days",
+  "requestThisService": false,
+  "instructions": "This request must be dispatched. Please call 311 to report concerns about cuts made in street, alley or sidewalk that are hazardous. A utility cut is when a contractor has cut an opening into the street and covers the hole up with a steel plate because work is not finished. Utility Cuts are generally square; if other, please complete a Street Repair - Routine service request. The estimated response time (ERT) for this service request is 1 calendar day. Please call 311 for more information",
+  "detailsForm": {
+    "status": "instructions_only",
+    "observedQuestions": [],
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "instructions_only",
+  "actions": [
+    {
+      "tagline": "Call Dallas 311 by phone to report a hazardous utility cut.",
+      "why": "For a hazardous contractor cut in a street, alley, or sidewalk, where an unfinished opening is covered with a steel plate. The description and instructions for \"Utility Street Cuts - Hazardous\" requests on the Dallas 311 website say this request must be dispatched and direct people to call 311. They direct cuts that are not generally square to Street Repair - Routine; the saved \"Street Repair\" 311 request form also directs hazardous cases to call 311 by phone.",
+      "why_not": null,
+      "what": "Call 311 by phone",
+      "who": "Dallas 311",
+      "how": "Call 311; for a hazardous cut that is not generally square, ask about Street Repair",
+      "how_formatted": "Call [311](tel:311); for a hazardous cut that is not generally square, ask about Street Repair"
+    }
+  ]
+}

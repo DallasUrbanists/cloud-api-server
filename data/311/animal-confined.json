@@ -1,0 +1,342 @@
+{
+  "title": "Animal Confined",
+  "categories": [
+    "Animal Care and Control"
+  ],
+  "description": "Use this service request to report confined stray animals, animals confined in vehicles or the bed of a truck, and animals trapped in culverts/drains/pipes. Residents are responsible for the animals they confine and will be held responsible for ensuring they are kept out of the sun/rain and given food and water during confinement. Animals that can be safely transported can be brought to the animal shelter at 1818 N Westmoreland Rd during normal business hours. Visit https://dallascityhall.com/departments/dallas-animal-services/Pages/default.aspx for more details. Service requests of this nature are dispatched and responded to based on priority. Priority 2: Instances in which there exists an immediate threat to the life of the animal will be responded to within 2 hours. Priority 3: Instances in which an animal is confined within living quarters and is also of a species that commonly carries rabies (bats, coyotes, foxes, raccoons and skunks) will be responded to within 4 hours. Priority 5: Other instances of confined animals will be responded to within 12 hours.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/65252dc0-4782-11ee-b03c-01efe55eb2e3.PNG"
+  ],
+  "department": "Dallas Animal Services",
+  "resolutionEstimate": "3 Calendar Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "options": [
+          "Cat",
+          "Dog",
+          "Livestock",
+          "Wildlife",
+          "DAS Only"
+        ],
+        "prompt": "Type of animal?",
+        "type": "radio",
+        "required": true
+      },
+      {
+        "tooltip": "size, color, breed, gender, markings",
+        "prompt": "Description of the animal:",
+        "type": "text",
+        "required": true
+      },
+      {
+        "options": [
+          "Horse",
+          "DAS Only",
+          "Cow",
+          "Goat",
+          "Pig",
+          "Sheep",
+          "Donkey",
+          "Other"
+        ],
+        "when": {
+          "equals": "Livestock",
+          "field": "Type of animal?"
+        },
+        "prompt": "What type of livestock are you reporting?",
+        "type": "select",
+        "required": true
+      },
+      {
+        "options": [
+          "Animal confined in vehicle",
+          "Stray confined in yard",
+          "Pet confined for owner surrender",
+          "In a trap",
+          "Animal trapped in culvert/drain/pipe",
+          "Animal in bed of truck",
+          "Rabies Vector Species (skunk or bat or fox or coyote or raccoon) confined in living space of a house",
+          "DAS Only"
+        ],
+        "prompt": "How is the animal confined?",
+        "type": "select",
+        "required": true
+      },
+      {
+        "when": {
+          "field": "How is the animal confined?",
+          "equalsAny": [
+            "Animal confined in vehicle",
+            "Animal in bed of truck"
+          ]
+        },
+        "prompt": "Where is the vehicle located?",
+        "type": "text",
+        "required": true
+      },
+      {
+        "when": {
+          "field": "How is the animal confined?",
+          "equalsAny": [
+            "Animal confined in vehicle",
+            "Animal in bed of truck"
+          ]
+        },
+        "prompt": "Describe the vehicle and driver:",
+        "type": "text",
+        "required": true
+      },
+      {
+        "when": {
+          "field": "How is the animal confined?",
+          "equalsAny": [
+            "Animal confined in vehicle",
+            "Animal in bed of truck"
+          ]
+        },
+        "prompt": "License plate # and state:",
+        "type": "text",
+        "required": true
+      },
+      {
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "when": {
+          "field": "How is the animal confined?",
+          "equalsAny": [
+            "Stray confined in yard",
+            "Pet confined for owner surrender",
+            "In a trap"
+          ]
+        },
+        "prompt": "Does the animal have food, water, and protection from the elements?",
+        "type": "radio",
+        "required": true
+      },
+      {
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "when": {
+          "field": "How is the animal confined?",
+          "equalsAny": [
+            "Stray confined in yard",
+            "Pet confined for owner surrender"
+          ]
+        },
+        "prompt": "Is an adult going to be present at the location?",
+        "type": "radio",
+        "required": true
+      },
+      {
+        "options": [
+          "Fenced yard",
+          "Inside home",
+          "Humane trap",
+          "In garage",
+          "Tied up",
+          "Pet carrier",
+          "Container",
+          "Other",
+          "DAS Only"
+        ],
+        "when": {
+          "equals": "Pet confined for owner surrender",
+          "field": "How is the animal confined?"
+        },
+        "prompt": "Where is the animal confined?",
+        "type": "select",
+        "required": true
+      },
+      {
+        "when": {
+          "equals": "Other",
+          "field": "Where is the animal confined?"
+        },
+        "prompt": "If other, please describe:",
+        "type": "text",
+        "required": true
+      },
+      {
+        "when": {
+          "equals": "Pet confined for owner surrender",
+          "field": "How is the animal confined?"
+        },
+        "prompt": "Why are you surrendering your pet?",
+        "type": "text",
+        "required": true
+      },
+      {
+        "when": {
+          "equals": "Pet confined for owner surrender",
+          "field": "How is the animal confined?"
+        },
+        "prompt": "How long have you owned the animal?",
+        "type": "text",
+        "required": true
+      },
+      {
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "when": {
+          "field": "How is the animal confined?",
+          "equalsAny": [
+            "Animal trapped in culvert/drain/pipe",
+            "Animal in bed of truck"
+          ]
+        },
+        "prompt": "Is the animal in immediate danger?",
+        "type": "radio",
+        "required": true
+      },
+      {
+        "when": {
+          "equals": "Animal trapped in culvert/drain/pipe",
+          "field": "How is the animal confined?"
+        },
+        "prompt": "Please leave your name and phone number in case Dallas Animal Services needs to reach you to better locate the trapped animal.",
+        "type": "text",
+        "required": true
+      },
+      {
+        "when": {
+          "equals": "Animal trapped in culvert/drain/pipe",
+          "field": "How is the animal confined?"
+        },
+        "prompt": "Describe where the animal is trapped:",
+        "type": "text",
+        "required": false
+      },
+      {
+        "prompt": "Additional Information",
+        "type": "text",
+        "required": false
+      }
+    ],
+    "unexplored": null,
+    "observedInstructions": [
+      {
+        "when": {
+          "equals": "Wildlife",
+          "field": "Type of animal?"
+        },
+        "text": "If you are reporting sick or injured wildlife, please use the service request \"Animal Lack of Care\". If you are reporting an infant or juvenile wild animal, please use the service request \"Animal Lack of Care\". If you are reporting a wild animal that is a member of a rabies vector species (skunks, raccoons, foxes, bats) confined in the living space of your home, please use the service request \"Animal Confined\". For other wildlife confined in the living space of your home, please consult the FAQ section of BeDallas90.org/wildlife for removal instructions. To report coyotes in your area, please call 469-676-9813. For all other wildlife concerns, please visit the Dallas Animal Services website at BeDallas90.org/wildlife",
+        "kind": "validation_alert"
+      },
+      {
+        "when": {
+          "equals": "Pet confined for owner surrender",
+          "field": "How is the animal confined?"
+        },
+        "text": "Please use the Animal Owner Surrender SR type for this kind of request.",
+        "kind": "inline_alert"
+      },
+      {
+        "when": {
+          "equals": "Animal trapped in culvert/drain/pipe",
+          "field": "How is the animal confined?"
+        },
+        "text": "Dallas Animal Services may need to contact you in order to locate an animal trapped a culvert/drain/pipe/inlet. Please leave your name and phone number in case they need additional information.",
+        "kind": "validation_alert"
+      }
+    ],
+    "pathCoverage": {
+      "strayYardFoodAdultCombinationsTested": 4,
+      "trapFoodOptionsTested": 2,
+      "animalConfinementCombinationsTested": 40,
+      "truckDangerOptionsTested": 2,
+      "contactStepReached": true,
+      "detailsContinueReached": true,
+      "ownerSurrenderFoodAdultLocationCombinationsTested": 36,
+      "culvertDangerOptionsTested": 2,
+      "livestockOptionsTested": 8,
+      "requestSubmitted": false,
+      "animalTypesTested": 5,
+      "contactDataEntered": false,
+      "confinementOptionsTested": 8
+    }
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "conditional_paths_explored",
+  "contactStep": {
+    "contactInformationOptional": true,
+    "fields": [
+      "First Name",
+      "Last Name",
+      "Email",
+      "Phone Number",
+      "Address"
+    ],
+    "disabled": [
+      "City",
+      "State",
+      "Zipcode"
+    ]
+  },
+  "actions": [
+    {
+      "tagline": "Submit a 311 request for a confined animal.",
+      "why": "Report a confined stray cat, dog, livestock animal, or wild animal; examples include an animal in a vehicle or truck bed, a stray in a yard or humane trap, an animal trapped in a culvert, drain, or pipe, or a rabies-vector species such as a bat, fox, raccoon, skunk, or coyote confined in a home. The 311 request form distinguishes the confinement location, whether food, water, and protection from weather are available, whether an adult will be present, and whether an animal in a culvert or truck bed is in immediate danger.",
+      "why_not": "The online form for \"Animal Confined\" requests is not the recommended route for sick or injured wildlife, infant or juvenile wild animals, pets being surrendered by their owners, non-rabies-vector wildlife confined inside a home, or coyotes reported in the area. If a pet is being surrendered by its owner, then view the \"Animal Owner Surrender\" 311 guidance instead. If a wild animal is sick, injured, infant, or juvenile, then submit an \"Animal Lack of Care\" 311 request instead. If non-rabies-vector wildlife is confined inside a home, then consult BeDallas90.org/wildlife. If coyotes are being reported in the area, then call the Coyote Hotline.",
+      "what": "Submit 311 request",
+      "who": "Dallas Animal Services",
+      "how": "Go to Dallas 311 > Choose \"Animal Care and Control\" > Choose \"Animal Confined\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Animal Care and Control\" > Choose \"Animal Confined\""
+    },
+    {
+      "tagline": "Bring a safely transportable animal to Dallas Animal Services.",
+      "why": "For a confined animal that a resident can safely transport to the shelter during normal business hours.",
+      "why_not": null,
+      "what": "Bring animal to shelter",
+      "who": "Dallas Animal Services",
+      "how": "Bring the animal to the shelter at 1818 N Westmoreland Rd during normal business hours",
+      "how_formatted": "Bring the animal to the shelter at 1818 N Westmoreland Rd during normal business hours"
+    },
+    {
+      "tagline": "Submit a 311 request for sick, injured, or juvenile wildlife.",
+      "why": "For wildlife that is sick or injured, or an infant or juvenile wild animal. The Animal Confined wildlife alert explicitly directs those concerns to Animal Lack of Care.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Dallas Animal Services",
+      "how": "Go to Dallas 311 > Choose \"Animal Care and Control\" > Choose \"Animal Lack of Care\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Animal Care and Control\" > Choose \"Animal Lack of Care\""
+    },
+    {
+      "tagline": "View Dallas Animal Services guidance for pet owner surrender.",
+      "why": "For a pet confined because its owner wants to surrender it. The Dallas 311 website directs people to Animal Owner Surrender; that service type has guidance and no online request button.",
+      "why_not": null,
+      "what": "View 311 guidance",
+      "who": "Dallas Animal Services",
+      "how": "Go to Dallas 311 > Choose \"Animal Care and Control\" > Choose \"Animal Owner Surrender\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Animal Care and Control\" > Choose \"Animal Owner Surrender\""
+    },
+    {
+      "tagline": "Visit the Dallas Animal Services website for wildlife guidance.",
+      "why": "For general details about confined animals, removal instructions for other wildlife confined in a home, or other wildlife concerns. The Dallas 311 website directs people with these concerns to Dallas Animal Services information and the BeDallas90.org/wildlife FAQ.",
+      "why_not": null,
+      "what": "Visit website",
+      "who": "Dallas Animal Services",
+      "how": "Visit the Dallas Animal Services website; consult BeDallas90.org/wildlife for wildlife removal instructions",
+      "how_formatted": "Visit the [Dallas Animal Services website](https://dallascityhall.com/departments/dallas-animal-services/Pages/default.aspx); consult BeDallas90.org/wildlife for wildlife removal instructions"
+    },
+    {
+      "tagline": "Call the Coyote Hotline to report coyotes in your area.",
+      "why": "To report coyotes in your area, as directed by the Animal Confined wildlife alert.",
+      "why_not": null,
+      "what": "Call",
+      "who": "Coyote Hotline",
+      "how": "Call 469-676-9813",
+      "how_formatted": "Call [469-676-9813](tel:4696769813)"
+    }
+  ]
+}

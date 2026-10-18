@@ -14,6 +14,7 @@ import { RecommendableActionController } from '../controllers/recommendableActio
 import { apiAccess, userAuth } from '../middleware/auth.js';
 
 const router = Router();
+router.post('/match', apiAccess({ apiKey: 'optional' }), userAuth('public'), RecommendableActionController.match);
 router.post('/candidates', apiAccess({ apiKey: 'required' }), userAuth('private'), RecommendableActionController.submit);
 router.get('/candidates', apiAccess({ apiKey: 'required' }), userAuth('private', ['staff']), RecommendableActionController.candidates);
 router.patch('/candidates/:id', apiAccess({ apiKey: 'required' }), userAuth('private', ['staff']), RecommendableActionController.review);

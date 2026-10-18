@@ -1,0 +1,87 @@
+{
+  "title": "Resident Only - Parking Permit Request",
+  "categories": [
+    "Parking, Vehicle, Bicycle and Scooter Concerns"
+  ],
+  "description": "Use this request to apply for a residential parking only permit: 1) due to parking congestion or 2) for Deep Ellum residents. Permits available only in certain areas for single family dwellings and Deep Ellum. ** Requestor must provide contact information ** The estimated response time (ERT) for this service request is 30 business days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/e5e58650-42c1-11ee-b797-25547d8b54e6.JPG"
+  ],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "90 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "prompt": "Is this for a single family dwelling or deep ellum parking permit?",
+        "type": "single_select",
+        "options": [
+          "Deep ellum permit",
+          "Single family dwelling (house/duplex) permit"
+        ],
+        "required": true,
+        "branches": {
+          "Deep ellum permit": "No further permit question",
+          "Single family dwelling (house/duplex) permit": "Ask what is causing parking congestion"
+        }
+      },
+      {
+        "prompt": "Vehicle license plate:",
+        "type": "text",
+        "required": true
+      },
+      {
+        "prompt": "What is causing the parking congestion?",
+        "type": "select",
+        "options": [
+          "Bar",
+          "Church",
+          "Hospital",
+          "Restaurant",
+          "School",
+          "Other"
+        ],
+        "required": true,
+        "when": "Single family dwelling permit",
+        "branches": {
+          "Other": "Ask If Other, please describe:"
+        }
+      },
+      {
+        "prompt": "If Other, please describe:",
+        "type": "text",
+        "required": true,
+        "when": "parking congestion = Other"
+      },
+      {
+        "prompt": "Would you like to be contacted?",
+        "type": "single_select",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ],
+        "required": false
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Single family dwelling permit; congestion = Other",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request for a residential or Deep Ellum parking permit.",
+      "why": "For a resident seeking a parking-only permit in an eligible single-family or duplex area because of parking congestion, or a Deep Ellum resident seeking a permit. The 311 request form asks for the permit type and vehicle plate, and asks single-family applicants what causes congestion. The description says contact information is required.",
+      "why_not": "The online form for \"Resident Only - Parking Permit Request\" requests does not apply outside eligible single-family dwelling areas or Deep Ellum.",
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Parking, Vehicle, Bicycle and Scooter Concerns\" > Choose \"Resident Only - Parking Permit Request\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Parking, Vehicle, Bicycle and Scooter Concerns\" > Choose \"Resident Only - Parking Permit Request\""
+    }
+  ]
+}

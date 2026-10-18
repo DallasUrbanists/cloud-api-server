@@ -1,0 +1,292 @@
+{
+  "title": "Animal Nuisance",
+  "categories": [
+    "Animal Care and Control"
+  ],
+  "description": "Use this service request to report common nuisance animal offenses. Initial complaints will result in correspondence to the owner and the complainant (if they provide address) to educate them on the violation and the next steps. Owners are given up to 3 weeks to comply. If Dallas Animal Services receives additional complaints after the compliance date, there will be an investigation. Priority 8: Instances will be responded to within 15 Business Days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/917759b0-4783-11ee-a643-c967669f66a7.PNG"
+  ],
+  "department": "Dallas Animal Services",
+  "resolutionEstimate": "17 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "options": [
+          "Cat",
+          "Dog",
+          "Livestock",
+          "Wildlife",
+          "DAS Only"
+        ],
+        "prompt": "Type of animal?",
+        "type": "radio",
+        "required": true
+      },
+      {
+        "prompt": "Description of the animal:",
+        "type": "text",
+        "required": true
+      },
+      {
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "prompt": "Is the animal owned?",
+        "type": "radio",
+        "required": true
+      },
+      {
+        "when": {
+          "equals": "Yes",
+          "field": "Is the animal owned?"
+        },
+        "prompt": "Name of owner:",
+        "type": "text",
+        "required": true
+      },
+      {
+        "when": {
+          "equals": "Yes",
+          "field": "Is the animal owned?"
+        },
+        "prompt": "Address of owner:",
+        "type": "text",
+        "required": true
+      },
+      {
+        "when": {
+          "equals": "Yes",
+          "field": "Is the animal owned?"
+        },
+        "prompt": "Where does the animal live? (Address, description of house, etc.)",
+        "type": "text",
+        "required": true
+      },
+      {
+        "options": [
+          "Pooper scooper",
+          "Too many animals in living space",
+          "Barking dog",
+          "Spay/neuter violation",
+          "Vaccination violation",
+          "Unsanitary conditions",
+          "DAS Only",
+          "Microchip",
+          "Tethering violation"
+        ],
+        "prompt": "What violation did you observe?",
+        "type": "select",
+        "required": true
+      },
+      {
+        "when": {
+          "equals": "Pooper scooper",
+          "field": "What violation did you observe?"
+        },
+        "prompt": "When did the incident occur?",
+        "type": "dateTime",
+        "required": true
+      },
+      {
+        "when": {
+          "equals": "Pooper scooper",
+          "field": "What violation did you observe?"
+        },
+        "prompt": "How often does this happen?",
+        "type": "text",
+        "required": true
+      },
+      {
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "when": {
+          "equals": "Pooper scooper",
+          "field": "What violation did you observe?"
+        },
+        "prompt": "Was the animal on a leash at the time?",
+        "type": "radio",
+        "required": true
+      },
+      {
+        "options": [
+          "Multifamily dwelling",
+          "Single family dwelling (half acre or less)",
+          "DAS Only",
+          "Single family dwelling (more than half acre)"
+        ],
+        "when": {
+          "equals": "Too many animals in living space",
+          "field": "What violation did you observe?"
+        },
+        "prompt": "Property size:",
+        "type": "radio",
+        "required": true
+      },
+      {
+        "when": {
+          "field": "What violation did you observe?",
+          "equalsAny": [
+            "Too many animals in living space",
+            "Spay/neuter violation",
+            "Vaccination violation",
+            "Unsanitary conditions",
+            "Microchip"
+          ]
+        },
+        "prompt": "Number of animals involved:",
+        "type": "text",
+        "required": true
+      },
+      {
+        "options": [
+          "Back yard",
+          "Front yard",
+          "Inside home",
+          "Side yard",
+          "DAS Only",
+          "Other"
+        ],
+        "when": {
+          "field": "What violation did you observe?",
+          "equalsAny": [
+            "Too many animals in living space",
+            "Spay/neuter violation",
+            "Vaccination violation",
+            "Unsanitary conditions",
+            "Microchip"
+          ]
+        },
+        "prompt": "Where is the animal located on the property?",
+        "type": "select",
+        "required": true
+      },
+      {
+        "when": {
+          "equals": "Other",
+          "field": "Where is the animal located on the property?"
+        },
+        "prompt": "If Other, please describe:",
+        "type": "text",
+        "required": true
+      },
+      {
+        "when": {
+          "equals": "Unsanitary conditions",
+          "field": "What violation did you observe?"
+        },
+        "prompt": "Describe the unsanitary conditions:",
+        "type": "text",
+        "required": true
+      },
+      {
+        "when": {
+          "equals": "Barking dog",
+          "field": "What violation did you observe?"
+        },
+        "prompt": "Name of complainant:",
+        "type": "text",
+        "required": true
+      },
+      {
+        "when": {
+          "equals": "Barking dog",
+          "field": "What violation did you observe?"
+        },
+        "prompt": "Address of complainant:",
+        "type": "text",
+        "required": true
+      },
+      {
+        "when": {
+          "equals": "Barking dog",
+          "field": "What violation did you observe?"
+        },
+        "prompt": "What time of day does the barking typically occur?",
+        "type": "text",
+        "required": true
+      },
+      {
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "prompt": "Is the property in a gated or enclosed area?",
+        "type": "radio",
+        "required": true
+      },
+      {
+        "when": {
+          "equals": "Yes",
+          "field": "Is the property in a gated or enclosed area?"
+        },
+        "prompt": "Gate code/access code (if needed):",
+        "type": "text",
+        "required": true
+      },
+      {
+        "prompt": "Additional Information",
+        "type": "text",
+        "required": false
+      }
+    ],
+    "unexplored": null,
+    "observedInstructions": [
+      {
+        "text": "Dallas Animal Services will send you next steps regarding your service request. City ordinance Sec 7-7.4 Disturbance by Animals requires that you provide your name and address and the name and address of the violator. Service requests without this information will not be responded to due to lack of information.",
+        "when": {
+          "equals": "Barking dog",
+          "field": "What violation did you observe?"
+        }
+      }
+    ],
+    "pathCoverage": {
+      "gatedOptionsTested": 2,
+      "requestSubmitted": false,
+      "detailsContinueReached": true,
+      "contactStepReached": true,
+      "animalOptionsTested": 5,
+      "violationOptionsTested": 9,
+      "primaryCombinationsTested": 180,
+      "propertySizeLocationCombinationsTested": 24,
+      "ownedOptionsTested": 2,
+      "contactDataEntered": false,
+      "pooperScooperLeashOptionsTested": 2
+    }
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "conditional_paths_explored",
+  "contactStep": {
+    "contactInformationOptional": true,
+    "fields": [
+      "First Name",
+      "Last Name",
+      "Email",
+      "Phone Number",
+      "Address"
+    ],
+    "disabled": [
+      "City",
+      "State",
+      "Zipcode"
+    ]
+  },
+  "actions": [
+    {
+      "tagline": "Submit a 311 request about an animal nuisance violation.",
+      "why": "Report common animal nuisance offenses involving a cat, dog, livestock, or wildlife, including failure to clean up animal waste, too many animals in a living space, a barking dog, spay/neuter or vaccination violations, unsanitary conditions, microchip issues, and tethering violations. The 311 request form asks whether the animal is owned, where it lives, what violation occurred, and whether the property is gated. For a barking dog it asks when barking typically occurs and requires the complainant’s and violator’s names and addresses for follow-up.",
+      "why_not": "A barking-dog complaint without the complainant’s name and address and the violator’s name and address will not be responded to, according to the 311 request form.",
+      "what": "Submit 311 request",
+      "who": "Dallas Animal Services",
+      "how": "Go to Dallas 311 > Choose \"Animal Care and Control\" > Choose \"Animal Nuisance\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Animal Care and Control\" > Choose \"Animal Nuisance\""
+    }
+  ]
+}

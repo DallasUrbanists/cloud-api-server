@@ -1,0 +1,86 @@
+{
+  "title": "Panhandling",
+  "categories": [
+    "Non-Emergency Police and Fire Services"
+  ],
+  "description": "Use this service request to report complaints of recurring panhandling at a specific location. A description of the individual, location and day(s) and time of activity is needed. Note: Call 9-1-1 for aggressive panhandlers. The estimated response time (ERT) for this service request is 3 business days.",
+  "photoUrls": [],
+  "department": "Dallas Police",
+  "resolutionEstimate": "7 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "intro": "***Be advised that this service request is not monitored on a 24-hour basis. If you have an emergency and require immediate assistance, please call 911.***",
+    "observedQuestions": [
+      {
+        "question": "Please give a description of the individual and their activity?",
+        "required": true,
+        "type": "free_text"
+      },
+      {
+        "question": "Direction of Travel?",
+        "required": false,
+        "type": "select",
+        "options": [
+          "Eastbound and westbound",
+          "Eastbound",
+          "Left turn lane",
+          "North and southbound",
+          "Northbound",
+          "Northeast",
+          "Northwest",
+          "Southbound",
+          "Southeast",
+          "Southwest",
+          "Westbound"
+        ]
+      },
+      {
+        "question": "Would you like to be contacted?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ]
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Description supplied; direction = Westbound; contact = No; Details Continue reached Contact",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request about recurring panhandling at a specific location.",
+      "why": "For recurring panhandling at a specific location. The 311 request asks for a description of the person and activity; the service description says to provide the location and days and times, and the 311 request form offers direction of travel.",
+      "why_not": "The online form for \"Panhandling\" requests does not apply to aggressive panhandling or an emergency needing immediate assistance. If the panhandler is aggressive, then call 911. If an emergency needs immediate assistance, then call 911.",
+      "what": "Submit 311 request",
+      "who": "Dallas Police",
+      "how": "Go to Dallas 311 > Choose \"Non-Emergency Police and Fire Services\" > Choose \"Panhandling\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Non-Emergency Police and Fire Services\" > Choose \"Panhandling\""
+    },
+    {
+      "tagline": "Call 911 about an aggressive panhandler.",
+      "why": "For aggressive panhandling. The description for \"Panhandling\" requests on the Dallas 311 website explicitly directs people to call 9-1-1.",
+      "why_not": null,
+      "what": "Call",
+      "who": "Emergency dispatch",
+      "how": "Call 911",
+      "how_formatted": "Call [911](tel:911)"
+    },
+    {
+      "tagline": "Call 911 for an emergency involving panhandling that needs immediate assistance.",
+      "why": "For another emergency needing immediate assistance involving panhandling. The 311 request form says it is not monitored around the clock.",
+      "why_not": null,
+      "what": "Call",
+      "who": "Emergency dispatch",
+      "how": "Call 911",
+      "how_formatted": "Call [911](tel:911)"
+    }
+  ]
+}

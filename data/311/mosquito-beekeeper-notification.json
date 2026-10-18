@@ -1,0 +1,110 @@
+{
+  "title": "Mosquito Beekeeper Notification",
+  "categories": [
+    "City Code Violations"
+  ],
+  "description": "This Service Request is used to COLLECT Beekeeper contact information. A Beekeeper is defined as a person who keeps, raises, and cares for honeybees. This Service Request will allow the City of Dallas to provide \"notification\" to Beekeepers before ground and aerial spraying take place for mosquito abatement. The City of Dallas does not respond to complaints regarding bees, please contact a private exterminator for pest control. If the concern is regarding mosquitoes, please submit a Code Concern Service Request Type (and select pest/bugs). The estimated response time for this service request is 48 hours.",
+  "photoUrls": [],
+  "department": "Code Compliance",
+  "resolutionEstimate": "2 Business Days",
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "label": "What type of property is it?",
+        "options": [
+          "Residential",
+          "Multi-Family/Apartments",
+          "Business",
+          "Median Right-of-Way",
+          "Vacant Building",
+          "Vacant Lot",
+          "Unknown"
+        ],
+        "type": "select",
+        "required": true
+      },
+      {
+        "label": "When would you like to be contacted?",
+        "options": [
+          "Aerial spraying",
+          "Ground spraying",
+          "Both"
+        ],
+        "type": "radio",
+        "required": true
+      },
+      {
+        "label": "Preferred method of contact for AERIAL spraying?",
+        "condition": "Schedule = Aerial spraying",
+        "options": [
+          "Email",
+          "Phone"
+        ],
+        "type": "radio",
+        "required": true
+      },
+      {
+        "label": "Please provide email address:",
+        "condition": "Aerial spraying + preferred method Email; or schedule Both",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "Provide email address for GROUND spraying:",
+        "condition": "Schedule = Ground spraying",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "Would you like to be contacted?",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ],
+        "type": "radio",
+        "required": false
+      }
+    ],
+    "observedInstructions": [
+      "The City will contact you 4-7 hours prior to ground spraying and 12-24 hours prior to aerial spraying via email. Property type options did not reveal additional fields. Ground spraying directly adds a required email address. Aerial spraying adds a required preferred-method radio: Email adds a required email field; Phone adds no Details fields. Both adds a required email field and no preferred-method question. Contact-preference options did not change the form."
+    ],
+    "contactStepObserved": "On the Aerial spraying + Phone branch, Contact step showed optional consent; First Name, Last Name, Email, Phone Number, Address, City, State, Zipcode disabled by default.",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "requestThisService": true,
+  "captureStatus": "conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request to receive advance mosquito-spraying notifications as a beekeeper.",
+      "why": "For a beekeeper, meaning a person who keeps, raises, and cares for honeybees, to provide contact information so the City of Dallas can notify them before ground or aerial mosquito-abatement spraying. The 311 request form asks the property type and whether notice is wanted for aerial spraying, ground spraying, or both. The 311 request form says the City gives 4–7 hours of advance notice for ground spraying and 12–24 hours for aerial spraying. Ground spraying requires an email address; the aerial-spraying choice allows Email or Phone, while choosing Both collects an email address.",
+      "why_not": "The online form for \"Mosquito Beekeeper Notification\" requests does not apply to complaints about bees or concerns about mosquitoes. If you need pest control for bees, then contact a private exterminator. If the concern is mosquitoes, then submit a \"Code Concerns\" 311 request instead and select pest/bugs.",
+      "what": "Submit 311 request",
+      "who": "Code Compliance",
+      "how": "Go to Dallas 311 > Choose \"City Code Violations\" > Choose \"Mosquito Beekeeper Notification\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"City Code Violations\" > Choose \"Mosquito Beekeeper Notification\""
+    },
+    {
+      "tagline": "Contact a private exterminator for bee pest control.",
+      "why": "For pest control or a complaint regarding bees; the description for \"Mosquito Beekeeper Notification\" requests on the Dallas 311 website says the City does not respond to bee complaints and directs people to contact a private exterminator.",
+      "why_not": null,
+      "what": "Contact",
+      "who": "Private exterminator",
+      "how": "Contact a private exterminator for pest control",
+      "how_formatted": "Contact a private exterminator for pest control"
+    },
+    {
+      "tagline": "Submit a 311 request about a mosquito concern.",
+      "why": "For a concern regarding mosquitoes, including pest or bug complaints. The description for \"Mosquito Beekeeper Notification\" requests on the Dallas 311 website directs these concerns to the \"Code Concern\" service type; the public \"Code Concerns\" 311 service offers an online request form with a pest/bugs option.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Code Compliance",
+      "how": "Go to Dallas 311 > Choose \"City Code Violations\" > Choose \"Code Concerns\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"City Code Violations\" > Choose \"Code Concerns\""
+    }
+  ]
+}

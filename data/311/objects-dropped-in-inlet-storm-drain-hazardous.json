@@ -1,0 +1,34 @@
+{
+  "title": "Objects Dropped in Inlet/Storm Drain - Hazardous",
+  "categories": [
+    "Streets, Medians, Sidewalks and Alleys",
+    "Water Inquiries and Line Locates"
+  ],
+  "description": "This request must be dispatched. Please call 311 to report objects dropped in the inlet or storm drain. The estimated response time (ERT) for this service request is 1 calendar day.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/882a7ef0-ade0-11ee-ad6d-455ad834804b.JPG"
+  ],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "1 Calendar Days",
+  "requestThisService": false,
+  "instructions": "Call 311 to report objects dropped in an inlet or storm drain. This request must be dispatched.",
+  "detailsForm": {
+    "status": "instructions_only",
+    "observedQuestions": [],
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "instructions_only",
+  "actions": [
+    {
+      "tagline": "Call Dallas 311 by phone about an object dropped into an inlet or storm drain.",
+      "why": "For an object dropped into an inlet or storm drain. The request must be dispatched and the saved instructions direct people to call 311.",
+      "why_not": null,
+      "what": "Call 311 by phone",
+      "who": "Dallas 311",
+      "how": "Call 311",
+      "how_formatted": "Call [311](tel:311)"
+    }
+  ]
+}

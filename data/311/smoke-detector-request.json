@@ -1,0 +1,112 @@
+{
+  "title": "Smoke Detector Request",
+  "categories": [
+    "Non-Emergency Police and Fire Services"
+  ],
+  "description": "Use this request to inquire about a smoke detector for owner occupied single-family and duplex residences. This does not apply to rental properties such as apartments or rent houses. The estimated response time for this service request is 2 business days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/09081d10-5e2d-11ee-b65c-c33ce0246595.jpg"
+  ],
+  "department": "Dallas Fire-Rescue",
+  "resolutionEstimate": "7 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "Are you requesting a smoke detector or batteries?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Batteries",
+          "Smoke detector"
+        ]
+      },
+      {
+        "question": "How did you find out about the program?",
+        "required": false,
+        "type": "select",
+        "options": [
+          "City Hall on the Go",
+          "DFD fire safety presentation",
+          "Door hanger",
+          "Newspaper",
+          "Radio",
+          "Television",
+          "Internet/website",
+          "DART billboard",
+          "Visiting Nurses Association/Meals on Wheels"
+        ]
+      },
+      {
+        "question": "Does the requestor in the home own it?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Yes",
+          "No",
+          "Unknown"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "No",
+            "instruction": "This request is for battery operated smoke detectors to be installed in owner occupied homes. If this is a multifamily complex/apt. the property manager is responsible for providing this service."
+          }
+        ]
+      },
+      {
+        "question": "Is there anyone in the home with a disability, hearing impaired, or over the age of 65?",
+        "required": false,
+        "type": "multi_choice",
+        "options": [
+          "Has a disability",
+          "Hearing impaired",
+          "Over age 65"
+        ]
+      },
+      {
+        "question": "What is the best contact time?",
+        "required": false,
+        "type": "free_text"
+      },
+      {
+        "question": "Would you like to be contacted?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ]
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Smoke detector; owner = Yes; all special-needs options selected; time supplied; contact = No; Details Continue reached Contact",
+    "contactStepObservation": "First Name, Last Name, and Phone Number marked required",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request for a smoke detector or batteries in an owner-occupied home.",
+      "why": "For a smoke detector or batteries for an owner-occupied single-family or duplex residence. The 311 request form asks whether the requester wants a detector or batteries, whether they own the home, whether someone has a disability or hearing impairment or is over 65, and the best contact time.",
+      "why_not": "The online form for \"Smoke Detector Request\" requests does not apply to rental homes or apartments. If the residence is a multifamily complex or apartment, then contact the property manager for smoke-detector service.",
+      "what": "Submit 311 request",
+      "who": "Dallas Fire-Rescue",
+      "how": "Go to Dallas 311 > Choose \"Non-Emergency Police and Fire Services\" > Choose \"Smoke Detector Request\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Non-Emergency Police and Fire Services\" > Choose \"Smoke Detector Request\""
+    },
+    {
+      "tagline": "Contact the property manager about a smoke detector in an apartment.",
+      "why": "For smoke-detector service in a multifamily complex or apartment. The Smoke Detector Request form says the property manager is responsible when the requester does not own the home.",
+      "why_not": null,
+      "what": "Contact",
+      "who": "Property manager",
+      "how": "Contact the property manager about smoke-detector service",
+      "how_formatted": "Contact the property manager about smoke-detector service"
+    }
+  ]
+}

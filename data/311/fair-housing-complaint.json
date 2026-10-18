@@ -1,0 +1,317 @@
+{
+  "title": "Fair Housing Complaint",
+  "categories": [
+    "ADA/Fair Housing Complaints"
+  ],
+  "description": "Use this Service Request to report complaints related to discriminatory practices in the sale, rental and financing of properties based on race, color, national origin, religion, sex, disability, etc. The estimated response time (ERT) for this service request is 3 business days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/71a86ec0-6a5d-11ed-8825-3777c4dcdf6a.png"
+  ],
+  "department": "Office of Housing and Community Empowerment",
+  "resolutionEstimate": "100 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "number": 1,
+        "options": [
+          "Sex",
+          "Color",
+          "Race",
+          "Religion",
+          "Disability",
+          "Familial Status",
+          "National Origin",
+          "ADA Concerns (American Disability Act)",
+          "Retaliation for Filing Fair Housing Complaint",
+          "Retaliation for Contacting Code Enforcement"
+        ],
+        "prompt": "Why do you believe you are being discriminated against?",
+        "type": "checkboxes",
+        "required": true
+      },
+      {
+        "number": 2,
+        "prompt": "Briefly explain why you think you are being discriminated against or denied services:",
+        "type": "text",
+        "required": true
+      },
+      {
+        "number": 3,
+        "options": [
+          "Bank",
+          "Broker",
+          "Housing Provider",
+          "Management Company",
+          "Property Owner",
+          "Real Estate Agent",
+          "Other"
+        ],
+        "prompt": "Who do you believe discriminated against you?",
+        "type": "select",
+        "required": true
+      },
+      {
+        "number": 4,
+        "options": [
+          "Apartment",
+          "Bank",
+          "Lending Institution",
+          "Mobile Home",
+          "Single Family Home",
+          "Public or Assisted Housing"
+        ],
+        "prompt": "Where did the alleged act of discrimination occur?",
+        "type": "select",
+        "required": true
+      },
+      {
+        "number": 5,
+        "prompt": "When approximately did the alleged act of discrimination last occur?",
+        "type": "date",
+        "required": false
+      },
+      {
+        "number": 6,
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "prompt": "Is there someone else we can call if we cannot reach you?",
+        "type": "radio",
+        "required": true
+      },
+      {
+        "number": "additional",
+        "prompt": "Additional Information",
+        "type": "text",
+        "required": false
+      },
+      {
+        "number": "conditional",
+        "when": {
+          "equals": "Broker",
+          "field": "Who do you believe discriminated against you?"
+        },
+        "prompt": "Brokers Name:",
+        "type": "text",
+        "required": false
+      },
+      {
+        "number": "conditional",
+        "when": {
+          "equals": "Broker",
+          "field": "Who do you believe discriminated against you?"
+        },
+        "prompt": "Broker Phone Number:",
+        "type": "text",
+        "required": false
+      },
+      {
+        "number": "conditional",
+        "when": {
+          "equals": "Other",
+          "field": "Who do you believe discriminated against you?"
+        },
+        "prompt": "If Other, Please Provide Name and Phone Number:",
+        "type": "text",
+        "required": false
+      },
+      {
+        "number": "conditional",
+        "when": {
+          "equals": "Housing Provider",
+          "field": "Who do you believe discriminated against you?"
+        },
+        "prompt": "Housing Providers Name:",
+        "type": "text",
+        "required": false
+      },
+      {
+        "number": "conditional",
+        "when": {
+          "equals": "Housing Provider",
+          "field": "Who do you believe discriminated against you?"
+        },
+        "prompt": "Housing Providers Phone Number:",
+        "type": "text",
+        "required": false
+      },
+      {
+        "number": "conditional",
+        "when": {
+          "equals": "Bank",
+          "field": "Who do you believe discriminated against you?"
+        },
+        "prompt": "Bank Name:",
+        "type": "text",
+        "required": false
+      },
+      {
+        "number": "conditional",
+        "when": {
+          "equals": "Bank",
+          "field": "Who do you believe discriminated against you?"
+        },
+        "prompt": "Bank Phone Number:",
+        "type": "text",
+        "required": false
+      },
+      {
+        "number": "conditional",
+        "when": {
+          "equals": "Management Company",
+          "field": "Who do you believe discriminated against you?"
+        },
+        "prompt": "Management Company Name:",
+        "type": "text",
+        "required": false
+      },
+      {
+        "number": "conditional",
+        "when": {
+          "equals": "Management Company",
+          "field": "Who do you believe discriminated against you?"
+        },
+        "prompt": "Management Company Phone Number:",
+        "type": "text",
+        "required": false
+      },
+      {
+        "number": "conditional",
+        "when": {
+          "equals": "Real Estate Agent",
+          "field": "Who do you believe discriminated against you?"
+        },
+        "prompt": "Real Estate Agents Name:",
+        "type": "text",
+        "required": false
+      },
+      {
+        "number": "conditional",
+        "when": {
+          "equals": "Real Estate Agent",
+          "field": "Who do you believe discriminated against you?"
+        },
+        "prompt": "Real Estate Agents Phone Number:",
+        "type": "text",
+        "required": false
+      },
+      {
+        "number": "conditional",
+        "when": {
+          "equals": "Property Owner",
+          "field": "Who do you believe discriminated against you?"
+        },
+        "prompt": "Property Owner's Name:",
+        "type": "text",
+        "required": false
+      },
+      {
+        "number": "conditional",
+        "when": {
+          "equals": "Property Owner",
+          "field": "Who do you believe discriminated against you?"
+        },
+        "prompt": "Property Owner's Phone Number:",
+        "type": "text",
+        "required": false
+      },
+      {
+        "number": "conditional",
+        "when": {
+          "equals": "Apartment",
+          "field": "Where did the alleged act of discrimination occur?"
+        },
+        "prompt": "What is the name of the apartment complex?",
+        "type": "text",
+        "required": true
+      },
+      {
+        "number": "conditional",
+        "when": {
+          "equals": "Yes",
+          "field": "Is there someone else we can call if we cannot reach you?"
+        },
+        "prompt": "First and Last Name:",
+        "type": "text",
+        "required": false
+      },
+      {
+        "number": "conditional",
+        "when": {
+          "equals": "Yes",
+          "field": "Is there someone else we can call if we cannot reach you?"
+        },
+        "prompt": "Phone Number:",
+        "type": "phone",
+        "required": false
+      }
+    ],
+    "unexplored": null,
+    "pathCoverage": {
+      "contactDataEntered": false,
+      "requestSubmitted": false,
+      "detailsContinueReached": true,
+      "actorOptionsTested": 7,
+      "contactStepReached": true,
+      "actorLocationContactCombinationsTested": 84,
+      "locationOptionsTested": 6,
+      "discriminationReasonOptionsTested": 10,
+      "alternateContactOptionsTested": 2
+    },
+    "observedSuggestions": [
+      {
+        "title": "New Service Type Suggestion",
+        "when": {
+          "selected": "ADA Concerns (American Disability Act)",
+          "field": "Why do you believe you are being discriminated against?"
+        },
+        "action": "Keep Current",
+        "suggestedServiceType": "Fair Housing Complaint"
+      },
+      {
+        "title": "New Service Type Suggestion",
+        "when": {
+          "selected": "Retaliation for Contacting Code Enforcement",
+          "field": "Why do you believe you are being discriminated against?"
+        },
+        "action": "Keep Current",
+        "suggestedServiceType": "Fair Housing Complaint"
+      }
+    ]
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "conditional_paths_explored",
+  "contactStep": {
+    "instruction": "For this request type, certain contact information is required. Your details will be securely stored in our database and used only to support and manage your request.",
+    "disabled": [
+      "City",
+      "State",
+      "Zipcode"
+    ],
+    "optional": [
+      "Email",
+      "Address"
+    ],
+    "required": [
+      "First Name",
+      "Last Name",
+      "Phone Number"
+    ]
+  },
+  "actions": [
+    {
+      "tagline": "Submit a 311 complaint about housing discrimination.",
+      "why": "Report alleged discrimination in the sale, rental, or financing of housing based on sex, color, race, religion, disability, familial status, national origin, or another reason offered in the 311 request form. The 311 request form also covers retaliation for filing a Fair Housing complaint or contacting Code Enforcement, asks who allegedly discriminated and where it occurred, and offers an ADA-concerns option.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Office of Housing and Community Empowerment",
+      "how": "Go to Dallas 311 > Choose \"ADA/Fair Housing Complaints\" > Choose \"Fair Housing Complaint\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"ADA/Fair Housing Complaints\" > Choose \"Fair Housing Complaint\""
+    }
+  ]
+}

@@ -1,0 +1,101 @@
+{
+  "title": "Street Sweeping - Thoroughfares",
+  "categories": [
+    "Streets, Medians, Sidewalks and Alleys"
+  ],
+  "description": "Use this request to report sweeping needed on major thoroughfares ONLY, no residential streets, private property or parking lots. If a Hazard (such as, glass or other harmful debris) exists on a residential street call 3-1-1 and refer to Street Spillage/Debris in Right-of-Way – Hazardous, and city crews will respond. The estimated response time (ERT) for this service request is 3 business days. NOTE: Sweeping is completed once a month along the scheduled route, weather permitting. The city has a systematic cleaning schedule that covers all major traffic thoroughfares within Dallas. Cleaning includes sweeping along the curb line at each location.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/c1cd0990-41ff-11ee-99c9-0f6c9bc743cc.JPG"
+  ],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "5 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "What type of street is it?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Major thoroughfare",
+          "Residential"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Residential",
+            "instruction": "The city does not provide street sweeping on residential streets, private property or parking lots."
+          },
+          {
+            "when": "Major thoroughfare",
+            "reveals": "What type of debris is in the street?"
+          }
+        ]
+      },
+      {
+        "question": "What type of debris is in the street?",
+        "required": true,
+        "type": "select",
+        "when": "Street type = Major thoroughfare",
+        "options": [
+          "Dirt",
+          "Leaves",
+          "Mud",
+          "Rocks",
+          "Sand",
+          "Small tree twigs",
+          "Other"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Other",
+            "reveals": "If Other, please describe:"
+          }
+        ]
+      },
+      {
+        "question": "If Other, please describe:",
+        "required": true,
+        "type": "free_text",
+        "when": "Debris = Other"
+      },
+      {
+        "question": "Would you like to be contacted?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ]
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Street = Major thoroughfare; debris = Other; description supplied; contact = No; Details Continue reached Contact",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request for debris sweeping on a major thoroughfare.",
+      "why": "For routine sweeping of dirt, leaves, mud, rocks, sand, small tree twigs, or another debris type along a major Dallas thoroughfare. The 311 request form asks whether the street is a major thoroughfare or residential and, for a major thoroughfare, what debris is present; city routes are swept about once a month, weather permitting.",
+      "why_not": "The online form for \"Street Sweeping - Thoroughfares\" requests is not for residential streets, private property, or parking lots. If a hazard such as glass or other harmful debris is on a residential street, then call 311 by phone instead of submitting a 311 request online, and ask about \"Street Spillage/Debris in Right-of-Way - Hazardous\".",
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Street Sweeping - Thoroughfares\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Street Sweeping - Thoroughfares\""
+    },
+    {
+      "tagline": "Call Dallas 311 by phone about a hazardous spill or debris on a residential street.",
+      "why": "For a hazard such as glass or other harmful debris on a residential street. The description for \"Street Sweeping - Thoroughfares\" requests on the Dallas 311 website directs residents to call 311 and refer to \"Street Spillage/Debris in Right-of-Way - Hazardous\". The description for \"Street Spillage/Debris in Right of Way\" requests on the Dallas 311 website covers hazardous spills or debris blocking a public right-of-way.",
+      "why_not": null,
+      "what": "Call 311 by phone",
+      "who": "Dallas 311",
+      "how": "Call 311 and refer to a \"Street Spillage/Debris in Right of Way\" request",
+      "how_formatted": "Call [311](tel:311) and refer to a \"Street Spillage/Debris in Right of Way\" request"
+    }
+  ]
+}

@@ -1,0 +1,74 @@
+{
+  "title": "Locked/Blocked Exit",
+  "categories": [
+    "Non-Emergency Police and Fire Services"
+  ],
+  "description": "Use this service request in any situation where a required exit door, exit window or exit pathway, including stairwells and stairways, are blocked or locked. The estimated response time for this service request is 1 business day.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/7ca94a40-5e2e-11ee-bf7f-3de98a985773.jpg"
+  ],
+  "department": "Dallas Fire-Rescue",
+  "resolutionEstimate": "7 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "What is the occupancy location type?",
+        "required": true,
+        "type": "select",
+        "options": [
+          "Single family/duplex",
+          "Apartments/condos/townhouse",
+          "Hotels/motels",
+          "Business/store/office",
+          "Hospital/nursing home/jail",
+          "Industrial",
+          "Manufacturing",
+          "Nightclub/restaurant/public gathering area",
+          "School K-12/daycare",
+          "Special/construction site/vacant lot",
+          "Storage/warehouse/parking garage"
+        ]
+      },
+      {
+        "question": "If this is a business, what is the name of the business/facility?",
+        "required": false,
+        "type": "free_text"
+      },
+      {
+        "question": "Please explain what is being locked/blocked and its location:",
+        "required": true,
+        "type": "free_text"
+      },
+      {
+        "question": "Would you like to be contacted?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ]
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Occupancy = Storage/warehouse/parking garage; business and exit description supplied; contact = No; Details Continue reached Contact",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request for a required exit door, exit window, or exit pathway that is locked or blocked, including stairwells and stairways.",
+      "why": "For a required exit door, exit window, or exit pathway that is locked or blocked, including stairwells and stairways. The request form asks for occupancy type and a description and location of the blocked or locked exit.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Dallas Fire-Rescue",
+      "how": "Go to Dallas 311 > Choose \"Non-Emergency Police and Fire Services\" > Choose \"Locked/Blocked Exit\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Non-Emergency Police and Fire Services\" > Choose \"Locked/Blocked Exit\""
+    }
+  ]
+}

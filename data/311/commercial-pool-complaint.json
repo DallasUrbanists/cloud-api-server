@@ -1,0 +1,115 @@
+{
+  "title": "Commercial Pool Complaint",
+  "categories": [
+    "City Code Violations"
+  ],
+  "description": "Use this service request to report complaints related to COMMERCIAL swimming pools, such as, emergency and safety equipment, condition of gate and or fencing and other safety conditions. Pool complaints pertaining to residential and apartment properties, please submit as a Code Concern SR. The estimated response time for this service request is 48 hours.",
+  "photoUrls": [],
+  "department": "Code Compliance",
+  "resolutionEstimate": "10 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "options": [
+          "Residential",
+          "Business",
+          "Vacant Lot",
+          "Multi-Family/Apartments"
+        ],
+        "prompt": "What type of property?",
+        "type": "radio",
+        "required": true
+      },
+      {
+        "prompt": "What is the name of the business?",
+        "type": "text",
+        "required": false
+      },
+      {
+        "options": [
+          "No fence",
+          "Insecure fence",
+          "Mosquitoes",
+          "Stagnant water",
+          "Safety Issue",
+          "Other"
+        ],
+        "prompt": "What is the problem with the pool?",
+        "type": "select",
+        "required": true
+      },
+      {
+        "when": {
+          "equals": "Safety Issue",
+          "field": "What is the problem with the pool?"
+        },
+        "prompt": "What is the safety issue?",
+        "type": "text",
+        "required": true
+      },
+      {
+        "when": {
+          "equals": "Other",
+          "field": "What is the problem with the pool?"
+        },
+        "prompt": "If other, please describe:",
+        "type": "text",
+        "required": true
+      },
+      {
+        "prompt": "Additional Information",
+        "type": "text",
+        "required": false
+      }
+    ],
+    "unexplored": null,
+    "pathCoverage": {
+      "contactStepReached": true,
+      "detailsContinueReached": true,
+      "propertyPoolProblemCombinationsTested": 24,
+      "contactDataEntered": false,
+      "requestSubmitted": false
+    }
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "conditional_paths_explored",
+  "contactStep": {
+    "contactInformationOptional": true,
+    "fields": [
+      "First Name",
+      "Last Name",
+      "Email",
+      "Phone Number",
+      "Address"
+    ],
+    "disabled": [
+      "City",
+      "State",
+      "Zipcode"
+    ]
+  },
+  "actions": [
+    {
+      "tagline": "Submit a 311 request to report safety problems at a commercial pool.",
+      "why": "To report complaints about a commercial swimming pool, including missing or insecure fencing, mosquitoes, stagnant water, emergency or safety equipment, and other safety conditions. The 311 request form asks for the property type and pool problem; for a safety issue or another problem, it asks for details. It also asks for the business name when applicable.",
+      "why_not": "The online form for \"Commercial Pool Complaint\" requests does not apply to pools at residential or apartment properties. If the pool is at a residential or multi-family/apartment property, then submit a \"Code Concerns\" 311 request instead.",
+      "what": "Submit 311 request",
+      "who": "Code Compliance",
+      "how": "Go to Dallas 311 > Choose \"City Code Violations\" > Choose \"Commercial Pool Complaint\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"City Code Violations\" > Choose \"Commercial Pool Complaint\""
+    },
+    {
+      "tagline": "Submit a 311 request about a residential or apartment pool.",
+      "why": "For a swimming-pool concern at a residential or apartment property. The description for \"Commercial Pool Complaint\" requests on the Dallas 311 website directs these pool complaints to a Code Concern service request.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Code Compliance",
+      "how": "Go to Dallas 311 > Choose \"City Code Violations\" > Choose \"Code Concerns\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"City Code Violations\" > Choose \"Code Concerns\""
+    }
+  ]
+}

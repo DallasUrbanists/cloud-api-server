@@ -1,0 +1,180 @@
+{
+  "title": "ADA Accessibility Concerns",
+  "categories": [
+    "ADA/Fair Housing Complaints"
+  ],
+  "description": "Use this service request to report physical barriers or constraints within citywide services, activities, or facilities (i.e., participation or communication concerns for public programs, services, or activities; inaccessible, missing, or damaged pedestrian elements such as pedestrian signals, crossings, sidewalks, or curb ramps; or access barriers for, at or in a city facility or park). The estimated response time (ERT) for this service request is 5 business days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/8ccd71d0-25d8-11eb-8dfa-1b5ff5c2742f.jpg"
+  ],
+  "department": "Office of Housing and Community Empowerment",
+  "resolutionEstimate": "30 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "number": 1,
+        "options": [
+          "Communication (braille, listening devices, interpreter, etc)",
+          "No Accessible Restroom",
+          "No Accessible Parking",
+          "No Signage (to accessible facilities - restroom, ramps, parking, entry, etc.)",
+          "No Access to Public Transportation",
+          "No Right-of-Way Access (curb, sidewalk, ramp, pedestrian crossing, signal)",
+          "Service Animal Accommodation",
+          "Trip Hazard (broken, missing, damaged sidewalk, etc.)",
+          "Fair Housing Complaint (discrimination)",
+          "Other"
+        ],
+        "prompt": "Type of grievance?",
+        "type": "select",
+        "required": true
+      },
+      {
+        "number": 2,
+        "timeDefault": "12:00 AM",
+        "prompt": "What date and time did the grievance occur?",
+        "type": "dateTime",
+        "required": false
+      },
+      {
+        "number": 3,
+        "options": [
+          "Apartment",
+          "Residential",
+          "Commercial (restaurant, theater, store, etc)",
+          "Public Facility (library, rec center, park, pool, etc)"
+        ],
+        "prompt": "Type of property?",
+        "type": "radio",
+        "required": true
+      },
+      {
+        "number": 4,
+        "prompt": "Describe the incident/compliant in detail:",
+        "type": "text",
+        "required": true
+      },
+      {
+        "number": 5,
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "prompt": "Have attempts been made to resolve the complaint through a City department?",
+        "type": "radio",
+        "required": false
+      },
+      {
+        "number": "additional",
+        "prompt": "Additional Information",
+        "type": "text",
+        "required": false
+      },
+      {
+        "number": "conditional",
+        "prompt": "Type of Communication:",
+        "when": {
+          "equals": "Communication (braille, listening devices, interpreter, etc)",
+          "field": "Type of grievance?"
+        },
+        "type": "radio",
+        "required": true,
+        "options": [
+          "Braille",
+          "Listening Devices",
+          "Language Interpreter",
+          "Sign Language Interpreter"
+        ]
+      },
+      {
+        "number": "conditional",
+        "when": {
+          "equals": "Other",
+          "field": "Type of grievance?"
+        },
+        "prompt": "If other, please describe:",
+        "type": "text",
+        "required": true
+      },
+      {
+        "number": "conditional",
+        "when": {
+          "equals": "Apartment",
+          "field": "Type of property?"
+        },
+        "prompt": "What is the name of the apartment complex?",
+        "type": "text",
+        "required": false
+      },
+      {
+        "number": "conditional",
+        "when": {
+          "equals": "Commercial (restaurant, theater, store, etc)",
+          "field": "Type of property?"
+        },
+        "prompt": "What is the name of the business?",
+        "type": "text",
+        "required": false
+      },
+      {
+        "number": "conditional",
+        "when": {
+          "equals": "Public Facility (library, rec center, park, pool, etc)",
+          "field": "Type of property?"
+        },
+        "prompt": "What is the name of the facility?",
+        "type": "text",
+        "required": false
+      },
+      {
+        "number": "conditional",
+        "when": {
+          "equals": "Yes",
+          "field": "Have attempts been made to resolve the complaint through a City department?"
+        },
+        "prompt": "Please describe the efforts that have been made to resolve:",
+        "type": "text",
+        "required": true
+      },
+      {
+        "number": "conditional",
+        "when": {
+          "equals": "Yes",
+          "field": "Have attempts been made to resolve the complaint through a City department?"
+        },
+        "prompt": "What action do you want taken?",
+        "type": "text",
+        "required": true
+      }
+    ],
+    "unexplored": null,
+    "pathCoverage": {
+      "grievanceOptionsTested": 10,
+      "requestSubmitted": false,
+      "communicationOptionsTested": 4,
+      "contactStepReached": true,
+      "grievancePropertyResolutionCombinationsTested": 80,
+      "propertyOptionsTested": 4,
+      "contactDataEntered": false,
+      "detailsContinueReached": true,
+      "priorResolutionOptionsTested": 2
+    }
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request about an accessibility barrier or grievance.",
+      "why": "Report a physical or communication barrier in a City service, activity, facility, park, or pedestrian route, including inaccessible restrooms or parking, missing signage, service-animal accommodation, damaged sidewalks or curb ramps, pedestrian signals or crossings, and right-of-way access. The 311 request form also offers Fair Housing Complaint (discrimination) and asks about the incident, property type, and any prior attempt to resolve it through a City department.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Office of Housing and Community Empowerment",
+      "how": "Go to Dallas 311 > Choose \"ADA/Fair Housing Complaints\" > Choose \"ADA Accessibility Concerns\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"ADA/Fair Housing Complaints\" > Choose \"ADA Accessibility Concerns\""
+    }
+  ]
+}

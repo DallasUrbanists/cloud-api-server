@@ -1,0 +1,91 @@
+{
+  "title": "Paving Reconstruction Project",
+  "categories": [
+    "Streets, Medians, Sidewalks and Alleys"
+  ],
+  "description": "Use this service request to inquire about the status of an alley, street, or thoroughfare reconstruction project being performed by the city or for complaints regarding a city reconstruction project taking place. The estimated response time (ERT) for this service request is 8 business days. *** City projects have an 'informational' sign in the project area detailing the project ***",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/b8190830-3ca6-11ee-902e-4788c31e8f09.JPG"
+  ],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "20 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "prompt": "Is your request regarding a routine street repair maintenance?",
+        "type": "single_select",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "required": true,
+        "branches": {
+          "No": "Ask if street or alley is currently under reconstruction",
+          "Yes": "New Service Type Suggestion popup displayed current service type only"
+        }
+      },
+      {
+        "prompt": "Is this street/alley currently under reconstruction?",
+        "type": "single_select",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "required": true,
+        "when": "routine maintenance = No",
+        "branches": {
+          "Yes": "Ask project type and concern description",
+          "No": "Validation Alert: do not continue; request is for current City of Dallas construction; utility or other contractor should use Construction Status Inquiry/Status"
+        }
+      },
+      {
+        "prompt": "What type of paving reconstruction project is the request regarding?",
+        "type": "single_select",
+        "options": [
+          "Alley reconstruction",
+          "Street reconstruction",
+          "Thoroughfare reconstruction (Multi-lanes)"
+        ],
+        "required": true,
+        "when": "currently under reconstruction = Yes"
+      },
+      {
+        "prompt": "Please describe the paving or reconstruction concerns you have regarding the current project in detail:",
+        "type": "text",
+        "required": true,
+        "when": "currently under reconstruction = Yes"
+      },
+      {
+        "prompt": "Would you like to be contacted?",
+        "type": "single_select",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ],
+        "required": false
+      }
+    ],
+    "conditionalMessage": "Do not continue SR - This request is for alleys, streets or thoroughfares currently under construction by the City of Dallas. If Utility or other contractor use SR type - Construction Status Inquiry/Status.",
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Routine maintenance = No; currently under reconstruction = Yes; Thoroughfare reconstruction",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request about an ongoing City alley, street, or thoroughfare reconstruction project.",
+      "why": "For a status inquiry or complaint about an alley, street, or thoroughfare reconstruction project currently being performed by the City of Dallas. The description says City projects have an informational sign in the work area; the 311 request form asks whether the project is underway, the project type, and the concern.",
+      "why_not": "The online form for \"Paving Reconstruction Project\" requests does not apply to a location that is not currently under City reconstruction. If a utility or other contractor is doing the work, then consult the Dallas 311 website guidance for \"Construction Status Inquiry/Status\".",
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Paving Reconstruction Project\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Paving Reconstruction Project\""
+    }
+  ]
+}

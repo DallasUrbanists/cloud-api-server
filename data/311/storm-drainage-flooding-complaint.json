@@ -1,0 +1,123 @@
+{
+  "title": "Storm Drainage/Flooding Complaint",
+  "categories": [
+    "Other Requests"
+  ],
+  "description": "Use this service request to report flooding from rising water in creeks or an overflow of water in the street due to inadequately sized drainage system. Use this for non-emergency services only. The estimated response time for this service request is 5 business days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/b28de870-5e3b-11ee-b65c-c33ce0246595.png"
+  ],
+  "department": "Dallas Water Utilities",
+  "resolutionEstimate": "10 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "Do you know if an inlet, drain or culvert needs to be cleaned?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Yes",
+            "suggestedService": "New Service Type Suggestion displayed Storm Drainage/Flooding Complaint; Keep Current used."
+          },
+          {
+            "when": "No",
+            "reveals": "No additional questions, instructions, alerts, or suggestions."
+          }
+        ]
+      },
+      {
+        "question": "What is the flooding problem?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Flowing/moving",
+          "Standing"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Flowing/moving or Standing",
+            "reveals": "No additional questions, instructions, alerts, or suggestions."
+          }
+        ]
+      },
+      {
+        "question": "Is this an emergency flooding situation that is happening now?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Yes or No",
+            "reveals": "No additional questions, instructions, alerts, or suggestions."
+          }
+        ]
+      },
+      {
+        "question": "Has water entered a structure or building?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Yes or No",
+            "reveals": "No additional questions, instructions, alerts, or suggestions."
+          }
+        ]
+      },
+      {
+        "question": "Would you like to be contacted?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Each contact preference",
+            "reveals": "No additional fields or suggestions."
+          }
+        ]
+      }
+    ],
+    "unexplored": null,
+    "conditionalPaths": [
+      {
+        "when": "Default map pin resolved to 2018 RANCH TRL",
+        "reveals": "The location you entered is outside the City's jurisdiction for this service type."
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "After the default pin resolved to 2018 RANCH TRL and displayed an out-of-jurisdiction alert, selected 1500 MARILLA ST, DALLAS, TX, 75201; selected No for inlet/drain cleaning, Standing, No for current emergency, and No for water entering a structure; continued to Contact. No Contact data entered.",
+    "contactStepObserved": "Contact step displayed How can we reach you? and an email verification instruction. Contact information is optional and may be enabled by a checkbox. Fields shown: First Name, Last Name, Email, Phone Number, Address, City, State, Zipcode."
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request about nonemergency creek or street flooding.",
+      "why": "For nonemergency flooding from rising water in a creek or street overflow caused by inadequate drainage capacity within the City service area. The 311 request form asks whether an inlet, drain, or culvert may need cleaning, whether water is moving or standing, whether flooding is happening now, and whether water has entered a building.",
+      "why_not": "The online form for \"Storm Drainage/Flooding Complaint\" requests is described for nonemergency concerns only and displays a jurisdiction alert for a location outside the City service area.",
+      "what": "Submit 311 request",
+      "who": "Dallas Water Utilities",
+      "how": "Go to Dallas 311 > Under \"Other Requests\", choose \"Storm Drainage/Flooding Complaint\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Under \"Other Requests\", choose \"Storm Drainage/Flooding Complaint\""
+    }
+  ]
+}

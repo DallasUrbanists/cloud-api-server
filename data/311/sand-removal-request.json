@@ -1,0 +1,73 @@
+{
+  "title": "Sand Removal Request",
+  "categories": [
+    "Streets, Medians, Sidewalks and Alleys"
+  ],
+  "description": "Use this service request to request sand pick up after a snow/ice event. Major thoroughfares and bus routes are swept immediately after the snow/ice event. Secondary thoroughfares are swept within 30 days after an event by the private contractor for the city. This does not include residential streets. The estimated response time (ERT) for this service request is 14 business days.",
+  "photoUrls": [],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "30 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "Where is the sand located?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Bridge/sidewalk",
+          "Bus route",
+          "Emergency room entrance",
+          "Major thoroughfare"
+        ]
+      },
+      {
+        "question": "Direction of Travel?",
+        "required": false,
+        "type": "select",
+        "options": [
+          "Eastbound and westbound",
+          "Eastbound",
+          "Left turn lane",
+          "North and southbound",
+          "Northbound",
+          "Northeast",
+          "Northwest",
+          "Southbound",
+          "Southeast",
+          "Southwest",
+          "Westbound"
+        ]
+      },
+      {
+        "question": "Would you like to be contacted?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ]
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Sand location = Major thoroughfare; direction = Westbound; contact = No; Details Continue reached Contact",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request to remove sand left after a snow or ice event.",
+      "why": "For post-storm sand removal on a major thoroughfare, bus route, bridge or sidewalk, or emergency-room entrance. The description says major thoroughfares and bus routes are swept immediately after a snow or ice event and secondary thoroughfares within 30 days; the 311 request form asks where the sand is and direction of travel.",
+      "why_not": "The online form for \"Sand Removal Request\" requests does not cover residential streets.",
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Sand Removal Request\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Sand Removal Request\""
+    }
+  ]
+}

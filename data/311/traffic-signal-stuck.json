@@ -1,0 +1,40 @@
+{
+  "title": "Traffic Signal Stuck",
+  "categories": [
+    "Traffic Signs and Signals"
+  ],
+  "description": "This request must be dispatched. Please call 311 to report when the traffic signal is stuck on one color or the indication is not changing. This service request requires the color and direction of travel. ** Do not use this for timing/sync issues. Use 'Traffic Signal - Modification - TPW'. ** The estimated response time (ERT) for this service request is 1 business day.",
+  "photoUrls": [],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "4 Business Days",
+  "requestThisService": false,
+  "instructions": "This request must be dispatched. Please call 311 to report when the traffic signal is stuck on one color or the indication is not changing. This service request requires the color and direction of travel. ** Do not use this for timing/sync issues. Use 'Traffic Signal - Modification - TPW'. ** The estimated response time (ERT) for this service request is 1 business day. Please call 311 for more information",
+  "detailsForm": {
+    "status": "instructions_only",
+    "observedQuestions": [],
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "instructions_only",
+  "actions": [
+    {
+      "tagline": "Call Dallas 311 by phone about a traffic signal stuck on one color.",
+      "why": "For a traffic signal that stays on one color or whose indication is not changing. This request must be dispatched by phone; the caller should have the color and direction of travel.",
+      "why_not": "This phone route does not apply to traffic-signal timing or synchronization issues. If the concern is timing or synchronization, then submit a \"Traffic Signal Timing and Modification\" 311 request instead.",
+      "what": "Call 311 by phone",
+      "who": "Dallas 311",
+      "how": "Call 311 to report the stuck signal",
+      "how_formatted": "Call [311](tel:311) to report the stuck signal"
+    },
+    {
+      "tagline": "Submit a 311 request about traffic-signal timing or synchronization.",
+      "why": "For traffic-signal timing or synchronization issues. The description for \"Traffic Signal Stuck\" requests on the Dallas 311 website directs these concerns to \"Traffic Signal - Modification - TPW\". The public \"Traffic Signal Timing and Modification\" service has an online request form for timing and synchronization issues.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Traffic Signs and Signals\" > Choose \"Traffic Signal Timing and Modification\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Traffic Signs and Signals\" > Choose \"Traffic Signal Timing and Modification\""
+    }
+  ]
+}

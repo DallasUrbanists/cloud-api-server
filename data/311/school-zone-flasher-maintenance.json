@@ -1,0 +1,141 @@
+{
+  "title": "School Zone Flasher Maintenance",
+  "categories": [
+    "Traffic Signs and Signals"
+  ],
+  "description": "Use this service request to report or request maintenance or repairs to school zone flashers. ** To request a new school zone flasher use 'Traffic Sign - New - TPW ** The estimated response time (ERT) for this service request is 2 business days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/a0ce2590-627e-11ee-9698-7d1d4af5a66a.JPG"
+  ],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "5 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "What is the flasher problem?",
+        "required": true,
+        "type": "select",
+        "options": [
+          "Burned out bulb",
+          "Flashing at wrong time",
+          "Head turn",
+          "Knockdown/Leaning in traffic",
+          "Not flashing",
+          "Obstructed"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Knockdown/Leaning in traffic",
+            "instruction": "** Please enter Traffic Signal - Knockdown - TPW **"
+          }
+        ]
+      },
+      {
+        "question": "When did you notice the problem?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Now",
+          "This week",
+          "Other"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Other",
+            "reveals": "If other, please describe:"
+          }
+        ]
+      },
+      {
+        "question": "If other, please describe:",
+        "required": true,
+        "type": "free_text",
+        "when": "When noticed = Other"
+      },
+      {
+        "question": "What street is the flasher on? (Street name should match request address)",
+        "required": true,
+        "type": "free_text"
+      },
+      {
+        "question": "What direction was the problem occurring?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Eastbound",
+          "Northbound",
+          "Southbound",
+          "Unknown",
+          "Westbound"
+        ]
+      },
+      {
+        "question": "What is the nearest cross street?",
+        "required": false,
+        "type": "free_text"
+      },
+      {
+        "question": "What school is it near?",
+        "required": true,
+        "type": "free_text"
+      },
+      {
+        "question": "Would you like to be contacted?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ]
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Problem = Obstructed; noticed = Other with description; street, school, and cross street supplied; direction = Westbound; contact = No; Details Continue reached Contact",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request to repair or maintain a school zone flasher.",
+      "why": "Report a school zone flasher with a burned-out bulb, incorrect flash timing, a head turned away, no flashing, or an obstruction. The 311 request form asks when the problem was noticed and for the street, direction, nearest cross street, and school.",
+      "why_not": "The online form for \"School Zone Flasher Maintenance\" requests does not apply to a new school zone flasher or to one knocked down or leaning in traffic. If a new school zone flasher is needed, then submit a \"Traffic Sign - New\" 311 request instead. If a flasher is knocked down or leaning in traffic, then view the \"Traffic Signal - Knockdown - TRN\" 311 guidance instead. If a flasher was hit or knocked down completely and the damage causes a signal malfunction, then call 311 by phone instead of submitting a 311 request online.",
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Traffic Signs and Signals\" > Choose \"School Zone Flasher Maintenance\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Traffic Signs and Signals\" > Choose \"School Zone Flasher Maintenance\""
+    },
+    {
+      "tagline": "Call Dallas 311 about a knocked-down school zone flasher causing a signal malfunction.",
+      "why": "For a school zone flasher that has been hit or knocked down completely and its damage causes a signal malfunction. The description for \"Traffic Signal - Knockdown - TRN\" requests on the Dallas 311 website directs these reports to 311 by phone.",
+      "why_not": null,
+      "what": "Call 311 by phone",
+      "who": "Dallas 311",
+      "how": "Call 311",
+      "how_formatted": "Call [311](tel:311)"
+    },
+    {
+      "tagline": "Submit a 311 request for a new school zone flasher.",
+      "why": "For requesting installation of a new school zone flasher. The description for \"School Zone Flasher Maintenance\" requests on the Dallas 311 website directs new flashers to Traffic Sign - New.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Traffic Signs and Signals\" > Choose \"Traffic Sign - New\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Traffic Signs and Signals\" > Choose \"Traffic Sign - New\""
+    },
+    {
+      "tagline": "View Dallas 311 guidance for a school zone flasher knocked down or leaning in traffic.",
+      "why": "For a school zone flasher that is knocked down or leaning in traffic. The 311 request form for \"School Zone Flasher Maintenance\" requests points to the Traffic Signal - Knockdown service; the public \"Traffic Signal - Knockdown - TRN\" guidance directs people to call 311 by phone when a complete knockdown causes a signal malfunction.",
+      "why_not": null,
+      "what": "View 311 guidance",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Traffic Signs and Signals\" > Choose \"Traffic Signal - Knockdown - TRN\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Traffic Signs and Signals\" > Choose \"Traffic Signal - Knockdown - TRN\""
+    }
+  ]
+}

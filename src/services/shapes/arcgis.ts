@@ -60,6 +60,7 @@ export async function queryFeatures(layer: string, where: string, signal: AbortS
  * registered source so the stored outline can be brought up to date.
  */
 export async function fetchShape(params: Record<string, unknown>, signal: AbortSignal): Promise<BoundaryShape> {
+  if (params.source === 'dallasCity' && params.key === 'Dallas') return dallasCityShape(signal);
   const source = typeof params.source === 'string' && Object.hasOwn(shapeSources, params.source) ? shapeSources[params.source] : undefined;
   const key = params.key;
   if (!source || !['string', 'number'].includes(typeof key) || !/^[A-Za-z0-9 ._-]{1,100}$/.test(String(key))) throw new BoundaryError(503, 'SERVICE_INVALID', 'Shape service configuration is invalid.');

@@ -48,3 +48,11 @@ These are read operations: they do not enqueue refreshes. Tick operations are in
 [Boundary tests](../tests/boundaries.test.ts) exercise dates, polygon holes, null/pending shapes, normalized administrative rules, parsing, pagination, and synchronization using test infrastructure. [Migration tests](../tests/boundaryMigration.test.ts) cover database structure. These checks do not establish that current external geocoding or GIS sources are available.
 
 See [representative search](representatives.md) for reuse of the same geography and [README setup](../README.md) for migrations and configuration. The generated code reference documents the selected implementation; seed-data generation is not expanded by this backfill.
+
+## Coordinate search cache
+
+`BoundaryService.findAll` caches spatial searches in each server process for 30 days after a successful lookup. Latitude and longitude are rounded to four decimal places (approximately 10-meter grid spacing near Dallas) for both the database query and exact geometry checks, so points rounding to the same pair share deterministic results. Search filters remain part of the key. Near an edge, membership follows the rounded point.
+
+The cache stores all spatially matching candidates before effective-date filtering and pagination. Each request applies its requested effective date and recalculates current Dallas-date validity, allowing scheduled boundary transitions to take effect without expiring the spatial cache at midnight. Returned pages are deep copies. Concurrent equivalent requests share a database read, empty results are cached, and failures are retried rather than cached. Searches without a coordinate pair bypass the cache.
+
+Least-recently-used eviction limits the cache to 128 entries and a 32 MiB serialized-payload budget; oversized results are not retained. Successful shape and research updates invalidate the local process cache, including pending entries. Other processes and external database writes become visible when entries expire; restarts and capacity eviction can remove entries sooner; there is no distributed cache or new infrastructure.

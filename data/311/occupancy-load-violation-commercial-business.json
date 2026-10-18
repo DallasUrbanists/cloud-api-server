@@ -1,0 +1,70 @@
+{
+  "title": "Occupancy Load Violation (Commercial/Business)",
+  "categories": [
+    "Non-Emergency Police and Fire Services"
+  ],
+  "description": "Use this service request to report an occupancy load violation such as too many people in a nightclub, bar, restaurant or other public location where the number of people is more than what is allowed by the certificate of occupancy of the business. Not for residential use. The estimated response time for this service request is 1 business day.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/4e9c8090-5e2e-11ee-bf7f-3de98a985773.jpg"
+  ],
+  "department": "Dallas Fire-Rescue",
+  "resolutionEstimate": "30 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "Is the building overcrowded now?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "question": "What time of day is the problem occurring?",
+        "required": true,
+        "type": "multi_choice",
+        "options": [
+          "Weekday mornings",
+          "Weekday afternoon",
+          "Weekday evenings",
+          "Weekday after 10pm",
+          "Weekend morning",
+          "Weekend afternoon",
+          "Weekend evening",
+          "Weekend after 10pm"
+        ]
+      },
+      {
+        "question": "Would you like to be contacted?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ]
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Overcrowded now = No; time choices selected; contact = No; Details Continue reached Contact",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request about overcrowding at a business or other public venue.",
+      "why": "For a commercial or public location such as a nightclub, bar, or restaurant where occupancy exceeds the limit on its certificate of occupancy. The 311 request form asks whether the building is overcrowded now and what times the problem occurs.",
+      "why_not": "The online form for \"Occupancy Load Violation (Commercial/Business)\" requests is not for residential use.",
+      "what": "Submit 311 request",
+      "who": "Dallas Fire-Rescue",
+      "how": "Go to Dallas 311 > Choose \"Non-Emergency Police and Fire Services\" > Choose \"Occupancy Load Violation (Commercial/Business)\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Non-Emergency Police and Fire Services\" > Choose \"Occupancy Load Violation (Commercial/Business)\""
+    }
+  ]
+}

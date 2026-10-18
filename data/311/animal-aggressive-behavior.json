@@ -1,0 +1,141 @@
+{
+  "title": "Animal Aggressive Behavior",
+  "categories": [
+    "Animal Care and Control"
+  ],
+  "description": "Use this service request to report animal attacks, aggressive activity and aggressive pack activity on public or private property, school grounds, and day care centers. Service requests of this nature are dispatched and responded to based on priority. Priority 1: Instances in which a dog is attacking a domestic animal or livestock, an attack on a human and vice versa is currently in progress, or high-risk dogs are active near children or locations during operating hours where children are commonly present (example: schools, daycare facilities and parks) will be responded to within 1 hour. Priority 3: Instances in which two or more dogs act together as an aggressive pack will be responded to within 4 hours. Priority 4: Other instances of loose aggressive dogs will be responded to within 6 hours.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/59a59b10-4782-11ee-b03c-01efe55eb2e3.PNG"
+  ],
+  "department": "Dallas Animal Services",
+  "resolutionEstimate": "1 Calendar Days",
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "label": "Type of animal?",
+        "options": [
+          "Cat",
+          "Dog",
+          "Livestock",
+          "Coyote",
+          "Wildlife",
+          "DAS Only"
+        ],
+        "type": "select",
+        "required": true
+      },
+      {
+        "label": "Description of the animal:",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "Where was the animal last seen?",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "What activity is being reported?",
+        "options": [
+          "Animal attack to a human in progress",
+          "Dog attack to domestic animal in progress",
+          "Loose aggressive animal at school/park/daycare when children are present",
+          "Loose aggressive animal",
+          "Aggressive pack activity (2 or more dogs)",
+          "Human attacking an animal"
+        ],
+        "type": "select",
+        "required": true
+      },
+      {
+        "label": "Number of animals involved:",
+        "condition": "Activity = loose aggressive animal at school/park/daycare with children present OR aggressive pack activity",
+        "type": "number",
+        "required": true
+      },
+      {
+        "label": "Is the aggressive activity currently in progress?",
+        "condition": "Activity = Loose aggressive animal",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "type": "radio",
+        "required": true
+      },
+      {
+        "label": "Is the animal owned?",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "type": "radio",
+        "required": true
+      },
+      {
+        "label": "Where does the animal live? (Address, description of house, etc.)",
+        "condition": "Owned = Yes",
+        "type": "text",
+        "required": true
+      }
+    ],
+    "observedInstructions": [
+      "Animal attack to a human in progress and Human attacking an animal display “Emergencies of this nature should be reported to 911.” For loose aggressive animal, answer No to whether activity is in progress displays: “This request cannot be submitted on Animal Aggressive Behavior. Please choose Animal Loose to continue entering your request.” Selecting animal type Coyote displays the Coyote Hotline routing instruction: non-aggressive coyote/sighting call (469) 676-9813; attack in progress dial 911; continue if coyote is aggressive or attack occurred in the past. The Details form also says the responsible department may contact the requester and asks for name and phone number."
+    ],
+    "contactStepObserved": "Contact step showed optional consent checkbox; First Name, Last Name, Email, Phone Number, Address, City, State, Zipcode were disabled by default. This differs from the Details page instruction asking for name and phone.",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "requestThisService": true,
+  "captureStatus": "conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request about current aggressive animal activity.",
+      "why": "Report a dog attacking a domestic animal or livestock, a loose aggressive animal, two or more dogs acting as an aggressive pack, or a high-risk dog active near children at an operating school, daycare, or park. The 311 request form asks where the animal was last seen, whether loose aggressive activity is currently in progress, whether the animal is owned, and how many animals are involved in pack or child-area incidents. It allows a past aggressive coyote incident.",
+      "why_not": "The online form for \"Animal Aggressive Behavior\" requests is not the route the Dallas 311 website gives for a human attack currently in progress, a human attacking an animal, a coyote attack in progress, a nonaggressive coyote sighting, or loose aggressive activity that is no longer in progress. If loose aggressive activity is no longer in progress, then submit an \"Animal Loose\" 311 request instead. If a nonaggressive coyote is being sighted, then call the Coyote Hotline. If a human attack or coyote attack is in progress, then call 911.",
+      "what": "Submit 311 request",
+      "who": "Dallas Animal Services",
+      "how": "Go to Dallas 311 > Choose \"Animal Care and Control\" > Choose \"Animal Aggressive Behavior\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Animal Care and Control\" > Choose \"Animal Aggressive Behavior\""
+    },
+    {
+      "tagline": "Submit a 311 request for an animal that is loose after aggressive activity has stopped.",
+      "why": "For an animal that was loose and aggressive but whose aggressive activity is no longer in progress. The 311 request form for \"Animal Aggressive Behavior\" requests says that this concern cannot be submitted under aggressive behavior and directs people to Animal Loose.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Dallas Animal Services",
+      "how": "Go to Dallas 311 > Choose \"Animal Care and Control\" > Choose \"Animal Loose\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Animal Care and Control\" > Choose \"Animal Loose\""
+    },
+    {
+      "tagline": "Call the Coyote Hotline about a nonaggressive coyote sighting.",
+      "why": "For a nonaggressive coyote or coyote sighting. The 311 request form for \"Animal Aggressive Behavior\" requests directs this situation to the Coyote Hotline.",
+      "why_not": null,
+      "what": "Call",
+      "who": "Coyote Hotline",
+      "how": "Call 469-676-9813",
+      "how_formatted": "Call [469-676-9813](tel:4696769813)"
+    },
+    {
+      "tagline": "Call 911 for a human attack in progress or a human attacking an animal.",
+      "why": "For an animal attack on a human currently in progress, or a human attacking an animal. The 311 request form for \"Animal Aggressive Behavior\" requests says emergencies of this nature should be reported to 911.",
+      "why_not": null,
+      "what": "Call",
+      "who": "911 emergency dispatch",
+      "how": "Call 911",
+      "how_formatted": "Call [911](tel:911)"
+    },
+    {
+      "tagline": "Call 911 for a coyote attack in progress.",
+      "why": "For a coyote attack currently in progress. The coyote guidance in the 311 request form for \"Animal Aggressive Behavior\" requests directs people to dial 911.",
+      "why_not": null,
+      "what": "Call",
+      "who": "911 emergency dispatch",
+      "how": "Call 911",
+      "how_formatted": "Call [911](tel:911)"
+    }
+  ]
+}

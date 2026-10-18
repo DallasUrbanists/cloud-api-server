@@ -1,0 +1,114 @@
+{
+  "title": "Consumer Protection Complaint",
+  "categories": [
+    "City Code Violations"
+  ],
+  "description": "Use this service request to report consumer protection concerns pertaining to credit lenders and payday loan facilities. Complaints against electronic and motor vehicle repair shops. Concerns related to repairs and work performed in your home. Violations related to scrap tire enforcement (i.e., mobile tire repair, tire repair shops, transporting tires), violations against wood vendors (i.e., businesses that sell and deliver wood used for fire and fuel), The estimated response time for this service request is 5 business days.",
+  "photoUrls": [],
+  "department": "Code Compliance",
+  "resolutionEstimate": "30 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "options": [
+          "Convenience Store (C-Store)",
+          "Credit Access Business, i.e., pay day lending",
+          "Electronic Repair",
+          "Home Repair",
+          "Mobile Tire Repair Decal",
+          "Motor Vehicle Repair",
+          "Secondary Metal (scrap metal)",
+          "Scrap Tire",
+          "Scrap Tire Transporter Decal",
+          "Unattended Dropbox, i.e., clothing, thrift items, etc.",
+          "Vacant Building Registration",
+          "Wood Vending",
+          "Other"
+        ],
+        "prompt": "What consumer complaint are you reporting?",
+        "type": "checkboxes",
+        "required": true
+      },
+      {
+        "when": {
+          "field": "What consumer complaint are you reporting?",
+          "selectedOnly": "Other"
+        },
+        "prompt": "If Other, please describe:",
+        "type": "text",
+        "required": true
+      },
+      {
+        "prompt": "Please provide details on your concern:",
+        "type": "text",
+        "required": true
+      },
+      {
+        "options": [
+          "Residential",
+          "Business"
+        ],
+        "prompt": "What type of property/building is it?",
+        "type": "radio",
+        "required": true
+      },
+      {
+        "when": {
+          "equals": "Business",
+          "field": "What type of property/building is it?"
+        },
+        "prompt": "What is the name of the business?",
+        "type": "text",
+        "required": false
+      },
+      {
+        "prompt": "Additional Information",
+        "type": "text",
+        "required": false
+      }
+    ],
+    "unexplored": null,
+    "pathCoverage": {
+      "contactStepReached": true,
+      "complaintOptionsTested": 13,
+      "contactDataEntered": false,
+      "requestSubmitted": false,
+      "propertyOptionsTested": 2,
+      "multiComplaintSampled": true,
+      "detailsContinueReached": true,
+      "otherWithAdditionalComplaintTested": true
+    }
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "conditional_paths_explored",
+  "contactStep": {
+    "contactInformationOptional": true,
+    "fields": [
+      "First Name",
+      "Last Name",
+      "Email",
+      "Phone Number",
+      "Address"
+    ],
+    "disabled": [
+      "City",
+      "State",
+      "Zipcode"
+    ]
+  },
+  "actions": [
+    {
+      "tagline": "Submit a 311 consumer protection complaint.",
+      "why": "Report consumer protection concerns involving payday or other credit-access lenders, electronic or motor-vehicle repair, home repair work, scrap tires or tire transport, wood vending, convenience stores, secondary metal dealers, unattended donation drop boxes, vacant-building registration, or another listed business practice. The 311 request form asks for the complaint type, details, whether the property is residential or a business, and the business name when applicable.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Code Compliance",
+      "how": "Go to Dallas 311 > Choose \"City Code Violations\" > Choose \"Consumer Protection Complaint\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"City Code Violations\" > Choose \"Consumer Protection Complaint\""
+    }
+  ]
+}

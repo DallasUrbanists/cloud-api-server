@@ -1,0 +1,35 @@
+{
+  "title": "Storm Water Industrial Site Urgent",
+  "categories": [
+    "Creeks, Streams, Storm Drains, and Waterways",
+    "Environmental Quality Concerns",
+    "Water Inquiries and Line Locates"
+  ],
+  "description": "This request must be dispatched. Please call 311 to report an illicit discharge, solid waste pollution or any other environmental concern pertaining to an Industrial facility going into the street, alley, ditch, creek/creek channel, lake, river or storm drain/inlet. The estimated response time for this service request is 3 calendar days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/c452a700-5f1f-11ee-8932-8b0765cde3fc.png"
+  ],
+  "department": "Dallas Water Utilities",
+  "resolutionEstimate": "3 Calendar Days",
+  "requestThisService": false,
+  "instructions": "This request must be dispatched. Please call 311 to report an illicit discharge, solid waste pollution or any other environmental concern pertaining to an Industrial facility going into the street, alley, ditch, creek/creek channel, lake, river or storm drain/inlet. Please call 311 for more information.",
+  "detailsForm": {
+    "status": "instructions_only",
+    "observedQuestions": [],
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "instructions_only",
+  "actions": [
+    {
+      "tagline": "Call Dallas 311 by phone about stormwater pollution from an industrial site.",
+      "why": "For an illicit discharge, solid waste pollution, or another environmental concern from an industrial facility entering a street, alley, ditch, creek, lake, river, or storm drain. This request must be dispatched, and the saved instructions direct people to call 311.",
+      "why_not": null,
+      "what": "Call 311 by phone",
+      "who": "Dallas 311",
+      "how": "Call 311",
+      "how_formatted": "Call [311](tel:311)"
+    }
+  ]
+}

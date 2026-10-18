@@ -289,6 +289,7 @@ export class BoundarySyncService {
           await fenced(client, job);
         });
         job.shape_requested = false;
+        BoundaryService.clearSearchCache();
       }
       kind = 'research';
       if (job.research_requested) {
@@ -313,6 +314,7 @@ export class BoundarySyncService {
             return applied;
           });
           if (!applied) throw new BoundaryError(502, 'RESEARCH_NO_EVIDENCE', 'Representative research requires review before updates can be applied.');
+          BoundaryService.clearSearchCache();
           job.research_requested = false;
         }
       }

@@ -1,0 +1,35 @@
+{
+    "title":  "Guardrail Repair Hazardous",
+    "categories":  [
+                       "Streets, Medians, Sidewalks and Alleys"
+                   ],
+    "description":  "This request must be dispatched. Please call 311 to report a hazardous guardrail in need of repair under emergency circumstances, i.e. rail knocked down, missing causing high fall risk, damaged metal protruding into right of way. **Freeways are the responsibility of Texas Dept of Transportation ** The estimated response time (ERT) for this service request is 1 calendar day.",
+    "photoUrls":  [
+
+                  ],
+    "department":  "Transportation and Public Works Department",
+    "resolutionEstimate":  "1 Calendar Days",
+    "requestThisService":  false,
+    "instructions":  "Call 311 to report a hazardous guardrail requiring emergency repair, such as a knocked-down or missing rail with a high fall risk or damaged metal protruding into the right of way. This request must be dispatched. Freeway guardrails are the Texas Department of Transportation\u0027s responsibility.",
+    "detailsForm":  {
+                        "status":  "instructions_only",
+                        "observedQuestions":  [
+
+                                              ],
+                        "unexplored":  null
+                    },
+    "sourcePortalUrl":  "https://dallascrm.my.site.com/public/s/",
+    "serviceRequestUrl":  "https://dallascrm.my.site.com/public/s/",
+    "captureStatus":  "instructions_only",
+    "actions":  [
+                    {
+                        "tagline":  "Call Dallas 311 by phone to report a hazardous guardrail that needs emergency repair.",
+                        "why":  "To report a hazardous guardrail requiring emergency repair, such as a knocked-down or missing rail creating a high fall risk, or damaged metal protruding into the right of way. The saved instructions say this request must be dispatched and reported by calling 311.",
+                        "why_not":  "This phone route does not apply to freeway guardrails, which the saved guidance identifies as the responsibility of the Texas Department of Transportation.",
+                        "what":  "Call 311 by phone",
+                        "who":  "Dallas 311",
+                        "how":  "Call 311",
+                        "how_formatted":  "Call [311](tel:311)"
+                    }
+                ]
+}

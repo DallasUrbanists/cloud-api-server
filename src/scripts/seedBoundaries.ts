@@ -1,14 +1,15 @@
 import 'dotenv/config';
 import { readFile, writeFile } from 'node:fs/promises';
 import booleanIntersects from '@turf/boolean-intersects';
+import { pool } from '../config/db.js';
 import { BoundaryError, type ServiceDescriptor } from '../models/boundary.js';
-import { shapeSources } from '../services/boundarySources.js';
+import { DALLAS_CITY_LAYER, shapeSources } from '../services/boundarySources.js';
 import { dallasCityShape, queryFeatures, validShape } from '../services/shapes/arcgis.js';
 
-export async function generateBoundarySeed(options: { metadataOnly?: boolean; sources?: string[]; hoaFile?: string } = {}): Promise<{ sql: string; counts: Record<string, number> }> {
+export async function generateBoundarySeed(options: { metadataOnly?: boolean; sources?: string[]; hoaFile?: string; cityLimitsOnly?: boolean } = {}): Promise<{ sql: string; counts: Record<string, number> }> {
   const signal = AbortSignal.timeout(600000);
   const city = await dallasCityShape(signal);
-  const counts: Record<string, number> = {};
+  const counts: Record<string, number> = { cityLimits: 1 };
   const contactGuidance: Record<string, string> = {
     congress119: 'Federal legislation, federal agency assistance, interstate infrastructure, and national policy affecting constituents.',
     congress120: 'Federal legislation, federal agency assistance, interstate infrastructure, and national policy affecting constituents.',
@@ -25,8 +26,16 @@ export async function generateBoundarySeed(options: { metadataOnly?: boolean; so
     neighborhoods: 'Neighborhood priorities, community organizing, local development, public spaces, and resident coordination.',
     hoas: 'Association governance, covenants, common property, assessments, and member maintenance concerns.',
   };
-  const records: Record<string, any>[] = [{ source_key: 'texas:senate', entity_name: 'United States', body_name: 'Senate', district_name: 'Texas', shape: null, states: ['TX'], description: 'The statewide constituency of the two United States senators representing Texas.', when_to_contact: 'Federal legislation, federal agency assistance, and issues affecting Texas residents.', research_service: { file: 'congress.js', function: 'researchMembers', params: { chamber: 'Senate' } } }];
-  for (const [id, source] of Object.entries(shapeSources)) {
+  const records: Record<string, any>[] = [
+    { source_key: 'city:dallas', entity_name: 'City of Dallas', body_name: null, district_name: null,
+      shape: options.metadataOnly ? null : city, shape_pending: !!options.metadataOnly,
+      shape_synced_at: options.metadataOnly ? null : new Date().toISOString(), states: ['TX'], cities: [], counties: [], zips: [],
+      description: `The municipal limits of the City of Dallas, Texas. Geometry sourced from ${DALLAS_CITY_LAYER}.`,
+      when_to_contact: 'Dallas municipal services, infrastructure, public safety, city ordinances, and issues within the City of Dallas.',
+      shape_service: { file: 'arcgis.js', function: 'fetchShape', params: { source: 'dallasCity', key: 'Dallas' } } },
+    ...(!options.cityLimitsOnly ? [{ source_key: 'texas:senate', entity_name: 'United States', body_name: 'Senate', district_name: 'Texas', shape: null, states: ['TX'], description: 'The statewide constituency of the two United States senators representing Texas.', when_to_contact: 'Federal legislation, federal agency assistance, and issues affecting Texas residents.', research_service: { file: 'congress.js', function: 'researchMembers', params: { chamber: 'Senate' } } }] : []),
+  ];
+  for (const [id, source] of (options.cityLimitsOnly ? [] : Object.entries(shapeSources))) {
     if (options.sources && !options.sources.includes(id)) continue;
     const features = await queryFeatures(source.layer, source.where ?? '1=1', signal, city);
     counts[id] = features.length;
@@ -55,7 +64,7 @@ export async function generateBoundarySeed(options: { metadataOnly?: boolean; so
       });
     }
   }
-  if (options.hoaFile) {
+  if (options.hoaFile && !options.cityLimitsOnly) {
     const collection = JSON.parse(await readFile(options.hoaFile, 'utf8'));
     if (collection.type !== 'FeatureCollection' || !Array.isArray(collection.features)) throw new Error('HOA input must be a verified GeoJSON FeatureCollection.');
     counts.verifiedHoas = 0;
@@ -122,10 +131,17 @@ if (process.argv[1]?.endsWith('seedBoundaries.ts') || process.argv[1]?.endsWith(
   try {
     const args = process.argv.slice(2);
     const output = args.includes('--output') ? args[args.indexOf('--output') + 1] : undefined;
+    const sqlFileIndex = args.indexOf('--sql-file');
+    const sqlFile = sqlFileIndex >= 0 ? args[sqlFileIndex + 1] : undefined;
     const hoaFile = args.includes('--hoa-file') ? args[args.indexOf('--hoa-file') + 1] : undefined;
-    const generated = await generateBoundarySeed({ metadataOnly: args.includes('--metadata-only'), hoaFile });
+    const apply = args.includes('--apply');
+    if (sqlFile && !apply) throw new Error('--sql-file requires --apply.');
+    if (output && sqlFile) throw new Error('Choose either --output or --sql-file.');
+    const generated = sqlFile ? { sql: await readFile(sqlFile, 'utf8'), counts: { suppliedSql: 1 } }
+      : await generateBoundarySeed({ metadataOnly: args.includes('--metadata-only'), hoaFile, cityLimitsOnly: args.includes('--city-limits-only') });
     console.log(JSON.stringify({ counts: generated.counts, bytes: Buffer.byteLength(generated.sql) }));
-    if (output) { await writeFile(output, generated.sql, { flag: 'wx' }); console.log(`Wrote SQL to ${output}; no database changes were made.`); }
-    else console.log('Dry run only. Supply --output <new.sql> to write an unapplied SQL seed.');
+    if (output) { await writeFile(output, generated.sql, { flag: 'wx' }); console.log(`Wrote SQL to ${output}.`); }
+    else if (!apply) console.log('Dry run only. Supply --output <new.sql> to write an unapplied SQL seed.');
+    if (apply) { await pool.query(generated.sql); console.log('Applied the boundary seed.'); await pool.end(); }
   } catch (error) { console.error(error instanceof Error ? error.message : 'Boundary seed generation failed.'); process.exitCode = 1; }
 }

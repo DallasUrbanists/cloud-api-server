@@ -1,0 +1,105 @@
+{
+  "title": "Traffic Signal - Lights Out All Directions",
+  "categories": [
+    "Traffic Signs and Signals"
+  ],
+  "description": "This request must be dispatched. Please call 311 to report a traffic signal where signal lights are all out/completely dark in all directions. *** Do not use this for flashing signal lights, street lights, or single color bulb outage *** The estimated response time (ERT) for this service request is 1 business day.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/8f52b810-6276-11ee-9698-7d1d4af5a66a.JPG"
+  ],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "4 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "When did you notice the problem?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Now",
+          "Last 4 hours",
+          "Last 24 hours",
+          "Last 48 hours",
+          "Other"
+        ]
+      },
+      {
+        "question": "If there are other signals in the area, are those completely dark in all directions as well?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "question": "Based on what you see, is there an obvious cause for the signal outage?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Power Outage/Weather",
+          "Wreck/Accident",
+          "Construction",
+          "None Observed"
+        ]
+      },
+      {
+        "question": "Do you see any temporary stop signs at the intersection?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "question": "Is this a mid-block pedestrian signal?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "question": "Would you like to be contacted?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ]
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Noticed = Other; nearby signals = No; cause = None Observed; temporary stop signs = No; mid-block pedestrian = No; contact = No; Details Continue reached Contact",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request about a traffic signal completely dark in all directions.",
+      "why": "For a traffic signal whose lights are completely out in every direction. The public 311 page has an online request form that asks when the outage was noticed, whether nearby signals are also dark, an apparent cause, temporary stop signs, and whether it is a mid-block pedestrian signal.",
+      "why_not": "The online form for \"Traffic Signal - Lights Out All Directions\" requests does not apply to flashing signal lights, street lights, or a single-color bulb outage.",
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Traffic Signs and Signals\" > Choose \"Traffic Signal - Lights Out All Directions\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Traffic Signs and Signals\" > Choose \"Traffic Signal - Lights Out All Directions\""
+    },
+    {
+      "tagline": "Call Dallas 311 by phone about a signal completely dark in all directions.",
+      "why": "For a traffic signal whose lights are completely out in all directions. The description for \"Traffic Signal - Lights Out All Directions\" requests on the Dallas 311 website says the request must be dispatched and directs people to call 311.",
+      "why_not": "This call instruction is not for flashing signals, street lights, or a single-color bulb outage.",
+      "what": "Call 311 by phone",
+      "who": "Dallas 311",
+      "how": "Call 311",
+      "how_formatted": "Call [311](tel:311)"
+    }
+  ]
+}

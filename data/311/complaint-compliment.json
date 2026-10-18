@@ -1,0 +1,396 @@
+{
+  "title": "Complaint/Compliment",
+  "categories": [
+    "Other Requests"
+  ],
+  "description": "***Web Users - Some users may experience an issue submitting this SR type on the customer web portal. Customers unable to submit at this time can download our mobile app or contact 311 to submit their request with an agent.*** Use this service request to make a complaint or compliment regarding a service request, a City of Dallas department, or an employee. Please allow 30 days from the time an SR is closed to report the same issue. The estimated response time for a service request of this nature is 2 business days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/5375d8d0-5d90-11ee-b430-93f372796878.jpg"
+  ],
+  "department": "Office of Communications & Customer Experience/311",
+  "resolutionEstimate": "10 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "Select the department:",
+        "required": true,
+        "type": "select",
+        "options": [
+          "Budget & Management Services",
+          "City Attorney",
+          "Code Compliance Services",
+          "Communication & Customer Experience/311",
+          "Convention & Event Services",
+          "Dallas Animal Services",
+          "Dallas Fire-Rescue",
+          "Dallas Police",
+          "Dallas Water Utilities",
+          "Data Analytics & Business Intelligence",
+          "Facilities & Real Estate Management",
+          "Library",
+          "Municipal Court & Detention Services",
+          "Office of Bond & Construction Management",
+          "Office of Community Police Oversight",
+          "Office of Emergency Management & Crisis Response",
+          "Office of Environmental Quality & Sustainability",
+          "Office of Housing & Community Empowerment",
+          "Park & Recreation",
+          "Planning & Development",
+          "Risk Management",
+          "Sanitation Services",
+          "Transportation & Public Works",
+          "Unknown"
+        ]
+      },
+      {
+        "question": "What is the nature of your concern?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Complaint",
+          "Compliment"
+        ],
+        "when": "Department is not Sanitation Services"
+      },
+      {
+        "question": "Is this related to Sanitation's Alley to Curb changes?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "when": "Department = Sanitation Services"
+      },
+      {
+        "question": "What is the nature of your concern?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Complaint",
+          "Compliment"
+        ],
+        "when": "Department = Sanitation Services"
+      },
+      {
+        "question": "What collection service is this regarding?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Brush/Bulk",
+          "Garbage",
+          "Recycling",
+          "Other"
+        ],
+        "when": "Department = Sanitation Services"
+      },
+      {
+        "question": "What is the nature of your complaint or compliment?",
+        "required": true,
+        "type": "select",
+        "options": [
+          "Service request concern",
+          "City policy/procedures",
+          "Employee conduct",
+          "Other",
+          "Property damage",
+          "Technology",
+          "Unsafe driving"
+        ],
+        "when": "Nature of your concern = Complaint and Department is not Sanitation Services"
+      },
+      {
+        "question": "What would you like to leave a compliment about?",
+        "required": true,
+        "type": "select",
+        "options": [
+          "Customer service",
+          "Timely response",
+          "Attention to detail",
+          "Helpful information provided",
+          "Quality of work",
+          "Safe Driving/Driver related",
+          "Other"
+        ],
+        "when": "Nature of your concern = Compliment"
+      },
+      {
+        "question": "What compliments do you have for this department?",
+        "required": true,
+        "type": "free_text",
+        "when": "Nature of your concern = Compliment"
+      },
+      {
+        "question": "What is the nature of your complaint or compliment?",
+        "required": true,
+        "type": "select",
+        "options": [
+          "Service request concern",
+          "Roll Cart Issue",
+          "Sanitation Worker",
+          "Missed Collection",
+          "City policy/procedures",
+          "Employee conduct",
+          "Other",
+          "Property damage",
+          "Technology",
+          "Unsafe driving"
+        ],
+        "when": "Department = Sanitation Services"
+      },
+      {
+        "question": "Please select the issue(s) with your request:",
+        "required": false,
+        "type": "multi_choice",
+        "options": [
+          "Dissatisfied with response/results/action",
+          "Incorrect information from city staff",
+          "Sr closed - problem still exists",
+          "Exceeded estimated response time (ert)",
+          "Exceeded service level agreement (sla)",
+          "No documented action/progress indicated on sr",
+          "Work quality/unsatisfactory"
+        ],
+        "when": "Standard issue-list complaint/compliment categories"
+      },
+      {
+        "question": "Please select the issue(s) with your request:",
+        "required": false,
+        "type": "multi_choice",
+        "options": [
+          "Roll Cart Damaged",
+          "Roll Cart Delivery",
+          "Improper Roll Cart Placement"
+        ],
+        "when": "Department = Sanitation Services and nature = Roll Cart Issue"
+      },
+      {
+        "question": "Please select the issue(s) with your request:",
+        "required": false,
+        "type": "multi_choice",
+        "options": [
+          "Left items on ground/in cart",
+          "Poor quality of work/work ethic",
+          "Unprofessional/Rude Behavior"
+        ],
+        "when": "Department = Sanitation Services and nature = Sanitation Worker"
+      },
+      {
+        "question": "Please provide the original service request number (If available):",
+        "required": false,
+        "type": "free_text",
+        "when": "Nature of complaint or compliment = Service request concern"
+      },
+      {
+        "question": "Please provide City employee's conduct, name (If applicable) and any additional information or description.",
+        "required": false,
+        "type": "free_text",
+        "when": "Nature = Employee conduct or Sanitation Worker issue = Poor quality of work/work ethic or Unprofessional/Rude Behavior"
+      },
+      {
+        "question": "If Other, please describe:",
+        "required": true,
+        "type": "free_text",
+        "when": "Nature of complaint or compliment = Other"
+      },
+      {
+        "question": "Please explain your complaint/compliment.",
+        "required": false,
+        "type": "free_text",
+        "when": "Nature of complaint or compliment = Other"
+      },
+      {
+        "question": "Have you previously reported this property damage?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "when": "Department = Sanitation Services and nature = Property damage"
+      },
+      {
+        "question": "Please provide the original service request number for the property damage:",
+        "required": true,
+        "type": "free_text",
+        "when": "Department = Sanitation Services, nature = Property damage, and previously reported = Yes"
+      },
+      {
+        "question": "Additional Comments:",
+        "required": false,
+        "type": "free_text",
+        "when": "Nature of complaint or compliment = Property damage"
+      },
+      {
+        "question": "Has a Risk Management SR been created or a Claims Form been completed?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "when": "Nature of complaint or compliment = Property damage"
+      },
+      {
+        "question": "What is the license or vehicle number?",
+        "required": false,
+        "type": "free_text",
+        "when": "Nature of complaint or compliment = Unsafe driving"
+      },
+      {
+        "question": "Please describe the employee or vehicle? (physical description, license plate, or truck/car number)",
+        "required": false,
+        "type": "free_text",
+        "when": "Nature of complaint or compliment = Unsafe driving"
+      },
+      {
+        "question": "What day did this occur? (ex. 01/01/2010)",
+        "required": false,
+        "type": "date"
+      },
+      {
+        "question": "What time of day did the incident occur?",
+        "required": false,
+        "type": "select",
+        "options": [
+          "Weekday mornings",
+          "Weekday afternoon",
+          "Weekday evenings",
+          "Weekday after 10pm",
+          "Weekend morning",
+          "Weekend afternoon",
+          "Weekend evening",
+          "Weekend after 10pm"
+        ]
+      },
+      {
+        "question": "Where did this incident occur?",
+        "required": false,
+        "type": "free_text"
+      },
+      {
+        "question": "Would you like to refer this to a supervisor/manager?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "question": "Can you describe the employee or vehicle? (physical description, license plate, truck number, etc.)",
+        "required": false,
+        "type": "free_text"
+      }
+    ],
+    "unexplored": null,
+    "conditionalPaths": [
+      {
+        "when": "Each department except Sanitation Services selected",
+        "reveals": "The same general complaint/compliment questions appeared."
+      },
+      {
+        "when": "Department = Sanitation Services",
+        "reveals": "Required Is this related to Sanitation's Alley to Curb changes? and required collection service questions appear; Brush/Bulk, Garbage, Recycling, and Other did not otherwise change the form."
+      },
+      {
+        "when": "Department = Sanitation Services and Alley to Curb changes = Yes",
+        "instruction": "Validation Alert: If your concern is regarding Sanitation Services Alley to Curb changes please submit a form directly to Sanitation [HERE] or contact them via email at SAN.CurbTransition@dallas.gov."
+      },
+      {
+        "when": "Department = Sanitation Services and Alley to Curb changes = No",
+        "reveals": "No additional alert or question."
+      },
+      {
+        "when": "Nature of your concern = Complaint",
+        "reveals": "Complaint nature selector appears. Outside Sanitation its options are Service request concern, City policy/procedures, Employee conduct, Other, Property damage, Technology, Unsafe driving."
+      },
+      {
+        "when": "Nature of your concern = Compliment",
+        "reveals": "Compliment topic selector and required What compliments do you have for this department? field appear. Each of the seven compliment topic options produced no further question."
+      },
+      {
+        "when": "Nature = Service request concern",
+        "reveals": "Optional original service request number field appears."
+      },
+      {
+        "when": "Nature = Employee conduct",
+        "reveals": "Optional City employee conduct/name description field appears."
+      },
+      {
+        "when": "Nature = Other",
+        "reveals": "Required If Other, please describe: and optional Please explain your complaint/compliment. appear."
+      },
+      {
+        "when": "Nature = Property damage, outside Sanitation",
+        "reveals": "Additional Comments and Risk Management Yes/No appear; both responses produce no further question."
+      },
+      {
+        "when": "Department = Sanitation Services and nature = Property damage",
+        "reveals": "Required Have you previously reported this property damage? appears; Yes reveals a required original service request number field. Risk Management Yes/No adds no fields."
+      },
+      {
+        "when": "Sanitation Worker issue = Left items on ground/in cart",
+        "reveals": "No employee detail field appears."
+      },
+      {
+        "when": "Sanitation Worker issue = Poor quality of work/work ethic or Unprofessional/Rude Behavior",
+        "reveals": "Optional City employee conduct/name description field appears."
+      },
+      {
+        "when": "Department = Sanitation Services and nature = Sanitation Worker; Left items on ground/in cart + Poor quality of work/work ethic selected together",
+        "reveals": "Same optional City employee conduct/name field as Poor quality alone; no further prompt."
+      },
+      {
+        "when": "Department = Sanitation Services and nature = Roll Cart Issue",
+        "reveals": "Roll Cart Damaged, Roll Cart Delivery, Improper Roll Cart Placement checkboxes; each alone and Damaged + Delivery together reveal no more questions."
+      },
+      {
+        "when": "General issue checkboxes tested singly and Dissatisfied with response/results/action + Work quality/unsatisfactory together",
+        "reveals": "No additional questions, instructions, alerts, or service suggestions."
+      },
+      {
+        "when": "Would you like to refer this to a supervisor/manager? = Yes or No",
+        "reveals": "No additional questions, instructions, alerts, or service suggestions."
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "contactStepObserved": "Contact information is optional; First Name, Last Name, Email, Phone Number, Address, City, State, and Zipcode fields are shown disabled until contact information is enabled.",
+    "completedContactPath": "Selected City Attorney, Complaint, and Other; entered a mock value in If Other, please describe:, then continued to Contact. No Contact data entered."
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request to complain about a City service, department, or employee.",
+      "why": "To report a complaint about a City of Dallas service request, department, or employee. The 311 request form covers unresolved or prematurely closed service requests, incorrect information, exceeded response time or service agreement, poor work quality, City policy or procedures, employee conduct, property damage, technology, unsafe driving, and Sanitation collection, roll-cart, or worker issues.",
+      "why_not": "The online form for \"Complaint/Compliment\" requests is not the recommended route for Sanitation Services Alley to Curb changes or a repeat report of the same closed service request before 30 days have passed. If your concern involves Sanitation Services Alley to Curb changes, then submit the Sanitation form or email Sanitation Services. If you are reporting the same issue less than 30 days after a service request was closed, then wait until 30 days have passed from its closure before reporting it again.",
+      "what": "Submit 311 request",
+      "who": "Office of Communications & Customer Experience/311",
+      "how": "Go to Dallas 311 > Under \"Other Requests\", choose \"Complaint/Compliment\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Under \"Other Requests\", choose \"Complaint/Compliment\""
+    },
+    {
+      "tagline": "Submit a 311 request to compliment a City service, department, or employee.",
+      "why": "To recognize a City of Dallas service request, department, or employee for positive service. The 311 request form offers compliment topics such as customer service, timely response, attention to detail, helpful information, quality of work, safe driving, or another topic, and asks what compliments the requester has for the department.",
+      "why_not": "The online form for a \"Complaint/Compliment\" request is not the directed route for a compliment about Sanitation Services Alley to Curb changes. If the compliment concerns Sanitation Services Alley to Curb changes, then submit the Sanitation form or email Sanitation Services.",
+      "what": "Submit 311 request",
+      "who": "Office of Communications & Customer Experience/311",
+      "how": "Go to Dallas 311 > Under \"Other Requests\", choose \"Complaint/Compliment\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Under \"Other Requests\", choose \"Complaint/Compliment\""
+    },
+    {
+      "tagline": "Contact Sanitation Services about Alley to Curb changes.",
+      "why": "For a complaint or compliment about Sanitation Services Alley to Curb changes. The 311 request form asks whether the collection service is Brush/Bulk, Garbage, Recycling, or Other; the Dallas 311 website then directs people who answer Yes to a Sanitation form or email.",
+      "why_not": null,
+      "what": "Contact",
+      "who": "Sanitation Services",
+      "how": "Submit the Sanitation Alley to Curb form or email SAN.CurbTransition@dallas.gov",
+      "how_formatted": "Submit the [Sanitation Alley to Curb form](https://forms.office.com/Pages/ResponsePage.aspx?id=nnA1KQzBCUijAoUtNp-HAIsiy0iNucBJkpI55OlFnQpURTRRTFBOV1FJV1BOMUk1NTVaWkVXQ1RTMSQlQCN0PWcu) or email [SAN.CurbTransition@dallas.gov](mailto:SAN.CurbTransition@dallas.gov)"
+    }
+  ]
+}

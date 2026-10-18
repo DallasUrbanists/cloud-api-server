@@ -1,0 +1,136 @@
+{
+  "title": "Parking in Fire Lane/Fire Hydrants",
+  "categories": [
+    "Parking, Vehicle, Bicycle and Scooter Concerns"
+  ],
+  "description": "Use this service request to report vehicles that are parked in marked fire lanes or vehicles parked on the street within 15 feet of a fire hydrant. The estimated response time for this service request is 3 business days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/82a959e0-5e2d-11ee-bf7f-3de98a985773.jpg"
+  ],
+  "department": "Dallas Fire-Rescue",
+  "resolutionEstimate": "5 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "prompt": "Is the vehicle parked at location now?",
+        "type": "single_select",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "required": false,
+        "branches": {
+          "No": "Validation Alert: No action is needed if the vehicle is no longer at location."
+        }
+      },
+      {
+        "prompt": "What time of day is the problem occurring?",
+        "type": "multi_select",
+        "options": [
+          "Weekday mornings",
+          "Weekday afternoon",
+          "Weekday evenings",
+          "Weekday after 10pm",
+          "Weekend morning",
+          "Weekend afternoon",
+          "Weekend evening",
+          "Weekend after 10pm"
+        ],
+        "required": true
+      },
+      {
+        "prompt": "What is the make of the vehicle?",
+        "type": "select",
+        "options": [
+          "Acura",
+          "Audi",
+          "Bentley",
+          "BMW",
+          "Buick",
+          "Cadillac",
+          "Chevrolet",
+          "Chrysler",
+          "Dodge",
+          "Fiat",
+          "Ford",
+          "Honda",
+          "Hyundai",
+          "Infiniti",
+          "Isuzu",
+          "Jaguar",
+          "Jeep",
+          "Kia",
+          "Land Rover",
+          "Lexus",
+          "Lincoln",
+          "Mazda",
+          "Mercedez-Benz",
+          "Mercury",
+          "Mitsubishi",
+          "Nissan",
+          "Oldsmobile",
+          "Peugeot",
+          "Plymouth",
+          "Pontiac",
+          "Ram",
+          "Range Rover",
+          "Saab",
+          "Subaru",
+          "Saturn",
+          "Suzuki",
+          "Toyota",
+          "Volkswagen",
+          "Yugo",
+          "Other"
+        ],
+        "required": true,
+        "branchFinding": "Other showed no additional question"
+      },
+      {
+        "prompt": "Model of vehicle:",
+        "type": "text",
+        "required": false
+      },
+      {
+        "prompt": "Color of vehicle:",
+        "type": "text",
+        "required": true
+      },
+      {
+        "prompt": "Vehicle license plate:",
+        "type": "text",
+        "required": true
+      },
+      {
+        "prompt": "Would you like to be contacted?",
+        "type": "single_select",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ],
+        "required": false
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Vehicle currently parked = Yes; weekday mornings; make = Other; color and plate supplied",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request about a vehicle parked in a fire lane or near a fire hydrant.",
+      "why": "For a vehicle currently parked in a marked fire lane or on a street within 15 feet of a fire hydrant. The 311 request form asks whether it remains there, when the problem occurs, and the vehicle make, color, and plate.",
+      "why_not": "The online form for \"Parking in Fire Lane/Fire Hydrants\" requests is not needed when the vehicle is no longer at the location; the 311 request form says no action is needed for that answer.",
+      "what": "Submit 311 request",
+      "who": "Dallas Fire-Rescue",
+      "how": "Go to Dallas 311 > Choose \"Parking, Vehicle, Bicycle and Scooter Concerns\" > Choose \"Parking in Fire Lane/Fire Hydrants\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Parking, Vehicle, Bicycle and Scooter Concerns\" > Choose \"Parking in Fire Lane/Fire Hydrants\""
+    }
+  ]
+}

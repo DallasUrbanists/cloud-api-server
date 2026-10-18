@@ -1,0 +1,119 @@
+{
+  "title": "Utility Cut - Routine",
+  "categories": [
+    "Streets, Medians, Sidewalks and Alleys"
+  ],
+  "description": "Use this service request type to report concerns about cuts made in the street, alley or sidewalk made by utility companies. A utility cut is when a contractor has cut an opening into the street and covers the hole up with a steel plate because work is not finished. ** Utility Cuts are generally - Square or Rectangle in shape, if other please complete a Street Repair - Routine SR. ** The estimated response time (ERT) for this service request is 3 business days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/5b278e20-4206-11ee-99c9-0f6c9bc743cc.jpg"
+  ],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "5 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "Have you noticed utility work at the location?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Yes",
+            "reveals": [
+              "Is this an ongoing project?",
+              "Do you know who is/was working at the location?"
+            ]
+          }
+        ]
+      },
+      {
+        "question": "Is this an ongoing project?",
+        "required": false,
+        "type": "single_choice",
+        "when": "Utility work = Yes",
+        "options": [
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "question": "Do you know who is/was working at the location?",
+        "required": false,
+        "type": "free_text",
+        "when": "Utility work = Yes"
+      },
+      {
+        "question": "Where is the hole located?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Alley",
+          "Street",
+          "Sidewalk",
+          "Parkway",
+          "Private property"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Private property",
+            "instruction": "** Sorry, the city does not handle private property **"
+          }
+        ]
+      },
+      {
+        "question": "Describe the hole?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Ditch",
+          "Open hole",
+          "Round",
+          "Square",
+          "A Void/Cave-in"
+        ]
+      },
+      {
+        "question": "Would you like to be contacted?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ]
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Utility work = Yes; ongoing = No; location = Street; hole = A Void/Cave-in; contact = No; Details Continue reached Contact",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request for a steel-plated utility cut in a street, alley, or sidewalk.",
+      "why": "Report a contractor's unfinished utility work where an opening in a street, alley, or sidewalk is covered with a steel plate. Utility cuts are generally square or rectangular. The 311 request form asks whether utility work was noticed, whether it is ongoing, who was working, where the hole is, and whether it is a ditch, open hole, round, square, or a void/cave-in.",
+      "why_not": "The online form for \"Utility Cut - Routine\" requests does not apply to hazardous cuts, cuts on private property, or utility cuts that are not generally square or rectangular; the City does not handle private-property cuts. If a nonhazardous cut has another shape, then submit a \"Street Repair\" 311 request instead. If the cut is hazardous, then call 311 by phone instead of submitting a 311 request online.",
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Utility Cut - Routine\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Utility Cut - Routine\""
+    },
+    {
+      "tagline": "Submit a 311 request for a nonhazardous cut that is not square or rectangular.",
+      "why": "For a nonhazardous cut whose opening is not generally square or rectangular. The description for \"Utility Cut - Routine\" requests on the Dallas 311 website directs other shapes to Street Repair - Routine; the saved service type is titled \"Street Repair\" and covers minor street repairs such as potholes, standing water, damaged surfaces, and broken curbs or gutters.",
+      "why_not": "The online form for \"Street Repair\" requests is not for hazardous conditions. If the cut is hazardous, then call 311 by phone instead of submitting a 311 request online.",
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Street Repair\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Street Repair\""
+    }
+  ]
+}

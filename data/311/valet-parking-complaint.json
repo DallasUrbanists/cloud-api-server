@@ -1,0 +1,61 @@
+{
+  "title": "Valet Parking Complaint",
+  "categories": [
+    "Parking, Vehicle, Bicycle and Scooter Concerns"
+  ],
+  "description": "Use this service request to report a complaint regarding valet services at a location or a valet company. The estimated response time (ERT) for this service request is 2 business days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/c7d0b1b0-42b9-11ee-b797-25547d8b54e6.JPG"
+  ],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "3 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "prompt": "What is the business name for the complaint?",
+        "type": "text",
+        "required": true
+      },
+      {
+        "prompt": "What is the name of the valet company?",
+        "type": "text",
+        "required": false
+      },
+      {
+        "prompt": "Briefly explain your complaint:",
+        "type": "text",
+        "required": false
+      },
+      {
+        "prompt": "Would you like to be contacted?",
+        "type": "single_select",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ],
+        "required": false
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Business name supplied",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request about a valet parking company or service.",
+      "why": "For a complaint about valet parking at a location or about a valet company. The 311 request form asks for the business name and allows the company name and a description of the complaint.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Parking, Vehicle, Bicycle and Scooter Concerns\" > Choose \"Valet Parking Complaint\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Parking, Vehicle, Bicycle and Scooter Concerns\" > Choose \"Valet Parking Complaint\""
+    }
+  ]
+}

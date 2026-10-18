@@ -1,0 +1,92 @@
+{
+  "title": "Illegal Dumping Sign",
+  "categories": [
+    "City Code Violations"
+  ],
+  "description": "Use this service request to apply for a sign to prohibit illegal dumping of trash, garbage and solid waste. The estimated response time for this service request is 10 business days.",
+  "photoUrls": [],
+  "department": "Code Compliance",
+  "resolutionEstimate": "10 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "prompt": "Is there a need for a sign at this location?",
+        "type": "radio",
+        "required": true
+      },
+      {
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "prompt": "Has there been a sign at this location before?",
+        "type": "radio",
+        "required": true
+      },
+      {
+        "prompt": "Where do you want the sign to be placed?",
+        "type": "text",
+        "required": true
+      },
+      {
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ],
+        "prompt": "Would you like to be contacted?",
+        "type": "radio",
+        "required": false
+      },
+      {
+        "prompt": "Additional Information",
+        "type": "text",
+        "required": false
+      }
+    ],
+    "unexplored": null,
+    "pathCoverage": {
+      "detailsContinueReached": true,
+      "contactStepReached": true,
+      "contactDataEntered": false,
+      "requestSubmitted": false,
+      "needPriorContactCombinationsTested": 12
+    }
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "conditional_paths_explored",
+  "contactStep": {
+    "contactInformationOptional": true,
+    "fields": [
+      "First Name",
+      "Last Name",
+      "Email",
+      "Phone Number",
+      "Address"
+    ],
+    "disabled": [
+      "City",
+      "State",
+      "Zipcode"
+    ]
+  },
+  "actions": [
+    {
+      "tagline": "Submit a 311 request to apply for a sign prohibiting illegal dumping of trash, garbage, or solid waste at a specified location.",
+      "why": "To apply for a sign prohibiting illegal dumping of trash, garbage, or solid waste at a specified location. The request form asks whether a sign is needed there, whether one was there before, and where it should be placed.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Code Compliance",
+      "how": "Go to Dallas 311 > Choose \"City Code Violations\" > Choose \"Illegal Dumping Sign\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"City Code Violations\" > Choose \"Illegal Dumping Sign\""
+    }
+  ]
+}

@@ -1,0 +1,230 @@
+{
+  "title": "Traffic Signal Timing and Modification",
+  "categories": [
+    "Traffic Signs and Signals"
+  ],
+  "description": "Use this service request to report signal timing/sync issues or to modify an existing traffic signal for a pedestrian crossing light, signal warning flasher, left turn signal, thru/right turn signal and bicycle lane signal. ***Contact name, email address and/or daytime phone is required if any additional information is needed*** The estimated response time (ERT) for this service request is 10 business day.",
+  "photoUrls": [],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "60 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "Is this request for a timing issue or a physical modification of a signal?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Physical modification",
+          "Timing Issue"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Physical modification",
+            "reveals": "What type of signal is needing modification?"
+          },
+          {
+            "when": "Timing Issue",
+            "reveals": "Can you describe the problem?"
+          }
+        ]
+      },
+      {
+        "question": "What type of signal is needing modification?",
+        "required": true,
+        "type": "single_choice",
+        "when": "Physical modification",
+        "options": [
+          "Bicycle lane signal",
+          "Left Turn signal",
+          "Pedestrian signal",
+          "Thru/right turn signal",
+          "Warning signal flasher"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Bicycle lane signal",
+            "reveals": "What street are you crossing that needs to have a bicycle signal installed?"
+          },
+          {
+            "when": "Left Turn signal",
+            "reveals": "What street are you trying to turn left onto?"
+          },
+          {
+            "when": "Pedestrian signal",
+            "reveals": "What street are you crossing that needs to have pedestrian signal installed?"
+          }
+        ]
+      },
+      {
+        "question": "What street are you crossing that needs to have a bicycle signal installed?",
+        "required": true,
+        "type": "free_text",
+        "when": "Physical modification = Bicycle lane signal"
+      },
+      {
+        "question": "What street are you trying to turn left onto?",
+        "required": true,
+        "type": "free_text",
+        "when": "Physical modification = Left Turn signal"
+      },
+      {
+        "question": "What street are you crossing that needs to have pedestrian signal installed?",
+        "required": true,
+        "type": "free_text",
+        "when": "Physical modification = Pedestrian signal"
+      },
+      {
+        "question": "What time of day is the traffic problem occurring?",
+        "required": true,
+        "type": "select",
+        "when": "Physical modification",
+        "options": [
+          "Morning",
+          "Morning rush hour 7am-9am",
+          "Afternoon",
+          "Evening",
+          "Evening rush hour 4pm-7pm",
+          "All the time",
+          "AM & PM rush hour",
+          "Evenings"
+        ]
+      },
+      {
+        "question": "What direction was the problem occurring?",
+        "required": false,
+        "type": "single_choice",
+        "when": "Physical modification",
+        "options": [
+          "Eastbound",
+          "Northbound",
+          "Southbound",
+          "Unknown",
+          "Westbound"
+        ]
+      },
+      {
+        "question": "Can you describe the problem?",
+        "required": true,
+        "type": "select",
+        "when": "Timing Issue",
+        "options": [
+          "Left turn not coming up",
+          "Left turn sequence long red",
+          "Night flash start/end time",
+          "Progression/sync of signals",
+          "Short green",
+          "Other",
+          "Pedestrian crossing time too short"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Other",
+            "reveals": "If Other, please describe:"
+          }
+        ]
+      },
+      {
+        "question": "If Other, please describe:",
+        "required": true,
+        "type": "free_text",
+        "when": "Timing Issue problem = Other"
+      },
+      {
+        "question": "What is the nearest signal from where you were travelling when you noticed the issue? (I.e. Main St from Houston to Akard)",
+        "required": true,
+        "type": "free_text",
+        "when": "Timing Issue"
+      },
+      {
+        "question": "What time of day is the traffic problem occurring?",
+        "required": true,
+        "type": "select",
+        "when": "Timing Issue",
+        "options": [
+          "During school times",
+          "Morning rush hour 7a-9a",
+          "Afternoon",
+          "Evening",
+          "Evening rush hour 4p-7p",
+          "All the time",
+          "AM & PM rush hour",
+          "Weekends"
+        ]
+      },
+      {
+        "question": "Is this an issue during the week or weekends?",
+        "required": true,
+        "type": "single_choice",
+        "when": "Timing Issue",
+        "options": [
+          "Weekdays",
+          "Weekends",
+          "Both"
+        ]
+      },
+      {
+        "question": "How long has the problem been occurring?",
+        "required": true,
+        "type": "single_choice",
+        "when": "Timing Issue",
+        "options": [
+          "First time noticed",
+          "Last few days",
+          "Months",
+          "Not sure",
+          "Weeks"
+        ]
+      },
+      {
+        "question": "Which direction is the problem occurring?",
+        "required": false,
+        "type": "select",
+        "when": "Timing Issue",
+        "options": [
+          "Eastbound/westbound",
+          "Eb left turn",
+          "Eb thru",
+          "Nb left turn",
+          "Nb thru",
+          "Northbound/southbound",
+          "Sb left turn",
+          "Sb thru",
+          "Wb left turn",
+          "Wb thru",
+          "Unknown"
+        ]
+      },
+      {
+        "question": "Would you like to be contacted?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ]
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Physical modification = Warning signal flasher; time = Evenings; direction = Westbound; contact = No; Details Continue reached Contact",
+    "contactStepObservation": "First Name, Last Name, Email, and Phone Number marked required",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request about traffic-signal timing or an existing signal modification.",
+      "why": "For timing or synchronization problems such as short green, long red, poor signal progression, night-flash timing, or pedestrian crossing time, or a physical modification to an existing bicycle, pedestrian, left-turn, through/right-turn, or warning-flasher signal. The 311 request form asks for the signal type or timing problem, location, direction, time of day, and duration. The description requests contact details if follow-up information is needed.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Traffic Signs and Signals\" > Choose \"Traffic Signal Timing and Modification\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Traffic Signs and Signals\" > Choose \"Traffic Signal Timing and Modification\""
+    }
+  ]
+}

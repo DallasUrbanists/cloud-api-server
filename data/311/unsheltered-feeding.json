@@ -1,0 +1,181 @@
+{
+  "title": "Unsheltered Feeding",
+  "categories": [
+    "City Code Violations"
+  ],
+  "description": "Use this Service Request to notify the City of Dallas of a hosted homeless meal event or to report a concern regarding a homeless meal event. The estimated response time for this service request is 3 business days.",
+  "photoUrls": [],
+  "department": "Code Compliance",
+  "resolutionEstimate": "5 Business Days",
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "label": "What is your Unsheltered Feeding Concern?",
+        "options": [
+          "Notify the City of Dallas of a hosted unsheltered feeding event",
+          "Report a concern regarding a hosted unsheltered feeding event"
+        ],
+        "type": "radio",
+        "required": true
+      },
+      {
+        "label": "Name of the individual or organization that will be serving the food?",
+        "condition": "Notify hosted event",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "Number of people to be served:",
+        "condition": "Notify hosted event",
+        "type": "number",
+        "required": true
+      },
+      {
+        "label": "Will you provide the required notice to the City of Dallas?",
+        "condition": "Notify hosted event",
+        "options": [
+          "Yes-at least 24 hours in advance",
+          "Yes-within 48 hours after the meal is served",
+          "No"
+        ],
+        "type": "radio",
+        "required": true
+      },
+      {
+        "label": "Who is the primary contact at the event?",
+        "condition": "Notify hosted event",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "Phone number of primary contact:",
+        "condition": "Notify hosted event",
+        "type": "phone",
+        "required": true
+      },
+      {
+        "label": "Have you attended city sponsored food safety training class, or a certified food handler will be present?",
+        "condition": "Notify hosted event",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "type": "radio",
+        "required": true
+      },
+      {
+        "label": "Will food be kept at the proper temperature?",
+        "condition": "Notify hosted event",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "type": "radio",
+        "required": true
+      },
+      {
+        "label": "Will all foods be served within 4 hours after removal from temperature control?",
+        "condition": "Notify hosted event",
+        "options": [
+          "Yes",
+          "No",
+          "NA"
+        ],
+        "type": "radio",
+        "required": true
+      },
+      {
+        "label": "Will a handwashing station be available with soap, potable water, paper towels or hand sanitizer?",
+        "condition": "Notify hosted event",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "type": "radio",
+        "required": true
+      },
+      {
+        "label": "Will gloves be provided?",
+        "condition": "Notify hosted event",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "type": "radio",
+        "required": true
+      },
+      {
+        "label": "Will all contact surfaces be clean and in good condition?",
+        "condition": "Notify hosted event",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "type": "radio",
+        "required": true
+      },
+      {
+        "label": "Will all trash and litter be removed from the feeding site after the event?",
+        "condition": "Notify hosted event",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "type": "radio",
+        "required": true
+      },
+      {
+        "label": "What is your concern regarding?",
+        "condition": "Report concern",
+        "options": [
+          "Food out of temperatures range",
+          "Illegal food service",
+          "Not registered with City of Dallas",
+          "Sick",
+          "Spoiled food",
+          "Trash/litter",
+          "Other"
+        ],
+        "type": "select",
+        "required": true
+      },
+      {
+        "label": "If other, please describe:",
+        "condition": "Report concern and concern type Other",
+        "type": "text",
+        "required": true
+      }
+    ],
+    "observedInstructions": [
+      "Both top-level paths and every finite concern/notice/safety answer option were inspected. Hosted-event safety answers and notice choices did not add questions, inline messages, or routing warnings. Report-concern choices did not add questions or messages; Other adds the required description."
+    ],
+    "contactStepObserved": "Contact step showed optional consent; First Name, Last Name, Email, Phone Number, Address, City, State, Zipcode were disabled by default.",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "requestThisService": true,
+  "captureStatus": "conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request to notify Dallas about a hosted meal for unsheltered people.",
+      "why": "For an organizer notifying the City of Dallas about a hosted meal event for unsheltered people. The 311 request form asks who will serve food, how many people are expected, the primary contact, notice timing, food-handler training or certification, temperature control, handwashing, gloves, clean surfaces, and trash removal.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Code Compliance",
+      "how": "Go to Dallas 311 > Choose \"City Code Violations\" > Choose \"Unsheltered Feeding\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"City Code Violations\" > Choose \"Unsheltered Feeding\""
+    },
+    {
+      "tagline": "Submit a 311 request about a concern at a hosted meal for unsheltered people.",
+      "why": "For reporting a hosted unsheltered meal event with concerns such as unsafe food temperature, illegal or unregistered food service, sickness, spoiled food, or trash and litter. The 311 request form asks the reporter to select the concern type and describe an Other concern.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Code Compliance",
+      "how": "Go to Dallas 311 > Choose \"City Code Violations\" > Choose \"Unsheltered Feeding\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"City Code Violations\" > Choose \"Unsheltered Feeding\""
+    }
+  ]
+}

@@ -1,0 +1,191 @@
+{
+  "title": "Traffic Sign Maintenance (Other)",
+  "categories": [
+    "Traffic Signs and Signals"
+  ],
+  "description": "Use this service request to report non-hazardous problems with traffic signs in need of maintenance, i.e. faded, damaged, knocked down, etc. Signs include street name blades, school crossing, dip, no parking, speed limit, etc. Signs for businesses or parking lots are the owner's responsiility. ** Please call 3-1-1 if a STOP, ONE WAY or YIELD sign is down or to report a Radar Feedback Sign issue. ** The estimated response time (ERT) for this service request is 5 business days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/c8181a50-62cb-11ee-8cb2-375e88068bbb.JPG"
+  ],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "10 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "intro": "*** If location is an Intersection ENTER in alpha order i.e. Akard @ Young ***",
+    "observedQuestions": [
+      {
+        "question": "Location of Sign?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Building",
+          "City roadway",
+          "Parking lot"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Building or Parking lot",
+            "instruction": "Uh oh, sorry signs for buildings and parking lots are the owner's responsibility."
+          },
+          {
+            "when": "City roadway",
+            "reveals": [
+              "Type of Sign?",
+              "Sign Problem?"
+            ]
+          }
+        ]
+      },
+      {
+        "question": "Type of Sign?",
+        "required": true,
+        "type": "select",
+        "when": "Location = City roadway",
+        "options": [
+          "2 way stop",
+          "Dip",
+          "Do not enter",
+          "Lane designation",
+          "Loading zone",
+          "Multi-way stop",
+          "No parking (resd/comm)",
+          "No trucks",
+          "Other",
+          "School zone",
+          "Speed limit",
+          "Street name",
+          "Street ends/no outlet",
+          "Chevron"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Other",
+            "reveals": "If other, please describe:",
+            "instruction": "If you are reporting a Radar Feedback Sign, please call 3-1-1 for assistance."
+          }
+        ]
+      },
+      {
+        "question": "If other, please describe:",
+        "required": true,
+        "type": "free_text",
+        "when": "Sign type = Other"
+      },
+      {
+        "question": "Sign Problem?",
+        "required": true,
+        "type": "select",
+        "options": [
+          "Damaged",
+          "Faded",
+          "Graffiti",
+          "Knockdown",
+          "Leaning",
+          "Missing",
+          "Rumble strip replacement",
+          "Visibility obstruction"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Knockdown and sign type = Street name",
+            "instruction": "Note: If Street Name Blade Sign has Stop Sign attached and has been knocked down, do not continue - Call 3-1-1 for immediate assistance for Traffic Sign - Knockdown."
+          },
+          {
+            "when": "Knockdown and sign type = 2 way stop",
+            "instruction": "We apologize this appears to be Traffic Sign - Knockdown. Please call 3-1-1 for immediate assistance."
+          }
+        ]
+      },
+      {
+        "question": "When did you notice the problem?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Now",
+          "Last 48 hours",
+          "Other"
+        ]
+      },
+      {
+        "question": "What corner/direction is it?",
+        "required": false,
+        "type": "select",
+        "options": [
+          "Eastbound",
+          "Median",
+          "Northbound",
+          "Northeast",
+          "Northwest",
+          "Southbound",
+          "Southeast",
+          "Southwest",
+          "Westbound"
+        ]
+      },
+      {
+        "question": "What is the intersection being reported or the nearest cross street?",
+        "required": false,
+        "type": "free_text"
+      },
+      {
+        "question": "What direction was the problem occurring?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Eastbound",
+          "Northbound",
+          "Southbound",
+          "Unknown",
+          "Westbound"
+        ]
+      },
+      {
+        "question": "Would you like to be contacted?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ]
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Location = City roadway; sign = Street name; problem = Faded; noticed = Other; direction and intersection supplied; contact = No; Details Continue reached Contact",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request about a nonhazardous City traffic-sign problem.",
+      "why": "For a faded, damaged, knocked-down, leaning, missing, graffiti-covered, or obscured City roadway sign other than a downed stop, one-way, or yield sign. Examples include street-name, school-crossing, no-parking, and speed-limit signs. The 311 request form asks for sign location and type, problem, timing, and direction.",
+      "why_not": "The online form for \"Traffic Sign Maintenance (Other)\" requests does not apply to signs owned by a building or parking lot, a downed stop, yield, or one-way sign, or a radar-feedback sign issue. If a stop, yield, or one-way sign is down, then call 311 by phone instead of submitting a 311 request online. If a radar-feedback sign has a problem, then call 311 by phone instead of submitting a 311 request online.",
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Traffic Signs and Signals\" > Choose \"Traffic Sign Maintenance (Other)\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Traffic Signs and Signals\" > Choose \"Traffic Sign Maintenance (Other)\""
+    },
+    {
+      "tagline": "Call Dallas 311 by phone about a downed stop, yield, or one-way sign.",
+      "why": "For a fallen stop, yield, or one-way sign, including a street-name blade with an attached stop sign that has been knocked down. The Traffic Sign Maintenance (Other) description and form direct this urgent sign condition to 311 by phone.",
+      "why_not": null,
+      "what": "Call 311 by phone",
+      "who": "Dallas 311",
+      "how": "Call 311",
+      "how_formatted": "Call [311](tel:311)"
+    },
+    {
+      "tagline": "Call Dallas 311 by phone about a radar-feedback sign problem.",
+      "why": "For an issue with a radar-feedback sign. The Traffic Sign Maintenance (Other) description and its Other sign-type guidance direct people to call 3-1-1.",
+      "why_not": null,
+      "what": "Call 311 by phone",
+      "who": "Dallas 311",
+      "how": "Call 311",
+      "how_formatted": "Call [311](tel:311)"
+    }
+  ]
+}

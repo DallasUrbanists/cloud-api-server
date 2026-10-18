@@ -1,0 +1,68 @@
+{
+  "title": "MOWmentum Program",
+  "categories": [
+    "Streets, Medians, Sidewalks and Alleys"
+  ],
+  "description": "Use this service request to receive information to adopt a Median, Right-of-way, Triangle or traffic circle for beautification, parkways not eligible. The MOWmentum Program is designed to allow homeowner association groups, businesses and individuals an opportunity to adopt a portion of the public right-of-way for the purposes of maintaining and improving the property. **Adopt a Roadside is handled by TXDOT ** The estimated response time (ERT) for this service request is 3 business days.",
+  "photoUrls": [],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "10 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "prompt": "What is the adoption location?",
+        "type": "text",
+        "required": true
+      },
+      {
+        "prompt": "Are you participating in the Dallas Reforestation Program?",
+        "type": "single_select",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "required": false,
+        "branchFinding": "Both answers showed the same remaining questions"
+      },
+      {
+        "prompt": "Would you like to be contacted?",
+        "type": "single_select",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ],
+        "required": false
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Adoption location supplied; reforestation = No",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request for information about adopting a City median or right-of-way.",
+      "why": "For homeowner associations, businesses, or individuals seeking information about adopting and beautifying a City median, right-of-way, triangle, or traffic circle through the MOWmentum Program. The 311 request form asks for the adoption location and whether the applicant participates in the Dallas Reforestation Program.",
+      "why_not": "The MOWmentum Program does not cover parkways or the Adopt a Roadside program. If the concern is Adopt a Roadside, then contact TxDOT about that program.",
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"MOWmentum Program\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"MOWmentum Program\""
+    },
+    {
+      "tagline": "Contact TxDOT about adopting a roadside.",
+      "why": "For an Adopt a Roadside inquiry. The description for \"MOWmentum Program\" requests on the Dallas 311 website says TxDOT handles that program.",
+      "why_not": null,
+      "what": "Contact",
+      "who": "TxDOT",
+      "how": "Contact TxDOT about Adopt a Roadside",
+      "how_formatted": "Contact TxDOT about Adopt a Roadside"
+    }
+  ]
+}

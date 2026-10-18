@@ -1,0 +1,137 @@
+{
+  "title": "Mobile Food Complaint",
+  "categories": [
+    "City Code Violations"
+  ],
+  "description": "Use this service request for reporting food violations concerning push carts, ice cream trucks, catering trucks, and food preparation trucks (hot trucks) or any food stand. If regarding food poisoning or food related illnesses call 3-1-1. The estimated response time (ERT) for this service request is 5 business days.",
+  "photoUrls": [],
+  "department": "Code Compliance",
+  "resolutionEstimate": "5 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "options": [
+          "Residential",
+          "Multi-Family/Apartments",
+          "Business",
+          "Median Right-of-Way",
+          "Vacant Building",
+          "Vacant Lot",
+          "Unknown"
+        ],
+        "prompt": "What type of property is it?",
+        "type": "select",
+        "required": true
+      },
+      {
+        "options": [
+          "Food Poisoning",
+          "Illegal Vending",
+          "Music/Loud Noise",
+          "No Permit",
+          "Other"
+        ],
+        "prompt": "What is the nature of your concern?",
+        "type": "radio",
+        "required": true
+      },
+      {
+        "when": {
+          "equals": "Other",
+          "field": "What is the nature of your concern?"
+        },
+        "prompt": "If other, please describe:",
+        "type": "text",
+        "required": true
+      },
+      {
+        "options": [
+          "Catering truck",
+          "Food truck",
+          "Ice cream truck",
+          "Push cart",
+          "Selling from car/trunk",
+          "Snow cone truck",
+          "Other"
+        ],
+        "prompt": "What type of mobile unit is involved?",
+        "type": "select",
+        "required": false
+      },
+      {
+        "when": {
+          "equals": "Other",
+          "field": "What type of mobile unit is involved?"
+        },
+        "prompt": "If Other, please describe:",
+        "type": "text",
+        "required": true
+      },
+      {
+        "prompt": "What date/time did the violation occur?",
+        "type": "dateTime",
+        "required": false
+      },
+      {
+        "prompt": "What is the name shown on vehicle or license plate number?",
+        "type": "text",
+        "required": false
+      },
+      {
+        "prompt": "Additional Information",
+        "type": "text",
+        "required": false
+      }
+    ],
+    "unexplored": null,
+    "pathCoverage": {
+      "mobileUnitOptionsTested": 7,
+      "detailsContinueReached": true,
+      "propertyConcernCombinationsTested": 35,
+      "contactStepReached": true,
+      "contactDataEntered": false,
+      "requestSubmitted": false
+    }
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "conditional_paths_explored",
+  "contactStep": {
+    "contactInformationOptional": true,
+    "fields": [
+      "First Name",
+      "Last Name",
+      "Email",
+      "Phone Number",
+      "Address"
+    ],
+    "disabled": [
+      "City",
+      "State",
+      "Zipcode"
+    ]
+  },
+  "actions": [
+    {
+      "tagline": "Submit a 311 request about a food-safety violation by a mobile vendor.",
+      "why": "For food violations involving a push cart, ice cream truck, catering truck, food-preparation truck, or food stand. The 311 request form asks for property type, concern, mobile-unit type, date and time, and vehicle name or plate. It also offers illegal vending, loud music, and no permit as concern answers.",
+      "why_not": "The online form for \"Mobile Food Complaint\" requests is not the directed route for food poisoning or food-related illness. If food poisoning or illness is involved, then call 311 by phone instead of submitting a 311 request online.",
+      "what": "Submit 311 request",
+      "who": "Code Compliance",
+      "how": "Go to Dallas 311 > Choose \"City Code Violations\" > Choose \"Mobile Food Complaint\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"City Code Violations\" > Choose \"Mobile Food Complaint\""
+    },
+    {
+      "tagline": "Call Dallas 311 by phone about food poisoning or food-related illness from a mobile vendor.",
+      "why": "For food poisoning or food-related illness connected to a mobile food vendor. The description for \"Mobile Food Complaint\" requests on the Dallas 311 website directs people to call 311.",
+      "why_not": null,
+      "what": "Call 311 by phone",
+      "who": "Dallas 311",
+      "how": "Call 311",
+      "how_formatted": "Call [311](tel:311)"
+    }
+  ]
+}

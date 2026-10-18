@@ -1,0 +1,210 @@
+{
+  "title": "Transportation Complaint",
+  "categories": [
+    "Transportation and Regulation"
+  ],
+  "description": "Use this service request for concerns regarding transportation services such as ambulances, limousines and taxi's, as well as, non-motorized transportation, i.e., carriages, petty cabs, trolley's, etc. Also use to request regulation of drivers, permits and companies. Contact information is required to submit this service request. The estimated response time for this service request is 3 business days.",
+  "photoUrls": [],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "5 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "prompt": "What type of transportation is this regarding?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Ambulance",
+          "Carriage",
+          "Limousine",
+          "Taxi",
+          "Non-motorized",
+          "Petty cab",
+          "Other"
+        ],
+        "branches": {
+          "Ambulance": "Company, concern, driver, pickup date/time and location, vehicle number, unit number",
+          "Petty cab": "Concern, driver, pickup date/time and location, vehicle number",
+          "Other": "Ask If other, please describe:, then concern, driver, pickup date/time and location, vehicle number",
+          "Taxi": "Company, concern, driver, pickup date/time and location, vehicle number, unit number",
+          "Carriage": "Concern, driver, pickup date/time and location, vehicle number",
+          "Non-motorized": "Concern, driver, pickup date/time and location, vehicle number",
+          "Limousine": "Company, concern, driver, pickup date/time and location, vehicle number, unit number"
+        }
+      },
+      {
+        "prompt": "What is the name of the transport company?",
+        "type": "multi_select",
+        "required": true,
+        "when": "Ambulance, Limousine, or Taxi",
+        "optionSets": {
+          "Taxi": [
+            "Alamo",
+            "Ambassador",
+            "Checker Cab",
+            "Cowboy Cab",
+            "Crescent Cab",
+            "DFW Taxi",
+            "Executive",
+            "Freedom",
+            "Genesis",
+            "Golden",
+            "Interstate",
+            "Jet",
+            "Mockingbird",
+            "Sky Cab",
+            "Star",
+            "Taxi Dallas",
+            "Texas Cab",
+            "United",
+            "Yellow Cab",
+            "Yellow Checker",
+            "Other"
+          ],
+          "Ambulance": [
+            "Air Car",
+            "Allegiance",
+            "A.M.R",
+            "Arcadian",
+            "Care Flight",
+            "Children's",
+            "City Ambulance",
+            "Compass",
+            "Integhearty",
+            "Lifeline",
+            "Sacred Cross",
+            "Other"
+          ],
+          "Limousine": [
+            "3 Star Limo",
+            "A to Z Limo",
+            "Acadian Limo",
+            "Affordable Limo",
+            "Alba Limo",
+            "Allegiance",
+            "All The Way Limo",
+            "American Star Limo",
+            "Black Car Limo",
+            "Cowboy Momo Service",
+            "Dallas City Tours",
+            "Elegancy Limo",
+            "Elite Limo",
+            "Ethiopia Star Limo",
+            "Execucar Limo",
+            "Federal Limo",
+            "Four Seasons Limo",
+            "G8 Limo",
+            "Integhearty",
+            "Legacy One Limo",
+            "Lyft",
+            "MoMo Four U",
+            "Marco Limo",
+            "Northgate",
+            "Own Time Limo",
+            "Premier Limo",
+            "Prime Limo",
+            "Queen Limo",
+            "Real Time",
+            "Silver West Limo",
+            "Star Power",
+            "Superior One",
+            "Theo Limo",
+            "Uber",
+            "Wayne Limo",
+            "Other"
+          ]
+        },
+        "branches": {
+          "Other": "Ask If Other, please describe:"
+        }
+      },
+      {
+        "prompt": "What is the nature of this concern?",
+        "type": "multi_select",
+        "required": true,
+        "options": [
+          "Harrassment",
+          "Unsafe driving",
+          "Rude driver",
+          "No driver I.D.",
+          "No license",
+          "No permit",
+          "Other"
+        ],
+        "taxiAdditionalOptions": [
+          "Overcharged",
+          "Meter not started",
+          "Meter not stopped",
+          "Meter left running",
+          "Meter malfunction",
+          "Expired permit"
+        ]
+      },
+      {
+        "prompt": "What is the name of the driver?",
+        "type": "text",
+        "required": false
+      },
+      {
+        "prompt": "What was the date and time of your pickup?",
+        "type": "date_time",
+        "required": false,
+        "dateFormat": "MM/DD/YYYY",
+        "timePeriodOptions": [
+          "AM",
+          "PM"
+        ]
+      },
+      {
+        "prompt": "What location were you picked up from?",
+        "type": "text",
+        "required": false
+      },
+      {
+        "prompt": "What is the license or vehicle number?",
+        "type": "text",
+        "required": false
+      },
+      {
+        "prompt": "Unit Number, if known",
+        "type": "text",
+        "required": false,
+        "when": "Ambulance, Limousine, or Taxi"
+      },
+      {
+        "prompt": "Would you like to be contacted?",
+        "type": "single_select",
+        "required": false,
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ]
+      }
+    ],
+    "conditionalPrompts": [
+      "If other, please describe: when transportation type = Other",
+      "If Other, please describe: when transport company includes Other"
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Taxi; company Other with description; concern Other",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request about a regulated transportation service or driver.",
+      "why": "For concerns about an ambulance, limousine, taxi, carriage, pedicab, or other nonmotorized transportation service, driver, company, or permit. The 311 request form includes unsafe driving, harassment, rude conduct, missing identification or permit, and taxi meter or fare issues; it asks for company, driver, vehicle, pickup location, and date or time when known. The description says contact information is required.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Transportation and Regulation\" > Choose \"Transportation Complaint\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Transportation and Regulation\" > Choose \"Transportation Complaint\""
+    }
+  ]
+}

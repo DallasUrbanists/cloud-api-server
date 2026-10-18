@@ -1,0 +1,59 @@
+{
+  "title": "Increased Police Patrol",
+  "categories": [
+    "Non-Emergency Police and Fire Services"
+  ],
+  "description": "Use this service request when a citizen would like to request additional police patrol in their neighborhood or a specific Dallas area. If there are specific days and times please provide. The estimated response time (ERT) for this service request is 3 business days.",
+  "photoUrls": [],
+  "department": "Dallas Police",
+  "resolutionEstimate": "7 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "intro": "***Be advised that this service request is not monitored on a 24-hour basis. If you have an emergency and require immediate assistance, please call 911.***",
+    "observedQuestions": [
+      {
+        "question": "What is the nature of your request?",
+        "required": true,
+        "type": "free_text"
+      },
+      {
+        "question": "Would you like to be contacted?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ]
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Nature supplied; contact = No; Details Continue reached Contact",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request for additional police patrol in a Dallas neighborhood or area.",
+      "why": "To request additional police patrol in a neighborhood or specific Dallas area; include specific days and times when relevant. The request form asks for the nature of the request.",
+      "why_not": "The online form for \"Increased Police Patrol\" requests does not apply to emergencies requiring immediate assistance because it is not monitored on a 24-hour basis. If immediate assistance is needed for an emergency, then call 911.",
+      "what": "Submit 311 request",
+      "who": "Dallas Police",
+      "how": "Go to Dallas 311 > Choose \"Non-Emergency Police and Fire Services\" > Choose \"Increased Police Patrol\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Non-Emergency Police and Fire Services\" > Choose \"Increased Police Patrol\""
+    },
+    {
+      "tagline": "Call 911 for an emergency needing immediate assistance.",
+      "why": "For an emergency needing immediate assistance; the Dallas 311 request form states that Increased Police Patrol is not monitored on a 24-hour basis.",
+      "why_not": null,
+      "what": "Call",
+      "who": "Emergency dispatch",
+      "how": "Call 911",
+      "how_formatted": "Call [911](tel:911)"
+    }
+  ]
+}

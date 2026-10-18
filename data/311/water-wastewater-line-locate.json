@@ -1,0 +1,89 @@
+{
+  "title": "Water/Wastewater Line Locate",
+  "categories": [
+    "Water Inquiries and Line Locates"
+  ],
+  "description": "FOR PUBLIC SYSTEM LOCATION ONLY. Use this to request a routine water / wastewater line locate from Dallas Water Utilities. Be advised only ONE location per Service Request (SR) is allowed and all requests will be handled as \"Mark and go\" locates. If water lines are outside the city of Dallas, please call 8-1-1. This request will be scheduled and closed within 1 business day. Once your request is scheduled and closed, Dallas Water Utilities has 3 additional business days to complete your line locate request.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/cfdce1d0-5d8f-11ee-b430-93f372796878.jpg"
+  ],
+  "department": "Office of Communications & Customer Experience/311",
+  "resolutionEstimate": "2 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "Is your work area marked or white lined?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "question": "Mapsco of locate address:",
+        "required": true,
+        "type": "free_text"
+      },
+      {
+        "question": "What is the name of the company?",
+        "required": false,
+        "type": "free_text"
+      },
+      {
+        "question": "Would you like to be contacted?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ]
+      }
+    ],
+    "unexplored": null,
+    "conditionalPaths": [
+      {
+        "instruction": "Validation Alert: NOTE: If area is NOT marked work may not be completed accurately or in a timely manner.",
+        "when": "Is your work area marked or white lined? = No"
+      },
+      {
+        "when": "Is your work area marked or white lined? = Yes",
+        "reveals": "No additional questions, instructions, or service suggestions."
+      },
+      {
+        "when": "Each contact preference selected",
+        "reveals": "No additional questions, instructions, alerts, or service suggestions."
+      }
+    ],
+    "contactStepObserved": "Contact step required First Name, Last Name, and Phone Number; Email and Address were optional; City, State, Zipcode were disabled.",
+    "completedContactPath": "Selected Yes for the marked or white lined question, entered a mock Mapsco value, and continued to Contact. No Contact data entered.",
+    "additionalInformation": "Optional free-text"
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request for a routine public water or wastewater line locate in Dallas.",
+      "why": "Request a routine locate of a public Dallas Water Utilities water or wastewater line for one location in a single service request; the work is handled as a \"Mark and go\" locate. The 311 request form asks whether the work area is marked or white-lined, the Mapsco location, and the company name. It warns that an unmarked area may delay the locate or reduce its accuracy. The request is scheduled and closed within one business day, after which Dallas Water Utilities has three additional business days to complete the locate.",
+      "why_not": "The online form for \"Water/Wastewater Line Locate\" requests does not apply to private-system locations, water lines outside the City of Dallas, or more than one location per service request. If the water lines are outside the City of Dallas, then call 8-1-1.",
+      "what": "Submit 311 request",
+      "who": "Office of Communications & Customer Experience/311",
+      "how": "Go to Dallas 311 > Choose \"Water Inquiries and Line Locates\" > Choose \"Water/Wastewater Line Locate\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Water Inquiries and Line Locates\" > Choose \"Water/Wastewater Line Locate\""
+    },
+    {
+      "tagline": "Call 811 about water lines outside Dallas.",
+      "why": "For a water line locate when the water lines are outside the City of Dallas. The description for \"Water/Wastewater Line Locate\" requests on the Dallas 311 website directs these requests to 8-1-1.",
+      "why_not": null,
+      "what": "Call",
+      "who": "811",
+      "how": "Call 8-1-1",
+      "how_formatted": "Call [8-1-1](tel:811)"
+    }
+  ]
+}

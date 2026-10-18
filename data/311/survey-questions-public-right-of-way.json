@@ -1,0 +1,86 @@
+{
+  "title": "Survey Questions - Public Right of Way",
+  "categories": [
+    "Streets, Medians, Sidewalks and Alleys"
+  ],
+  "description": "Use this service request to request survey information on a City of Dallas public right-of-way. **Be advised the City does not do surveys for personal or private property. ** The estimated response time (ERT) for this service request is 3 business days.",
+  "photoUrls": [],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "3 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "Are you requesting survey information about private property or your property?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Yes",
+            "instruction": "The city does not provide surveys for personal/private property. Only for Right of Way surveys."
+          }
+        ]
+      },
+      {
+        "question": "What survey information are you requesting?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Subdivision plats",
+          "Block maps",
+          "Right of way survey"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Right of way survey",
+            "reveals": "Why are you requesting the Right of Way Survey?"
+          }
+        ]
+      },
+      {
+        "question": "Why are you requesting the Right of Way Survey?",
+        "required": true,
+        "type": "free_text",
+        "when": "Survey information = Right of way survey"
+      },
+      {
+        "question": "Please provide address of location:",
+        "required": true,
+        "type": "free_text"
+      },
+      {
+        "question": "Would you like to be contacted?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ]
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Private property = No; survey = Right of way survey; reason and address supplied; contact = No; Details Continue reached Contact",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request for City public right-of-way survey information.",
+      "why": "For survey information about a City of Dallas public right-of-way, including a right-of-way survey, subdivision plat, or block map. The 311 request form asks which information is needed, the location address, and the reason when a right-of-way survey is requested.",
+      "why_not": "The online form for \"Survey Questions - Public Right of Way\" requests does not apply to a survey of personal or private property; the City says it does not provide those surveys.",
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Survey Questions - Public Right of Way\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Survey Questions - Public Right of Way\""
+    }
+  ]
+}

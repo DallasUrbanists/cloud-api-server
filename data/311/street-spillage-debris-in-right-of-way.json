@@ -1,0 +1,145 @@
+{
+  "title": "Street Spillage/Debris in Right of Way",
+  "categories": [
+    "Environmental Quality Concerns",
+    "Streets, Medians, Sidewalks and Alleys"
+  ],
+  "description": "Use this service request to report hazardous spills or debris blocking the public right-of-way to include driving or travel lanes of traffic. ** Freeways are the responsibility of Texas Dept. of Transportation (TXDOT). ** The estimated response time (ERT) for this service request is 12 hours.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/1d0bf2d0-3cba-11ee-ae50-773537b2e1cd.JPG"
+  ],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "1 Calendar Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "Was the spill caused by a Sanitation Truck?",
+        "type": "single_select",
+        "required": true,
+        "options": [
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "question": "Debris type?",
+        "type": "text",
+        "required": true,
+        "shownWhen": "Sanitation Truck = No"
+      },
+      {
+        "question": "Where is the debris located?",
+        "type": "single_select",
+        "required": true,
+        "shownWhen": "Sanitation Truck = No",
+        "options": [
+          "Street",
+          "Alley",
+          "Sidewalk",
+          "Freeway"
+        ]
+      },
+      {
+        "question": "Direction of Travel?",
+        "type": "select",
+        "required": false,
+        "shownWhen": "Debris located = Street or Freeway",
+        "options": [
+          "Eastbound and westbound",
+          "Eastbound",
+          "Left turn lane",
+          "North and southbound",
+          "Northbound",
+          "Northeast",
+          "Northwest",
+          "Southbound",
+          "Southeast",
+          "Southwest",
+          "Westbound"
+        ]
+      },
+      {
+        "question": "Which lane is the debris in/blocking?",
+        "type": "text",
+        "required": false,
+        "shownWhen": "Debris located = Street or Freeway"
+      },
+      {
+        "question": "Would you like to be contacted?",
+        "type": "single_select",
+        "required": false,
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ]
+      },
+      {
+        "question": "Additional Information",
+        "type": "text",
+        "required": false
+      }
+    ],
+    "conditionalInstructions": [
+      {
+        "when": "Sanitation Truck = Yes",
+        "text": "New Service Type Suggestion offers Sanitation Property Damage."
+      },
+      {
+        "when": "Debris located = Freeway",
+        "text": "Please verify the debris/spillage is blocking the driving/travel lanes of traffic or public right of way causing a hazard. If litter/debris is on the grassy/dirt area alongside or within a highway/freeway, street or intersection please create a Median/Right of Way Maintenance SR - this work is performed by City crews and a private contractor."
+      }
+    ],
+    "pathCoverage": [
+      "Both Sanitation Truck answers tried; Yes triggered alternate-service suggestion.",
+      "All four debris locations tried; Street and Freeway revealed direction and lane questions.",
+      "All eleven direction answers tried; no further fields.",
+      "All three contact-preference answers tried. Required fields filled with mock values and Continue advanced to Contact. No contact data entered."
+    ],
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request for hazardous debris blocking a public right of way.",
+      "why": "Report hazardous spills or debris blocking a public right of way, street, alley, sidewalk, driving lane, or other travel lane. The 311 request form asks what debris is present, whether a Sanitation truck caused the spill, and, for street or freeway locations, the direction of travel and affected lane.",
+      "why_not": "The online form for \"Street Spillage/Debris in Right of Way\" requests is not the directed route for nonblocking litter or debris on a grassy or dirt roadside area; freeway routing is ambiguous because the description for \"Street Spillage/Debris in Right of Way\" requests on the Dallas 311 website assigns responsibility to TxDOT while the 311 request form still offers Freeway as a location. If a Sanitation truck caused property damage, then submit a \"Sanitation Property Damage\" 311 request instead. If litter or debris is on a grassy or dirt area without blocking a travel lane, then submit a \"Median/Right of Way Maintenance\" 311 request instead. If the concern is on a freeway, then contact TxDOT.",
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Environmental Quality Concerns\" > Choose \"Street Spillage/Debris in Right of Way\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Environmental Quality Concerns\" > Choose \"Street Spillage/Debris in Right of Way\""
+    },
+    {
+      "tagline": "Contact TxDOT about a hazardous spill or debris on a freeway.",
+      "why": "For hazardous debris or spillage on a freeway. The description for \"Street Spillage/Debris in Right of Way\" requests on the Dallas 311 website states that freeways are the responsibility of the Texas Department of Transportation.",
+      "why_not": null,
+      "what": "Contact",
+      "who": "TxDOT",
+      "how": "Contact TxDOT",
+      "how_formatted": "Contact TxDOT"
+    },
+    {
+      "tagline": "Submit a 311 request for debris on a median or grassy right of way.",
+      "why": "For litter or debris on a grassy or dirt area alongside or within a highway, freeway, street, or intersection, instead of debris blocking a driving or travel lane. The Dallas 311 website directs people with debris in that location to Median/Right of Way Maintenance.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Median/Right of Way Maintenance\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Median/Right of Way Maintenance\""
+    },
+    {
+      "tagline": "Submit a 311 request for property damage caused by a Sanitation truck.",
+      "why": "For property damage caused by a Sanitation truck. When people answer Yes to the Sanitation-truck question in the 311 request form, the Dallas 311 website suggests Sanitation Property Damage; the description for \"Sanitation Property Damage\" requests on the Dallas 311 website limits its use to property damage caused by sanitation trucks.",
+      "why_not": "The online form for \"Sanitation Property Damage\" requests is not to be used for spills without property damage; the description for \"Sanitation Property Damage\" requests on the Dallas 311 website limits this service to property damage caused by sanitation trucks.",
+      "what": "Submit 311 request",
+      "who": "Sanitation Services",
+      "how": "Go to Dallas 311 > Choose \"Garbage, Recycle, and Brush/Bulky Item Collection\" > Choose \"Sanitation Property Damage\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Garbage, Recycle, and Brush/Bulky Item Collection\" > Choose \"Sanitation Property Damage\""
+    }
+  ]
+}

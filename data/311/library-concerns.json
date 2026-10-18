@@ -1,0 +1,138 @@
+{
+    "title":  "Library Concerns",
+    "categories":  [
+                       "Other Requests"
+                   ],
+    "description":  "Use this service request to report concerns regarding building/property maintenance and library/employee services at City of Dallas libraries. For additional information please visit our website at www.dallaslibrary.org. The estimated response time (ERT) for this service request is 2 business days.",
+    "photoUrls":  [
+
+                  ],
+    "department":  "Library",
+    "resolutionEstimate":  "2 Business Days",
+    "requestThisService":  true,
+    "instructions":  null,
+    "detailsForm":  {
+                        "status":  "conditional_paths_explored",
+                        "observedQuestions":  [
+                                                  {
+                                                      "question":  "What is the nature of your concern?",
+                                                      "required":  true,
+                                                      "type":  "single_choice",
+                                                      "options":  [
+                                                                      "Building/Property Maintenance",
+                                                                      "Library/Employee Services"
+                                                                  ],
+                                                      "conditionalPaths":  [
+                                                                               {
+                                                                                   "when":  "Building/Property Maintenance",
+                                                                                   "reveals":  "No additional questions, instructions, alerts, or service suggestions."
+                                                                               },
+                                                                               {
+                                                                                   "when":  "Library/Employee Services",
+                                                                                   "reveals":  "No additional questions, instructions, alerts, or service suggestions."
+                                                                               }
+                                                                           ]
+                                                  },
+                                                  {
+                                                      "question":  "What is the name of the library?",
+                                                      "required":  true,
+                                                      "type":  "select",
+                                                      "options":  [
+                                                                      "Arcadia Park",
+                                                                      "Audelia Road",
+                                                                      "Bachman Lake",
+                                                                      "Bookmarks at Northpark Center",
+                                                                      "Dallas West",
+                                                                      "Forest Green",
+                                                                      "Fretz Park",
+                                                                      "Grauwyler Park",
+                                                                      "Hampton-Illinois",
+                                                                      "Highland Hills",
+                                                                      "J.Erik Jonsson Central",
+                                                                      "Kleberg-Rylie",
+                                                                      "Lakewood",
+                                                                      "Lancaster-Kiest/Paul Laurence Dunbar",
+                                                                      "Lochwood",
+                                                                      "Martin L. King",
+                                                                      "Jr.Mountain Creek",
+                                                                      "North Oak Cliff",
+                                                                      "Oak Lawn",
+                                                                      "Park Forest",
+                                                                      "Pleasant Grove",
+                                                                      "Polk-Wisdom",
+                                                                      "Prairie Creek",
+                                                                      "Preston Royal",
+                                                                      "Renner Frankford",
+                                                                      "Skillman Southwestern",
+                                                                      "Skyline",
+                                                                      "Timberglen",
+                                                                      "Vickery Park",
+                                                                      "White Rock Hills"
+                                                                  ],
+                                                      "conditionalPaths":  [
+                                                                               {
+                                                                                   "when":  "Each listed library selected",
+                                                                                   "reveals":  "No additional questions, instructions, alerts, or service suggestions."
+                                                                               }
+                                                                           ]
+                                                  },
+                                                  {
+                                                      "question":  "Would you like to be contacted?",
+                                                      "required":  false,
+                                                      "type":  "single_choice",
+                                                      "options":  [
+                                                                      "Yes - prior to work being completed",
+                                                                      "Yes - once the work is completed",
+                                                                      "No"
+                                                                  ],
+                                                      "conditionalPaths":  [
+                                                                               {
+                                                                                   "when":  "Yes - prior to work being completed, Yes - once the work is completed, or No",
+                                                                                   "reveals":  "No additional questions, instructions, alerts, or service suggestions."
+                                                                               }
+                                                                           ]
+                                                  }
+                                              ],
+                        "unexplored":  null,
+                        "conditionalPaths":  [
+                                                 {
+                                                     "when":  "Each nature of concern option",
+                                                     "reveals":  "Both choices were tested; no additional form content appeared."
+                                                 },
+                                                 {
+                                                     "when":  "Each library selected",
+                                                     "reveals":  "All listed library options were tested; no additional form content appeared."
+                                                 },
+                                                 {
+                                                     "when":  "Each contact preference option",
+                                                     "reveals":  "No additional form content appeared."
+                                                 }
+                                             ],
+                        "additionalInformation":  "Optional free-text",
+                        "contactStepObserved":  "Contact step displayed: How can we reach you? Please provide an email address that can be verified to Complete the Service Request submission. Contact information is optional; the consent checkbox controls whether details may be stored. Fields shown: First Name, Last Name, Email, Phone Number, Address, City, State, Zipcode. They were disabled while the checkbox was unchecked.",
+                        "completedContactPath":  "Selected 1500 MARILLA ST, DALLAS, TX, 75201; selected Library/Employee Services, White Rock Hills, and No for contact preference; continued to Contact. No Contact data entered."
+                    },
+    "sourcePortalUrl":  "https://dallascrm.my.site.com/public/s/",
+    "serviceRequestUrl":  "https://dallascrm.my.site.com/public/s/",
+    "captureStatus":  "details_form_conditional_paths_explored",
+    "actions":  [
+                    {
+                        "tagline":  "Submit a 311 request about maintenance or services at a City of Dallas library.",
+                        "why":  "To report building or property maintenance concerns or library and employee service concerns at a City of Dallas library. The 311 request form asks for the concern type and which library, including the named City library locations.",
+                        "why_not":  null,
+                        "what":  "Submit 311 request",
+                        "who":  "Library",
+                        "how":  "Go to Dallas 311 \u003e Under \"Other Requests\", choose \"Library Concerns\"",
+                        "how_formatted":  "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) \u003e Under \"Other Requests\", choose \"Library Concerns\""
+                    },
+                    {
+                        "tagline":  "Visit the Dallas Public Library website for more information about library concerns.",
+                        "why":  "For additional information about City of Dallas libraries. The description for \"Library Concerns\" requests on the Dallas 311 website directs residents to www.dallaslibrary.org.",
+                        "why_not":  null,
+                        "what":  "Visit website",
+                        "who":  "Dallas Public Library",
+                        "how":  "Visit www.dallaslibrary.org",
+                        "how_formatted":  "Visit [www.dallaslibrary.org](https://www.dallaslibrary.org)"
+                    }
+                ]
+}

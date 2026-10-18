@@ -1,0 +1,51 @@
+{
+  "title": "Street, Road or Driveway Blockage",
+  "categories": [
+    "Parking, Vehicle, Bicycle and Scooter Concerns"
+  ],
+  "description": "This request must be dispatched. Use this service request to report non-emergency concerns regarding vehicles that are blocking the street/roadway/driveway that may be abandoned/unoccupied or disabled in the roadway in need of traffic control until the vehicle is in a safe location or not blocking the roadway 24 hours a day. The estimated response time (ERT) for this service request is 6 hours. ** Please call 911 for emergency conditions or freeway concerns **",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/e243e6a0-8b87-11ed-a93a-911e0b114d00.JPG"
+  ],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "1 Calendar Days",
+  "requestThisService": false,
+  "instructions": "This request must be dispatched. Call 311 to report a non-emergency vehicle blocking a street, roadway, or driveway, including an abandoned, unoccupied, or disabled vehicle that needs traffic control. Call 911 for emergency conditions or freeway concerns.",
+  "detailsForm": {
+    "status": "instructions_only",
+    "observedQuestions": [],
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "instructions_only",
+  "actions": [
+    {
+      "tagline": "Call Dallas 311 by phone about a non-emergency vehicle blocking a street, road, or driveway.",
+      "why": "For a non-emergency vehicle blocking a street, roadway, or driveway, including an abandoned or unoccupied vehicle or a disabled vehicle that needs traffic control until it is moved to a safe location or stops blocking the way. The service request must be dispatched and has no online request button.",
+      "why_not": "This service is not the route for emergency conditions or freeway concerns. If there is an emergency condition, then call 911. If the vehicle blockage is on a freeway, then call 911.",
+      "what": "Call 311 by phone",
+      "who": "Dallas 311",
+      "how": "Call 311 to report the non-emergency blockage",
+      "how_formatted": "Call [311](tel:311) to report the non-emergency blockage"
+    },
+    {
+      "tagline": "Call 911 about an emergency vehicle blockage.",
+      "why": "For an emergency condition involving a vehicle blocking a street, road, or driveway. The description for \"Street, Road or Driveway Blockage\" requests on the Dallas 311 website directs emergency conditions to 911.",
+      "why_not": null,
+      "what": "Call",
+      "who": "911 emergency dispatch",
+      "how": "Call 911",
+      "how_formatted": "Call [911](tel:911)"
+    },
+    {
+      "tagline": "Call 911 about a vehicle blockage on a freeway.",
+      "why": "For a vehicle blocking a freeway. The description for \"Street, Road or Driveway Blockage\" requests on the Dallas 311 website directs freeway concerns to 911.",
+      "why_not": null,
+      "what": "Call",
+      "who": "911 emergency dispatch",
+      "how": "Call 911",
+      "how_formatted": "Call [911](tel:911)"
+    }
+  ]
+}

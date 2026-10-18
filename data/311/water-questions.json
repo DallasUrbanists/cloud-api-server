@@ -1,0 +1,85 @@
+{
+  "title": "Water Questions",
+  "categories": [
+    "Water Inquiries and Line Locates"
+  ],
+  "description": "Use this service request to submit a general request or concern related to Water. Please call 214-651-1441 Monday-Friday from 8:00am to 5:00pm for routine Water calls such as making a payment, service discontinuance, theft of water, or water quality concerns. For Water emergencies such as a main break, burst pipes, leaks doing property damage or sewer issues please call 3-1-1 or 214-670-3111. The estimated response time for this service request is 2 business days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/5fccf9a0-5dfa-11ee-b65c-c33ce0246595.jpg"
+  ],
+  "department": "Office of Communications & Customer Experience/311",
+  "resolutionEstimate": "2 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "What is the Dallas Water Utilities account number?",
+        "required": true,
+        "type": "numeric"
+      },
+      {
+        "question": "If the service address is different than the address listed on the account, please provide the the service address:",
+        "required": false,
+        "type": "free_text"
+      },
+      {
+        "question": "What is the nature of your concern?",
+        "required": true,
+        "type": "free_text"
+      },
+      {
+        "question": "Would you like to be contacted?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ]
+      }
+    ],
+    "unexplored": null,
+    "conditionalPaths": [
+      {
+        "when": "Each option for \"Would you like to be contacted?\"",
+        "reveals": "No additional Details questions, instructions, or service suggestions appeared."
+      }
+    ],
+    "completedContactPath": "Entered mock values for the required Dallas Water Utilities account number and nature of concern, then continued to Contact. No Contact data entered.",
+    "additionalInformation": "Optional free-text"
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request for a general Dallas Water Utilities question or concern.",
+      "why": "Use the 311 request form for a general water-related request or concern. It asks for the Dallas Water Utilities account number, a service address if different from the account address, and the nature of the concern.",
+      "why_not": "The online form for \"Water Questions\" requests is not for routine water calls or water emergencies. If you have a routine question about making a payment, discontinuing service, water theft, or water quality, then call Dallas Water Utilities at 214-651-1441 Monday through Friday from 8:00 a.m. to 5:00 p.m. If there is a water main break, burst pipe, leak causing property damage, or sewer issue, then call 311 by phone instead of submitting a 311 request online.",
+      "what": "Submit 311 request",
+      "who": "Office of Communications & Customer Experience/311",
+      "how": "Go to Dallas 311 > Choose \"Water Inquiries and Line Locates\" > Choose \"Water Questions\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Water Inquiries and Line Locates\" > Choose \"Water Questions\""
+    },
+    {
+      "tagline": "Call Dallas Water Utilities about routine water service questions.",
+      "why": "For routine questions about making a payment, discontinuing water service, theft of water, or water quality. The description for \"Water Questions\" requests on the Dallas 311 website directs these calls to Dallas Water Utilities at 214-651-1441 Monday through Friday from 8:00 a.m. to 5:00 p.m.",
+      "why_not": null,
+      "what": "Call",
+      "who": "Dallas Water Utilities",
+      "how": "Call 214-651-1441 Monday through Friday from 8:00 a.m. to 5:00 p.m.",
+      "how_formatted": "Call [214-651-1441](tel:2146511441) Monday through Friday from 8:00 a.m. to 5:00 p.m."
+    },
+    {
+      "tagline": "Call Dallas 311 by phone about a water emergency.",
+      "why": "For a water main break, burst pipe, leak causing property damage, or sewer issue. The description for \"Water Questions\" requests on the Dallas 311 website directs water emergencies to call 311 or 214-670-3111.",
+      "why_not": null,
+      "what": "Call 311 by phone",
+      "who": "Dallas 311",
+      "how": "Call 311 or 214-670-3111",
+      "how_formatted": "Call [311](tel:311) or [214-670-3111](tel:2146703111)"
+    }
+  ]
+}

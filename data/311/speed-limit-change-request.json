@@ -1,0 +1,105 @@
+{
+  "title": "Speed Limit Change Request",
+  "categories": [
+    "Traffic Signs and Signals"
+  ],
+  "description": "Use this request to request changes in speed limits for streets within the Dallas city limits. For freeways please contact TXDOT. The estimated response time (ERT) for this service request is 69 business days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/a28d1e30-42c2-11ee-b797-25547d8b54e6.JPG"
+  ],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "85 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "Is the location a Dallas city roadway/street?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "No",
+            "instruction": "Note: If this is for the freeway - please contact TXDOT."
+          },
+          {
+            "when": "Yes",
+            "reveals": [
+              "What is the current speed limit?",
+              "What is the new requested speed limit?"
+            ]
+          }
+        ]
+      },
+      {
+        "question": "What is the current speed limit?",
+        "required": true,
+        "type": "select",
+        "when": "Dallas city roadway/street = Yes",
+        "options": [
+          "30 mph",
+          "35 mph",
+          "40 mph",
+          "45 mph",
+          "50 mph",
+          "55 mph"
+        ]
+      },
+      {
+        "question": "What is the new requested speed limit?",
+        "required": true,
+        "type": "select",
+        "when": "Dallas city roadway/street = Yes",
+        "options": [
+          "30 mph",
+          "35 mph",
+          "40 mph",
+          "45 mph",
+          "50 mph",
+          "55 mph"
+        ]
+      },
+      {
+        "question": "Would you like to be contacted?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ]
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "City roadway = Yes; current = 55 mph; new = 30 mph; contact = No; Details Continue reached Contact",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request to change a speed limit on a Dallas city street.",
+      "why": "For requesting a change to the posted speed limit on a street within Dallas city limits. People who answer Yes that the location is a Dallas city roadway can enter the current and requested speed limits; the 311 request form offers 30, 35, 40, 45, 50, or 55 mph for each.",
+      "why_not": "The online form for \"Speed Limit Change Request\" requests does not apply to freeway speed limits. If the location is a freeway, then contact TxDOT.",
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Traffic Signs and Signals\" > Choose \"Speed Limit Change Request\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Traffic Signs and Signals\" > Choose \"Speed Limit Change Request\""
+    },
+    {
+      "tagline": "Contact TxDOT about a freeway speed limit.",
+      "why": "For a request to change a speed limit on a freeway rather than a Dallas city street. The description for \"Speed Limit Change Request\" requests on the Dallas 311 website directs freeway requests to TxDOT.",
+      "why_not": null,
+      "what": "Contact",
+      "who": "TxDOT",
+      "how": "Contact TxDOT",
+      "how_formatted": "Contact TxDOT"
+    }
+  ]
+}

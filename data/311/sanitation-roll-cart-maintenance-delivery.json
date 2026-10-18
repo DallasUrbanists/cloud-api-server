@@ -1,0 +1,164 @@
+{
+  "title": "Sanitation Roll Cart Maintenance/Delivery",
+  "categories": [
+    "Garbage, Recycle, and Brush/Bulky Item Collection"
+  ],
+  "description": "Use this service request to request repairs/replacements or delivery of roll carts. For RESIDENTIAL CUSTOMERS ONLY, use to request new roll cart service (no roll carts are on property) or the additional/removal of a roll cart(s). All customers (Commercial/Business, Residential, or Multi-Family) can also use this request for the maintenance of existing roll cart(s). The fee for each additional residential garbage roll cart is $15.51. Effective October 1, 2023, the owner or occupant of a dwelling unit with one roll cart for recyclable materials may request one additional roll cart for recyclable materials from the director of sanitation for no additional fee. Dwelling units with two or more roll carts for recyclable materials may request additional roll carts for recyclable materials for a one-time processing and handling fee for $50.00 per roll cart, which will be applied to the dwelling unit’s water account. The estimated response time for a request of this nature is 2 business days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/219d8710-5f23-11ee-8932-8b0765cde3fc.jpg"
+  ],
+  "department": "Sanitation Services",
+  "resolutionEstimate": "5 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      "What type of property is this?",
+      "Select the service your request is concerning.",
+      "What is the nature of your concern?",
+      "How many garbage roll cart(s)/dumpsters are currently on the property?:",
+      "How many recycle roll cart(s)/dumpsters are currently on the property?:",
+      "Is the property in a gated or enclosed area?"
+    ],
+    "propertyOptions": [
+      "Business/Commercial",
+      "City Facility",
+      "Single-Family Home",
+      "Multi-Family Complex"
+    ],
+    "propertyBranches": [
+      "Business/Commercial and City Facility ask What is the name of the property?",
+      "Multi-Family Complex asks subtype Apartment/Condo, Townhome, or Mobile Home Park, property name, and Apt/Unit/Suite #",
+      "Single-Family Home has no property name question"
+    ],
+    "serviceOptions": [
+      "Garbage",
+      "Recycling",
+      "Garbage and Recycling"
+    ],
+    "natureBranches": [
+      {
+        "when": "Single-Family Home or Multi-Family Complex",
+        "adds": [
+          "What is the Dallas Water Utilities account number?",
+          "Are you the account holder?"
+        ],
+        "option": "New Service"
+      },
+      {
+        "when": "Single-Family Home or Multi-Family Complex",
+        "adds": [
+          "Why are you requesting to stop Sanitation service?"
+        ],
+        "option": "Stop Service"
+      },
+      {
+        "adds": [
+          "What is your regular day of service?",
+          "What needs to be repaired?"
+        ],
+        "option": "Repair Roll Cart(s)"
+      },
+      {
+        "adds": [
+          "What is your regular day of service?",
+          "Why is replacement necessary?"
+        ],
+        "option": "Replace Roll Cart(s)"
+      },
+      {
+        "when": "Account questions only for residential and multi-family; quantity prompts follow selected service",
+        "adds": [
+          "What is the Dallas Water Utilities account number?",
+          "Are you the account holder?",
+          "# of additional Garbage Roll Cart(s) to ADD:",
+          "# of additional Recycle Roll Cart(s) to ADD:"
+        ],
+        "option": "Request Additional Roll Cart(s)"
+      },
+      {
+        "when": "Account questions only for residential and multi-family; quantity prompts follow selected service",
+        "adds": [
+          "What is the Dallas Water Utilities account number?",
+          "Are you the account holder?",
+          "What is your regular day of service?",
+          "# of additional Garbage Roll Cart(s) to REMOVE:",
+          "# of additional Recycle Roll Cart(s) to REMOVE:"
+        ],
+        "option": "Remove Additional Roll Cart(s)"
+      },
+      {
+        "adds": [],
+        "option": "Remove Damaged Roll Cart(s) - Left Behind"
+      },
+      {
+        "when": "Garbage size and count questions appear for Garbage or Garbage and Recycling; recycle count for Recycling or both",
+        "adds": [
+          "What is your regular day of service?",
+          "What size garbage cart?",
+          "How many garbage roll cart(s) need to be exchanged?",
+          "How many recycle roll cart(s) need to be exchanged?"
+        ],
+        "option": "Roll Cart Size - Exchange"
+      },
+      {
+        "adds": [],
+        "option": "Dumpster Service"
+      },
+      {
+        "adds": [],
+        "option": "Take-A-Peek Audit Non-Compliant"
+      },
+      {
+        "adds": [],
+        "option": "Take-A-Peek Audit - Training Completed"
+      }
+    ],
+    "otherBranches": [
+      "Account holder Yes has no extra question; No asks authority to make changes. Authority No says unable to continue; authority Yes warns request may be denied if not account holder or authorized user.",
+      "Stop Service reasons: HOA/NA Provides Sanitation Service, Property Under Construction, Moving Out of Property, Other. Other asks If other, please describe:.",
+      "Repair choices: Axle rod, Front bar, Lid, Wheel; each shows same further questions.",
+      "Replacement reasons: Roll Cart has a Hole, Roll Cart has a Crack, Stolen/Lost, Contaminated. Stolen/Lost adds What size garbage cart? when Garbage is selected.",
+      "Garbage cart size choices: 48 gallon, 64 gallon, 96 gallon.",
+      "Gated area Yes adds required Gate code/access code (if needed):; No does not."
+    ],
+    "conditionalMessages": [
+      "To request any account information and/or modifications you must be the account holder or listed on the account as an authorized user. At this time you are unable to continue with this request.",
+      "If your name is not listed as the account holder or listed as an authorized user on the Dallas Water Utilities account, the service request will be denied.",
+      "If roll cart is beyond repairs, it will be replaced. If you are requesting to repair, replace, exchange, or to remove a roll cart(s), it must be placed at the front curb for service. Staff will make two attempts to service before closing the request with no further action taken. A new service request will have to be submitted.",
+      "All roll carts will be inspected for repairs first before being replaced. If you are requesting to repair, replace, exchange, or to remove a roll cart(s), it must be placed at the front curb for service. Staff will make two attempts to service before closing the request with no further action taken. A new service request will have to be submitted. ** The only exception to this is if the cart (s) is stolen. **",
+      "Are you requesting an additional roll cart to replace a lost or stolen cart? If so, please change your selection to \"Replace Roll Cart(s)\"",
+      "Your roll-cart(s) must be empty, and placed at the curb in front of your property for repairs, replacements, exchanges, and removals. The only exception to this is if the cart (s) is stolen.",
+      "If you are requesting to repair, replace, exchange, or to remove a roll cart(s), it must be placed at the front curb for service. Staff will make two attempts to service before closing the request with no further action taken. A new service request will have to be submitted.",
+      "The fee for each additional residential garbage roll cart is $35.81. Estimated time frame for the delivery of an additional roll cart(s) can take up to 10 business days."
+    ],
+    "staticMessage": "In the event that we need additional information, the responsible department may contact you. Please provide your name and phone number.",
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Single-Family Home; Garbage and Recycling; Take-A-Peek Audit - Training Completed; one garbage cart and one recycle cart; not gated",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request for roll-cart repair, replacement, delivery, exchange, or removal.",
+      "why": "For residential customers seeking new or additional roll carts or removal of carts, and for residential, commercial, City-facility, or multifamily customers seeking maintenance of existing carts. The 311 request form offers repair, replacement, size exchange, additional or removed carts, and damaged-cart pickup, and asks about garbage or recycling, cart counts, account authority when relevant, and gate access.",
+      "why_not": "The online form for \"Sanitation Roll Cart Maintenance/Delivery\" requests cannot continue with account changes when the requester is neither the account holder nor authorized on the Dallas Water Utilities account. If an additional cart is sought to replace a lost or stolen cart, then select \"Replace Roll Cart(s)\" in the 311 request form instead.",
+      "what": "Submit 311 request",
+      "who": "Sanitation Services",
+      "how": "Go to Dallas 311 > Choose \"Garbage, Recycle, and Brush/Bulky Item Collection\" > Choose \"Sanitation Roll Cart Maintenance/Delivery\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Garbage, Recycle, and Brush/Bulky Item Collection\" > Choose \"Sanitation Roll Cart Maintenance/Delivery\""
+    },
+    {
+      "tagline": "Place roll carts at the front curb for maintenance.",
+      "why": "For a cart being repaired, replaced, exchanged, or removed. The 311 request form says the cart must be empty and at the front curb; a stolen cart is the exception. Staff make two service attempts before closing an unattended request.",
+      "why_not": null,
+      "what": "Place roll carts at curb",
+      "who": "Sanitation Services",
+      "how": "Empty the cart and place it at the front curb for repair, replacement, exchange, or removal, unless it was stolen",
+      "how_formatted": "Empty the cart and place it at the front curb for repair, replacement, exchange, or removal, unless it was stolen"
+    }
+  ]
+}

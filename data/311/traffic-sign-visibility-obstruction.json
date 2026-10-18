@@ -1,0 +1,42 @@
+{
+  "title": "Traffic Sign - Visibility Obstruction",
+  "categories": [
+    "Traffic Signs and Signals"
+  ],
+  "description": "This request must be dispatched. Please call 311 to report visibility obstructions for stop, yield or one-way signs only. Place all other signs on Traffic Sign - Maintenance (Other). The estimated response time (ERT) for this service request is 1 business day.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/8c6df2c0-62e6-11ee-9698-7d1d4af5a66a.JPG"
+  ],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "4 Business Days",
+  "requestThisService": false,
+  "instructions": "This request must be dispatched. Please call 311 to report visibility obstructions for stop, yield or one-way signs only. Place all other signs on Traffic Sign - Maintenance (Other). The estimated response time (ERT) for this service request is 1 business day. Please call 311 for more information",
+  "detailsForm": {
+    "status": "instructions_only",
+    "observedQuestions": [],
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "instructions_only",
+  "actions": [
+    {
+      "tagline": "Call Dallas 311 by phone about an obscured stop, yield, or one-way sign.",
+      "why": "For a visibility obstruction affecting a stop, yield, or one-way sign. The request must be dispatched, and its saved instructions direct people to call 311.",
+      "why_not": "This call-in service covers stop, yield, and one-way signs only. If another City traffic sign is obscured, then submit a \"Traffic Sign Maintenance (Other)\" 311 request instead.",
+      "what": "Call 311 by phone",
+      "who": "Dallas 311",
+      "how": "Call 311",
+      "how_formatted": "Call [311](tel:311)"
+    },
+    {
+      "tagline": "Submit a 311 request about another obscured City traffic sign.",
+      "why": "For a nonhazardous visibility obstruction affecting a City traffic sign other than a stop, yield, or one-way sign. The Traffic Sign - Visibility Obstruction instructions direct those signs to traffic-sign maintenance.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Traffic Signs and Signals\" > Choose \"Traffic Sign Maintenance (Other)\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Traffic Signs and Signals\" > Choose \"Traffic Sign Maintenance (Other)\""
+    }
+  ]
+}

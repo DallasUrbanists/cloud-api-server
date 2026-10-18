@@ -1,0 +1,132 @@
+{
+  "title": "Sanitation Missed Brush/Bulk",
+  "categories": [
+    "Garbage, Recycle, and Brush/Bulky Item Collection"
+  ],
+  "description": "Use this service request to report a missed residential brush/bulk collection. Sanitation Services has until 6:00 P.M. on the Friday of the scheduled collection week to pick up brush/bulk debris from the service location. If you have received an Orange Tag on your brush/bulk debris, a collection violation was identified and needs to be corrected in order for your location to be serviced. Collection will be attempted on your next scheduled day of service or week. Visit DallasCityHall.com/Sanitation to Contact Us online or by phone. Business/Commercial accounts are not currently serviced for brush/bulk collections. The estimated initial response time for a service request of this nature is 2 business days. Missed bulk/brush service is resolved within 7 business days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/04d499c0-5f23-11ee-b5ea-bf93c94ffce7.jpg"
+  ],
+  "department": "Sanitation Services",
+  "resolutionEstimate": "7 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "Is this for a business or a residence?",
+        "type": "single_select",
+        "required": true,
+        "options": [
+          "Business",
+          "Residence"
+        ]
+      },
+      {
+        "question": "Is it currently before 6:00 P.M. on the Friday of your scheduled pick up week?",
+        "type": "single_select",
+        "required": true,
+        "options": [
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "question": "Is there an orange tag on the missed items?",
+        "type": "single_select",
+        "required": true,
+        "options": [
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "question": "What brush/bulk items do you have out for pickup?",
+        "type": "multi_select",
+        "required": true,
+        "options": [
+          "Appliances",
+          "Bagged yard trash",
+          "Brush/tree limbs",
+          "Furniture",
+          "Construction Materials",
+          "Other"
+        ]
+      },
+      {
+        "question": "If Other, please describe:",
+        "type": "text",
+        "required": true,
+        "shownWhen": "Items = Other"
+      },
+      {
+        "question": "Additional Information",
+        "type": "text",
+        "required": false
+      }
+    ],
+    "conditionalInstructions": [
+      {
+        "when": "Business",
+        "text": "Business/Commercial accounts are not currently serviced for brush/bulk collections. Customers needing to dispose of brush and/or bulk items can also self-transport to the McCommas Bluff Landfill or one of the three transfer stations. Visit DallasCityHall.com/Sanitation for more information."
+      },
+      {
+        "when": "Before Friday 6 PM = Yes",
+        "text": "As a reminder, Sanitation Services has until 6:00 P.M. on the Friday of the scheduled collection week to pick up brush/bulk debris from the service location. If it is currently before 6:00 P.M. on that Friday, Sanitation Services may still be picking up collections."
+      },
+      {
+        "when": "Before Friday 6 PM = No",
+        "text": "If you answer No, and the service request is submitted before 6:00 P.M., your service request will be closed with no further action. A new service request will need to be submitted after the stated time."
+      },
+      {
+        "when": "Orange tag = Yes",
+        "text": "If you have received an Orange Tag on your brush/bulk debris, a collection violation was identified and needs to be corrected in order for your location to be serviced. Collection will be attempted on your next scheduled day of service or week. Visit DallasCityHall.com/Sanitation to Contact Us online or by phone."
+      }
+    ],
+    "observedInstructions": [
+      "Appliances: If an appliance has Freon (e.g. a/c unit or refrigerator) it is NOT accepted",
+      "Brush/tree limbs: Tree limbs 8 feet or less are preferable",
+      "Furniture: If your furniture is in good condition and still functional, please consider a donation center.",
+      "What does NOT go on the curb? Construction debris (e.g. bricks, concrete, rocks, dirt, etc,), mirrors and glass (e.g. windows or shower glass), electronics (e.g. televisions, computers, etc.), tires (passenger tires 25 inches or less can be taken to the Landfill or the Northwest Transfer Station. Please limit to 6 per year per resident), Car parts (e.g. engine), and lawnmowers or any machinery containing gasoline.",
+      "In the event that we need additional information, the responsible department may contact you. Please provide your name and phone number."
+    ],
+    "pathCoverage": [
+      "Business and Residence; both time answers; both orange-tag answers; each item checkbox individually. Other revealed description.",
+      "Residence, after-Friday, no-tag, brush/tree-limbs path advanced to Contact. Contact requires First Name, Last Name, Email, Phone Number; no contact data entered."
+    ],
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request for missed residential brush or bulk collection.",
+      "why": "Report a residential brush or bulk collection that was missed, including brush or tree limbs, bagged yard waste, eligible appliances, or furniture. The 311 request form asks whether this is a business or residence, whether 6:00 P.M. Friday of the scheduled collection week has passed, whether an Orange Tag is present, and what items are out. Sanitation may still collect through that Friday cutoff.",
+      "why_not": "The online form for \"Sanitation Missed Brush/Bulk\" requests does not apply to business or commercial accounts or a pickup week that has not passed its 6:00 P.M. Friday cutoff. Orange-tagged items require the collection violation to be corrected, and appliances with Freon, construction debris, mirrors or glass, electronics, tires, car parts, and machinery containing gasoline are not accepted curbside. If a business needs to dispose of brush or bulk items, then self-transport them to McCommas Bluff Landfill or one of the three transfer stations. If an Orange Tag identifies a collection violation, then correct the violation before the next scheduled collection attempt.",
+      "what": "Submit 311 request",
+      "who": "Sanitation Services",
+      "how": "Go to Dallas 311 > Choose \"Garbage, Recycle, and Brush/Bulky Item Collection\" > Choose \"Sanitation Missed Brush/Bulk\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Garbage, Recycle, and Brush/Bulky Item Collection\" > Choose \"Sanitation Missed Brush/Bulk\""
+    },
+    {
+      "tagline": "Self-transport commercial brush or bulk items to a Dallas disposal site.",
+      "why": "For a business or commercial account needing to dispose of brush or bulk items. The 311 request form for \"Sanitation Missed Brush/Bulk\" requests says commercial accounts are not currently serviced for brush/bulk collection and directs customers to self-transport to McCommas Bluff Landfill or one of three transfer stations.",
+      "why_not": null,
+      "what": "Self-transport items",
+      "who": "Dallas Sanitation",
+      "how": "Take brush or bulk items to McCommas Bluff Landfill or one of three transfer stations; visit DallasCityHall.com/Sanitation for details",
+      "how_formatted": "Take brush or bulk items to McCommas Bluff Landfill or one of three transfer stations; visit DallasCityHall.com/Sanitation for details"
+    },
+    {
+      "tagline": "Contact Dallas Sanitation for help with an Orange Tag brush or bulk collection violation.",
+      "why": "For a brush or bulk collection with an Orange Tag identifying a violation. The Dallas 311 website says the violation must be corrected before service and directs customers to Contact Us online or by phone for more information.",
+      "why_not": null,
+      "what": "Contact",
+      "who": "Dallas Sanitation",
+      "how": "Visit DallasCityHall.com/Sanitation and choose Contact Us online or by phone",
+      "how_formatted": "Visit DallasCityHall.com/Sanitation and choose Contact Us online or by phone"
+    }
+  ]
+}

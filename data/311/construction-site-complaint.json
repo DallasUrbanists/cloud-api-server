@@ -1,0 +1,153 @@
+{
+  "title": "Construction Site Complaint",
+  "categories": [
+    "Other Requests"
+  ],
+  "description": "Use this service request for issues and concerns caused by construction sites, such as trash and debris left behind by construction crews, no erosion control, and mud being tracked into the street. The estimated response time for a request of this nature is 2 business days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/368f4df0-5e2b-11ee-b65c-c33ce0246595.jpg"
+  ],
+  "department": "Planning & Development Department",
+  "resolutionEstimate": "10 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "What is the nature of your complaint?",
+        "required": true,
+        "type": "select",
+        "options": [
+          "Mud tracking into the street",
+          "No erosion control",
+          "High Weeds",
+          "Construction on private property without a permit",
+          "Sign not posted",
+          "Street/curb/sidewalk damage",
+          "Trash and debris",
+          "Use of public right away",
+          "Noise complaint",
+          "Construction not related to building permit",
+          "No building permit posted",
+          "Other"
+        ]
+      },
+      {
+        "question": "If other, please describe:",
+        "required": true,
+        "type": "free_text",
+        "when": "What is the nature of your complaint? = Other"
+      },
+      {
+        "question": "Are any of these violations occurring?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Mud/sediment tracking into the street/alley",
+          "Concrete washout",
+          "None of the above"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Are any of these violations occurring? = Mud/sediment tracking into the street/alley",
+            "suggestedService": "Storm Water Construction Site Urgent"
+          },
+          {
+            "when": "Are any of these violations occurring? = Concrete washout",
+            "suggestedService": "Storm Water Construction Site Urgent"
+          },
+          {
+            "when": "Are any of these violations occurring? = None of the above",
+            "reveals": "No additional questions, instructions, alerts, or service suggestions."
+          }
+        ]
+      },
+      {
+        "question": "Would you like to be contacted?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ]
+      }
+    ],
+    "unexplored": null,
+    "conditionalPaths": [
+      {
+        "when": "What is the nature of your complaint? = Other",
+        "reveals": "Required question If other, please describe: appears."
+      },
+      {
+        "when": "What is the nature of your complaint? = Noise complaint",
+        "suggestedService": "Code Concerns; the current Construction Site Complaint suggestion was kept."
+      },
+      {
+        "when": "What is the nature of your complaint? = Construction not related to building permit",
+        "suggestedService": "Building Permits Violation; the current Construction Site Complaint suggestion was kept."
+      },
+      {
+        "when": "What is the nature of your complaint? = Mud tracking into the street, No erosion control, High Weeds, Construction on private property without a permit, Sign not posted, Street/curb/sidewalk damage, Trash and debris, Use of public right away, or No building permit posted",
+        "reveals": "No additional questions, instructions, or alerts. No service suggestion appeared for these selections."
+      },
+      {
+        "when": "Are any of these violations occurring? = Mud/sediment tracking into the street/alley or Concrete washout",
+        "suggestedService": "Storm Water Construction Site Urgent; the current Construction Site Complaint suggestion was kept."
+      },
+      {
+        "when": "Would you like to be contacted? = Yes - prior to work being completed, Yes - once the work is completed, or No",
+        "reveals": "No additional questions, instructions, alerts, or service suggestions."
+      },
+      {
+        "when": "Default map pin resolved to 2018 RANCH TRL",
+        "reveals": "The location you entered is outside the City's jurisdiction for this service type."
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "contactStepObserved": "Contact step displayed: How can we reach you? Please provide an email address that can be verified to Complete the Service Request submission. Providing your contact information is optional. If you prefer to remain anonymous, simply uncheck the box to remove your contact details. If you choose to provide your information, please check the box to confirm your consent for it to be securely stored in our database. Fields shown: First Name, Last Name, Email, Phone Number, Address, City, State, Zipcode. Fields were disabled while the contact information checkbox was unchecked.",
+    "completedContactPath": "Selected the City of Dallas address 1500 MARILLA ST, DALLAS, TX, 75201 after the default pin resolved to an out-of-jurisdiction address; selected Other, entered a mock description, selected None of the above, and continued to Contact. No Contact data entered."
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 complaint about a construction site.",
+      "why": "Report construction-site concerns such as trash or debris left by crews, absent erosion controls, mud tracked into the street, high weeds, missing permit signs, damaged streets or sidewalks, public right-of-way use, or construction noise. The 311 request form also asks whether sediment is tracking into a street or alley or concrete is washing out. For noise complaints and work unrelated to a building permit, the 311 request form offers other service suggestions while allowing the current request to continue.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Planning & Development Department",
+      "how": "Go to Dallas 311 > Under \"Other Requests\", choose \"Construction Site Complaint\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Under \"Other Requests\", choose \"Construction Site Complaint\""
+    },
+    {
+      "tagline": "Consider a 311 Code Concerns request for construction-site noise.",
+      "why": "For a construction-site noise complaint. The 311 request form for \"Construction Site Complaint\" requests suggests Code Concerns while allowing the current service to continue; the Code Concerns form includes construction during prohibited hours among noise issues.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Code Compliance",
+      "how": "Go to Dallas 311 > Choose \"City Code Violations\" > Choose \"Code Concerns\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"City Code Violations\" > Choose \"Code Concerns\""
+    },
+    {
+      "tagline": "Consider a 311 request for construction outside the scope of a building permit.",
+      "why": "For active construction believed to be outside the scope of a permit or approved plans. The 311 request form for \"Construction Site Complaint\" requests suggests Building Permits Violation for construction not related to a building permit while allowing the current service to continue.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Planning & Development Department",
+      "how": "Go to Dallas 311 > Under \"Other Requests\", choose \"Building Permits Violation\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Under \"Other Requests\", choose \"Building Permits Violation\""
+    },
+    {
+      "tagline": "Call Dallas 311 by phone about urgent construction-site runoff or sediment.",
+      "why": "For sediment or mud from a construction site tracking into a street or alley, concrete washout, or other illicit discharge or pollution from construction reaching a street, alley, ditch, waterway, or storm drain. The 311 request form for \"Construction Site Complaint\" requests suggests Storm Water Construction Site Urgent for sediment tracking or concrete washout; that service must be dispatched by phone.",
+      "why_not": null,
+      "what": "Call 311 by phone",
+      "who": "Dallas 311",
+      "how": "Call 311 and ask for \"Storm Water Construction Site Urgent\"",
+      "how_formatted": "Call [311](tel:311) and ask for \"Storm Water Construction Site Urgent\""
+    }
+  ]
+}

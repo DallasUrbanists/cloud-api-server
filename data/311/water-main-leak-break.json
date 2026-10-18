@@ -1,0 +1,124 @@
+{
+  "title": "Water Main Leak/Break",
+  "categories": [
+    "Water Inquiries and Line Locates"
+  ],
+  "description": "Use this service request to report a water main leak or main break on a public right of way. The estimated response time for this service request is 1 business day.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/fe293af0-923d-11ef-91d6-a35ab2f2cfbe.jpg"
+  ],
+  "department": "Dallas Water Utilities",
+  "resolutionEstimate": "14 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "Where is the leak located?",
+        "required": true,
+        "type": "select",
+        "options": [
+          "Street",
+          "Alley",
+          "Sidewalk",
+          "Water meter",
+          "Fire hydrant",
+          "Other"
+        ]
+      },
+      {
+        "question": "If Other, please describe:",
+        "required": true,
+        "type": "free_text",
+        "when": "Where is the leak located? = Other"
+      },
+      {
+        "question": "What direction?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Eastbound",
+          "Northbound",
+          "Southbound",
+          "Westbound",
+          "Unknown"
+        ]
+      },
+      {
+        "question": "Describe the leak (select all that apply):",
+        "required": true,
+        "type": "multi_choice",
+        "options": [
+          "Odor/Smell",
+          "Spewing upward at least one foot out of the ground",
+          "Bubbling water",
+          "Seeping/Saturated",
+          "Low Flow",
+          "Other"
+        ]
+      },
+      {
+        "question": "If Other, please describe:",
+        "required": true,
+        "type": "free_text",
+        "when": "Describe the leak (select all that apply): Other selected alone"
+      },
+      {
+        "question": "Is the leak causing property damage?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "question": "Is the leak causing damage to the roadway?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Yes",
+          "No"
+        ]
+      }
+    ],
+    "unexplored": null,
+    "conditionalPaths": [
+      {
+        "when": "Where is the leak located? = Other",
+        "reveals": "Required text question: If Other, please describe:"
+      },
+      {
+        "when": "Describe the leak (select all that apply): Other selected alone",
+        "reveals": "Required text question: If Other, please describe:"
+      },
+      {
+        "when": "Eastbound, Northbound, Southbound, Westbound, or Unknown selected for What direction?",
+        "reveals": "No additional questions, instructions, alerts, or service suggestions."
+      },
+      {
+        "when": "Yes or No selected for either damage question",
+        "reveals": "No additional questions, instructions, alerts, or service suggestions."
+      }
+    ],
+    "contactStepObserved": "Contact step states contact information is optional; First Name, Last Name, Email, Phone Number, Address, City, State, and Zipcode fields are shown disabled unless contact information is enabled.",
+    "completedContactPath": "Selected a location, chose Street and Odor/Smell, answered both damage questions with No, then continued to Contact. No Contact data entered.",
+    "additionalInformation": "Optional free-text",
+    "combinationObservation": "The Other description disappears when Odor/Smell is selected along with Other."
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request about a water-main leak or break in a public right-of-way.",
+      "why": "For a water main leak or break on a public street, alley, sidewalk, by a water meter or fire hydrant, or another public right-of-way location. The 311 request form asks where the leak is, whether water is spewing, bubbling, seeping, or at low flow, and whether it damages property or the roadway.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Dallas Water Utilities",
+      "how": "Go to Dallas 311 > Choose \"Water Inquiries and Line Locates\" > Choose \"Water Main Leak/Break\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Water Inquiries and Line Locates\" > Choose \"Water Main Leak/Break\""
+    }
+  ]
+}

@@ -1,0 +1,75 @@
+{
+  "title": "Fire Inspection",
+  "categories": [
+    "Non-Emergency Police and Fire Services"
+  ],
+  "description": "Use this service request to request a fire inspection. The estimated response time for this service request is 10 business days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/87edc530-5e2d-11ee-bf7f-3de98a985773.jpg"
+  ],
+  "department": "Dallas Fire-Rescue",
+  "resolutionEstimate": "35 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "What is the occupancy type?",
+        "required": false,
+        "type": "select",
+        "options": [
+          "Single family/duplexes",
+          "Apartments/condos/townhouses",
+          "Hotels/motels",
+          "Business/stores/offices",
+          "Hospital/nursing homes/jails",
+          "Industrial",
+          "Manufacturing",
+          "Nightclub/restaurant/public gathering areas",
+          "School K-12/daycares",
+          "Special/construction sites/vacant lots",
+          "Storage/warehouse/parking garages"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Apartments/condos/townhouses",
+            "instruction": "If the requestor is renting an apartment and requesting inspection for smoke detector, enter \"resident states that the landlord has not provided a working smoke detector in a rental property\""
+          }
+        ]
+      },
+      {
+        "question": "Is there a specific problem or concern?",
+        "required": true,
+        "type": "free_text"
+      },
+      {
+        "question": "Would you like to be contacted?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ]
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Occupancy = Storage/warehouse/parking garages; concern supplied; contact = No; Details Continue reached Contact",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request for a fire inspection.",
+      "why": "Request a fire inspection for a home, apartment, hotel, business, hospital, industrial facility, restaurant, school, construction site, warehouse, or another occupancy type. The 311 request form asks for the specific problem. For a renter requesting an apartment inspection because the landlord has not provided a working smoke detector, the 311 request form instructs residents to state that concern explicitly.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Dallas Fire-Rescue",
+      "how": "Go to Dallas 311 > Choose \"Non-Emergency Police and Fire Services\" > Choose \"Fire Inspection\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Non-Emergency Police and Fire Services\" > Choose \"Fire Inspection\""
+    }
+  ]
+}

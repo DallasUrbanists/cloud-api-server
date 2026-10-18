@@ -1,0 +1,91 @@
+{
+  "title": "Restaurant/Food Complaint",
+  "categories": [
+    "City Code Violations"
+  ],
+  "description": "Use this service request for turning in complaints on restaurants in the City limits of Dallas that have a roach problem, improper food temperature, dirty dishes, dirty bathrooms, no hot water in the restrooms, and the overall sanitary conditions of the restaurant. Also use for food complaints at convenience stores, grocery stores, schools, lunch trucks, and ice cream trucks where prepared food is sold. The estimated response time for this service request is 5 business days.",
+  "photoUrls": [],
+  "department": "Code Compliance",
+  "resolutionEstimate": "15 Business Days",
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "label": "Did the violation occur within the City limits of Dallas?",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "type": "radio",
+        "required": true
+      },
+      {
+        "label": "What is the nature of your concern?",
+        "options": [
+          "Animal or bird in restaurant",
+          "Coughing/sneezing",
+          "Dirty restroom",
+          "Dumpster/garbage area dirty",
+          "Employees not washing hands",
+          "Fire in establishment",
+          "Food out of date",
+          "Food poisoning",
+          "Grease trap overflowing",
+          "Handling food and money",
+          "Improper food temperature",
+          "Insects and rodents",
+          "Leaky pipes",
+          "No hair nets",
+          "No health permit",
+          "No hot water",
+          "No registered food service manager",
+          "Restaurant dirty",
+          "Sewage overflowing",
+          "Smoking",
+          "Spoiled food",
+          "Unsanitary conditions",
+          "Other"
+        ],
+        "type": "checkbox_group",
+        "required": true
+      },
+      {
+        "label": "If other, please describe:",
+        "condition": "Concern Other",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "What is the name of the establishment?",
+        "type": "text",
+        "required": false
+      },
+      {
+        "label": "What date/time did this occur?",
+        "type": "date_time",
+        "required": false
+      }
+    ],
+    "observedInstructions": [
+      "Selecting No for city limits displays a Validation Alert: This SR Type cannot be submitted outside of Dallas City limits. Across all 23 concern choices on the Yes path, no new fields or route messages appeared except Other, which adds a required description."
+    ],
+    "contactStepObserved": "Contact page showed optional consent; First Name, Last Name, Email, Phone Number, Address, City, State, Zipcode disabled by default.",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "requestThisService": true,
+  "captureStatus": "conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request about unsanitary food service within Dallas city limits.",
+      "why": "For food-service concerns within Dallas city limits at a restaurant, convenience or grocery store, school, lunch truck, or ice cream truck selling prepared food. Examples include insects or rodents, unsafe food temperature, dirty dishes or restrooms, no hot water, spoiled food, or other unsanitary conditions. The 311 request form asks for concern types, establishment name, and date and time.",
+      "why_not": "The online form for \"Restaurant/Food Complaint\" requests cannot be submitted for a violation outside Dallas city limits; the 311 request form displays a validation alert for that answer.",
+      "what": "Submit 311 request",
+      "who": "Code Compliance",
+      "how": "Go to Dallas 311 > Choose \"City Code Violations\" > Choose \"Restaurant/Food Complaint\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"City Code Violations\" > Choose \"Restaurant/Food Complaint\""
+    }
+  ]
+}

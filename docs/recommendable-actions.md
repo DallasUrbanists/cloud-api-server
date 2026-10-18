@@ -21,8 +21,7 @@ flowchart TD
     Service --> Reader[Official-document reader]
     Service --> Gemini[Gemini extraction]
     Service --> Boundaries[BoundaryService / PostgreSQL]
-    Service --> Review[Firestore review candidates]
-    Service --> Catalog[Firestore catalog and versions]
+    Service --> Catalog[Firestore recommendableActions: all statuses and versions]
     Suggestion[Suggestion creation] --> Service
     Service --> Jev[Jev relevance judgments]
     Service --> Actions[RecommendedActionService]
@@ -40,45 +39,91 @@ This is a responsibility/dependency map, not a call sequence: different service 
 | [Model](../src/models/recommendableAction.ts) | Define domain shapes, normalize candidate content without I/O, and express any-overlap geographic scope. |
 | [Service](../src/services/recommendableActionService.ts) | Retrieve/extract evidence, check boundary references, persist review/catalog state, version publications, and match suggestions. |
 | [Source scanner](../src/scripts/recommendableWorker.ts) | Detect changed registry pages and propose candidates; never auto-publish them. |
+| [Dallas 311 seed script](../src/scripts/seedDallas311Recommendables.ts) | Build one or more stable review candidates per service type; apply only after a citywide Dallas boundary is seeded. |
 | [Suggestion controller](../src/controllers/suggestionController.ts) | Save a suggestion, attempt matching, and preserve submission success if matching fails. |
 
 ## Workflows and invariants
 
-The approved catalog is publicly readable without an API key through `GET /api/recommendables`; an optional `search` query performs case-insensitive substring matching across summary, instructions, and reason. `GET /api/recommendables/:id` returns an entry only while it is approved. The collection response remains bounded to 500 entries.
+The approved catalog is publicly readable without an API key through `GET /api/recommendables`; an optional `search` query performs case-insensitive substring matching across summary, instructions, why, and whyNot. `GET /api/recommendables/:id` returns an entry only while it is approved. The collection response remains bounded to 500 entries.
 
 ### Submission and extraction
+
+Actions expose `photos: string[]`, with `[]` when none are attached. Submission accepts an optional `photos` array of HTTP/HTTPS URLs; the validator trims and deduplicates URLs and rejects non-URL values and credential-bearing URLs. Older inputs may omit the field, and legacy stored records read as `[]`. Generic text extraction does not invent image URLs.
 
 1. The controller checks the submission shape and connects response closure to an abort signal.
 2. The service accepts City of Dallas hosts, retrieves the source through the [official-document reader](../src/services/research/official.ts), and checks the final host.
 3. Gemini proposes structured action content. The service requires nonempty action text and supporting evidence that occurs in the retrieved text after whitespace/case normalization. Textual support is not a guarantee that every generated claim is correct.
 4. The controller combines the proposal with submitted boundaries and runs model validation. The validator rejects invalid shapes/fields, trims text, serializes the URL, and deduplicates/sorts boundary IDs without mutating input. It does not retrieve URLs or prove network safety.
-5. Candidate creation checks boundary existence and writes to `recommendableActionCandidates`. It does not publish the action.
+5. Candidate creation checks boundary existence and writes to `recommendableActions` with status `candidate`. Every lifecycle status uses this collection; only approved records are public and eligible for matching.
 
 The worker is a separate caller: it prepares candidate content directly rather than invoking the controller's model-validation path.
 
 ### Review and versioning
 
-- Candidate listing includes reviewed records; it is not a pending-only queue.
-- Rejection changes the candidate only. It does not retract an existing catalog entry.
-- Approval rechecks boundaries and publishes to `recommendableActions`. A registry `sourceKey`, when present, is the stable catalog identity; otherwise the candidate ID is used.
-- The catalog write, its `versions` snapshot, and the candidate's approved state are written in one transaction. The initial candidate read is outside that transaction; it is not a concurrent-review lock.
-- Reapproving an already-approved candidate returns the current catalog entry when available.
+- Candidate listing includes reviewed records and returns up to the 500 newest; it is not a pending-only queue or a paginated feed.
+- Approval and rejection update the same action document and save version snapshots atomically. Rejection makes that action ineligible for matching.
+- A registry or seed `sourceKey`, when present, is the stable document ID. Otherwise the supplied/generated action ID is used. Approval never copies a document into a second collection.
+- Approval rechecks boundaries; a transaction rejects concurrent content changes. Repeating the same review decision returns the current record without adding a version.
+- Changed source fingerprints update the same action and return it to candidate status; there is no separately published copy while the changed content awaits review. Unchanged source fingerprints preserve status.
 - Catalog status updates create a new version even when the requested status equals the existing status. Only approved catalog entries participate in matching.
+
+### Playground and read-only matching
+
+Open `/playground/recommendables` from the home page to test unstructured text without creating a suggestion or saving results. Latitude and longitude default to downtown Dallas (`32.7767`, `-96.7970`); edit them or clear both to test unrestricted actions only. Public access requires no login or API key.
+
+`POST /api/recommendables/match` accepts `{ text, latitude?, longitude? }`. Text must be nonblank and at most 10,000 characters; coordinates must be supplied together within geographic ranges. The OpenAPI definition owns the complete request and response contract.
+
+`RecommendableActionService.findMatches` reads all approved catalog entries through pagination, resolves all applicable boundaries, and keeps unrestricted actions plus those sharing any resolved boundary. It asks JEV independent relevance questions in batches of 40, with at most three requests in flight. It returns accepted catalog entries with match probabilities, sorted by descending probability then ID, plus catalog/eligible counts, threshold, and boundary IDs/names. The public catalog listing remains bounded to 500; matching does not use that limit.
+
+The threshold comes from `RECOMMENDABLE_MATCH_THRESHOLD` (default `0.9`); credentials and model use `TYPESAFE_API_KEY` and `TYPESAFE_MODEL` (default `jev-latest`). JEV calls time out after 20 seconds and a full run after 120 seconds. Disconnecting cancels outstanding work. Invalid/missing answers or dependency failures fail the run without returning partial matches.
+
+The playground displays action content, source links, probabilities, and geographic diagnostics. Nothing from a test is persisted.
 
 ### Suggestion matching
 
-1. Read the bounded approved catalog and resolve suggestion coordinates to boundary IDs when available.
-2. Keep globally scoped entries (empty boundaries) and restricted entries with any shared boundary ID. A restricted entry cannot match when no suggestion boundaries resolve.
-3. Ask Jev for relevance judgments in batches. Accept finite scores at or above the configured threshold and skip catalog links already attached to the suggestion.
-4. Delegate accepted entries to [RecommendedActionService](../src/services/recommendedActionService.ts) using deterministic action IDs and catalog linkage.
+`matchSuggestion` wraps read-only classification for saved suggestions, combining their summary and details as input text. It skips catalog links already attached and delegates new matches to RecommendedActionService using deterministic IDs. Its return array contains only newly attached catalog entries.
 
-Matching persists incrementally rather than atomically across all matches. If a later call fails, earlier actions may already exist. The suggestion controller catches matching failures after saving the suggestion, so submission remains available.
+Classification completes before linked actions are written. Persistence remains incremental rather than atomic across matches. The suggestion controller catches matching failures after saving the suggestion, so submission remains available.
 
 ### Scheduled discovery
 
-The [scanner](../src/scripts/recommendableWorker.ts) reads the [source registry](../src/data/recommendableSources.ts), compares content fingerprints, and skips unchanged pages. Changed pages produce stable candidate IDs derived from source identity and fingerprint. A supplied candidate ID avoids overwriting an existing record, but the read-before-create sequence is not an atomic upsert.
+The [scanner](../src/scripts/recommendableWorker.ts) reads the [source registry](../src/data/recommendableSources.ts), compares content fingerprints, and skips unchanged pages. Changed pages update the action at the stable source key transactionally, save its previous version, and return it to candidate status.
 
 When extraction reports no verifiable opportunity, the scanner attempts to mark the associated catalog entry uncertain and stores the new source fingerprint. Other failures are logged per source. In production, the `recommendable-worker` Cloud Run Job runs `dist/scripts/recommendableWorker.js` once daily at midnight America/Chicago, triggered by the `recommendable-worker-daily` Cloud Scheduler job. It uses the API runtime identity and the public-improvements Firestore database; the job image is independently deployed and does not automatically follow later API revisions.
+
+### Dallas 311 one-time seed
+
+The [boundary seed generator](../src/scripts/seedBoundaries.ts) includes a citywide `City of Dallas` record using the official City Limits GIS layer. Generate a city-only SQL seed with `npm run seed:boundaries -- --city-limits-only --output <new-file.sql>`, then apply that reviewed file with `npm run seed:boundaries -- --sql-file <file.sql> --apply`.
+
+The [311 candidate generator](../src/scripts/seedDallas311Recommendables.ts) now converts the enriched `actions` arrays in `data/311`, rather than regenerating routes from the older 279-type catalog. The checked-in [mapping](../data/dallas311-seed-mapping.json) assigns permanent member identities, canonical group keys, evidence pointers, and explicit merge decisions. The initial [manifest](../data/dallas311-seed-manifest.json) accounts for 368 source actions in 365 groups: 198 eligible drafts and 167 held groups. The two test records and `.bak` files are excluded. Only equivalent hazardous-pothole and hazardous-guardrail phone actions are merged initially; other equivalences require explicit mapping review.
+
+Generation is offline and does not load database clients:
+
+```sh
+npm run seed:dallas311-recommendables -- --output data/my-311-review.json
+```
+
+Use `--force` only to intentionally replace an existing draft. The manifest preserves source action snapshots (including null exclusions), file and observation hashes, JSON pointers, dispositions, scenario-specific exclusions, and consolidation decisions. Candidate text maps the saved tagline, formatted directions, purpose, and exclusions into the existing model. A null captured `why_not` becomes `whyNot: ""`; merged actions omit empty scenario exclusions and retain the numbering of real exclusions. Instructions incorporate the recipient naturally in the directions, end sentences with punctuation, and format portal menu paths as numbered steps; they do not append a recipient label. Captured links, addresses and route conditions are preserved. Supporting evidence contains captured source text, never generated action prose. Oversized fields are held without truncation. Staff-question holds conservatively cover an entire cited record and propagate through evidence references and merges; a record citation does not prove every action in that record is wrong. Resolve the unanswered question and update the questions document before regenerating those groups.
+
+Review the six `pilotKeys` using the [pilot notes](dallas311-seed-pilot.md), including the held example. Add only the five eligible pilot keys to `review.approvedKeys`. This is seed-content review, separate from staff catalog approval. After the Dallas boundary exists, import that selected artifact:
+
+```sh
+npm run seed:dallas311-recommendables -- --apply --manifest data/my-311-review.json --pilot --report data/my-311-pilot-import.json
+```
+
+Review the persisted pilot candidates, set `review.pilotReviewed` to `true`, and expand `review.approvedKeys` to the remaining eligible groups you have reviewed. Import with a fresh report filename:
+
+To preserve separately approved pilot edits, select only the remaining group keys in `review.approvedKeys`. Excluded pilots may satisfy the pilot prerequisite through their existing approved status even if their fingerprints differ from the draft. They are not written by that import; selected pilots still use revision matching and may be returned to candidate status if their content differs.
+
+```sh
+npm run seed:dallas311-recommendables -- --apply --manifest data/my-311-review.json --report data/my-311-import.json
+```
+
+Import reads the chosen manifest without regenerating candidate wording. It validates provenance, source drift, coverage, unresolved holds, and all eligible payloads, requires exactly one active Dallas citywide boundary with a shape, then checks action count and identity collisions before the first write. It refuses imports that would exceed the 500-record action listing limit. Coordinate imports serially because capacity preflight is not a cross-process reservation. Production collection sizes and legacy overlaps are checked at import time, not during offline generation.
+
+The report lists created, updated, retained, held, skipped, failed, and overlapping legacy records. The importer transactionally upserts each action at its stable source key. An unchanged fingerprint retains the existing status; changed content saves version history and resets the same action to candidate status. Partial failures return a nonzero exit code; rerun the same manifest with a new report path to resume. Successful import only creates review candidates; publication still uses the normal staff approval endpoint. Review legacy overlaps in the report before publication; no older entry is automatically closed.
+
+Canonical keys and member UUIDs are assigned in the mapping and must remain stable when wording changes. If a saved action changes, update its `actionHash` and evidence pointers after review while retaining its member ID and group key; then generate a new manifest. Changes in content or provenance produce a new fingerprint and seed revision token in the manifest; the database document ID remains the same `sourceKey`. Revision tokens are not separate draft document IDs. Snapshot pointers record current array positions for tracing; array positions do not define identity. The `/candidates` API paths remain compatibility routes for creating, listing, and reviewing actions; they do not identify a separate collection. Any inventory, mapping, or questions-document change invalidates an older artifact. Editing review selections does not change candidate revision IDs. For editorial changes directly in a manifest, recalculate the changed entry's fingerprint with the exported `entryFingerprint` and `candidateId` helpers; evidence and provenance remain immutable.
 
 ## Configuration and operational context
 
@@ -89,3 +134,29 @@ Existing setup instructions and environment-variable details remain in the [READ
 [Recommended Actions tests](../tests/recommendedActions.test.ts) cover model normalization and geographic applicability alongside suggestion-action behavior. They do not establish end-to-end correctness of extraction, review transactions, discovery, or external relevance services.
 
 The approved pilot's comments feed TypeDoc-generated Markdown reference rendered directly inside the [developer portal](index.md), sharing its theme, navigation, layout, and search. The portal renders this overview's Mermaid diagram graphically, with light/dark themes and an expandable source view. Generate the unified site with `npm run docs:build`; this does not change executable API behavior or OpenAPI. This feature remains the four-module pilot; the shared reference also includes the [additional selected features](index.md#feature-guides). The [Documentation workflow](index.md#automated-checks) validates the unified build on Ubuntu and Windows. Broader backfill, required-check branch rules, and publication remain separate follow-up steps.
+
+## Consolidating legacy review collections
+
+### Captured 311 photos
+
+New 311 manifests populate `input.photos` from each action's saved source record `photoUrls`; merged actions use the deduplicated union of their member records. Photos are source-page illustrations, not photos submitted by a resident or evidence that a particular incident occurred. No images are fetched or generated. Older manifests without the field remain readable.
+
+Run `npm run backfill:recommendable-photos -- --project urbanists-mixer-slides-helper --database public-improvements --report data/photo-preview.json` to preview enrichment of existing candidate and approved actions. Add `--apply` with a new report filename to write. The report preserves full pre-change records. Existing attachments are retained; captured images are appended without duplicates, and records without captured or attached images receive `[]`. Each changed action gets a version snapshot and increment while its status, text, boundaries and seed fingerprint remain unchanged. Concurrent edits are reported rather than overwritten. Held groups are not imported by this command, and other lifecycle statuses are untouched.
+
+### Collection migration
+
+`npm run migrate:recommendable-actions -- --project urbanists-mixer-slides-helper --database public-improvements --report data/recommendables-migration-preview.json` previews the one-time consolidation and writes a source-data backup. Add `--apply` with a fresh report path to apply it. The migration maps each source-backed record to its stable source key in `recommendableActions`, preserves every field and status, checks all source/target records again inside one atomic transaction, and verifies the result. Conflicting target data and legacy subcollections stop the migration without deleting source data. Repeating the migration after success is a no-op. The migration is limited to 200 legacy records per run; larger datasets require pagination.
+
+Deploy the updated API and scanner together with this data migration: older runtime images still target the obsolete collection and can recreate it. This repository change does not deploy unrelated local changes automatically.
+
+The playground’s “Show low matches (20% to 50% probability)” toggle reveals actions from 20% to below 50%, ordered by descending JEV probability. It switches the displayed results immediately without another model request. The matching response exposes `eligibleActions` for this inspection; `data` and `count` continue to represent accepted matches only.
+
+Playground cards use fixed visual score bands: primary at 80% or higher, secondary from 50% to below 80%, and tertiary from 20% to below 50%. Scores below 20% stay hidden. Primary and secondary cards appear by default; the checkbox reveals tertiary cards. These display bands do not change the server-configured acceptance threshold or saved-suggestion matching.
+
+The low-match checkbox appears only when results include scores from 20% to below 50%, after higher-scoring cards and before low-scoring cards. The resolved-boundary table follows all cards and shows boundary names alongside current representatives, bold names/titles, and stored phone/email labels and contact reasons. The page omits the API header, introductory paragraph, and documentation footer. Representative reads are paginated and do not trigger research or persistence.
+
+## JEV score cache
+
+Successful JEV judgments are cached per server process for one hour after completion. The SHA-256 lookup key contains the description converted to uppercase with all characters outside `A–Z` and `0–9` removed, plus latitude/longitude rounded to four decimal places (or nulls when omitted). Normalization affects only the cache key; JEV receives the original description on a miss.
+
+Every request still reads the current approved catalog and geography. A separate fingerprint covers the selected model and every eligible action’s ID, summary, instructions, why, and why-not text. Changes to classification content or eligibility invalidate cached scores, including additions, removals, and approval changes. Cached scores are combined with current action records, photos, representative contacts, and the current acceptance threshold. Failures, cancellations, and partial results are not cached. LRU eviction limits retained entries to 128 and an 8 MiB serialized score budget; restarts or eviction may remove entries before expiry.

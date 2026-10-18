@@ -1,0 +1,112 @@
+{
+  "title": "Short Term/Vacation Rental Survey",
+  "categories": [
+    "Other Requests"
+  ],
+  "description": "The City of Dallas uses this service request to track and survey customers about possible issues regarding short term rental/vacation properties. Information provided in this service request will be used for tracking purposes only. If assistance from a service department is needed, please submit the appropriate service request in addition to this survey. Please note, this survey is regarding possible violations occurring when a property is rented out to a tenant temporarily (Ex AirBNB, Homestay, Vacasa, etc.)",
+  "photoUrls": [],
+  "department": "Code Compliance",
+  "resolutionEstimate": "1 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "Is there a single family residence, apartment unit, or condominium unit with ongoing nuisance issue related to frequent rentals?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Yes or No",
+            "reveals": "No additional questions, instructions, alerts, or service suggestions."
+          }
+        ]
+      },
+      {
+        "question": "Is it a property that is rented for less than 30 consecutive days?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Yes or No",
+            "reveals": "No additional questions, instructions, alerts, or service suggestions."
+          }
+        ]
+      },
+      {
+        "question": "What concerns do you have with the short term rental/vacation property? (Please select all that apply.)",
+        "required": true,
+        "type": "multi_choice",
+        "options": [
+          "Noise/Loud Music",
+          "Parking Issues",
+          "Large Crowd or Gatherings",
+          "Criminal Activity",
+          "Litter",
+          "Other"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Noise/Loud Music, Parking Issues, Large Crowd or Gatherings, Criminal Activity, or Litter selected alone",
+            "reveals": "No additional questions, instructions, alerts, or service suggestions."
+          },
+          {
+            "when": "Other selected alone",
+            "reveals": "Required question If Other, please describe: appears."
+          },
+          {
+            "when": "Other selected with Noise/Loud Music, Parking Issues, Large Crowd or Gatherings, Criminal Activity, or Litter",
+            "reveals": "Required question If Other, please describe: remains visible."
+          }
+        ]
+      },
+      {
+        "question": "If Other, please describe:",
+        "required": true,
+        "type": "free_text",
+        "when": "Other selected in What concerns do you have with the short term rental/vacation property? (Please select all that apply.)"
+      }
+    ],
+    "unexplored": null,
+    "conditionalPaths": [
+      {
+        "when": "Either response to Question 1 or Question 2",
+        "reveals": "No additional content appeared."
+      },
+      {
+        "when": "Other selected alone, or with any of the other listed concerns",
+        "reveals": "Required If Other, please describe: textbox appears."
+      },
+      {
+        "when": "Any non-Other concern selected alone",
+        "reveals": "No additional fields, alerts, instructions, or suggestions appeared."
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Selected 1500 MARILLA ST, DALLAS, TX, 75201; selected Yes for both required yes/no questions, selected Noise/Loud Music and Other, entered a mock description, and continued to Contact. No Contact data entered.",
+    "contactStepObserved": "Contact step displayed How can we reach you? and an email verification instruction. Contact information is optional and may be enabled by a checkbox. Fields shown: First Name, Last Name, Email, Phone Number, Address, City, State, Zipcode."
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request to survey a possible short-term rental violation.",
+      "why": "For possible violations involving a home, apartment, or condominium rented temporarily to tenants, such as an Airbnb, Homestay, or Vacasa, including frequent rental nuisances like noise or loud music, parking, large gatherings, criminal activity, litter, or another concern. The 311 request form asks whether the residence has an ongoing nuisance related to frequent rentals and whether it is rented for less than 30 consecutive days.",
+      "why_not": "The online form for \"Short Term/Vacation Rental Survey\" requests is for tracking and survey purposes only, not for requesting assistance from a service department. If you need department assistance, then also submit the appropriate 311 service request.",
+      "what": "Submit 311 request",
+      "who": "Code Compliance",
+      "how": "Go to Dallas 311 > Under \"Other Requests\", choose \"Short Term/Vacation Rental Survey\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Under \"Other Requests\", choose \"Short Term/Vacation Rental Survey\""
+    }
+  ]
+}

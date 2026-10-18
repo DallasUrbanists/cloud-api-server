@@ -1,0 +1,78 @@
+{
+  "title": "Report Storm Brush/Debris",
+  "categories": [
+    "Garbage, Recycle, and Brush/Bulky Item Collection"
+  ],
+  "description": "Use this service request to report storm debris at a residence as the result of a recent storm event including heavy rains, thunderstorms, winds, ice, etc. This service request is used by Sanitation Services to assess the extent of the damage and determine where their efforts are most needed. This service request should only be used for storm brush and debris, please do not enter downed trees, electrical lines, or power outages here. If a tree or limb is blocking the street or alley please report your concern to public works. Depending upon Sanitation's assessment, storm debris MAY be picked up before OR during the normal bulk trash pickup week. Pick up before the normal bulk trash pickup week and holds on bulk trash citations are not guaranteed. Residents are encouraged to visit the City's landfill, transfer stations, or private haulers may also be hired at the resident's discretion and expense to avoid a bulk trash citation from Code Compliance.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/281c6e30-5f23-11ee-b5ea-bf93c94ffce7.jpg"
+  ],
+  "department": "Sanitation Services",
+  "resolutionEstimate": "1 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "prompt": "Is the storm debris blocking the alley or street?",
+        "type": "single_select",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "required": true,
+        "branches": {
+          "No": "Can continue to Contact",
+          "Yes": "Validation Alert: PLEASE CALL 311"
+        }
+      },
+      {
+        "prompt": "Would you like to be contacted?",
+        "type": "single_select",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ],
+        "required": false
+      }
+    ],
+    "staticMessage": "All storm brush/debris should be moved to the front parkway for pickup.",
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Blocking = No",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request for residential storm brush and debris.",
+      "why": "Report storm brush and debris at a residence after a recent storm, including heavy rain, thunderstorms, wind, or ice. The 311 request form asks whether debris blocks a street or alley and says storm brush and debris should be moved to the front parkway. Sanitation uses the request to assess damage and where collection efforts are most needed.",
+      "why_not": "The online form for \"Report Storm Brush/Debris\" requests does not apply to downed trees, electrical lines, power outages, or storm debris blocking a street or alley. Pickup before the regular bulk trash week and a hold on bulk trash citations are not guaranteed. If a tree or limb blocks a street or alley, then call 311 by phone to report the concern to Public Works instead of submitting a 311 request online. If other storm debris blocks a street or alley, then call 311 by phone instead of submitting a 311 request online.",
+      "what": "Submit 311 request",
+      "who": "Sanitation Services",
+      "how": "Go to Dallas 311 > Choose \"Garbage, Recycle, and Brush/Bulky Item Collection\" > Choose \"Report Storm Brush/Debris\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Garbage, Recycle, and Brush/Bulky Item Collection\" > Choose \"Report Storm Brush/Debris\""
+    },
+    {
+      "tagline": "Call Dallas 311 about storm debris blocking a street or alley.",
+      "why": "For storm brush or debris other than a downed tree or limb that blocks a street or alley. The 311 request form for \"Report Storm Brush/Debris\" requests tells people who answer Yes to the blocking question to call 311.",
+      "why_not": null,
+      "what": "Call 311 by phone",
+      "who": "Dallas 311",
+      "how": "Call 311",
+      "how_formatted": "Call [311](tel:311)"
+    },
+    {
+      "tagline": "Call 311 by phone to report a tree or limb blocking a street or alley to Public Works.",
+      "why": "For a tree or limb blocking a street or alley after a storm. The description for \"Report Storm Brush/Debris\" requests on the Dallas 311 website directs this concern to Public Works; the 311 request form directs street or alley blockages to a 311 phone call.",
+      "why_not": null,
+      "what": "Call 311 by phone",
+      "who": "Public Works",
+      "how": "Call 311 and report the tree or limb blocking the street or alley to Public Works",
+      "how_formatted": "Call [311](tel:311) and report the tree or limb blocking the street or alley to Public Works"
+    }
+  ]
+}

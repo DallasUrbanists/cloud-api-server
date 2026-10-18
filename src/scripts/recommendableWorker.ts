@@ -29,7 +29,7 @@ async function run(): Promise<void> {
         continue;
       }
       candidates++;
-      await stateRef.set({ sourceUrl: page.url, fingerprint, lastCheckedAt: new Date().toISOString(), lastCandidateId: id });
+      await stateRef.set({ sourceUrl: page.url, fingerprint, lastCheckedAt: new Date().toISOString(), lastCandidateId: source.key });
     } catch (error) {
       console.warn(JSON.stringify({ event: 'recommendable_source_scan_failed', sourceKey: source.key, message: error instanceof Error ? error.message : 'unknown error' }));
     }

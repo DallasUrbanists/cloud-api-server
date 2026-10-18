@@ -1,0 +1,61 @@
+{
+  "title": "Animal Community Cat Nuisance",
+  "categories": [
+    "Animal Care and Control"
+  ],
+  "description": "Complaints involving community cats, including sanitation and noise concerns.",
+  "photoUrls": [],
+  "department": "Dallas Animal Services",
+  "resolutionEstimate": "1 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "number": "additional",
+        "prompt": "Additional Information",
+        "type": "text",
+        "required": false
+      }
+    ],
+    "unexplored": null,
+    "pathCoverage": {
+      "detailsContinueReached": true,
+      "contactStepReached": true,
+      "contactDataEntered": false,
+      "conditionalQuestionsPresent": false,
+      "requestSubmitted": false
+    }
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "conditional_paths_explored",
+  "contactStep": {
+    "disabled": [
+      "City",
+      "State",
+      "Zipcode"
+    ],
+    "optional": [
+      "Address"
+    ],
+    "required": [
+      "First Name",
+      "Last Name",
+      "Email",
+      "Phone Number"
+    ]
+  },
+  "actions": [
+    {
+      "tagline": "Submit a 311 request about a community cat nuisance.",
+      "why": "Report a complaint involving community cats, including sanitation or noise concerns. This service addresses nuisance complaints rather than requests for spay/neuter surgery or vaccinations.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Dallas Animal Services",
+      "how": "Go to Dallas 311 > Choose \"Animal Care and Control\" > Choose \"Animal Community Cat Nuisance\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Animal Care and Control\" > Choose \"Animal Community Cat Nuisance\""
+    }
+  ]
+}

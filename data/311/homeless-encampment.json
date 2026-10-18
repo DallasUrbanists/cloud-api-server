@@ -1,0 +1,161 @@
+{
+  "title": "Homeless Encampment",
+  "categories": [
+    "Homeless Outreach, and Encampments"
+  ],
+  "description": "Use this service request to report a temporary structure being used as an overnight shelter or to report unsheltered individuals living/sleeping in vehicles, on sidewalks, under bridges, etc. DO NOT enter request for individuals trespassing in abandoned buildings, panhandling, squatting, etc. Trespassing concerns should be reported to 911; and reports for panhandling should be submitted as a Panhandling service request to the Police Department. The estimated response time for this service request is 3 business days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/64d94b90-68f2-11ed-a8ea-5978fba39ae7.jpg"
+  ],
+  "department": "Office of Emergency Management and Crisis Response",
+  "resolutionEstimate": "25 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "prompt": "Is there a temporary structure being used as an overnight shelter? (cardboard boxes, huts, tents, etc.)",
+        "type": "single_select",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "required": true,
+        "branches": {
+          "No": "Ask concern regarding unsheltered individual",
+          "Yes": "Ask encampment size, number of people, sleeping and frequency"
+        }
+      },
+      {
+        "prompt": "Size of encampment?",
+        "type": "single_select",
+        "options": [
+          "Small",
+          "Medium",
+          "Large"
+        ],
+        "required": true,
+        "when": "temporary structure = Yes"
+      },
+      {
+        "prompt": "How many people do you observe?",
+        "type": "select",
+        "options": [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9",
+          "10 or more"
+        ],
+        "required": true,
+        "when": "temporary structure = Yes"
+      },
+      {
+        "prompt": "Are they sleeping at this location?",
+        "type": "single_select",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "required": false,
+        "when": "temporary structure = Yes"
+      },
+      {
+        "prompt": "Do you see them every day?",
+        "type": "single_select",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "required": false,
+        "when": "temporary structure = Yes or concern = Living/Sleeping in Vehicle, Living/Sleeping on Sidewalk, Camping/Loitering"
+      },
+      {
+        "prompt": "What is your concern regarding the unsheltered individual?",
+        "type": "select",
+        "options": [
+          "Left behind Litter/Trash",
+          "Living/Sleeping in Vehicle",
+          "Living/Sleeping on Sidewalk",
+          "Camping/Loitering",
+          "Panhandling",
+          "At Risk (extreme cold/heat or welfare concern)",
+          "Other"
+        ],
+        "required": true,
+        "when": "temporary structure = No"
+      },
+      {
+        "prompt": "If other, please describe:",
+        "type": "text",
+        "required": true,
+        "when": "temporary structure = No and concern = Other"
+      }
+    ],
+    "conditionalMessages": [
+      {
+        "when": "temporary structure = No; concern = At Risk (extreme cold/heat or welfare concern)",
+        "text": "If this is an AT RISK situation, please contact 9-1-1"
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Temporary structure = Yes; size = Large; people = 1; sleeping = No; every day = No",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request to report an overnight shelter or unsheltered person living outdoors.",
+      "why": "To report a temporary structure used as an overnight shelter, such as a cardboard box, hut, or tent, or an unsheltered person living or sleeping in a vehicle, on a sidewalk, under a bridge, or camping or loitering. The 311 request form asks about structure, encampment size and number of people, whether people are sleeping there, and whether they are seen daily. For unsheltered individuals, it asks the concern, including left-behind litter or trash, living or sleeping in a vehicle or on a sidewalk, and camping or loitering; its panhandling and at-risk choices have separate guidance.",
+      "why_not": "The online form for \"Homeless Encampment\" requests does not apply to trespassing in abandoned buildings, panhandling, squatting, or an unsheltered person at risk from extreme cold, heat, or another welfare concern. If panhandling recurs at a specific location, then submit a \"Panhandling\" 311 request instead. If the person is at risk from extreme cold or heat or has another welfare concern, then call 911 instead of submitting a 311 request online. If the concern is trespassing, then call 911 instead of submitting a 311 request online. If panhandling is aggressive, then call 911 instead of submitting a 311 request online.",
+      "what": "Submit 311 request",
+      "who": "Office of Emergency Management and Crisis Response",
+      "how": "Go to Dallas 311 > Choose \"Homeless Outreach, and Encampments\" > Choose \"Homeless Encampment\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Homeless Outreach, and Encampments\" > Choose \"Homeless Encampment\""
+    },
+    {
+      "tagline": "Call 911 about trespassing in an abandoned building.",
+      "why": "For trespassing in an abandoned building. The description for \"Homeless Encampment\" requests on the Dallas 311 website directs trespassing concerns to 911.",
+      "why_not": null,
+      "what": "Call",
+      "who": "Emergency dispatch",
+      "how": "Call 911",
+      "how_formatted": "Call [911](tel:911)"
+    },
+    {
+      "tagline": "Submit a 311 request to report recurring panhandling at a specific location.",
+      "why": "For recurring panhandling at a specific location. The description for \"Homeless Encampment\" requests on the Dallas 311 website directs panhandling reports to the Police Department; the \"Panhandling\" 311 request asks for a description of the person, location, and days or times of activity.",
+      "why_not": "The \"Panhandling\" online form is for recurring complaints at a specific location and does not apply to aggressive panhandling. If panhandling is aggressive, then call 911.",
+      "what": "Submit 311 request",
+      "who": "Dallas Police",
+      "how": "Go to Dallas 311 > Choose \"Non-Emergency Police and Fire Services\" > Choose \"Panhandling\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Non-Emergency Police and Fire Services\" > Choose \"Panhandling\""
+    },
+    {
+      "tagline": "Call 911 for an at-risk unsheltered person.",
+      "why": "For an unsheltered person at risk from extreme cold or heat or another welfare concern. The 311 request form for \"Homeless Encampment\" requests tells people who select At Risk to contact 911.",
+      "why_not": null,
+      "what": "Call",
+      "who": "Emergency dispatch",
+      "how": "Call 911",
+      "how_formatted": "Call [911](tel:911)"
+    },
+    {
+      "tagline": "Call 911 about aggressive panhandling.",
+      "why": "For aggressive panhandling. The saved \"Panhandling\" record directs reports about aggressive panhandlers to 911 instead of the recurring-panhandling online request.",
+      "why_not": null,
+      "what": "Call",
+      "who": "Emergency dispatch",
+      "how": "Call 911",
+      "how_formatted": "Call [911](tel:911)"
+    }
+  ]
+}

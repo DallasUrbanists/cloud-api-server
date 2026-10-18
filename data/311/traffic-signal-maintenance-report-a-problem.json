@@ -1,0 +1,254 @@
+{
+  "title": "Traffic Signal Maintenance - Report a Problem",
+  "categories": [
+    "Traffic Signs and Signals"
+  ],
+  "description": "Use this request to report other Non-Emergency signal concerns such as a partially blocked signal, a single signal bulb burned out, graffiti on a signal sign or control box and a broken pedestrian crossing button. *** For school zone flasher issues - use 'School Zone Flasher Maintenance - TPW' and Traffic Signal - Modification - TPW for signal timing issues. *** The estimated response time (ERT) for this service request is 2 business day.",
+  "photoUrls": [],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "10 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "What is your traffic signal concern?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Burned out signal bulb",
+          "Pedestrian crossing",
+          "Visibility/partial obstruction",
+          "Graffiti on signal/box"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Burned out signal bulb",
+            "reveals": "Which bulb is affected?"
+          },
+          {
+            "when": "Pedestrian crossing",
+            "reveals": "What is the pedestrian crossing concern?"
+          },
+          {
+            "when": "Visibility/partial obstruction",
+            "reveals": "What is causing the visibility/partial obstruction?"
+          },
+          {
+            "when": "Graffiti on signal/box",
+            "reveals": "Where is the graffiti?"
+          }
+        ]
+      },
+      {
+        "question": "Which bulb is affected?",
+        "required": true,
+        "type": "single_choice",
+        "when": "Concern = Burned out signal bulb",
+        "options": [
+          "Red",
+          "Yellow/Amber",
+          "Green",
+          "Left turn",
+          "Pedestrian"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Red",
+            "reveals": "Can you still see at least 2 or more signal heads in the same direction of travel?"
+          }
+        ]
+      },
+      {
+        "question": "Can you still see at least 2 or more signal heads in the same direction of travel?",
+        "required": true,
+        "type": "single_choice",
+        "when": "Bulb = Red",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "No",
+            "instruction": "** Our apologies please call 3-1-1 to submit a Traffic Signal - Signal Head Turned/Not Visible service request **"
+          },
+          {
+            "when": "Yes",
+            "reveals": [
+              "Which lane of traffic is affected by the burned out bulb?",
+              "Which street is showing the burned out bulb?",
+              "Which direction is showing the burned out bulb?"
+            ]
+          }
+        ]
+      },
+      {
+        "question": "Which lane of traffic is affected by the burned out bulb?",
+        "required": true,
+        "type": "single_choice",
+        "when": "Bulb = Red and signal heads visible = Yes",
+        "options": [
+          "Left turn",
+          "Left lane",
+          "Middle lane",
+          "Right lane"
+        ]
+      },
+      {
+        "question": "Which street is showing the burned out bulb?",
+        "required": true,
+        "type": "free_text",
+        "when": "Bulb = Red and signal heads visible = Yes"
+      },
+      {
+        "question": "Which direction is showing the burned out bulb?",
+        "required": true,
+        "type": "single_choice",
+        "when": "Bulb = Red and signal heads visible = Yes",
+        "options": [
+          "Eastbound",
+          "Northbound",
+          "Southbound",
+          "Unknown",
+          "Westbound"
+        ]
+      },
+      {
+        "question": "What is the pedestrian crossing concern?",
+        "required": true,
+        "type": "single_choice",
+        "when": "Concern = Pedestrian crossing",
+        "options": [
+          "Pedestrian button broken/missing",
+          "Need pedestrian crossing button installed"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Pedestrian button broken/missing",
+            "reveals": [
+              "Which street are you crossing?",
+              "Which direction were you traveling?",
+              "Any additional information?"
+            ]
+          },
+          {
+            "when": "Need pedestrian crossing button installed",
+            "instruction": "** Please stop and submit a Traffic Signal - Timing/Modification service request **"
+          }
+        ]
+      },
+      {
+        "question": "Which street are you crossing?",
+        "required": true,
+        "type": "free_text",
+        "when": "Pedestrian button broken/missing"
+      },
+      {
+        "question": "Which direction were you traveling?",
+        "required": true,
+        "type": "single_choice",
+        "when": "Pedestrian button broken/missing",
+        "options": [
+          "Eastbound",
+          "Northbound",
+          "Southbound",
+          "Unknown",
+          "Westbound"
+        ]
+      },
+      {
+        "question": "What is causing the visibility/partial obstruction?",
+        "required": true,
+        "type": "single_choice",
+        "when": "Concern = Visibility/partial obstruction",
+        "options": [
+          "Trees/limbs",
+          "Bird nests/animals",
+          "Other signal head issue"
+        ]
+      },
+      {
+        "question": "Where is the graffiti?",
+        "required": true,
+        "type": "single_choice",
+        "when": "Concern = Graffiti on signal/box",
+        "options": [
+          "Signal box",
+          "Sign on signal",
+          "On signal pole"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "On signal pole",
+            "suggestedService": "Code Concerns"
+          }
+        ]
+      },
+      {
+        "question": "Any additional information?",
+        "required": false,
+        "type": "free_text",
+        "when": "Pedestrian button broken/missing, visibility/partial obstruction, or graffiti on signal box"
+      },
+      {
+        "question": "Additional Information",
+        "required": false,
+        "type": "free_text"
+      }
+    ],
+    "completedContactPath": "Concern = Burned out signal bulb; bulb = Red; visible heads = Yes; lane = Right lane; street supplied; direction = Westbound; Details Continue reached Contact",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request for a non-emergency traffic signal problem.",
+      "why": "For a non-emergency signal issue such as one burned-out bulb, a partially blocked signal, a broken or missing pedestrian crossing button, or graffiti on a signal sign or control box. The 311 request form asks which signal concern occurred and collects details such as the affected bulb or lane, street and travel direction, obstruction cause, graffiti location, or crossing direction.",
+      "why_not": "The online form for \"Traffic Signal Maintenance - Report a Problem\" requests does not apply to a burned-out red bulb when fewer than two signal heads are visible in the same direction of travel, school-zone flasher issues, traffic-signal timing or sync issues, or requests to install a new pedestrian crossing button. If graffiti is on a signal pole, then consider the \"Code Concerns\" 311 request suggested by the Dallas 311 website. If the issue is a school-zone flasher, then submit a \"School Zone Flasher Maintenance\" 311 request instead. If the request is for a new pedestrian crossing button or signal timing/modification, then submit a \"Traffic Signal Timing and Modification\" 311 request instead. If a red signal bulb is burned out and fewer than two signal heads are visible in the same direction of travel, then call 311 by phone instead of submitting a 311 request online and report a \"Traffic Signal Head Turned or Not Visible\" concern.",
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Traffic Signs and Signals\" > Choose \"Traffic Signal Maintenance - Report a Problem\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Traffic Signs and Signals\" > Choose \"Traffic Signal Maintenance - Report a Problem\""
+    },
+    {
+      "tagline": "Submit a 311 request for a new pedestrian crossing button or traffic-signal timing issue.",
+      "why": "For installing a pedestrian crossing button or changing an existing pedestrian crossing light, signal warning flasher, left-turn signal, thru/right-turn signal, or bicycle-lane signal. The 311 request form for \"Traffic Signal Maintenance - Report a Problem\" requests directs people seeking a new pedestrian button to \"Traffic Signal - Timing/Modification\"; the description directs timing issues there. The saved matching service is \"Traffic Signal Timing and Modification,\" which has an online button and covers these modifications.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Traffic Signs and Signals\" > Choose \"Traffic Signal Timing and Modification\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Traffic Signs and Signals\" > Choose \"Traffic Signal Timing and Modification\""
+    },
+    {
+      "tagline": "Submit a 311 request about graffiti on a traffic-signal pole.",
+      "why": "For graffiti on a traffic-signal pole. People who select On signal pole in the 311 request form see a Code Concerns suggestion. The public \"Code Concerns\" service has an online request form that includes graffiti concerns.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Code Compliance",
+      "how": "Go to Dallas 311 > Choose \"City Code Violations\" > Choose \"Code Concerns\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"City Code Violations\" > Choose \"Code Concerns\""
+    },
+    {
+      "tagline": "Submit a 311 request to maintain a school-zone flasher.",
+      "why": "For a school-zone flasher issue. The description for \"Traffic Signal Maintenance - Report a Problem\" requests on the Dallas 311 website directs school-zone flasher issues to \"School Zone Flasher Maintenance - TPW\". The public \"School Zone Flasher Maintenance\" service has an online request form for these concerns.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Traffic Signs and Signals\" > Choose \"School Zone Flasher Maintenance\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Traffic Signs and Signals\" > Choose \"School Zone Flasher Maintenance\""
+    },
+    {
+      "tagline": "Call Dallas 311 by phone about a red signal bulb when fewer than two signal heads are visible.",
+      "why": "For a red signal bulb when fewer than two signal heads are visible in the same direction of travel. People who answer No to the two-or-more-visible-heads question are instructed to call 311 and report a \"Traffic Signal - Signal Head Turned/Not Visible\" request. The public \"Traffic Signal Head Turned or Not Visible\" guidance directs people to call 311 by phone for signal heads that motorists cannot see, multiple bulbs out, or conflicting colors.",
+      "why_not": null,
+      "what": "Call 311 by phone",
+      "who": "Dallas 311",
+      "how": "Call 311 and report a \"Traffic Signal Head Turned or Not Visible\" request",
+      "how_formatted": "Call [311](tel:311) and report a \"Traffic Signal Head Turned or Not Visible\" request"
+    }
+  ]
+}

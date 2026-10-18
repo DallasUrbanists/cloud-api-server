@@ -1,0 +1,209 @@
+{
+  "title": "Sanitation District Billing Dispute",
+  "categories": [
+    "Garbage, Recycle, and Brush/Bulky Item Collection"
+  ],
+  "description": "Use this service request only for sanitation billing disputes related to cost-plus or brush/bulk debris removal, business/commercial or pack-out garbage/recycle service, questions on frequency of service received, residential roll-cart(s) quantity, and property inspections. A person claiming entitlement to a refund/credit must provide notification to the Sanitation Department within 180 days (6 months) from the date the disputed payment was received by the City or day of collection service. The estimated response time for a service request of this nature is 5 business days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/f4933940-5f22-11ee-8932-8b0765cde3fc.jpg"
+  ],
+  "department": "Sanitation Services",
+  "resolutionEstimate": "30 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "What is the Dallas Water Utilities account number?",
+        "type": "numeric_text",
+        "required": true
+      },
+      {
+        "question": "Are you the account holder?",
+        "type": "single_select",
+        "required": true,
+        "options": [
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "question": "If no, do you have authority to make changes to the Dallas Water Utilities account?",
+        "type": "single_select",
+        "required": true,
+        "shownWhen": "Account holder = No",
+        "options": [
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "question": "What type of property is this?",
+        "type": "single_select",
+        "required": true,
+        "options": [
+          "Business/Commercial",
+          "Single-Family Home",
+          "Multi-Family Complex"
+        ]
+      },
+      {
+        "question": "Select the service your request is concerning",
+        "type": "single_select",
+        "required": true,
+        "options": [
+          "Garbage",
+          "Recycle",
+          "Garbage and Recycle",
+          "Debris Removal",
+          "Other"
+        ]
+      },
+      {
+        "question": "If Other, please describe:",
+        "type": "text",
+        "required": true,
+        "shownWhen": "Service concerning = Other, or inquiry/complaint = Other"
+      },
+      {
+        "question": "Select your request/concern or dispute.",
+        "type": "single_select",
+        "required": true,
+        "options": [
+          "SAN Billing Charges/Fees Dispute",
+          "SAN Collection Services",
+          "Property Inspection",
+          "Other"
+        ]
+      },
+      {
+        "question": "Please describe in detail the request/concern.",
+        "type": "text",
+        "required": true,
+        "shownWhen": "Request/concern = Other"
+      },
+      {
+        "question": "What service is the dispute regarding:",
+        "type": "single_select",
+        "required": true,
+        "shownWhen": "Request/concern = SAN Billing Charges/Fees Dispute",
+        "options": [
+          "Brush/Bulk Collection",
+          "Business/Commercial Collection",
+          "Pack-Out Collection",
+          "Residential Collection",
+          "Residential Roll-Cart(s) Quantity"
+        ]
+      },
+      {
+        "question": "Have you previously submitted a request to dispute this charge/fee?",
+        "type": "single_select",
+        "required": true,
+        "shownWhen": "Billing Charges/Fees Dispute",
+        "options": [
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "question": "What is the Service Request Number assigned to the dispute?",
+        "type": "text",
+        "required": true,
+        "shownWhen": "Previously submitted = Yes"
+      },
+      {
+        "question": "What is the service address where the debris was removed?",
+        "type": "text",
+        "required": true,
+        "shownWhen": "Dispute service = Brush/Bulk Collection"
+      },
+      {
+        "question": "If this is related to your Annual 20 Cubic Yard Exemption, what is the Service Request Number associated with this Dispute?",
+        "type": "text",
+        "required": false,
+        "shownWhen": "Dispute service = Brush/Bulk Collection"
+      },
+      {
+        "question": "What is the nature of your inquiry/complaint?",
+        "type": "select_or_single_select_or_text",
+        "required": true,
+        "shownWhen": "Billing Charges/Fees Dispute",
+        "optionsByService": {
+          "Brush/Bulk Collection": [
+            "Debris was not set out at this address for the claimed month",
+            "I submitted my Annual 20 Cubic Yard Exemption SR",
+            "Debris did not exceed 10 cubic yards",
+            "Fees charged to incorrect service address",
+            "Over-charged for debris quantity set out",
+            "Other"
+          ],
+          "Business/Commercial Collection": [
+            "Never received/agreed to service",
+            "Not receiving agreed to Frequency of Service",
+            "Over-charged for quantity of Commercial Roll-Cart(s)",
+            "Other"
+          ],
+          "Pack-Out Collection": [
+            "Never received/agreed to service",
+            "Not receiving agreed to Frequency of Service",
+            "Other"
+          ],
+          "Residential Collection": "free text",
+          "Residential Roll-Cart(s) Quantity": "free text"
+        }
+      },
+      {
+        "question": "Additional Information",
+        "type": "text",
+        "required": false
+      }
+    ],
+    "conditionalInstructions": [
+      {
+        "when": "Account holder = Yes or authority = Yes",
+        "text": "If your name is not listed as the account holder or listed as an authorized user on the Dallas Water Utilities account, the service request will be denied."
+      },
+      {
+        "when": "Account holder = No and authority = No",
+        "text": "To request any Billing account information and / or modifications you must be the account holder or listed on the account as an authorized user. At this time you are unable to continue with this request."
+      },
+      {
+        "when": "Billing Charges/Fees Dispute",
+        "text": "A person claiming entitlement to a refund/credit must provide notification to the Sanitation Department within 180 days (6 months) from the date the disputed payment was received by the City or day of collection service."
+      },
+      {
+        "when": "Dispute service = Brush/Bulk Collection",
+        "text": "Oversize and other non-compliant brush/bulk set-outs are collected and automatically billed to customers at a rate of $60.00 per 5 cubic yards, billed in 5 cubic yard increments (Dallas City Code Section 18-4(h))."
+      },
+      {
+        "when": "Previously submitted = Yes",
+        "text": "Please provide any supporting documents to support your dispute by uploading/attaching to the service request."
+      }
+    ],
+    "observedInstructions": [
+      "In the event that we need additional information, the responsible department may contact you. Please provide your name and phone number."
+    ],
+    "pathCoverage": [
+      "Account holder Yes/No and authority Yes/No; all three property types.",
+      "All five service choices and four concern/dispute choices; Other paths revealed descriptions.",
+      "All five billing dispute services, both previous-request answers, and all complaint-choice answers for Brush/Bulk, Business/Commercial, and Pack-Out. Residential types used free text.",
+      "Mock account number and valid dispute path advanced to Contact. Contact requires First Name, Last Name, Email, and Phone Number; no contact data entered."
+    ],
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request to dispute a Sanitation charge or collection service.",
+      "why": "For a Sanitation billing dispute involving cost-plus or brush/bulk debris removal, commercial or pack-out garbage and recycling, service frequency, residential roll-cart quantity, or property inspection. The 311 request form asks for the Dallas Water Utilities account, service and dispute type, and any prior service request number. A person seeking a refund or credit must notify Sanitation within 180 days of the disputed payment or collection service.",
+      "why_not": "The online form for \"Sanitation District Billing Dispute\" requests cannot continue when the requester is neither the account holder nor authorized to make account changes. A refund or credit claim falls outside the stated notification window when Sanitation is notified more than 180 days after the disputed payment or collection date.",
+      "what": "Submit 311 request",
+      "who": "Sanitation Services",
+      "how": "Go to Dallas 311 > Choose \"Garbage, Recycle, and Brush/Bulky Item Collection\" > Choose \"Sanitation District Billing Dispute\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Garbage, Recycle, and Brush/Bulky Item Collection\" > Choose \"Sanitation District Billing Dispute\""
+    }
+  ]
+}

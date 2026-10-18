@@ -1,0 +1,70 @@
+{
+  "title": "Water Utilities Payment Plan Request",
+  "categories": [
+    "Water Inquiries and Line Locates"
+  ],
+  "description": "Use this service request to have City staff call you to set up a Water Utility account payment plan. Please complete the requested fields to request a call back regarding a payment arrangement or other options to prevent disconnection. Due to the high volume of requests, it may take up to five business days before you are contacted. If you have received a disconnection notice please contact 214-651-1441 for assistance. Do not use this service request for general inquiries or Water emergencies.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/1005d1f0-5dfd-11ee-b430-93f372796878.png"
+  ],
+  "department": "Dallas Water Utilities",
+  "resolutionEstimate": "5 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "How can we help you?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Pay my water bill",
+          "Set up payment plan"
+        ]
+      },
+      {
+        "question": "What is the Dallas Water Utilities account number?",
+        "required": true,
+        "type": "free_text"
+      }
+    ],
+    "unexplored": null,
+    "conditionalPaths": [
+      {
+        "when": "Pay my water bill selected",
+        "reveals": "No additional questions, instructions, alerts, or service suggestions."
+      },
+      {
+        "when": "Set up payment plan selected",
+        "reveals": "No additional questions, instructions, alerts, or service suggestions."
+      }
+    ],
+    "contactStepObserved": "Contact step required First Name, Last Name, Email, and Phone Number; Address was optional; City, State, and Zipcode were disabled.",
+    "completedContactPath": "Selected Set up payment plan and entered a mock Dallas Water Utilities account number, then continued to Contact. No Contact data entered.",
+    "additionalInformation": "Optional free-text"
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request for a callback about a water bill or payment plan.",
+      "why": "For requesting a Dallas Water Utilities staff callback about paying a water bill, setting up a payment arrangement, or options to prevent disconnection. The 311 request form asks whether help is needed with paying a water bill or setting up a payment plan and asks for the account number. The description says the callback may take up to five business days.",
+      "why_not": "The online form for \"Water Utilities Payment Plan Request\" requests is not for general inquiries or water emergencies. If you have received a disconnection notice, then call Dallas Water Utilities at 214-651-1441 for assistance.",
+      "what": "Submit 311 request",
+      "who": "Dallas Water Utilities",
+      "how": "Go to Dallas 311 > Choose \"Water Inquiries and Line Locates\" > Choose \"Water Utilities Payment Plan Request\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Water Inquiries and Line Locates\" > Choose \"Water Utilities Payment Plan Request\""
+    },
+    {
+      "tagline": "Call Dallas Water Utilities about a disconnection notice.",
+      "why": "For assistance after receiving a water service disconnection notice. The description for \"Water Utilities Payment Plan Request\" requests on the Dallas 311 website directs people with a notice to call 214-651-1441.",
+      "why_not": null,
+      "what": "Call",
+      "who": "Dallas Water Utilities",
+      "how": "Call 214-651-1441",
+      "how_formatted": "Call [214-651-1441](tel:2146511441)"
+    }
+  ]
+}

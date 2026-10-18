@@ -1,0 +1,88 @@
+{
+  "title": "Water/Sanitary Sewer Construction Project",
+  "categories": [
+    "Other Requests"
+  ],
+  "description": "Use this service request to request information and ask questions regarding water and wastewater construction projects. The estimated response time (ERT) for this service request is 2 business days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/2404db00-6150-11ee-a8db-7fb54e837b5a.png"
+  ],
+  "department": "Dallas Water Utilities",
+  "resolutionEstimate": "10 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "What is your question or concern?",
+        "required": true,
+        "type": "free_text"
+      },
+      {
+        "question": "When did you observe the work being reported?",
+        "required": true,
+        "type": "date",
+        "timeControl": "free_text",
+        "timePlaceholder": "12:00",
+        "meridiemOptions": [
+          "AM",
+          "PM"
+        ]
+      },
+      {
+        "question": "What is the nature of the ongoing construction work?",
+        "required": true,
+        "type": "select",
+        "options": [
+          "Road work",
+          "Pipeline work",
+          "Stormwater",
+          "Utility Work - Natural gas",
+          "Utility Work - Phone/Internet lines",
+          "Other"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Other",
+            "reveals": "Required question If other, please describe: appears."
+          },
+          {
+            "when": "Road work, Pipeline work, Stormwater, Utility Work - Natural gas, or Utility Work - Phone/Internet lines",
+            "reveals": "No additional questions, alerts, or suggestions."
+          }
+        ]
+      },
+      {
+        "question": "If other, please describe:",
+        "required": true,
+        "type": "free_text",
+        "when": "What is the nature of the ongoing construction work? = Other"
+      }
+    ],
+    "unexplored": null,
+    "conditionalPaths": [
+      {
+        "when": "Details form viewed",
+        "instruction": "In the event that we need additional information, the responsible department may contact you. Please provide your name and phone number."
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Selected the default map location 2045 FEDERAL ST; entered a mock question, selected 10/17/2026 at 12:00 PM, selected Other and entered mock construction type details, then continued to Contact. No Contact data entered.",
+    "contactStepObserved": "Contact step displayed How can we reach you? and an email verification instruction. For this request type, certain contact information is required and details will be securely stored in the database and used only to support and manage the request. Required fields shown: First Name, Last Name, Email, Phone Number. Address, City, State, Zipcode fields were also shown."
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request with a question about a water or sewer construction project.",
+      "why": "For information or questions about water or wastewater construction work. The 311 request form asks for the concern, when the work was observed, and the type of construction.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Dallas Water Utilities",
+      "how": "Go to Dallas 311 > Under \"Other Requests\", choose \"Water/Sanitary Sewer Construction Project\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Under \"Other Requests\", choose \"Water/Sanitary Sewer Construction Project\""
+    }
+  ]
+}

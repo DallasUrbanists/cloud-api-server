@@ -1,0 +1,92 @@
+{
+    "title":  "Private Development Coordination",
+    "categories":  [
+                       "Other Requests"
+                   ],
+    "description":  "Use this service request to review private engineering plans and contracts for private development within a City of Dallas public right-of-way and or easement or questions regarding construction in the listed areas. For information, contact Private Development Coordination at 214-948-4205. The estimated response time for a request of this nature is 3 business days.",
+    "photoUrls":  [
+                      "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/3d59bd00-5e2b-11ee-bf7f-3de98a985773.PNG"
+                  ],
+    "department":  "Planning \u0026 Development Department",
+    "resolutionEstimate":  "20 Business Days",
+    "requestThisService":  true,
+    "instructions":  null,
+    "detailsForm":  {
+                        "status":  "conditional_paths_explored",
+                        "observedQuestions":  [
+                                                  {
+                                                      "question":  "What is the nature of your request?",
+                                                      "required":  true,
+                                                      "type":  "select",
+                                                      "options":  [
+                                                                      "Plat reviews",
+                                                                      "Site plans",
+                                                                      "Engineering plans",
+                                                                      "Infrastructure development",
+                                                                      "Development contracts",
+                                                                      "Three-way contracts",
+                                                                      "Other"
+                                                                  ],
+                                                      "conditionalPaths":  [
+                                                                               {
+                                                                                   "when":  "Each listed nature of request selected",
+                                                                                   "reveals":  "No additional questions, instructions, alerts, or service suggestions."
+                                                                               }
+                                                                           ]
+                                                  },
+                                                  {
+                                                      "question":  "Would you like to be contacted?",
+                                                      "required":  false,
+                                                      "type":  "single_choice",
+                                                      "options":  [
+                                                                      "Yes - prior to work being completed",
+                                                                      "Yes - once the work is completed",
+                                                                      "No"
+                                                                  ],
+                                                      "conditionalPaths":  [
+                                                                               {
+                                                                                   "when":  "Each contact preference selected",
+                                                                                   "reveals":  "No additional fields or service suggestions."
+                                                                               }
+                                                                           ]
+                                                  }
+                                              ],
+                        "unexplored":  null,
+                        "conditionalPaths":  [
+                                                 {
+                                                     "when":  "Each nature of request option, including Other",
+                                                     "reveals":  "All seven choices tested; no conditional fields, alerts, instructions, or suggestions appeared."
+                                                 },
+                                                 {
+                                                     "when":  "Each Would you like to be contacted? option",
+                                                     "reveals":  "No additional fields or suggestions appeared."
+                                                 }
+                                             ],
+                        "additionalInformation":  "Optional free-text",
+                        "completedContactPath":  "Selected 1500 MARILLA ST, DALLAS, TX, 75201; selected Plat reviews and continued to Contact. No Contact data entered.",
+                        "contactStepObserved":  "Contact step displayed How can we reach you? and an email verification instruction. Contact information is optional and may be enabled by a checkbox. Fields shown: First Name, Last Name, Email, Phone Number, Address, City, State, Zipcode."
+                    },
+    "sourcePortalUrl":  "https://dallascrm.my.site.com/public/s/",
+    "serviceRequestUrl":  "https://dallascrm.my.site.com/public/s/",
+    "captureStatus":  "details_form_conditional_paths_explored",
+    "actions":  [
+                    {
+                        "tagline":  "Submit a 311 request about private development plans or construction in a City right-of-way or easement.",
+                        "why":  "To request review of private engineering plans or contracts for development within a City of Dallas public right-of-way or easement, or to ask a question about construction in those areas. The 311 request form asks whether the request concerns plat reviews, site plans, engineering plans, infrastructure development, development contracts, three-way contracts, or another topic.",
+                        "why_not":  null,
+                        "what":  "Submit 311 request",
+                        "who":  "Planning \u0026 Development Department",
+                        "how":  "Go to Dallas 311 \u003e Under \"Other Requests\", choose \"Private Development Coordination\"",
+                        "how_formatted":  "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) \u003e Under \"Other Requests\", choose \"Private Development Coordination\""
+                    },
+                    {
+                        "tagline":  "Call Private Development Coordination for information about private development coordination.",
+                        "why":  "For information about private development coordination. The description for \"Private Development Coordination\" requests on the Dallas 311 website directs people to call 214-948-4205.",
+                        "why_not":  null,
+                        "what":  "Call",
+                        "who":  "Private Development Coordination",
+                        "how":  "Call 214-948-4205",
+                        "how_formatted":  "Call [214-948-4205](tel:2149484205)"
+                    }
+                ]
+}

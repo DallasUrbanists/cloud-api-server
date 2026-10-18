@@ -1,0 +1,97 @@
+{
+  "title": "Median/Right of Way Maintenance",
+  "categories": [
+    "Streets, Medians, Sidewalks and Alleys"
+  ],
+  "description": "Use this service request type to report routine maintenance of shrubs, trees, trimming and mowing on City of Dallas medians or rights-of-way (median, triangles, and traffic circles). The estimated response time (ERT) for this service request is 3 business days.",
+  "photoUrls": [],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "5 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "prompt": "What is the maintenance needed?",
+        "type": "single_select",
+        "options": [
+          "Mowing",
+          "Shrub trimming",
+          "Tree removal",
+          "Tree trimming",
+          "Other"
+        ],
+        "required": true,
+        "branches": {
+          "Other": "Ask If Other, please describe:"
+        }
+      },
+      {
+        "prompt": "If Other, please describe:",
+        "type": "text",
+        "required": true,
+        "when": "maintenance = Other"
+      },
+      {
+        "prompt": "Which location is it?",
+        "type": "single_select",
+        "options": [
+          "Highway Right-of-Way",
+          "Median",
+          "Sidewalk",
+          "Street"
+        ],
+        "required": true
+      },
+      {
+        "prompt": "Direction of travel?",
+        "type": "single_select",
+        "options": [
+          "North",
+          "South",
+          "East",
+          "West",
+          "Other"
+        ],
+        "required": false,
+        "branches": {
+          "Other": "Ask If Other, please describe:"
+        }
+      },
+      {
+        "prompt": "If Other, please describe:",
+        "type": "text",
+        "required": true,
+        "when": "direction = Other"
+      },
+      {
+        "prompt": "Would you like to be contacted?",
+        "type": "single_select",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ],
+        "required": false
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Maintenance = Other; location = Street; direction = Other",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request for routine mowing, trimming, or tree removal on City medians or rights-of-way.",
+      "why": "For routine mowing, shrub trimming, tree trimming or removal, or other maintenance on City medians or rights-of-way such as medians, triangles, and traffic circles. The request form asks maintenance type, location (highway right-of-way, median, sidewalk, or street), and direction of travel.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Median/Right of Way Maintenance\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Median/Right of Way Maintenance\""
+    }
+  ]
+}

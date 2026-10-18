@@ -1,0 +1,132 @@
+{
+  "title": "Traffic - Speed Control",
+  "categories": [
+    "Traffic Signs and Signals"
+  ],
+  "description": "Use this service request to inquire about the installation of traffic speed control on a street. It should be used to address excessive speed, pedestrian and bicycle safety, cut-through traffic, crashes and quality of life issues. A study and petition will be required if requesting speed control measures. (Measures could include: road/speed humps, street markings, bicycle lanes and/or speed trailers) **This request requires a name, address, and phone number. ** The estimated response time (ERT) for this service request is 30 business days. ***** For chronic or recurring speeding/traffic violations use Traffic Violations (Chronic) - DPD or Extra Patrol - DPD.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/40975ba0-62e8-11ee-8cb2-375e88068bbb.JPG"
+  ],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "120 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "intro": "*** If location is an Intersection ENTER in alpha order i.e. Akard @ Young ***",
+    "observedQuestions": [
+      {
+        "question": "Is this a residential or commercial area?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Residential",
+          "Commercial/Industrial"
+        ]
+      },
+      {
+        "question": "What are the number of lanes of traffic?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "2",
+          "4",
+          "6"
+        ]
+      },
+      {
+        "question": "Where along the roadway is the issue located?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "At the intersection",
+          "In the middle of the block",
+          "At the alley entrance"
+        ]
+      },
+      {
+        "question": "Is the speeding impacting a crosswalk?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "question": "When does the issue primarily occur on weekdays or weekends?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Weekdays",
+          "Weekends"
+        ]
+      },
+      {
+        "question": "What time of the day was the problem noticed?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Morning",
+          "Noon",
+          "Evening"
+        ]
+      },
+      {
+        "question": "Is construction in the area contributing to the traffic issue?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "question": "Would you like to be contacted?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ]
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Commercial/Industrial; 6 lanes; alley entrance; crosswalk = No; weekends; evening; construction = No; contact = No; Details Continue reached Contact",
+    "contactStepObservation": "First Name, Last Name, and Phone Number marked required",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request to study traffic-speed control for a Dallas street.",
+      "why": "For excessive speed, pedestrian or bicycle safety, cut-through traffic, crashes, or quality-of-life concerns on a street, including possible road or speed humps, street markings, bicycle lanes, or speed trailers. The 311 request form asks whether the area is residential or commercial/industrial, lane count, location along the roadway, crosswalk impact, weekdays or weekends, time of day, and whether construction contributes. Intersections should be entered in alphabetical order. The description says a study and petition are required when requesting speed-control measures; a name, address, and phone number are required.",
+      "why_not": "The online form for \"Traffic - Speed Control\" requests does not apply to chronic or recurring speeding or traffic violations. If the concern is chronic or recurring speeding or another traffic violation, then submit a \"Chronic Traffic Violations\" 311 request instead. If you want additional police patrol in a neighborhood or Dallas area, then submit an \"Increased Police Patrol\" 311 request instead.",
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Traffic Signs and Signals\" > Choose \"Traffic - Speed Control\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Traffic Signs and Signals\" > Choose \"Traffic - Speed Control\""
+    },
+    {
+      "tagline": "Submit a 311 request about recurring speeding or traffic violations.",
+      "why": "For recurring speeding or traffic violations in a specific area. The description for \"Traffic - Speed Control\" requests on the Dallas 311 website directs these cases to \"Traffic Violations (Chronic) - DPD\". The public \"Chronic Traffic Violations\" service has an online request form for recurring speeding, school-zone cell-phone use, street racing, and red-light or traffic-sign violations.",
+      "why_not": "The online form for \"Chronic Traffic Violations\" requests is not for parking violations. If the traffic violation is an emergency, then call 911.",
+      "what": "Submit 311 request",
+      "who": "Dallas Police",
+      "how": "Go to Dallas 311 > Choose \"Non-Emergency Police and Fire Services\" > Choose \"Chronic Traffic Violations\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Non-Emergency Police and Fire Services\" > Choose \"Chronic Traffic Violations\""
+    },
+    {
+      "tagline": "Submit a 311 request for additional police patrol in a neighborhood or Dallas area.",
+      "why": "For requesting additional police patrol in a neighborhood or a specific Dallas area. The description for \"Traffic - Speed Control\" requests on the Dallas 311 website directs requests for extra patrol to \"Extra Patrol - DPD\". The public \"Increased Police Patrol\" service has an online request form for a neighborhood or Dallas area.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Dallas Police",
+      "how": "Go to Dallas 311 > Choose \"Non-Emergency Police and Fire Services\" > Choose \"Increased Police Patrol\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Non-Emergency Police and Fire Services\" > Choose \"Increased Police Patrol\""
+    }
+  ]
+}

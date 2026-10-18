@@ -1,0 +1,89 @@
+{
+  "title": "Railroad Crossing Repair",
+  "categories": [
+    "Streets, Medians, Sidewalks and Alleys"
+  ],
+  "description": "Use this service request to report concerns regarding railroad crossings in need of repair - i.e. rough railroad crossings. Call 9-1-1 for malfunctioning railroad signals. Contact DART for DART train/rail crossings. The estimated response time (ERT) for this service request is 7 business days. **** Please be advised that the City of Dallas does not have jurisdiction over maintenance of railroads. They are owned, operated and maintained by the rail/railroad owner and notified accordingly. ****",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/32886310-3caa-11ee-ae50-773537b2e1cd.JPG"
+  ],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "10 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "Is the repair for rough or unrepaired railroad track/grade crossings?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "No",
+            "instruction": "Uh oh, if this is regarding malfunctioning railroad arms or if a train is blocking the crossing - Call 9-1-1. For DART rail crossings - please contact DART."
+          }
+        ]
+      },
+      {
+        "question": "Would you like to be contacted?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ]
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Railroad track/grade crossing = Yes; contact = No; Details Continue reached Contact",
+    "contactStepObservation": "First Name, Last Name, Email, and Phone Number marked required",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request for a rough railroad crossing.",
+      "why": "Report a rough or unrepaired railroad track or grade crossing. The 311 request form asks whether the concern is a rough or unrepaired crossing.",
+      "why_not": "The online form for \"Railroad Crossing Repair\" requests does not apply to malfunctioning railroad signals or arms, a train blocking the crossing, or DART train/rail crossings. If railroad signals or arms are malfunctioning, then call 911. If a train is blocking the crossing, then call 911. If the crossing is for DART rail, then contact DART.",
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Railroad Crossing Repair\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Railroad Crossing Repair\""
+    },
+    {
+      "tagline": "Call 911 about malfunctioning railroad signals or crossing arms.",
+      "why": "For malfunctioning railroad signals or crossing arms. The description and 311 request form for \"Railroad Crossing Repair\" requests on the Dallas 311 website direct these concerns to 911.",
+      "why_not": null,
+      "what": "Call",
+      "who": "Emergency dispatch",
+      "how": "Call 911",
+      "how_formatted": "Call [911](tel:911)"
+    },
+    {
+      "tagline": "Contact DART Customer Support about a DART rail crossing.",
+      "why": "For a nonurgent repair concern at a DART train or rail crossing. The description for \"Railroad Crossing Repair\" requests on the Dallas 311 website directs DART rail crossing concerns to DART.",
+      "why_not": "DART Customer Support is not the route for an urgent railroad-crossing malfunction or a train blocking the crossing. If signals or arms malfunction or a train blocks the crossing, then call 911.",
+      "what": "Contact",
+      "who": "DART Customer Support",
+      "how": "Call 214-749-3333 or use the DART Contact Us page",
+      "how_formatted": "Call [214-749-3333](tel:2147493333) or use the [DART Contact Us page](https://www.dart.org/contact-us)"
+    },
+    {
+      "tagline": "Call 911 about a train blocking a railroad crossing.",
+      "why": "For a train blocking a railroad crossing. The 311 request form for \"Railroad Crossing Repair\" requests on the Dallas 311 website directs this situation to 911.",
+      "why_not": null,
+      "what": "Call",
+      "who": "Emergency dispatch",
+      "how": "Call 911",
+      "how_formatted": "Call [911](tel:911)"
+    }
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "title": "Sewer Problems",
+  "categories": [
+    "Water Inquiries and Line Locates"
+  ],
+  "description": "Use this service request to report sewer problems. In case of a sewer emergency please call 311. The estimated response time (ERT) for this service request is 10 business days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/940c4ea0-5e3b-11ee-b65c-c33ce0246595.png"
+  ],
+  "department": "Dallas Water Utilities",
+  "resolutionEstimate": "10 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "What is the Dallas Water Utilities account number?",
+        "required": true,
+        "type": "free_text"
+      },
+      {
+        "question": "If the service address is different than the address listed on the account, please provide the the service address:",
+        "required": false,
+        "type": "free_text"
+      },
+      {
+        "question": "What is the nature of your concern?",
+        "required": true,
+        "type": "free_text"
+      },
+      {
+        "question": "Would you like to be contacted?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ]
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Account number, alternate address, and concern supplied; contact = No; Details Continue reached Contact",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request about a nonemergency sewer problem.",
+      "why": "For a sewer problem that is not an emergency. The 311 request form asks for the Dallas Water Utilities account number, a description of the concern, and the service address when different from the account address.",
+      "why_not": "The online form for \"Sewer Problems\" requests is not the directed route for a sewer emergency. If the sewer problem is an emergency, then call 311 by phone instead of submitting a 311 request online.",
+      "what": "Submit 311 request",
+      "who": "Dallas Water Utilities",
+      "how": "Go to Dallas 311 > Choose \"Water Inquiries and Line Locates\" > Choose \"Sewer Problems\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Water Inquiries and Line Locates\" > Choose \"Sewer Problems\""
+    },
+    {
+      "tagline": "Call Dallas 311 by phone about a sewer emergency.",
+      "why": "For a sewer emergency. The description for \"Sewer Problems\" requests on the Dallas 311 website directs emergency concerns to 311 by phone.",
+      "why_not": null,
+      "what": "Call 311 by phone",
+      "who": "Dallas 311",
+      "how": "Call 311",
+      "how_formatted": "Call [311](tel:311)"
+    }
+  ]
+}

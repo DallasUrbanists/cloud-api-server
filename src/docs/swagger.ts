@@ -921,13 +921,50 @@ Endpoint policies:
     '/api/recommendables': {
       get: {
         summary: 'List or search approved Recommendable Actions', tags: ['Suggestions'], security: [],
-        description: 'Public endpoint. An optional search term performs a case-insensitive substring match across summary, instructions, and reason. Results are bounded to 500 approved catalog entries.',
+        description: 'Public endpoint. An optional search term performs a case-insensitive substring match across summary, instructions, why, and whyNot. Results are bounded to 500 approved catalog entries.',
         parameters: [{ name: 'search', in: 'query', required: false, schema: { type: 'string' } }],
         responses: {
           200: { description: 'Approved catalog entries.', content: { 'application/json': { schema: {
             type: 'object', properties: { data: { type: 'array', items: { $ref: '#/components/schemas/RecommendableAction' } }, count: { type: 'integer' } },
           } } } },
           400: { $ref: '#/components/responses/BadRequestError' },
+        },
+      },
+    },
+    '/api/recommendables/match': {
+      post: {
+        summary: 'Match free text to approved Recommendable Actions', tags: ['Suggestions'], security: [],
+        description: 'Read-only matching with no suggestion record. Optional coordinates must be supplied together; without them only unrestricted actions participate. Uses the entire approved catalog.',
+        requestBody: { required: true, content: { 'application/json': { schema: {
+          type: 'object', required: ['text'], properties: {
+            text: { type: 'string', minLength: 1, maxLength: 10000 },
+            latitude: { type: 'number', minimum: -90, maximum: 90, example: 32.7767 },
+            longitude: { type: 'number', minimum: -180, maximum: 180, example: -96.7970 },
+          },
+        } } } },
+        responses: {
+          200: { description: 'Matches sorted by descending probability; nothing is persisted.', content: { 'application/json': { schema: {
+            type: 'object', required: ['data', 'eligibleActions', 'count', 'diagnostics'], properties: {
+              data: { type: 'array', items: { allOf: [{ $ref: '#/components/schemas/RecommendableAction' }, { type: 'object', required: ['matchProbability'], properties: { matchProbability: { type: 'number', minimum: 0, maximum: 1 } } }] } },
+              eligibleActions: { type: 'array', description: 'All geographically eligible actions, including scores below the threshold, sorted highest first.', items: { allOf: [{ $ref: '#/components/schemas/RecommendableAction' }, { type: 'object', required: ['matchProbability'], properties: { matchProbability: { type: 'number', minimum: 0, maximum: 1 } } }] } },
+              count: { type: 'integer' },
+              diagnostics: { type: 'object', required: ['catalogCount', 'eligibleCount', 'threshold', 'boundaries'], properties: {
+                catalogCount: { type: 'integer' }, eligibleCount: { type: 'integer' }, threshold: { type: 'number' },
+                boundaries: { type: 'array', items: { type: 'object', required: ['id', 'name'], properties: {
+                  id: { type: 'integer' }, name: { type: 'string' },
+                  representatives: { type: 'array', description: 'Currently serving representatives for this boundary, with stored contact labels and reasons.', items: { type: 'object', properties: {
+                    id: { type: 'integer' }, name: { type: 'string', nullable: true }, title: { type: 'string', nullable: true },
+                    phones: { $ref: '#/components/schemas/Representative/properties/phones' }, emails: { $ref: '#/components/schemas/Representative/properties/emails' },
+                  } } },
+                } } },
+              } },
+            },
+          } } } },
+          400: { $ref: '#/components/responses/BadRequestError' },
+          415: { description: 'Send application/json.' },
+          502: { description: 'JEV returned invalid output or rejected the request.' },
+          503: { description: 'Matching is not configured or a dependency is unavailable.' },
+          504: { description: 'Matching timed out.' },
         },
       },
     },
@@ -953,18 +990,19 @@ Endpoint policies:
           type: 'object', required: ['sourceUrl', 'description'], properties: {
             sourceUrl: { type: 'string', format: 'uri' }, description: { type: 'string', maxLength: 5000 },
             boundaries: { type: 'array', items: { type: 'integer', minimum: 1 }, maxItems: 50 },
+            photos: { type: 'array', default: [], description: 'Optional photo URLs; omission means no photos.', items: { type: 'string', format: 'uri' } },
           },
         } } } },
         responses: { 201: { description: 'Candidate created.' }, 400: { $ref: '#/components/responses/BadRequestError' }, 401: { $ref: '#/components/responses/UnauthorizedError' }, 422: { description: 'No evidence-backed public input opportunity was found.' } },
       },
       get: {
-        summary: 'List Recommendable Action candidates', tags: ['Suggestions'], security: [{ ApiKeyAuth: [], BearerAuth: [] }], description: 'Staff only.',
+        summary: 'List Recommendable Actions for review', tags: ['Suggestions'], security: [{ ApiKeyAuth: [], BearerAuth: [] }], description: 'Staff only. Compatibility route returning up to the 500 newest actions across all statuses from recommendableActions.',
         responses: { 200: { description: 'Candidates returned.' }, 403: { $ref: '#/components/responses/ForbiddenError' } },
       },
     },
     '/api/recommendables/candidates/{id}': {
       patch: {
-        summary: 'Approve or reject a candidate', tags: ['Suggestions'], security: [{ ApiKeyAuth: [], BearerAuth: [] }], description: 'Staff only. Approved entries become eligible for matching.',
+        summary: 'Approve or reject an action', tags: ['Suggestions'], security: [{ ApiKeyAuth: [], BearerAuth: [] }], description: 'Staff only. Updates status and version history on the same recommendableActions document; the ID does not change. Only approved entries are eligible for matching.',
         parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
         requestBody: { required: true, content: { 'application/json': { schema: { type: 'object', required: ['decision'], properties: { decision: { type: 'string', enum: ['approve', 'reject'] } } } } } },
         responses: { 200: { description: 'Candidate reviewed.' }, 400: { $ref: '#/components/responses/BadRequestError' }, 403: { $ref: '#/components/responses/ForbiddenError' }, 404: { $ref: '#/components/responses/NotFoundError' } },
@@ -2006,7 +2044,7 @@ Endpoint policies:
         },
       },
       RecommendedActionStatus: { type: 'string', enum: ['open', 'ignored', 'started', 'paused', 'cancelled', 'finished'] },
-      RecommendableAction: { type: 'object', required: ['id', 'summary', 'instructions', 'reason', 'boundaries', 'sourceUrl', 'sourceEvidence', 'sourceDescription', 'status', 'version'], properties: { id: { type: 'string' }, summary: { type: 'string' }, instructions: { type: 'string' }, reason: { type: 'string' }, boundaries: { type: 'array', description: 'Empty means unrestricted; any one matching suggestion boundary is sufficient.', items: { type: 'integer' } }, sourceUrl: { type: 'string', format: 'uri' }, sourceEvidence: { type: 'string' }, sourceDescription: { type: 'string' }, status: { type: 'string', enum: ['candidate', 'approved', 'closed', 'uncertain', 'rejected'] }, version: { type: 'integer' }, confidence: { type: 'number', nullable: true }, createdAt: { type: 'string', format: 'date-time' }, updatedAt: { type: 'string', format: 'date-time' } } },
+      RecommendableAction: { type: 'object', required: ['id', 'summary', 'instructions', 'photos', 'why', 'whyNot', 'boundaries', 'sourceUrl', 'sourceEvidence', 'sourceDescription', 'status', 'version'], properties: { id: { type: 'string' }, summary: { type: 'string' }, instructions: { type: 'string' }, photos: { type: 'array', description: 'Photo URLs; empty when none are attached.', items: { type: 'string', format: 'uri' } }, why: { type: 'string' }, whyNot: { type: 'string', description: 'Empty string when no exclusion is recorded.' }, boundaries: { type: 'array', description: 'Empty means unrestricted; any one matching suggestion boundary is sufficient.', items: { type: 'integer' } }, sourceUrl: { type: 'string', format: 'uri' }, sourceEvidence: { type: 'string' }, sourceDescription: { type: 'string' }, status: { type: 'string', enum: ['candidate', 'approved', 'closed', 'uncertain', 'rejected'] }, version: { type: 'integer' }, confidence: { type: 'number', nullable: true }, createdAt: { type: 'string', format: 'date-time' }, updatedAt: { type: 'string', format: 'date-time' } } },
       RecommendableActionEnvelope: { type: 'object', required: ['data'], properties: { data: { $ref: '#/components/schemas/RecommendableAction' } } },
       RecommendedAction: { type: 'object', required: ['id', 'summary', 'instructions', 'representativeId', 'reason', 'expirationDate', 'status', 'creationDate', 'modificationDate'], properties: { id: { type: 'string' }, summary: { type: 'string' }, instructions: { type: 'string' }, representativeId: { type: 'integer', nullable: true }, reason: { type: 'string' }, expirationDate: { type: 'string', format: 'date-time', nullable: true }, status: { $ref: '#/components/schemas/RecommendedActionStatus' }, recommendableId: { type: 'string' }, matchProbability: { type: 'number', minimum: 0, maximum: 1 }, creationDate: { type: 'string', format: 'date-time' }, modificationDate: { type: 'string', format: 'date-time' } } },
       CreateRecommendedActionDTO: { type: 'object', required: ['summary', 'instructions', 'reason'], properties: { summary: { type: 'string' }, instructions: { type: 'string' }, representativeId: { type: 'integer', nullable: true }, reason: { type: 'string' }, expirationDate: { type: 'string', format: 'date-time', nullable: true }, status: { $ref: '#/components/schemas/RecommendedActionStatus' } } },

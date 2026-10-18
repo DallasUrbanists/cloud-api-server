@@ -1,0 +1,105 @@
+{
+  "title": "Shopping Cart Pickup",
+  "categories": [
+    "Streets, Medians, Sidewalks and Alleys"
+  ],
+  "description": "Use this service request to report five or more shopping carts that are blocking a street, alley or sidewalk. The city will NOT remove carts from private property. If a cart is located on private property, the citizen must move the cart to the parkway (grassy area between the street and sidewalk). The estimated response time (ERT) for this service request is 3 business days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/c86af460-3caf-11ee-ae50-773537b2e1cd.JPG"
+  ],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "5 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "Shopping cart(s) location?",
+        "required": true,
+        "type": "select",
+        "options": [
+          "Alley",
+          "Bridge",
+          "Curb",
+          "Median",
+          "Park",
+          "Parkway",
+          "Private property (move to parkway)",
+          "Street"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Private property (move to parkway)",
+            "instruction": "Uh oh, we apologize but the City does not remove items from private property."
+          }
+        ]
+      },
+      {
+        "question": "What is the store name on the shopping cart(s)?",
+        "required": false,
+        "type": "free_text"
+      },
+      {
+        "question": "Does cart(s) appear to be abandoned? (If no and it appears to have personal belongings, contact Police)",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "No",
+            "instruction": "If cart does not appear abandoned and contains personal belongings Contact 9-1-1"
+          }
+        ]
+      },
+      {
+        "question": "Would you like to be contacted?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ]
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Location = Street; abandoned = Yes; contact = No; Details Continue reached Contact",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request for five or more carts blocking a public way.",
+      "why": "Report five or more shopping carts blocking a street, alley, or sidewalk. The 311 request form also offers bridge, curb, median, park, and parkway locations, asks for the store name if known, and asks whether the cart appears abandoned.",
+      "why_not": "The online form for \"Shopping Cart Pickup\" requests does not apply to fewer than five carts, carts on private property, or a cart that is not abandoned and contains personal belongings. If carts are on private property, then move them to the parkway between the street and sidewalk before requesting City pickup. If a cart does not appear abandoned and contains personal belongings, then call 911.",
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Shopping Cart Pickup\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Shopping Cart Pickup\""
+    },
+    {
+      "tagline": "Call 911 about a shopping cart with personal belongings that is not abandoned.",
+      "why": "For a shopping cart that does not appear abandoned and contains personal belongings. The Dallas 311 website directs this circumstance to 911.",
+      "why_not": null,
+      "what": "Call",
+      "who": "Emergency dispatch",
+      "how": "Call 911",
+      "how_formatted": "Call [911](tel:911)"
+    },
+    {
+      "tagline": "Move shopping carts from private property to the parkway for City pickup.",
+      "why": "For five or more shopping carts on private property that need City pickup. The description and 311 request form for \"Shopping Cart Pickup\" requests on the Dallas 311 website say the City does not remove carts from private property and instruct residents to move them to the parkway between the street and sidewalk.",
+      "why_not": null,
+      "what": "Move carts to parkway",
+      "who": "Resident",
+      "how": "Move the carts to the parkway, the grassy area between the street and sidewalk",
+      "how_formatted": "Move the carts to the parkway, the grassy area between the street and sidewalk"
+    }
+  ]
+}

@@ -1,0 +1,116 @@
+{
+    "title":  "Interagency Projects",
+    "categories":  [
+                       "Streets, Medians, Sidewalks and Alleys"
+                   ],
+    "description":  "Use this service request to contact the department responsible for providing engineering and construction coordination on City of Dallas transportation projects involving other governmental agencies (DART, TXDOT, Dallas County, Collin County, and the NTTA). The estimated response time (ERT) for this service request is 3 business days. For additional information Click Here",
+    "photoUrls":  [
+
+                  ],
+    "department":  "Transportation and Public Works Department",
+    "resolutionEstimate":  "3 Business Days",
+    "requestThisService":  true,
+    "instructions":  null,
+    "detailsForm":  {
+                        "status":  "conditional_paths_explored",
+                        "observedQuestions":  [
+                                                  {
+                                                      "prompt":  "What is the interagency concern?",
+                                                      "type":  "single_select",
+                                                      "options":  [
+                                                                      "Design",
+                                                                      "Construction",
+                                                                      "Other"
+                                                                  ],
+                                                      "required":  true,
+                                                      "branches":  {
+                                                                       "Other":  "Ask If Other, please describe:"
+                                                                   }
+                                                  },
+                                                  {
+                                                      "prompt":  "If Other, please describe:",
+                                                      "type":  "text",
+                                                      "required":  true,
+                                                      "when":  "concern = Other"
+                                                  },
+                                                  {
+                                                      "prompt":  "Where is the concerned/project area?",
+                                                      "type":  "single_select",
+                                                      "options":  [
+                                                                      "Street",
+                                                                      "Freeway",
+                                                                      "Frontage Road",
+                                                                      "Bridge",
+                                                                      "Other"
+                                                                  ],
+                                                      "required":  true,
+                                                      "branches":  {
+                                                                       "Other":  "Ask If other, please describe:"
+                                                                   }
+                                                  },
+                                                  {
+                                                      "prompt":  "If other, please describe:",
+                                                      "type":  "text",
+                                                      "required":  true,
+                                                      "when":  "project area = Other"
+                                                  },
+                                                  {
+                                                      "prompt":  "Who is performing the work?",
+                                                      "type":  "single_select",
+                                                      "options":  [
+                                                                      "City of Dallas Department",
+                                                                      "Utility Company",
+                                                                      "County",
+                                                                      "State",
+                                                                      "Other"
+                                                                  ],
+                                                      "required":  false,
+                                                      "branches":  {
+                                                                       "Other":  "Ask If Other, please describe:"
+                                                                   }
+                                                  },
+                                                  {
+                                                      "prompt":  "If Other, please describe:",
+                                                      "type":  "text",
+                                                      "required":  true,
+                                                      "when":  "performer = Other"
+                                                  },
+                                                  {
+                                                      "prompt":  "Would you like to be contacted?",
+                                                      "type":  "single_select",
+                                                      "options":  [
+                                                                      "Yes - prior to work being completed",
+                                                                      "Yes - once the work is completed",
+                                                                      "No"
+                                                                  ],
+                                                      "required":  false
+                                                  }
+                                              ],
+                        "additionalInformation":  "Optional free-text",
+                        "completedContactPath":  "Concern, area, and performer = Other",
+                        "unexplored":  null
+                    },
+    "sourcePortalUrl":  "https://dallascrm.my.site.com/public/s/",
+    "serviceRequestUrl":  "https://dallascrm.my.site.com/public/s/",
+    "captureStatus":  "details_form_conditional_paths_explored",
+    "actions":  [
+                    {
+                        "tagline":  "Submit a 311 request about engineering or construction coordination on a City transportation project involving another agency.",
+                        "why":  "To contact the department coordinating engineering and construction on City of Dallas transportation projects involving another governmental agency, including DART, TxDOT, Dallas County, Collin County, or the NTTA. The 311 request form asks whether the concern is about design, construction, or another issue; the project area; and who is doing the work.",
+                        "why_not":  null,
+                        "what":  "Submit 311 request",
+                        "who":  "Transportation and Public Works Department",
+                        "how":  "Go to Dallas 311 \u003e Choose \"Streets, Medians, Sidewalks and Alleys\" \u003e Choose \"Interagency Projects\"",
+                        "how_formatted":  "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) \u003e Choose \"Streets, Medians, Sidewalks and Alleys\" \u003e Choose \"Interagency Projects\""
+                    },
+                    {
+                        "tagline":  "Visit the City of Dallas website for more information about interagency projects.",
+                        "why":  "For additional information about engineering and construction coordination on City transportation projects involving other governmental agencies. The description for \"Interagency Projects\" requests on the Dallas 311 website provides a separate \"Click Here\" link for more information, but no target URL was saved.",
+                        "why_not":  null,
+                        "what":  "Visit website",
+                        "who":  "City of Dallas Transportation and Public Works Department",
+                        "how":  "Use the \"Click Here\" link for additional information in the Interagency Projects service description",
+                        "how_formatted":  "Use the \"Click Here\" link for additional information in the Interagency Projects service description"
+                    }
+                ]
+}

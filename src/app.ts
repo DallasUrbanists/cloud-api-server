@@ -15,6 +15,7 @@ import boundariesRoutes from './routes/boundariesRoutes.js';
 import boundaryTickRoutes from './routes/boundaryTickRoutes.js';
 import recommendableActionRoutes from './routes/recommendableActionRoutes.js';
 import { swaggerDocument } from './docs/swagger.js';
+import { RecommendablePlaygroundController } from './controllers/recommendablePlaygroundController.js';
 import { HomeController } from './controllers/homeController.js';
 import { formatResponseIntegers } from './utils/responseFormatting.js';
 
@@ -739,6 +740,9 @@ export function createApp(): Express {
 
   // Homepage: Render README.md with top navigation to GitHub and API Docs
   app.get('/', HomeController.renderHome);
+  app.get('/playground/recommendables', RecommendablePlaygroundController.render);
+  app.get('/playground/recommendables/marked.js', RecommendablePlaygroundController.markedScript);
+  app.get('/playground/recommendables/purify.js', RecommendablePlaygroundController.purifyScript);
 
   // Interactive Swagger Documentation UI
   app.use('/docs', swaggerUi.serve, swaggerSetup);

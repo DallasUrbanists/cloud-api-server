@@ -1,0 +1,57 @@
+{
+  "title": "Single Family Rental Needs Registration",
+  "categories": [
+    "City Code Violations"
+  ],
+  "description": "Use this service request to report rental property NOT registered with the City of Dallas or for any issues and concerns related to the registration of rental properties, or Code Concerns at single family rental properties (single family, duplexes and rented condominium units). The estimated response time for this service request is 10 business days.",
+  "photoUrls": [],
+  "department": "Code Compliance",
+  "resolutionEstimate": "50 Business Days",
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "label": "What type of single family property is it?",
+        "options": [
+          "Condominium unit",
+          "Duplex",
+          "Triplex",
+          "Single family dwelling",
+          "Other"
+        ],
+        "type": "radio",
+        "required": true
+      },
+      {
+        "label": "Are you the tenant?",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "type": "radio",
+        "required": false
+      }
+    ],
+    "observedInstructions": [
+      "All five property types were checked against tenant Yes and No. No answer combination added form questions or routing messages."
+    ],
+    "contactStepObserved": "Contact step showed optional consent; First Name, Last Name, Email, Phone Number, Address, City, State, Zipcode were disabled by default.",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "requestThisService": true,
+  "captureStatus": "conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request about an unregistered Dallas rental or a related code concern.",
+      "why": "For a rental property not registered with the City of Dallas, a rental-registration issue, or a code concern at a rented single-family home, duplex, or condominium unit. The 311 request form asks for property type and whether the requester is the tenant.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Code Compliance",
+      "how": "Go to Dallas 311 > Choose \"City Code Violations\" > Choose \"Single Family Rental Needs Registration\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"City Code Violations\" > Choose \"Single Family Rental Needs Registration\""
+    }
+  ]
+}

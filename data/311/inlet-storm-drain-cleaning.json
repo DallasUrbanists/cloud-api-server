@@ -1,0 +1,168 @@
+{
+  "title": "Inlet/Storm Drain Cleaning",
+  "categories": [
+    "Creeks, Streams, Storm Drains, and Waterways"
+  ],
+  "description": "Use this service request to report an inlet or storm drain that needs cleaning. Water Utilities is responsible for the maintenance of underground storm sewer main lines, inlet boxes and lateral lines on public property and drainage easements throughout the City of Dallas. Water Utilities is also responsible for the removal of any obstruction in culverts under City maintained streets and alleys. The City of Dallas does not provide cleaning of private property. If this request is regarding an animal, personal items or smoke in the inlet/storm drain, please call 311 for immediate assistance. The estimated response time (ERT) for this service request is 5 business days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/48dcb070-5e3e-11ee-b65c-c33ce0246595.png"
+  ],
+  "department": "Dallas Water Utilities",
+  "resolutionEstimate": "22 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "Is the street/alley flooded?",
+        "type": "single_select",
+        "required": true,
+        "options": [
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "question": "What is the nature of your request?",
+        "type": "single_select",
+        "required": true,
+        "options": [
+          "Inlet cleaning",
+          "Storm drain cleaning",
+          "Inlet repair",
+          "Drainage ditch cleaning"
+        ]
+      },
+      {
+        "question": "What is in the inlet storm drain?",
+        "type": "select",
+        "required": true,
+        "shownWhen": "Nature = Inlet cleaning or Storm drain cleaning",
+        "options": [
+          "Animals",
+          "Debris/trash",
+          "Dirt",
+          "Grass",
+          "Leaves",
+          "Personal items",
+          "Steam"
+        ]
+      },
+      {
+        "question": "Where is the inlet/storm drain located?",
+        "type": "select",
+        "required": false,
+        "options": [
+          "Alley next to location",
+          "Back of location",
+          "Even side of alley",
+          "Front of location",
+          "Intersection",
+          "Middle of block",
+          "Northeast corner",
+          "Northwest corner",
+          "Odd side of alley",
+          "Southeast corner",
+          "Southwest corner",
+          "Unknown"
+        ]
+      },
+      {
+        "question": "Is this private property?",
+        "type": "single_select",
+        "required": false,
+        "options": [
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "question": "Would you like to be contacted?",
+        "type": "single_select",
+        "required": false,
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ]
+      },
+      {
+        "question": "Additional Information",
+        "type": "text",
+        "required": false
+      }
+    ],
+    "conditionalInstructions": [
+      {
+        "when": "Street/alley flooded = Yes",
+        "text": "If the street/alley is flooded, please submit an Inlet/Storm Drain Stopped Up - Hazardous service request by calling 311. Validation Alert: Please call 311 to report service requests of this nature. New Service Type Suggestion offers Inlet/Storm Drain Stopped Up - Hazardous."
+      },
+      {
+        "when": "What is in the inlet storm drain? = Animals or Personal items",
+        "text": "Water Utilities does not address animal(s) in the inlet storm drain. Please submit an Objects Dropped in Inlet-Hazardous - PBW service request by calling 311. Validation Alert: Please call 311 to report service requests of this nature."
+      },
+      {
+        "when": "Is this private property? = Yes",
+        "text": "The City does not clean inlets on private property. If you are reporting a parking lot of an apartment complex, please notify apartment management or maintenance."
+      }
+    ],
+    "pathCoverage": [
+      "Both flooded answers; all four nature answers.",
+      "All seven inlet contents and all twelve location answers.",
+      "Both private-property answers and all three contact-preference answers.",
+      "Continue advanced to Contact using No flooded, Inlet cleaning, Debris/trash, No private property. No contact data entered."
+    ],
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request to clean a public inlet, storm drain, drainage ditch, or City-maintained culvert.",
+      "why": "For cleaning an inlet or storm drain on public property or a drainage easement, including debris, dirt, grass, or leaves. Dallas Water Utilities also maintains storm sewer lines and removes obstructions in culverts under City-maintained streets and alleys. The 311 request form asks whether the street or alley is flooded, the kind of cleaning or repair needed, the drain contents, and the location.",
+      "why_not": "The online form for \"Inlet/Storm Drain Cleaning\" requests does not apply to a flooded street or alley, an animal or personal item or smoke in an inlet or storm drain, or cleaning on private property. If the street or alley is flooded, then call 311 by phone instead of submitting a 311 request online for the hazardous stopped-up condition. If an animal or personal item is in the inlet or storm drain, then call 311 by phone instead of submitting a 311 request online about the hazardous objects-dropped service. If smoke is in the inlet or storm drain, then call 311 by phone instead of submitting a 311 request online. If an inlet is in an apartment-complex parking lot, then notify apartment management or maintenance.",
+      "what": "Submit 311 request",
+      "who": "Dallas Water Utilities",
+      "how": "Go to Dallas 311 > Choose \"Creeks, Streams, Storm Drains, and Waterways\" > Choose \"Inlet/Storm Drain Cleaning\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Creeks, Streams, Storm Drains, and Waterways\" > Choose \"Inlet/Storm Drain Cleaning\""
+    },
+    {
+      "tagline": "Call Dallas 311 about a flooded street or alley with a stopped-up storm drain.",
+      "why": "For an inlet/storm drain cleaning concern when the street or alley is flooded. The conditional guidance on the Dallas 311 website directs this situation to the \"Inlet/Storm Drain Stopped Up - Hazardous\" service by calling 311; that target has no online request button and says to call 311 for more information.",
+      "why_not": null,
+      "what": "Call 311 by phone",
+      "who": "Dallas 311",
+      "how": "Call 311",
+      "how_formatted": "Call [311](tel:311)"
+    },
+    {
+      "tagline": "Call Dallas 311 about an animal or personal item in an inlet or storm drain.",
+      "why": "For an animal or personal item in an inlet/storm drain. The conditional guidance on the Dallas 311 website directs these cases to the dispatched \"Objects Dropped in Inlet/Storm Drain - Hazardous\" service by calling 311; that target also directs people to call 311.",
+      "why_not": null,
+      "what": "Call 311 by phone",
+      "who": "Dallas 311",
+      "how": "Call 311",
+      "how_formatted": "Call [311](tel:311)"
+    },
+    {
+      "tagline": "Call Dallas 311 about smoke in an inlet or storm drain.",
+      "why": "For smoke in an inlet or storm drain. The description for \"Inlet/Storm Drain Cleaning\" requests on the Dallas 311 website directs people to call 311 for immediate assistance.",
+      "why_not": null,
+      "what": "Call 311 by phone",
+      "who": "Dallas 311",
+      "how": "Call 311",
+      "how_formatted": "Call [311](tel:311)"
+    },
+    {
+      "tagline": "Notify apartment management about an inlet in an apartment parking lot.",
+      "why": "For an inlet on private property in an apartment-complex parking lot. The conditional guidance on the Dallas 311 website directs people to notify apartment management or maintenance because the City does not clean private-property inlets.",
+      "why_not": null,
+      "what": "Contact",
+      "who": "Apartment management or maintenance",
+      "how": "Notify apartment management or maintenance",
+      "how_formatted": "Notify apartment management or maintenance"
+    }
+  ]
+}

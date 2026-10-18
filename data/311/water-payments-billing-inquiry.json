@@ -1,0 +1,146 @@
+{
+  "title": "Water Payments & Billing Inquiry",
+  "categories": [
+    "Water Inquiries and Line Locates"
+  ],
+  "description": "Use this service request if you have a question regarding your monthly water bill statement or payments made to your account. Do not user this service request to request restoration of service, service discontinuance, new service or theft of water. For those types of request, please call Water Customer Service at 214-651-1441. For questions about garbage pickup call 311. The estimated response time for this service request is 4 business days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/ff740780-5dfc-11ee-b65c-c33ce0246595.jpg"
+  ],
+  "department": "Office of Communications & Customer Experience/311",
+  "resolutionEstimate": "21 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "What is the Dallas Water Utilities account number?",
+        "required": true,
+        "type": "numeric"
+      },
+      {
+        "question": "If the service address is different than the address listed on the account, please provide the the service address:",
+        "required": false,
+        "type": "free_text"
+      },
+      {
+        "question": "Is the concern regarding a billing issue or a payment made to your account?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Billing",
+          "Payment"
+        ]
+      },
+      {
+        "question": "Please select your billing issue:",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "I did not receive my bill",
+          "I need an explanation of my bill",
+          "Other"
+        ],
+        "when": "Is the concern regarding a billing issue or a payment made to your account? = Billing"
+      },
+      {
+        "question": "If Other, please describe:",
+        "required": true,
+        "type": "free_text",
+        "when": "Billing issue = Other"
+      },
+      {
+        "question": "How did you make your payment?",
+        "required": true,
+        "type": "select",
+        "options": [
+          "Automatic draft",
+          "City hall drop box",
+          "City hall walk in",
+          "City of dallas website (water e-pay)",
+          "Courier service",
+          "My bank online",
+          "Pay station",
+          "Payment by phone",
+          "U.S. Postal service mail"
+        ],
+        "when": "Is the concern regarding a billing issue or a payment made to your account? = Payment"
+      },
+      {
+        "question": "Date of the payment:",
+        "required": true,
+        "type": "date",
+        "when": "Is the concern regarding a billing issue or a payment made to your account? = Payment"
+      },
+      {
+        "question": "Would you like to be contacted?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ]
+      }
+    ],
+    "unexplored": null,
+    "conditionalPaths": [
+      {
+        "when": "Billing selected for issue type",
+        "reveals": "Required radio question Please select your billing issue: with options I did not receive my bill, I need an explanation of my bill, Other."
+      },
+      {
+        "when": "Billing issue = Other",
+        "reveals": "Required text question If Other, please describe:"
+      },
+      {
+        "when": "Payment selected for issue type",
+        "reveals": "Required payment method selector and required payment date question."
+      },
+      {
+        "when": "Each payment method selected",
+        "reveals": "No additional questions, instructions, alerts, or service suggestions."
+      },
+      {
+        "when": "Each contact preference selected",
+        "reveals": "No additional questions, instructions, alerts, or service suggestions."
+      }
+    ],
+    "contactStepObserved": "Contact step required First Name, Last Name, and Phone Number; Email and Address were optional; City, State, Zipcode were disabled.",
+    "completedContactPath": "Entered mock account number, selected Payment, selected a payment method, entered a mock payment date, and continued to Contact. No Contact data entered.",
+    "additionalInformation": "Optional free-text"
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request about a water bill or account payment.",
+      "why": "Ask about a monthly Dallas Water Utilities bill or a payment made to a water account. Billing examples include a bill not received or a request to explain charges; payment questions can identify the payment date and method, such as automatic draft, online bank or City water e-pay, phone, mail, drop box, pay station, walk-in, or courier. The 311 request form asks for the account number and, if different, the service address.",
+      "why_not": "The online form for \"Water Payments & Billing Inquiry\" requests is not for water service restoration, discontinuance, new service, theft of water, or garbage pickup questions. If the question is about garbage pickup, then call 311 by phone instead of submitting a 311 request online. If the concern involves service restoration, discontinuance, new service, or theft of water, then call Water Customer Service at 214-651-1441.",
+      "what": "Submit 311 request",
+      "who": "Office of Communications & Customer Experience/311",
+      "how": "Go to Dallas 311 > Choose \"Water Inquiries and Line Locates\" > Choose \"Water Payments & Billing Inquiry\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Water Inquiries and Line Locates\" > Choose \"Water Payments & Billing Inquiry\""
+    },
+    {
+      "tagline": "Call Dallas Water Utilities Customer Service about water service or theft.",
+      "why": "For restoration of water service, service discontinuance, starting new service, or reporting theft of water. The description for \"Water Payments & Billing Inquiry\" requests on the Dallas 311 website explicitly sends these requests to Water Customer Service instead of the online 311 billing/payment request.",
+      "why_not": null,
+      "what": "Call",
+      "who": "Dallas Water Utilities Customer Service",
+      "how": "Call 214-651-1441",
+      "how_formatted": "Call [214-651-1441](tel:2146511441)"
+    },
+    {
+      "tagline": "Call Dallas 311 by phone about a garbage pickup question.",
+      "why": "For a question about garbage pickup rather than a monthly water bill or payment. The description for \"Water Payments & Billing Inquiry\" requests on the Dallas 311 website directs garbage pickup questions to 311.",
+      "why_not": null,
+      "what": "Call 311 by phone",
+      "who": "Dallas 311",
+      "how": "Call 311",
+      "how_formatted": "Call [311](tel:311)"
+    }
+  ]
+}

@@ -1,0 +1,110 @@
+{
+  "title": "Graffiti Traffic Sign",
+  "categories": [
+    "Traffic Signs and Signals"
+  ],
+  "description": "Use this service request to report graffiti on traffic signs. The estimated response time (ERT) for this request is 5 business days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/67b2d460-421a-11ee-99c9-0f6c9bc743cc.JPG"
+  ],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "10 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "Where is graffiti located?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Sign",
+          "Signal"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Signal",
+            "suggestedService": "Graffiti Traffic Sign (current service)"
+          }
+        ]
+      },
+      {
+        "question": "Type of Sign?",
+        "required": true,
+        "type": "select",
+        "options": [
+          "2 way stop",
+          "Dip",
+          "Do not enter",
+          "Lane designation",
+          "Loading zone",
+          "Multi-way stop",
+          "No parking (resd/comm)",
+          "No trucks",
+          "Other",
+          "School zone",
+          "Speed limit",
+          "Street name",
+          "Street ends/no outlet",
+          "Chevron"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Other",
+            "reveals": "If Other, please describe:"
+          }
+        ]
+      },
+      {
+        "question": "If Other, please describe:",
+        "required": true,
+        "type": "free_text",
+        "when": "Type of Sign = Other"
+      },
+      {
+        "question": "What corner/direction is it?",
+        "required": false,
+        "type": "select",
+        "options": [
+          "Eastbound",
+          "Median",
+          "Northbound",
+          "Northeast",
+          "Northwest",
+          "Southbound",
+          "Southeast",
+          "Southwest",
+          "Westbound"
+        ]
+      },
+      {
+        "question": "Would you like to be contacted?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ]
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Graffiti on Sign; sign type = Other with description; direction = Westbound; contact = No; Details Continue reached Contact",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request to report graffiti on a traffic sign or signal.",
+      "why": "For graffiti on a traffic sign, including stop, do-not-enter, lane designation, parking, school-zone, speed-limit, street-name, and other signs. The 311 request form also offers Signal as a graffiti-location answer and suggests the current service for that answer. It asks for the sign type, direction, and a description when Other is selected.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Traffic Signs and Signals\" > Choose \"Graffiti Traffic Sign\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Traffic Signs and Signals\" > Choose \"Graffiti Traffic Sign\""
+    }
+  ]
+}

@@ -1,0 +1,96 @@
+{
+  "title": "Sanitation Pack-Out",
+  "categories": [
+    "Garbage, Recycle, and Brush/Bulky Item Collection"
+  ],
+  "description": "Use this service request to request pack-out service from Sanitation. For an additional fee, customers can add Pack-Out service which enables sanitation crews to go onto their private property (at an approved location) to provide collection service for our City issued garbage/recycle roll cart(s). If you wish to opt in for this service, an application is required. Please note, all customers will continue to be charged the residential collection service rate and any other related sanitation fees. The estimated response time for a request of this nature is 3 business days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/13076590-5f23-11ee-8932-8b0765cde3fc.jpg"
+  ],
+  "department": "Sanitation Services",
+  "resolutionEstimate": "5 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "prompt": "What is the Dallas Water Utilities account number?",
+        "type": "numeric",
+        "required": true
+      },
+      {
+        "prompt": "Are you the account holder?",
+        "type": "single_select",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "required": true,
+        "branches": {
+          "No": "Ask authority to make changes",
+          "Yes": "Ask account holder name"
+        }
+      },
+      {
+        "prompt": "If no, do you have authority to make changes to the Dallas Water Utilities account?",
+        "type": "single_select",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "when": "account holder = No",
+        "branches": {
+          "No": "Cannot continue; must be account holder or authorized user",
+          "Yes": "Ask account holder name; warn request will be denied if respondent is not authorized user"
+        }
+      },
+      {
+        "prompt": "What is the name listed on the Dallas Water Utilities account?",
+        "type": "text",
+        "when": "account holder = Yes or authority = Yes",
+        "required": true
+      },
+      {
+        "prompt": "What is the nature of your request?",
+        "type": "single_select",
+        "options": [
+          "Initiate Service",
+          "Cancel Service"
+        ],
+        "required": true
+      }
+    ],
+    "conditionalMessages": [
+      {
+        "when": "account holder = No; authority = No",
+        "text": "To request Pack-Out Service (which requires account modifications) you must be the account holder or listed on the account as an authorized user. At this time you are unable to continue with this request."
+      },
+      {
+        "when": "account holder = No; authority = Yes",
+        "text": "If your name is not listed as the account holder or listed as an authorized user on the Dallas Water Utilities account, the service request will be denied."
+      },
+      {
+        "when": "account holder = Yes or authority = Yes",
+        "text": "An application is required and if approved an additional fee will be applied to the stated DWU account. In the event that we need additional information, the responsible department may contact you. Please provide your name and phone number."
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "account holder = No; authority = Yes; nature = Cancel Service",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request to start or cancel paid Pack-Out collection service.",
+      "why": "For a resident seeking or cancelling Pack-Out service, which allows Sanitation crews to collect City-issued garbage or recycling carts from an approved location on private property. Starting service requires an application and carries an additional fee besides ordinary residential charges. The 311 request form asks for the Dallas Water Utilities account, account holder or authorized-user status, and whether to initiate or cancel service.",
+      "why_not": "The online form for \"Sanitation Pack-Out\" requests cannot continue when the requester is neither the account holder nor an authorized user on the Dallas Water Utilities account.",
+      "what": "Submit 311 request",
+      "who": "Sanitation Services",
+      "how": "Go to Dallas 311 > Choose \"Garbage, Recycle, and Brush/Bulky Item Collection\" > Choose \"Sanitation Pack-Out\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Garbage, Recycle, and Brush/Bulky Item Collection\" > Choose \"Sanitation Pack-Out\""
+    }
+  ]
+}

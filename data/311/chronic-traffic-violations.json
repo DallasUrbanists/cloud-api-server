@@ -1,0 +1,103 @@
+{
+    "title":  "Chronic Traffic Violations",
+    "categories":  [
+                       "Non-Emergency Police and Fire Services"
+                   ],
+    "description":  "Use this service request to report traffic violations that reoccur such as speeding, using cell phones in an active school zone, street racing and red light/traffic sign violations at/in a specific area or location. NOT for PARKING violations. NOTE: For emergencies call 9-1-1. The estimated response time (ERT) for this service request is 5 business days.",
+    "photoUrls":  [
+
+                  ],
+    "department":  "Dallas Police",
+    "resolutionEstimate":  "17 Business Days",
+    "requestThisService":  true,
+    "instructions":  null,
+    "detailsForm":  {
+                        "status":  "conditional_paths_explored",
+                        "intro":  "***Be advised that this service request is not monitored on a 24-hour basis. If you have an emergency and require immediate assistance, please call 911.***",
+                        "observedQuestions":  [
+                                                  {
+                                                      "question":  "Is this a recurring problem?",
+                                                      "required":  false,
+                                                      "type":  "single_choice",
+                                                      "options":  [
+                                                                      "Yes",
+                                                                      "No"
+                                                                  ]
+                                                  },
+                                                  {
+                                                      "question":  "What is the nature of your request?",
+                                                      "required":  true,
+                                                      "type":  "single_choice",
+                                                      "options":  [
+                                                                      "Speeding",
+                                                                      "Red light violations",
+                                                                      "Cell phone usage in school zone",
+                                                                      "Other"
+                                                                  ],
+                                                      "conditionalPaths":  [
+                                                                               {
+                                                                                   "when":  "Other",
+                                                                                   "reveals":  "If Other, please describe:"
+                                                                               }
+                                                                           ]
+                                                  },
+                                                  {
+                                                      "question":  "If Other, please describe:",
+                                                      "required":  true,
+                                                      "type":  "free_text",
+                                                      "when":  "Nature = Other"
+                                                  },
+                                                  {
+                                                      "question":  "What time of day is the violation occurring?",
+                                                      "required":  true,
+                                                      "type":  "single_choice",
+                                                      "options":  [
+                                                                      "Monday - Friday 6am - 7 pm",
+                                                                      "Monday - Friday after 7pm",
+                                                                      "Weekends"
+                                                                  ]
+                                                  },
+                                                  {
+                                                      "question":  "Give any additional information regarding individuals, vehicles, times or days of occurrence:",
+                                                      "required":  false,
+                                                      "type":  "free_text"
+                                                  },
+                                                  {
+                                                      "question":  "Would you like to be contacted?",
+                                                      "required":  false,
+                                                      "type":  "single_choice",
+                                                      "options":  [
+                                                                      "Yes - prior to work being completed",
+                                                                      "Yes - once the work is completed",
+                                                                      "No"
+                                                                  ]
+                                                  }
+                                              ],
+                        "additionalInformation":  "Optional free-text",
+                        "completedContactPath":  "Recurring = No; nature = Other with description; time = Weekends; additional details supplied; contact = No; Details Continue reached Contact",
+                        "unexplored":  null
+                    },
+    "sourcePortalUrl":  "https://dallascrm.my.site.com/public/s/",
+    "serviceRequestUrl":  "https://dallascrm.my.site.com/public/s/",
+    "captureStatus":  "details_form_conditional_paths_explored",
+    "actions":  [
+                    {
+                        "tagline":  "Submit a 311 request to report recurring traffic violations.",
+                        "why":  "To report recurring or repeat traffic violations at a specific location, including speeding, street racing, red-light or traffic-sign violations, and cell-phone use in an active school zone. The 311 request form asks whether the problem recurs, the violation type, whether it occurs on weekdays during the day, weekday evenings, or weekends, and details about people, vehicles, times, or days.",
+                        "why_not":  "The online form for \"Chronic Traffic Violations\" requests does not apply to parking violations. If the condition is an emergency or needs immediate assistance, then call 911 instead of submitting a 311 request online.",
+                        "what":  "Submit 311 request",
+                        "who":  "Dallas Police",
+                        "how":  "Go to Dallas 311 \u003e Choose \"Non-Emergency Police and Fire Services\" \u003e Choose \"Chronic Traffic Violations\"",
+                        "how_formatted":  "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) \u003e Choose \"Non-Emergency Police and Fire Services\" \u003e Choose \"Chronic Traffic Violations\""
+                    },
+                    {
+                        "tagline":  "Call emergency dispatch for an emergency involving traffic violations.",
+                        "why":  "For a traffic-violation emergency or a situation requiring immediate assistance; the Dallas 311 website says this request is not monitored on a 24-hour basis.",
+                        "why_not":  null,
+                        "what":  "Call",
+                        "who":  "Emergency dispatch",
+                        "how":  "Call 911",
+                        "how_formatted":  "Call [911](tel:911)"
+                    }
+                ]
+}

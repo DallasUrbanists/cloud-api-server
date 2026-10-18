@@ -1,0 +1,70 @@
+{
+  "title": "High Water Flooded Roadway Alarm Warning System",
+  "categories": [
+    "Creeks, Streams, Storm Drains, and Waterways",
+    "Streets, Medians, Sidewalks and Alleys",
+    "Water Inquiries and Line Locates"
+  ],
+  "description": "Use this service request to report a problem with the high water sign systems if the lights are NOT flashing when water is ON the road and if the lights are still flashing after water has receded. The estimated response time (ERT) for this service request is 1 calendar day.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/8c34f260-adda-11ee-ad6d-455ad834804b.JPG"
+  ],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "2 Calendar Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "What is going on with the warning system?",
+        "type": "single_select",
+        "required": true,
+        "options": [
+          "High water/lights not flashing",
+          "Lights flashing/no high water"
+        ]
+      },
+      {
+        "question": "What is the intersection being reported or the nearest cross street?",
+        "type": "text",
+        "required": false
+      },
+      {
+        "question": "Would you like to be contacted?",
+        "type": "single_select",
+        "required": false,
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ]
+      },
+      {
+        "question": "Additional Information",
+        "type": "text",
+        "required": false
+      }
+    ],
+    "pathCoverage": [
+      "Both warning-system answers tried; no additional fields revealed.",
+      "All three contact-preference answers tried; no additional fields revealed.",
+      "Continue advanced to Contact. No contact data entered."
+    ],
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request for a high-water warning sign system when water is on the road but its lights are not flashing, or when lights continue flashing after water has receded.",
+      "why": "For a high-water warning sign system when water is on the road but its lights are not flashing, or when lights continue flashing after water has receded. The 311 request asks which warning-system condition applies and for the intersection or nearest cross street.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Creeks, Streams, Storm Drains, and Waterways\" > Choose \"High Water Flooded Roadway Alarm Warning System\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Creeks, Streams, Storm Drains, and Waterways\" > Choose \"High Water Flooded Roadway Alarm Warning System\""
+    }
+  ]
+}

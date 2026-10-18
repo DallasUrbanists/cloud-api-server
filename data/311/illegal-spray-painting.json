@@ -1,0 +1,69 @@
+{
+  "title": "Illegal Spray Painting",
+  "categories": [
+    "Non-Emergency Police and Fire Services"
+  ],
+  "description": "Use this service request to report illegal spray painting by commercial businesses that are not using the proper painting booth, causing vapors to go into the neighborhood where applying flammable or combustible coatings onto products is an integral part of their work process without benefit of an approved spray booth, spray room, or spray area. Do not use for individual spray painting, reporting graffiti or tagging. The estimated response time for this service request is 3 business days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/ccc42fe0-5e2e-11ee-bf7f-3de98a985773.jpg"
+  ],
+  "department": "Dallas Fire-Rescue",
+  "resolutionEstimate": "30 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "Please describe the illegal spray painting being done by the company/business:",
+        "required": true,
+        "type": "free_text"
+      },
+      {
+        "question": "What is the occupancy location type?",
+        "required": false,
+        "type": "select",
+        "options": [
+          "Single family/duplex",
+          "Apartments/condos/townhouse",
+          "Hotels/motels",
+          "Business/store/office",
+          "Hospital/nursing home/jail",
+          "Industrial",
+          "Manufacturing",
+          "Nightclub/restaurant/public gathering area",
+          "School K-12/daycare",
+          "Special/construction site/vacant lot",
+          "Storage/warehouse/parking garage"
+        ]
+      },
+      {
+        "question": "Would you like to be contacted?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ]
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Description supplied; occupancy = Storage/warehouse/parking garage; contact = No; Details Continue reached Contact",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request for a commercial business applying flammable or combustible coatings as part of its work without an approved spray booth, spray room, or spray area, when vapors enter the neighborhood.",
+      "why": "For a commercial business applying flammable or combustible coatings as part of its work without an approved spray booth, spray room, or spray area, when vapors enter the neighborhood. The request asks for a description of the business activity and occupancy type.",
+      "why_not": "The online form for \"Illegal Spray Painting\" requests does not apply to individual spray painting, graffiti, or tagging.",
+      "what": "Submit 311 request",
+      "who": "Dallas Fire-Rescue",
+      "how": "Go to Dallas 311 > Choose \"Non-Emergency Police and Fire Services\" > Choose \"Illegal Spray Painting\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Non-Emergency Police and Fire Services\" > Choose \"Illegal Spray Painting\""
+    }
+  ]
+}

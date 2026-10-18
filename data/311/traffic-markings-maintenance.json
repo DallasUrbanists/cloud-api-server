@@ -1,0 +1,164 @@
+{
+  "title": "Traffic Markings - Maintenance",
+  "categories": [
+    "Traffic Signs and Signals"
+  ],
+  "description": "Use this service request for maintenance on all traffic markings for streets in Dallas city limits. This would include lane lines, center stripes, crosswalks, stop bars, lane delineations, etc. It does not include any curb markings. Maintenance on highways should go to the Texas Department of Transportation (TxDOT). The estimated response time (ERT) for this service request is 5 Business Days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/5cf0b680-42e4-11ee-b797-25547d8b54e6.JPG"
+  ],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "14 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "intro": "*** If location is an Intersection ENTER in alpha order i.e. Akard @ Young ***",
+    "observedQuestions": [
+      {
+        "question": "What is the placement of the marking?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "City roadway",
+          "Highway/freeway (contact txdot)",
+          "Parking lot (property owner's responsibility)"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Highway/freeway (contact txdot)",
+            "instruction": "Freeways and Highways are maintained by TXDOT"
+          },
+          {
+            "when": "Parking lot (property owner's responsibility)",
+            "instruction": "Parking lots are the responsibility of owner."
+          },
+          {
+            "when": "City roadway",
+            "reveals": [
+              "What type of marking?",
+              "What kind of problem is occurring?"
+            ]
+          }
+        ]
+      },
+      {
+        "question": "What type of marking?",
+        "required": true,
+        "type": "select",
+        "when": "Placement = City roadway",
+        "options": [
+          "Road humps",
+          "Small reflective buttons/markers",
+          "Center line stripe",
+          "Intersection lane control use",
+          "Left/right turn arrow",
+          "Other",
+          "Pedestrian crosswalk",
+          "Stop bar stripe",
+          "Traffic lane line"
+        ]
+      },
+      {
+        "question": "What kind of problem is occurring?",
+        "required": true,
+        "type": "single_choice",
+        "when": "Placement = City roadway",
+        "options": [
+          "Broken small reflective button",
+          "Faded",
+          "Missing",
+          "Other",
+          "Paint splattering"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Missing",
+            "reveals": "Are the markings missing because of a construction project?"
+          },
+          {
+            "when": "Other",
+            "reveals": "If Other, please describe:"
+          }
+        ]
+      },
+      {
+        "question": "Are the markings missing because of a construction project?",
+        "required": true,
+        "type": "single_choice",
+        "when": "Problem = Missing",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Yes",
+            "suggestedService": "Paving Reconstruction Project"
+          }
+        ]
+      },
+      {
+        "question": "If Other, please describe:",
+        "required": true,
+        "type": "free_text",
+        "when": "Problem = Other"
+      },
+      {
+        "question": "When did you notice the problem?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Now",
+          "Last 48 hours",
+          "Other"
+        ]
+      },
+      {
+        "question": "Would you like to be contacted?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ]
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Placement = City roadway; marking = Traffic lane line; problem = Missing; construction = No; noticed = Other; contact = No; Details Continue reached Contact",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request to maintain traffic markings on a Dallas city street.",
+      "why": "For maintenance of lane lines, center stripes, crosswalks, stop bars, road humps, reflective markers, turn arrows, traffic lane lines, or other markings on a Dallas city roadway. People who select City roadway can describe the marking type and problem, including faded, missing, broken reflective buttons, or paint splatter; if markings are missing, the 311 request form asks whether a construction project caused the problem.",
+      "why_not": "The online form for \"Traffic Markings - Maintenance\" requests does not apply to curb markings, highways, freeways, or parking lots. If markings are missing because of a City construction project, then consider the \"Paving Reconstruction Project\" 311 request suggested by the Dallas 311 website. If the marking is on a highway or freeway, then contact TxDOT.",
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Traffic Signs and Signals\" > Choose \"Traffic Markings - Maintenance\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Traffic Signs and Signals\" > Choose \"Traffic Markings - Maintenance\""
+    },
+    {
+      "tagline": "Contact TxDOT about highway or freeway traffic markings.",
+      "why": "For maintenance of traffic markings on a highway or freeway. The description for \"Traffic Markings - Maintenance\" requests on the Dallas 311 website directs highway maintenance to TxDOT.",
+      "why_not": null,
+      "what": "Contact",
+      "who": "TxDOT",
+      "how": "Contact TxDOT",
+      "how_formatted": "Contact TxDOT"
+    },
+    {
+      "tagline": "Submit a 311 request about traffic markings missing because of a construction project.",
+      "why": "For markings missing because of a construction project when the concern involves a City reconstruction project. People who answer Yes to the construction-project question see a Paving Reconstruction Project suggestion. The public \"Paving Reconstruction Project\" service has an online request form for City reconstruction projects.",
+      "why_not": "The online form for \"Paving Reconstruction Project\" requests applies to reconstruction work performed by the City or complaints about a City reconstruction project; it does not apply to non-City reconstruction work.",
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Paving Reconstruction Project\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Paving Reconstruction Project\""
+    }
+  ]
+}

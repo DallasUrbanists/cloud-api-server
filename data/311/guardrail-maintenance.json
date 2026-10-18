@@ -1,0 +1,83 @@
+{
+  "title": "Guardrail Maintenance",
+  "categories": [
+    "Streets, Medians, Sidewalks and Alleys"
+  ],
+  "description": "Use this service request to report damages to existing guardrails or treated posts. If the damages could pose a Hazardous condition that could be detrimental to vehicular or pedestrian traffic, please dial 3-1-1. The estimated response time (ERT) for this service request is 3 business days.",
+  "photoUrls": [],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "10 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "prompt": "What is the problem with the guardrail?",
+        "type": "single_select",
+        "options": [
+          "Rail damaged/missing",
+          "Posts damaged/missing",
+          "Overgrown vegetation"
+        ],
+        "required": true
+      },
+      {
+        "prompt": "What is the location of the guardrail?",
+        "type": "single_select",
+        "options": [
+          "Dead end of street",
+          "Side of road",
+          "Sidewalk",
+          "Other"
+        ],
+        "required": true,
+        "branches": {
+          "Other": "Ask If Other, please describe:"
+        }
+      },
+      {
+        "prompt": "If Other, please describe:",
+        "type": "text",
+        "required": true,
+        "when": "location = Other"
+      },
+      {
+        "prompt": "Would you like to be contacted?",
+        "type": "single_select",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ],
+        "required": false
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Overgrown vegetation; location = Other",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request for existing guardrails or treated posts with damaged or missing rail or posts, or overgrown vegetation, at a street end, roadside, sidewalk, or another described location.",
+      "why": "For existing guardrails or treated posts with damaged or missing rail or posts, or overgrown vegetation, at a street end, roadside, sidewalk, or another described location.",
+      "why_not": "The online form for \"Guardrail Maintenance\" requests does not apply when damage could pose a hazard detrimental to vehicular or pedestrian traffic. If the damage could pose that hazard, then call 311 by phone instead of submitting a 311 request online.",
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Guardrail Maintenance\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Guardrail Maintenance\""
+    },
+    {
+      "tagline": "Call Dallas 311 by phone about a hazardous guardrail.",
+      "why": "For guardrail damage that could pose a hazard detrimental to vehicular or pedestrian traffic; the description for \"Guardrail Maintenance\" requests on the Dallas 311 website directs people to dial 311.",
+      "why_not": null,
+      "what": "Call 311 by phone",
+      "who": "Dallas 311",
+      "how": "Call 311",
+      "how_formatted": "Call [311](tel:311)"
+    }
+  ]
+}

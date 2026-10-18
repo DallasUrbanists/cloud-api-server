@@ -1,0 +1,88 @@
+{
+  "title": "Increased Criminal Activities",
+  "categories": [
+    "Non-Emergency Police and Fire Services"
+  ],
+  "description": "Use this service request to report complaints of reoccurring criminal offenses such as burglaries, thefts, and criminal mischief's in a particular neighborhood that have been reported. MUST provide day/time of activity, exact location, and a description of individual(s) involved. Note: If reporting a crime that is occurring or that has just occurred - CALL 9-1-1. The estimated response time (ERT) for this service request is 3 business days.",
+  "photoUrls": [],
+  "department": "Dallas Police",
+  "resolutionEstimate": "7 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "intro": "***Be advised that this service request is not monitored on a 24-hour basis. If you have an emergency and require immediate assistance, please call 911.***",
+    "observedQuestions": [
+      {
+        "question": "Is this a recurring problem?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "No",
+            "suggestedService": "Increased Police Patrol"
+          }
+        ]
+      },
+      {
+        "question": "What is the nature of your request?",
+        "required": true,
+        "type": "free_text"
+      },
+      {
+        "question": "Give any additional information regarding individuals, vehicles, times or days of occurrence:",
+        "required": false,
+        "type": "free_text"
+      },
+      {
+        "question": "Would you like to be contacted?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ]
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Recurring = Yes; nature and additional details supplied; contact = No; Details Continue reached Contact",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request for recurring criminal offenses in a particular neighborhood, such as reported burglaries, thefts, or criminal mischief.",
+      "why": "For recurring criminal offenses in a particular neighborhood, such as reported burglaries, thefts, or criminal mischief. The description calls for days and times, exact location, and a description of involved individuals; the 311 request form asks whether the problem recurs and for information about individuals, vehicles, and times.",
+      "why_not": "The online form for \"Increased Criminal Activities\" requests does not apply to a crime occurring now or that has just occurred. If a crime is occurring or has just occurred, then call 911.",
+      "what": "Submit 311 request",
+      "who": "Dallas Police",
+      "how": "Go to Dallas 311 > Choose \"Non-Emergency Police and Fire Services\" > Choose \"Increased Criminal Activities\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Non-Emergency Police and Fire Services\" > Choose \"Increased Criminal Activities\""
+    },
+    {
+      "tagline": "Call 911 to report a crime happening now or just occurred.",
+      "why": "For a crime that is occurring or has just occurred; the description for \"Increased Criminal Activities\" requests on the Dallas 311 website directs people to call 9-1-1.",
+      "why_not": null,
+      "what": "Call",
+      "who": "Emergency dispatch",
+      "how": "Call 911",
+      "how_formatted": "Call [911](tel:911)"
+    },
+    {
+      "tagline": "Consider submitting a 311 request for additional neighborhood patrol.",
+      "why": "For a request for additional police patrol in a neighborhood or specific Dallas area when you answer No to whether the criminal activity is recurring. The Increased Criminal Activities request form suggests \"Increased Police Patrol\" for that answer.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Dallas Police",
+      "how": "Go to Dallas 311 > Choose \"Non-Emergency Police and Fire Services\" > Choose \"Increased Police Patrol\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Non-Emergency Police and Fire Services\" > Choose \"Increased Police Patrol\""
+    }
+  ]
+}

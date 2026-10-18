@@ -1,0 +1,104 @@
+{
+  "title": "Scooter/Bike Shared Dockless Vehicle",
+  "categories": [
+    "Parking, Vehicle, Bicycle and Scooter Concerns"
+  ],
+  "description": "Use this request to report concerns or issues with shared dockless scooters or bikes (i.e., scooters and bikes that are rented with a smartphone app) that are incorrectly parked, are damaged/inoperable, or are being operated improperly. Contact the relevant company for any other violations. The estimated response time for this service request is 4 business days.",
+  "photoUrls": [],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "4 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "prompt": "Scooter or Bike Company:",
+        "type": "single_select",
+        "options": [
+          "Bird (Silver and Blue)",
+          "Lime (Green and White)",
+          "Spin (Orange and Black)",
+          "Other"
+        ],
+        "required": true,
+        "branchFinding": "All company choices display the same questions"
+      },
+      {
+        "prompt": "What is the nature of the issue or complaint? (Select one)",
+        "type": "select",
+        "options": [
+          "Device is broken and inoperable",
+          "Device is in the roadway",
+          "Device is obstructing the sidewalk",
+          "Device is on private property",
+          "Device is in park, waterway, or trail",
+          "Device parked within 10 feet of intersection",
+          "48 hour parking violation",
+          "Other"
+        ],
+        "required": true,
+        "branches": {
+          "Other": "Ask If other, please describe:"
+        }
+      },
+      {
+        "prompt": "If other, please describe:",
+        "type": "text",
+        "required": true,
+        "when": "issue = Other"
+      },
+      {
+        "prompt": "Describe in detail where the scooter(s) or bike(s) is located. (e.g., laying in the grassy area in front of CVS Pharmacy). Please add a photo if available:",
+        "type": "text",
+        "required": true
+      },
+      {
+        "prompt": "Please list the identification number that is located on the front of the scooter(s) or bike(s)?",
+        "type": "text",
+        "required": false
+      },
+      {
+        "prompt": "How many scooters/bikes?",
+        "type": "numeric",
+        "required": true
+      },
+      {
+        "prompt": "Would you like to be contacted?",
+        "type": "single_select",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ],
+        "required": false
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Company = Other; issue = Other",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request about a shared dockless scooter or bike.",
+      "why": "Report a rented scooter or bicycle that is incorrectly parked, damaged or inoperable, or being operated improperly. The 311 request form asks which company is involved (Bird, Lime, Spin, or Other), the issue type—such as blocking a sidewalk, lying in a roadway, being on private property or in a park, being within 10 feet of an intersection, or a 48-hour parking violation—and its location, identification number if available, and quantity.",
+      "why_not": "The online form for \"Scooter/Bike Shared Dockless Vehicle\" requests does not apply to other violations involving the company’s devices. If the issue is another violation, then contact the relevant company.",
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Parking, Vehicle, Bicycle and Scooter Concerns\" > Choose \"Scooter/Bike Shared Dockless Vehicle\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Parking, Vehicle, Bicycle and Scooter Concerns\" > Choose \"Scooter/Bike Shared Dockless Vehicle\""
+    },
+    {
+      "tagline": "Contact the relevant scooter or bike company about another violation.",
+      "why": "For a violation involving a shared dockless scooter or bike that is not an incorrectly parked, damaged/inoperable, or improperly operated concern covered by the 311 service. The description for \"Scooter/Bike Shared Dockless Vehicle\" requests on the Dallas 311 website directs other violations to the relevant company; the saved form identifies Bird, Lime, Spin, or Other as company choices.",
+      "why_not": null,
+      "what": "Contact",
+      "who": "the relevant scooter or bike company",
+      "how": "Contact the relevant company",
+      "how_formatted": "Contact the relevant company"
+    }
+  ]
+}

@@ -1,0 +1,127 @@
+{
+  "title": "Street Lamp/Light Maintenance",
+  "categories": [
+    "Traffic Signs and Signals"
+  ],
+  "description": "Use this service request to report maintenance needed for a street light or highway lighting (including high mast and underpass lighting). The estimated response time (ERT) for this service request is 10 business days. Due to requiring lane closures, you may experience delays on maintenance of highway lighting. **Please report street lights that are mounted on wooden poles directly to Oncor 1-888-313-4747 or Click Here **",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/7f6fbb50-7d3d-11ee-a0dd-fbc6b1d79238.JPG"
+  ],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "20 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "What type of lighting needs maintenance?",
+        "required": true,
+        "type": "select",
+        "options": [
+          "Street Lighting",
+          "Pedestrian Lighting",
+          "Highway/Freeway Lighting",
+          "Traffic Signal",
+          "School Flasher or Warning Flasher",
+          "Other"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Traffic Signal or School Flasher or Warning Flasher",
+            "instruction": "Oops, If this is regarding a Traffic Signal or School Flasher/Warning Flasher issue please call 3-1-1"
+          },
+          {
+            "when": "Other",
+            "reveals": "If Other, Please Describe:"
+          },
+          {
+            "when": "Street Lighting or Pedestrian Lighting or Highway/Freeway Lighting",
+            "reveals": "What kind of problem is occurring?"
+          }
+        ]
+      },
+      {
+        "question": "If Other, Please Describe:",
+        "required": true,
+        "type": "free_text",
+        "when": "Lighting type = Other"
+      },
+      {
+        "question": "What kind of problem is occurring?",
+        "required": true,
+        "type": "single_choice",
+        "when": "Lighting type = Street, Pedestrian, Highway/Freeway, or Other",
+        "options": [
+          "Bulb out",
+          "Light cycling on and off",
+          "Other",
+          "Pole knocked down",
+          "Row of lights out"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Other",
+            "reveals": "If Other, please describe:"
+          }
+        ]
+      },
+      {
+        "question": "If Other, please describe:",
+        "required": true,
+        "type": "free_text",
+        "when": "Problem = Other"
+      },
+      {
+        "question": "Provide the the pole #, if available:",
+        "required": false,
+        "type": "free_text"
+      },
+      {
+        "question": "Would you like to be contacted?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ]
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Lighting = Street Lighting; problem = Other with description; pole supplied; contact = No; Details Continue reached Contact",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request for street, pedestrian, or highway lighting maintenance.",
+      "why": "To report maintenance needed for street, pedestrian, highway, or freeway lighting, including high mast and underpass lights. The 311 request form covers a bulb that is out, a light cycling on and off, a knocked-down pole, a row of lights out, or another lighting problem; a pole number can be supplied if available.",
+      "why_not": "The online form for \"Street Lamp/Light Maintenance\" requests is not the route for lights on wooden poles, traffic signals, school flashers, or warning flashers. If the issue concerns a traffic signal, school flasher, or warning flasher, then call 311 by phone instead of submitting a 311 request online. If the street light is mounted on a wooden pole, then report it directly to Oncor.",
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Traffic Signs and Signals\" > Choose \"Street Lamp/Light Maintenance\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Traffic Signs and Signals\" > Choose \"Street Lamp/Light Maintenance\""
+    },
+    {
+      "tagline": "Report a wooden-pole street light to Oncor.",
+      "why": "For maintenance of a street light mounted on a wooden pole. The description for \"Street Lamp/Light Maintenance\" requests on the Dallas 311 website directs this specific pole type to Oncor by phone or website.",
+      "why_not": null,
+      "what": "Report street light",
+      "who": "Oncor",
+      "how": "Call 1-888-313-4747 or visit Oncor Streetlight",
+      "how_formatted": "Call [1-888-313-4747](tel:18883134747) or visit [Oncor Streetlight](https://www.oncorstreetlight.com/)"
+    },
+    {
+      "tagline": "Call Dallas 311 by phone about a traffic signal, school flasher, or warning flasher issue.",
+      "why": "If the selected lighting type is Traffic Signal or School Flasher or Warning Flasher. The Dallas 311 website directs people with these issues to call 311 by phone instead of submitting the street-light maintenance request online.",
+      "why_not": null,
+      "what": "Call 311 by phone",
+      "who": "Dallas 311",
+      "how": "Call 311",
+      "how_formatted": "Call [311](tel:311)"
+    }
+  ]
+}

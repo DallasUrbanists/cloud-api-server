@@ -1,0 +1,100 @@
+{
+  "title": "Mosquito - Do Not Spray",
+  "categories": [
+    "City Code Violations"
+  ],
+  "description": "This Service Request is used to document residents who DO NOT wish to have Mosquito Spraying at their address (this does not include the entire block or area). Once submitted, your address will be placed on the “Do Not Spray” list, please allow up to 48 hours for your address to appear on this list. You will need to renew your request each year that you wish to be on the list. Yard signs are also available to identify a residence as a \"Do Not Spray\" Address. The estimated response time for this service request is 1 business day.",
+  "photoUrls": [],
+  "department": "Code Compliance",
+  "resolutionEstimate": "5 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "options": [
+          "Residential",
+          "Business",
+          "Vacant Lot",
+          "Multi-Family/Apartments"
+        ],
+        "prompt": "What type of property?",
+        "type": "radio",
+        "required": true
+      },
+      {
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "prompt": "Would you like to pick up a \"DO NOT SPRAY\" sign to place in your yard?",
+        "type": "radio",
+        "required": false
+      },
+      {
+        "prompt": "Additional Information",
+        "type": "text",
+        "required": false
+      }
+    ],
+    "unexplored": null,
+    "observedInstructions": [
+      {
+        "when": "All Details paths",
+        "text": "THE YARD SIGN IS DESIGNED TO HELP STAFF IDENITY YOUR RESIDENCE AS A \"DO NOT SPRAY\" ADDRESS - ***PLEASE PLACE SIGN IN FRONT YARD***",
+        "kind": "information"
+      },
+      {
+        "when": "Would you like to pick up a DO NOT SPRAY sign: Yes",
+        "text": "You may pick up the yard signs between the hours of 8:00 am - 4:00 pm Monday - Friday at: 3112 Canton Street ste #100 - Dallas, TX 75226 or 7901 Goforth Road - Dallas, TX 75238. Signs are only available between May 1st - October 31st.",
+        "kind": "validation_alert"
+      }
+    ],
+    "pathCoverage": {
+      "detailsContinueReached": true,
+      "contactStepReached": true,
+      "contactDataEntered": false,
+      "requestSubmitted": false,
+      "propertySignCombinationsTested": 8
+    }
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "conditional_paths_explored",
+  "contactStep": {
+    "contactInformationOptional": true,
+    "fields": [
+      "First Name",
+      "Last Name",
+      "Email",
+      "Phone Number",
+      "Address"
+    ],
+    "disabled": [
+      "City",
+      "State",
+      "Zipcode"
+    ]
+  },
+  "actions": [
+    {
+      "tagline": "Submit a 311 request to place your address on the mosquito Do Not Spray list.",
+      "why": "For a resident who does not want mosquito spraying at their own address. The request applies to that address, not the entire block or area; the address may take up to 48 hours to appear on the list and the request must be renewed each year. The 311 request form asks about property type and whether a yard sign is wanted.",
+      "why_not": "The online form for \"Mosquito - Do Not Spray\" requests does not cover an entire block or area.",
+      "what": "Submit 311 request",
+      "who": "Code Compliance",
+      "how": "Go to Dallas 311 > Choose \"City Code Violations\" > Choose \"Mosquito - Do Not Spray\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"City Code Violations\" > Choose \"Mosquito - Do Not Spray\""
+    },
+    {
+      "tagline": "Pick up a Do Not Spray yard sign to mark your address.",
+      "why": "For a resident who chooses Yes when the 311 request form asks whether they want a Do Not Spray yard sign. The Dallas 311 website says the sign helps staff identify the residence and should be placed in the front yard. Signs are available May 1 through October 31, Monday through Friday from 8 a.m. to 4 p.m.",
+      "why_not": null,
+      "what": "Pick up yard sign",
+      "who": "City of Dallas",
+      "how": "Pick up a sign at 3112 Canton Street, Suite 100, Dallas, TX 75226, or 7901 Goforth Road, Dallas, TX 75238",
+      "how_formatted": "Pick up a sign at 3112 Canton Street, Suite 100, Dallas, TX 75226, or 7901 Goforth Road, Dallas, TX 75238"
+    }
+  ]
+}

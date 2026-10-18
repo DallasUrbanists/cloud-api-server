@@ -1,0 +1,33 @@
+{
+  "title": "Towing Complaint",
+  "categories": [
+    "Transportation and Regulation"
+  ],
+  "description": "Use this service request for concerns regarding towing companies, operators and services. Your name and phone number are required to continue with this request. The estimated response time for this service request is 3 business days.",
+  "photoUrls": [],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "7 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "No numbered Details questions",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request about a towing company, operator, or service.",
+      "why": "For a complaint or concern about a towing company, operator, or towing service. The description says the requester must provide a name and phone number to continue.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Transportation and Regulation\" > Choose \"Towing Complaint\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Transportation and Regulation\" > Choose \"Towing Complaint\""
+    }
+  ]
+}

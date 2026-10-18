@@ -1,0 +1,85 @@
+{
+  "title": "Floodplain/Stormwater Project Inquiry",
+  "categories": [
+    "Other Requests"
+  ],
+  "description": "Use this service request for miscellaneous issues or concerns regarding floodplain construction projects. This request can also be used for customers requesting a new storm drain to be installed. The estimated response time for this service request is 5 business days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/9424f2c0-5f17-11ee-b5ea-bf93c94ffce7.png"
+  ],
+  "department": "Dallas Water Utilities",
+  "resolutionEstimate": "30 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "Are there any signs posted?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "question": "What is the project #?",
+        "required": true,
+        "type": "numeric",
+        "when": "Are there any signs posted? = Yes"
+      },
+      {
+        "question": "Would you like to be contacted?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ]
+      }
+    ],
+    "unexplored": null,
+    "conditionalPaths": [
+      {
+        "when": "Are there any signs posted? = Yes",
+        "reveals": "Required numeric field What is the project #? appears."
+      },
+      {
+        "when": "Are there any signs posted? = No",
+        "reveals": "The project number field is hidden and no other Details question appears."
+      },
+      {
+        "when": "Each Would you like to be contacted? option selected",
+        "reveals": "No additional questions, alerts, instructions, or service suggestions."
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "contactStepObserved": "Contact information is optional; First Name, Last Name, Email, Phone Number, Address, City, State, and Zipcode fields are disabled until contact information is enabled.",
+    "completedContactPath": "Selected Yes for Are there any signs posted?, entered a mock project number, and continued to Contact. No Contact data entered."
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 inquiry about a floodplain construction project.",
+      "why": "Ask about a floodplain construction project or report a miscellaneous concern about one. The 311 request form asks whether project signs are posted and, if they are, requests the project number.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Dallas Water Utilities",
+      "how": "Go to Dallas 311 > Under \"Other Requests\", choose \"Floodplain/Stormwater Project Inquiry\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Under \"Other Requests\", choose \"Floodplain/Stormwater Project Inquiry\""
+    },
+    {
+      "tagline": "Submit a 311 request for a new storm drain.",
+      "why": "Request installation of a new storm drain. The description for \"Floodplain/Stormwater Project Inquiry\" requests on the Dallas 311 website explicitly includes this purpose; the 311 request form asks whether project signs are posted and requests a project number only if they are.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Dallas Water Utilities",
+      "how": "Go to Dallas 311 > Under \"Other Requests\", choose \"Floodplain/Stormwater Project Inquiry\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Under \"Other Requests\", choose \"Floodplain/Stormwater Project Inquiry\""
+    }
+  ]
+}

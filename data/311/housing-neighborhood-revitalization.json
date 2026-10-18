@@ -1,0 +1,91 @@
+{
+  "title": "Housing & Neighborhood Revitalization",
+  "categories": [
+    "Housing and Community Concerns"
+  ],
+  "description": "Use this service request to request assistance or information related to home repair, Dallas Home Assistance Program, first time home buyers program, or the Major System Repair Program (roofing, electrical, plumbing/gas, and HVAC.) The estimated response time for this service request is 3 business days.",
+  "photoUrls": [],
+  "department": "Office of Housing and Community Empowerment",
+  "resolutionEstimate": "5 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "prompt": "What is the nature of your concern?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Dallas tomorrow fund",
+          "First time home buyers program",
+          "Major system repair program",
+          "Homeless encampment",
+          "Substandard conditions",
+          "Other"
+        ],
+        "branches": {
+          "Other": "Ask If other, please describe:",
+          "Major system repair program": "Ask program subtype"
+        }
+      },
+      {
+        "prompt": "Which Major System Repair Program are you inquiring about?",
+        "type": "select",
+        "required": true,
+        "when": "nature = Major system repair program",
+        "options": [
+          "Roofing",
+          "Electrical",
+          "Plumbing",
+          "Gas",
+          "Heating",
+          "Air conditioning",
+          "Other"
+        ],
+        "branches": {
+          "Other": "Ask If Other, Please Describe:"
+        }
+      },
+      {
+        "prompt": "If other, please describe:",
+        "type": "text",
+        "required": true,
+        "when": "nature = Other"
+      },
+      {
+        "prompt": "If Other, Please Describe:",
+        "type": "text",
+        "required": true,
+        "when": "program subtype = Other"
+      },
+      {
+        "prompt": "Would you like to be contacted?",
+        "type": "single_select",
+        "required": false,
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ]
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Nature = Major system repair program; subtype = Other; description supplied",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request for home repair or housing-program assistance and information.",
+      "why": "For assistance or information about home repair, the Dallas Home Assistance Program, the first-time home buyers program, or the Major System Repair Program for roofing, electrical, plumbing or gas, heating, or air conditioning. The 311 request form asks which program or repair type the inquiry concerns.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Office of Housing and Community Empowerment",
+      "how": "Go to Dallas 311 > Choose \"Housing and Community Concerns\" > Choose \"Housing & Neighborhood Revitalization\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Housing and Community Concerns\" > Choose \"Housing & Neighborhood Revitalization\""
+    }
+  ]
+}

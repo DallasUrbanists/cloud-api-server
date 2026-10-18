@@ -1,0 +1,108 @@
+{
+  "title": "Guardrail New",
+  "categories": [
+    "Streets, Medians, Sidewalks and Alleys"
+  ],
+  "description": "Use this service request to inquire about new guardrails for Dallas city roadways. For maintenance on guardrails - use Guardrail Repair - Routine. **Guardrails on the freeway are handled by TXDOT. Guardrails on private property are the owner's responsibility. ** The estimated response time (ERT) for this service request is 10 business days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/0a14c070-42b5-11ee-b797-25547d8b54e6.JPG"
+  ],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "45 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "prompt": "Is the installation on a city roadway, freeway or private property?",
+        "type": "single_select",
+        "options": [
+          "City roadway",
+          "Freeway (refer to txdot)",
+          "Private property (property owner)"
+        ],
+        "required": true,
+        "branches": {
+          "Private property (property owner)": "Validation Alert: Oops, private property railings are the owner's responsibility.",
+          "Freeway (refer to txdot)": "Validation Alert: Uh oh, freeways are handled by TXDOT."
+        }
+      },
+      {
+        "prompt": "Why is the guardrail needed?",
+        "type": "single_select",
+        "options": [
+          "Dangerous curve",
+          "Drop off beside roadway",
+          "Other",
+          "Damage to private property"
+        ],
+        "required": true,
+        "branches": {
+          "Other": "Ask If other, please describe:"
+        }
+      },
+      {
+        "prompt": "If other, please describe:",
+        "type": "text",
+        "required": true,
+        "when": "reason = Other"
+      },
+      {
+        "prompt": "Would you like to be contacted?",
+        "type": "single_select",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ],
+        "required": false
+      }
+    ],
+    "staticMessage": "*** If location is an Intersection ENTER in alpha order i.e. Akard @ Young ***",
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "City roadway; Damage to private property",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request to ask about a new guardrail on a Dallas city roadway.",
+      "why": "To inquire about installing a new guardrail on a Dallas city roadway, such as at a dangerous curve or beside a drop-off. The 311 request form asks whether the location is a city roadway, freeway, or private property and why a guardrail is needed; for an unlisted reason, it asks for details. If reporting an intersection, the 311 request form instructs people to enter the intersecting streets in alphabetical order.",
+      "why_not": "The online form for \"Guardrail New\" requests does not apply to existing guardrails needing routine maintenance, hazardous guardrail damage, freeway guardrails, or guardrails on private property. Private-property guardrails are the property owner's responsibility. If an existing guardrail needs routine maintenance, then submit a \"Guardrail Maintenance\" 311 request instead. If guardrail damage poses a hazard to traffic or pedestrians, then call 311 by phone instead of submitting a 311 request online. If the location is a freeway, then contact TxDOT.",
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Guardrail New\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Guardrail New\""
+    },
+    {
+      "tagline": "Contact TxDOT about a new guardrail on a freeway.",
+      "why": "For a request about a new guardrail on a freeway. The description for \"Guardrail New\" requests on the Dallas 311 website says freeway guardrails are handled by TxDOT, and the 311 request form directs people who select Freeway to TxDOT.",
+      "why_not": null,
+      "what": "Contact",
+      "who": "TxDOT",
+      "how": "Contact TxDOT about a new freeway guardrail",
+      "how_formatted": "Contact TxDOT about a new freeway guardrail"
+    },
+    {
+      "tagline": "Submit a 311 request for routine maintenance of an existing guardrail.",
+      "why": "To report routine damage to an existing guardrail or treated post. The description for \"Guardrail New\" requests on the Dallas 311 website calls this route \"Guardrail Repair - Routine\"; the public Dallas 311 service for routine guardrail repair is titled \"Guardrail Maintenance\". Hazardous damage must be reported by calling 311 by phone.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Guardrail Maintenance\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Guardrail Maintenance\""
+    },
+    {
+      "tagline": "Call Dallas 311 by phone about hazardous guardrail damage.",
+      "why": "For a guardrail knocked down or missing with a high fall risk, or damaged metal protruding into the right of way. The saved \"Guardrail Repair Hazardous\" guidance says emergency repairs must be dispatched by calling 311, and the \"Guardrail Maintenance\" record also directs hazardous damage to 311 by phone.",
+      "why_not": null,
+      "what": "Call 311 by phone",
+      "who": "Dallas 311",
+      "how": "Call 311",
+      "how_formatted": "Call [311](tel:311)"
+    }
+  ]
+}

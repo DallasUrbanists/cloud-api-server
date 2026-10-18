@@ -1,0 +1,33 @@
+{
+  "title": "Water Pollution Urgent",
+  "categories": [
+    "Other Requests"
+  ],
+  "description": "Use this service request to report dumping of any materials on City or vacant property that is exposed to rain or that can enter into a creek, river or lake. Use this service request if an emergency or urgent response is needed. The estimated response time (ERT) for this service request is 1 business day.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/b4182950-5ee8-11ee-8932-8b0765cde3fc.png"
+  ],
+  "department": "Dallas Water Utilities",
+  "resolutionEstimate": "1 Business Days",
+  "requestThisService": false,
+  "instructions": "Please call 311 for more information",
+  "detailsForm": {
+    "status": "instructions_only",
+    "observedQuestions": [],
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "instructions_only",
+  "actions": [
+    {
+      "tagline": "Call Dallas 311 by phone for information about urgently reporting water pollution.",
+      "why": "For urgent dumping of material on City or vacant property where rain may carry it into a creek, river, or lake. The \"Water Pollution Urgent\" page has no online request button and instructs people to call 311 for more information.",
+      "why_not": null,
+      "what": "Call 311 by phone",
+      "who": "Dallas 311",
+      "how": "Call 311",
+      "how_formatted": "Call [311](tel:311)"
+    }
+  ]
+}

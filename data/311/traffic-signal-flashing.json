@@ -1,0 +1,109 @@
+{
+  "title": "Traffic Signal - Flashing",
+  "categories": [
+    "Traffic Signs and Signals"
+  ],
+  "description": "Use this service request to report signals that are flashing a single color. ** Use School Zone Flasher Maintenance for school zone flashers. ** The estimated response time (ERT) for this service request is 2 business days.",
+  "photoUrls": [],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "5 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "What color is flashing?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Red in all directions",
+          "Red/Yellow"
+        ]
+      },
+      {
+        "question": "When did you notice the problem?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Now",
+          "Last 4 hours",
+          "Last 24 hours",
+          "Last 48 hours",
+          "Other"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Other",
+            "reveals": "If other, please describe:"
+          }
+        ]
+      },
+      {
+        "question": "If other, please describe:",
+        "required": true,
+        "type": "free_text",
+        "when": "When noticed = Other"
+      },
+      {
+        "question": "What time of the day is the traffic problem occurring?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Evening",
+          "Late night",
+          "All the time",
+          "During special events/sport events"
+        ]
+      },
+      {
+        "question": "Based on what you see, is there an obvious cause?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Power Outage/Weather",
+          "Wreck/Accident",
+          "Construction",
+          "Railroad/DART crossing",
+          "None Observed"
+        ]
+      },
+      {
+        "question": "Would you like to be contacted?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ]
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Red/Yellow; noticed = Other with description; special events; cause = None Observed; contact = No; Details Continue reached Contact",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request for a traffic signal flashing one color.",
+      "why": "For a traffic signal flashing a single color, including red in all directions or red and yellow. The 311 request form asks when the flashing was noticed, what time of day it occurs, and whether the apparent cause is weather or power outage, a wreck, construction, a railroad or DART crossing, or none observed.",
+      "why_not": "The online form for \"Traffic Signal - Flashing\" requests is not for a school-zone flasher. If the flashing signal is a school-zone flasher, then submit a \"School Zone Flasher Maintenance\" 311 request instead.",
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Traffic Signs and Signals\" > Choose \"Traffic Signal - Flashing\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Traffic Signs and Signals\" > Choose \"Traffic Signal - Flashing\""
+    },
+    {
+      "tagline": "Submit a 311 request to maintain a school-zone flasher.",
+      "why": "For repair or maintenance of a flashing signal in a school zone. The description for \"Traffic Signal - Flashing\" requests on the Dallas 311 website directs school-zone flasher issues to \"School Zone Flasher Maintenance\". The public \"School Zone Flasher Maintenance\" service has an online request form for these concerns.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Traffic Signs and Signals\" > Choose \"School Zone Flasher Maintenance\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Traffic Signs and Signals\" > Choose \"School Zone Flasher Maintenance\""
+    }
+  ]
+}

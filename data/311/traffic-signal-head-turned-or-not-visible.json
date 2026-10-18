@@ -1,0 +1,31 @@
+{
+  "title": "Traffic Signal Head Turned or Not Visible",
+  "categories": [
+    "Traffic Signs and Signals"
+  ],
+  "description": "This request must be dispatched. Please call 311 to report a traffic signal head that is turned and cannot be seen by motorists in that lane of travel, multiple bulbs are out, or shows conflicting colors, e.g. driver can see both a green light and a red light at the same time in their direction of travel. The estimated response time (ERT) for this service request is 1 business day.",
+  "photoUrls": [],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "4 Business Days",
+  "requestThisService": false,
+  "instructions": "This request must be dispatched. Please call 311 to report a traffic signal head that is turned and cannot be seen by motorists in that lane of travel, multiple bulbs are out, or shows conflicting colors, e.g. driver can see both a green light and a red light at the same time in their direction of travel. The estimated response time (ERT) for this service request is 1 business day. Please call 311 for more information",
+  "detailsForm": {
+    "status": "instructions_only",
+    "observedQuestions": [],
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "instructions_only",
+  "actions": [
+    {
+      "tagline": "Call Dallas 311 by phone about a turned, dark, or conflicting traffic signal head.",
+      "why": "For a traffic signal head turned away from motorists in its lane, multiple bulbs out, or conflicting colors visible in the same travel direction, such as green and red at once. This request must be dispatched; its saved instructions direct people to call 311.",
+      "why_not": null,
+      "what": "Call 311 by phone",
+      "who": "Dallas 311",
+      "how": "Call 311",
+      "how_formatted": "Call [311](tel:311)"
+    }
+  ]
+}

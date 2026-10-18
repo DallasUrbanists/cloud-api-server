@@ -1,0 +1,79 @@
+{
+  "title": "Illegal Removal of Protected Tree",
+  "categories": [
+    "Tree Concerns"
+  ],
+  "description": "Use this service request to report the illegal removal of protected trees from public and/or private property or a protected tree that is endangered by construction. Property owners are responsible for the removal of trees that are not protected. The estimated response time for a request of this nature is 3 business days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/f568af60-5e2a-11ee-b65c-c33ce0246595.jpg"
+  ],
+  "department": "Planning & Development Department",
+  "resolutionEstimate": "10 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "prompt": "Is the lot under 2 acres with a single family/duplex dwelling?",
+        "type": "single_select",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "required": true
+      },
+      {
+        "prompt": "Is the tree on the parkway?",
+        "type": "single_select",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "required": true
+      },
+      {
+        "prompt": "Are they in the process of removing the tree now?",
+        "type": "single_select",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "required": true
+      },
+      {
+        "prompt": "If there is a company sign or contact information on site enter the information here:",
+        "type": "text",
+        "required": false
+      },
+      {
+        "prompt": "Would you like to be contacted?",
+        "type": "single_select",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ],
+        "required": false
+      }
+    ],
+    "branchFinding": "All eight combinations of the three required Yes/No answers displayed the same remaining questions and no extra instruction.",
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "All three required answers = No",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request to report illegal removal of a protected tree on public or private property, or a protected tree endangered by construction.",
+      "why": "To report illegal removal of a protected tree on public or private property, or a protected tree endangered by construction. The request asks whether the lot is under two acres with a single-family or duplex dwelling, whether the tree is on the parkway, whether removal is happening now, and any company contact information.",
+      "why_not": "The online form for \"Illegal Removal of Protected Tree\" requests does not apply to trees that are not protected; property owners are responsible for removing those trees.",
+      "what": "Submit 311 request",
+      "who": "Planning & Development Department",
+      "how": "Go to Dallas 311 > Choose \"Tree Concerns\" > Choose \"Illegal Removal of Protected Tree\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Tree Concerns\" > Choose \"Illegal Removal of Protected Tree\""
+    }
+  ]
+}

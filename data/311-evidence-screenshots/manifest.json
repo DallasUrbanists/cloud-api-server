@@ -1,0 +1,1908 @@
+[
+  {
+    "question": 1,
+    "file": "q01-alley-rut-guidance.jpg",
+    "caption": "“Alley Repair - Routine” sends dirt ruts to “Sanitation Property Damage - SAN”.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 316,
+      "y": 410,
+      "width": 392,
+      "height": 209
+    },
+    "marks": [
+      {
+        "type": "rect",
+        "x": 17.59375,
+        "y": 77.75,
+        "width": 358,
+        "height": 64.5
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 932,
+    "height": 1004,
+    "figure": 1
+  },
+  {
+    "question": 1,
+    "file": "q01-sanitation-truck-limit.jpg",
+    "caption": "“Sanitation Property Damage” limits coverage to damage caused by Sanitation trucks.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 869,
+      "y": 150,
+      "width": 395,
+      "height": 365
+    },
+    "marks": [
+      {
+        "type": "rect",
+        "x": 24,
+        "y": 130,
+        "width": 330,
+        "height": 30
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 1280,
+    "height": 720,
+    "figure": 2,
+    "max_display_height_pt": 245.09255079006772
+  },
+  {
+    "question": 2,
+    "file": "q02-signs-only.jpg",
+    "caption": "The sign service limits its phone route to stop, yield, and one-way signs.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 814,
+      "y": 150,
+      "width": 451,
+      "height": 260
+    },
+    "marks": [
+      {
+        "type": "underline",
+        "x": 302.234375,
+        "y": 157,
+        "width": 104.265625,
+        "height": 0
+      },
+      {
+        "type": "underline",
+        "x": 25,
+        "y": 179,
+        "width": 155.03125,
+        "height": 0
+      },
+      {
+        "type": "underline",
+        "x": 25,
+        "y": 201,
+        "width": 275.25,
+        "height": 0
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 1280,
+    "height": 720,
+    "figure": 3
+  },
+  {
+    "question": 2,
+    "file": "q02-visibility-call.jpg",
+    "caption": "The general service says to call 311 for an obstructed sign or signal.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 814,
+      "y": 150,
+      "width": 451,
+      "height": 290
+    },
+    "marks": [
+      {
+        "type": "underline",
+        "x": 206.828125,
+        "y": 209,
+        "width": 206.25,
+        "height": 0
+      },
+      {
+        "type": "underline",
+        "x": 25,
+        "y": 231,
+        "width": 227.28125,
+        "height": 0
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 1280,
+    "height": 720,
+    "figure": 4
+  },
+  {
+    "question": 3,
+    "file": "q03-cut-shape-redirect.jpg",
+    "caption": "The hazardous utility-cut service names a routine service for cuts of other shapes.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 814,
+      "y": 150,
+      "width": 451,
+      "height": 348
+    },
+    "marks": [
+      {
+        "type": "underline",
+        "x": 298.265625,
+        "y": 135,
+        "width": 116.4375,
+        "height": 0
+      },
+      {
+        "type": "underline",
+        "x": 115.9375,
+        "y": 267,
+        "width": 287.484375,
+        "height": 0
+      },
+      {
+        "type": "underline",
+        "x": 25,
+        "y": 289,
+        "width": 209.53125,
+        "height": 0
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 1280,
+    "height": 720,
+    "figure": 5
+  },
+  {
+    "question": 4,
+    "file": "q04-freeway-alert.jpg",
+    "caption": "After “Freeway” is selected, the debris form discusses travel-lane hazards and refers grassy-area debris to “Median/Right of Way Maintenance”.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 316,
+      "y": 371,
+      "width": 392,
+      "height": 282
+    },
+    "marks": [
+      {
+        "type": "rect",
+        "x": 17.59375,
+        "y": 77.75,
+        "width": 358,
+        "height": 142.5
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 932,
+    "height": 1004,
+    "figure": 6
+  },
+  {
+    "question": 4,
+    "file": "q04-freeway-responsibility.jpg",
+    "caption": "The debris service assigns freeway responsibility to TxDOT.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 814,
+      "y": 150,
+      "width": 451,
+      "height": 282
+    },
+    "marks": [
+      {
+        "type": "underline",
+        "x": 25,
+        "y": 201,
+        "width": 391.703125,
+        "height": 0
+      },
+      {
+        "type": "underline",
+        "x": 25,
+        "y": 223,
+        "width": 192.6875,
+        "height": 0
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 1280,
+    "height": 720,
+    "figure": 7
+  },
+  {
+    "question": 4,
+    "file": "q04-freeway-selected.jpg",
+    "caption": "The Dallas 311 debris form offers “Freeway” as a debris location.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 274,
+      "y": 253,
+      "width": 460,
+      "height": 298
+    },
+    "marks": [
+      {
+        "type": "rect",
+        "x": 17.59375,
+        "y": 227.125,
+        "width": 426,
+        "height": 49.75
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 932,
+    "height": 1004,
+    "figure": 8
+  },
+  {
+    "question": 5,
+    "file": "q05-oversight-phone.jpg",
+    "caption": "The oversight panel ends with “Please call 311 for more information” rather than an online request button.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 446,
+      "y": 802,
+      "width": 486,
+      "height": 183
+    },
+    "marks": [
+      {
+        "type": "rect",
+        "x": 17,
+        "y": 137.5,
+        "width": 457,
+        "height": 28.5
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 932,
+    "height": 1004,
+    "figure": 9
+  },
+  {
+    "question": 5,
+    "file": "q05-oversight-submission.jpg",
+    "caption": "The oversight description links to separate complaint and commendation forms.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 814,
+      "y": 150,
+      "width": 451,
+      "height": 570
+    },
+    "marks": [
+      {
+        "type": "underline",
+        "x": 25,
+        "y": 281,
+        "width": 125.109375,
+        "height": 0
+      },
+      {
+        "type": "underline",
+        "x": 150.109375,
+        "y": 281,
+        "width": 43.78125,
+        "height": 0
+      },
+      {
+        "type": "underline",
+        "x": 260.84375,
+        "y": 413,
+        "width": 161.265625,
+        "height": 0
+      },
+      {
+        "type": "underline",
+        "x": 25,
+        "y": 435,
+        "width": 43.78125,
+        "height": 0
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 1280,
+    "height": 720,
+    "figure": 10
+  },
+  {
+    "question": 6,
+    "file": "q06-guardrail-public-title.jpg",
+    "caption": "The public service title is “Guardrail Maintenance”.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 814,
+      "y": 150,
+      "width": 466,
+      "height": 224
+    },
+    "marks": [
+      {
+        "type": "underline",
+        "x": 55.25,
+        "y": 51,
+        "width": 355.5,
+        "height": 0
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 1280,
+    "height": 720,
+    "figure": 11
+  },
+  {
+    "question": 6,
+    "file": "q06-guardrail-referral.jpg",
+    "caption": "“Guardrail New” refers maintenance to “Guardrail Repair - Routine”.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 814,
+      "y": 150,
+      "width": 451,
+      "height": 268
+    },
+    "marks": [
+      {
+        "type": "underline",
+        "x": 287.953125,
+        "y": 143,
+        "width": 128.4375,
+        "height": 0
+      },
+      {
+        "type": "underline",
+        "x": 25,
+        "y": 165,
+        "width": 73.46875,
+        "height": 0
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 1280,
+    "height": 720,
+    "figure": 12
+  },
+  {
+    "question": 7,
+    "file": "q07-noisy-animal-referral.jpg",
+    "caption": "The residential noise description refers animal concerns to “Animal - Noisy”.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 814,
+      "y": 150,
+      "width": 451,
+      "height": 370
+    },
+    "marks": [
+      {
+        "type": "underline",
+        "x": 60.421875,
+        "y": 267,
+        "width": 116.59375,
+        "height": 0
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 1280,
+    "height": 720,
+    "figure": 13
+  },
+  {
+    "question": 8,
+    "file": "q08-current-cat-choice.jpg",
+    "caption": "Live recheck: “Animal Loose” accepts “Cat”; the saved “Animal Community Cat Program - DAS” alert was not reproduced in this capture.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 274,
+      "y": 127,
+      "width": 450,
+      "height": 159
+    },
+    "marks": [
+      {
+        "type": "rect",
+        "x": 17.59375,
+        "y": 77,
+        "width": 415.140625,
+        "height": 60
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 932,
+    "height": 1004,
+    "figure": 14
+  },
+  {
+    "question": 9,
+    "file": "q02-signs-only.jpg",
+    "caption": "The visibility page uses the referral name “Traffic Sign - Maintenance (Other)”.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 814,
+      "y": 150,
+      "width": 451,
+      "height": 260
+    },
+    "marks": [
+      {
+        "type": "underline",
+        "x": 302.234375,
+        "y": 157,
+        "width": 104.265625,
+        "height": 0
+      },
+      {
+        "type": "underline",
+        "x": 25,
+        "y": 179,
+        "width": 155.03125,
+        "height": 0
+      },
+      {
+        "type": "underline",
+        "x": 25,
+        "y": 201,
+        "width": 275.25,
+        "height": 0
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 1280,
+    "height": 720,
+    "figure": 15
+  },
+  {
+    "question": 9,
+    "file": "q09-housing-old-name.jpg",
+    "caption": "The social-services page uses “Housing & Neighborhood Revitalization Requests”.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 814,
+      "y": 150,
+      "width": 451,
+      "height": 400
+    },
+    "marks": [
+      {
+        "type": "underline",
+        "x": 272.5,
+        "y": 341,
+        "width": 81.5,
+        "height": 0
+      },
+      {
+        "type": "underline",
+        "x": 25,
+        "y": 363,
+        "width": 306,
+        "height": 0
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 1280,
+    "height": 720,
+    "figure": 16
+  },
+  {
+    "question": 9,
+    "file": "q09-lighting-old-name.jpg",
+    "caption": "The utility information page uses the referral name “Street Lighting - Maintenance”.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 814,
+      "y": 150,
+      "width": 466,
+      "height": 224
+    },
+    "marks": [
+      {
+        "type": "underline",
+        "x": 344,
+        "y": 143,
+        "width": 49.0625,
+        "height": 0
+      },
+      {
+        "type": "underline",
+        "x": 25,
+        "y": 165,
+        "width": 185.46875,
+        "height": 0
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 1280,
+    "height": 720,
+    "figure": 17
+  },
+  {
+    "question": 9,
+    "file": "q09-patrol-old-name.jpg",
+    "caption": "The speed-control page uses the referral name “Extra Patrol - DPD”.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 814,
+      "y": 150,
+      "width": 451,
+      "height": 400
+    },
+    "marks": [
+      {
+        "type": "underline",
+        "x": 261.28125,
+        "y": 385,
+        "width": 144.84375,
+        "height": 0
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 1280,
+    "height": 720,
+    "figure": 18
+  },
+  {
+    "question": 10,
+    "file": "q10-event-response-times.jpg",
+    "caption": "The same live panel shows “2 business days” in its description and “5 Business Days” under “RESOLUTION ESTIMATE”.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 814,
+      "y": 150,
+      "width": 451,
+      "height": 570
+    },
+    "marks": [
+      {
+        "type": "underline",
+        "x": 351.328125,
+        "y": 165,
+        "width": 10.296875,
+        "height": 0
+      },
+      {
+        "type": "underline",
+        "x": 25,
+        "y": 187,
+        "width": 113.90625,
+        "height": 0
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 1280,
+    "height": 720,
+    "figure": 19
+  },
+  {
+    "question": 11,
+    "file": "q11-click-here-link.jpg",
+    "caption": "The live wheelchair-ramp description displays “Click Here”; the earlier saved record did not capture its destination.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 814,
+      "y": 150,
+      "width": 451,
+      "height": 304
+    },
+    "marks": [
+      {
+        "type": "underline",
+        "x": 265.375,
+        "y": 245,
+        "width": 82.375,
+        "height": 0
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 1280,
+    "height": 720,
+    "figure": 20
+  },
+  {
+    "question": 12,
+    "file": "q12-contact-disabled-default.jpg",
+    "caption": "The “Animal Aggressive Behavior” contact step labels contact information optional and shows disabled fields while the consent box is unchecked.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 204,
+      "y": 246,
+      "width": 616,
+      "height": 371
+    },
+    "marks": [
+      {
+        "type": "rect",
+        "x": 66.59375,
+        "y": 31,
+        "width": 529,
+        "height": 88
+      },
+      {
+        "type": "ellipse",
+        "x": 10.59375,
+        "y": 191.5,
+        "width": 296,
+        "height": 62
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 932,
+    "height": 1004,
+    "figure": 21
+  },
+  {
+    "question": 12,
+    "file": "q12-contact-request-guidance.jpg",
+    "caption": "The “Animal Aggressive Behavior” details step asks the resident to provide a name and phone number for possible follow-up.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 301,
+      "y": 457,
+      "width": 395,
+      "height": 94
+    },
+    "marks": [
+      {
+        "type": "rect",
+        "x": 17.59375,
+        "y": 12.9375,
+        "width": 360.40625,
+        "height": 65
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 932,
+    "height": 1004,
+    "figure": 22
+  },
+  {
+    "question": 13,
+    "file": "q13-test-crm-details-live.jpg",
+    "caption": "Live recheck: “TEST CRM” reached “Details” using the public City Hall address; the earlier location error was not reproduced.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 270,
+      "y": 0,
+      "width": 468,
+      "height": 226
+    },
+    "marks": [
+      {
+        "type": "ellipse",
+        "x": 36,
+        "y": 38.5,
+        "width": 106,
+        "height": 31
+      },
+      {
+        "type": "rect",
+        "x": 21.59375,
+        "y": 157,
+        "width": 426,
+        "height": 47
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 932,
+    "height": 1004,
+    "figure": 23
+  },
+  {
+    "question": 13,
+    "file": "q13-test-sr-details-live.jpg",
+    "caption": "Live recheck: “Test SR's Name” also reached “Details” with the public City Hall address.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 270,
+      "y": 0,
+      "width": 468,
+      "height": 254
+    },
+    "marks": [
+      {
+        "type": "ellipse",
+        "x": 36,
+        "y": 38.5,
+        "width": 112,
+        "height": 31
+      },
+      {
+        "type": "rect",
+        "x": 29.59375,
+        "y": 158,
+        "width": 426,
+        "height": 74
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 932,
+    "height": 1004,
+    "figure": 24
+  },
+  {
+    "question": 14,
+    "file": "q14-contact-optional.jpg",
+    "caption": "The “Food Borne Illness” contact step says contact information is optional and leaves the fields disabled until consent is selected.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 204,
+      "y": 246,
+      "width": 616,
+      "height": 371
+    },
+    "marks": [
+      {
+        "type": "rect",
+        "x": 66.59375,
+        "y": 31,
+        "width": 529,
+        "height": 88
+      },
+      {
+        "type": "ellipse",
+        "x": 10.59375,
+        "y": 191.5,
+        "width": 296,
+        "height": 62
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 932,
+    "height": 1004,
+    "figure": 25
+  },
+  {
+    "question": 14,
+    "file": "q14-illness-contact-required.jpg",
+    "caption": "The description says a name and phone number are required to process the request.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 814,
+      "y": 150,
+      "width": 466,
+      "height": 224
+    },
+    "marks": [
+      {
+        "type": "underline",
+        "x": 329.078125,
+        "y": 143,
+        "width": 95.375,
+        "height": 0
+      },
+      {
+        "type": "underline",
+        "x": 25,
+        "y": 165,
+        "width": 407.890625,
+        "height": 0
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 1280,
+    "height": 720,
+    "figure": 26
+  },
+  {
+    "question": 15,
+    "file": "q15-smoke-call-instruction.jpg",
+    "caption": "The drain-cleaning description tells residents to call 311 for smoke.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 814,
+      "y": 150,
+      "width": 451,
+      "height": 422
+    },
+    "marks": [
+      {
+        "type": "underline",
+        "x": 25,
+        "y": 341,
+        "width": 391.34375,
+        "height": 0
+      },
+      {
+        "type": "underline",
+        "x": 25,
+        "y": 363,
+        "width": 173.828125,
+        "height": 0
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 1280,
+    "height": 720,
+    "figure": 27
+  },
+  {
+    "question": 15,
+    "file": "q15-steam-choice.jpg",
+    "caption": "The “Inlet/Storm Drain Cleaning” form accepts “Steam”; no call instruction appeared for this choice during the capture.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 274,
+      "y": 395,
+      "width": 460,
+      "height": 159
+    },
+    "marks": [
+      {
+        "type": "rect",
+        "x": 17.59375,
+        "y": 77.375,
+        "width": 426,
+        "height": 60
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 932,
+    "height": 1004,
+    "figure": 28
+  },
+  {
+    "question": 16,
+    "file": "q16-housing-encampment-suggestion.jpg",
+    "caption": "Live recheck: selecting “Homeless encampment” in the housing form offers “Homeless Encampment” as a service to switch to.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 478,
+      "y": 491,
+      "width": 330,
+      "height": 170
+    },
+    "marks": [
+      {
+        "type": "rect",
+        "x": 17.75,
+        "y": 37.1015625,
+        "width": 295.625,
+        "height": 26
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 932,
+    "height": 1004,
+    "figure": 29
+  },
+  {
+    "question": 16,
+    "file": "q16-housing-scope.jpg",
+    "caption": "The housing service description covers help with housing programs.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 466,
+      "y": 150,
+      "width": 451,
+      "height": 282
+    },
+    "marks": [
+      {
+        "type": "rect",
+        "x": 22,
+        "y": 110,
+        "width": 407,
+        "height": 158
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 932,
+    "height": 1004,
+    "figure": 30
+  },
+  {
+    "question": 17,
+    "file": "q17-hazardous-online-button.jpg",
+    "caption": "The hazardous lid service also offers a “Request This Service” button.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 558,
+      "y": 686,
+      "width": 267,
+      "height": 242
+    },
+    "marks": [
+      {
+        "type": "rect",
+        "x": 17.453125,
+        "y": 167.5,
+        "width": 232.09375,
+        "height": 53
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 932,
+    "height": 1004,
+    "figure": 31
+  },
+  {
+    "question": 17,
+    "file": "q17-lid-call-instruction.jpg",
+    "caption": "The regular lid service says to call 311 if conditions appear hazardous.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 814,
+      "y": 150,
+      "width": 451,
+      "height": 260
+    },
+    "marks": [
+      {
+        "type": "underline",
+        "x": 25,
+        "y": 201,
+        "width": 351.890625,
+        "height": 0
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 1280,
+    "height": 720,
+    "figure": 32
+  },
+  {
+    "question": 18,
+    "file": "q18-code-concerns-suggestion.jpg",
+    "caption": "Live recheck: selecting “Food Poisoning” in “Mobile Food Complaint” also offers “Code Concerns” as a service to switch to.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 478,
+      "y": 471,
+      "width": 330,
+      "height": 170
+    },
+    "marks": [
+      {
+        "type": "rect",
+        "x": 17.75,
+        "y": 37.1015625,
+        "width": 295.625,
+        "height": 26
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 932,
+    "height": 1004,
+    "figure": 33
+  },
+  {
+    "question": 18,
+    "file": "q18-mobile-food-phone.jpg",
+    "caption": "The mobile-food description tells residents to call 311 for food poisoning.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 814,
+      "y": 150,
+      "width": 466,
+      "height": 246
+    },
+    "marks": [
+      {
+        "type": "underline",
+        "x": 236.625,
+        "y": 165,
+        "width": 133.59375,
+        "height": 0
+      },
+      {
+        "type": "underline",
+        "x": 25,
+        "y": 187,
+        "width": 352.875,
+        "height": 0
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 1280,
+    "height": 720,
+    "figure": 34
+  },
+  {
+    "question": 19,
+    "file": "q19-construction-public-title.jpg",
+    "caption": "The public title is “Construction Right of Way/Status Inquiry”, and its description includes City work.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 814,
+      "y": 150,
+      "width": 451,
+      "height": 304
+    },
+    "marks": [
+      {
+        "type": "underline",
+        "x": 25,
+        "y": 223,
+        "width": 365.140625,
+        "height": 0
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 1280,
+    "height": 720,
+    "figure": 35
+  },
+  {
+    "question": 19,
+    "file": "q19-construction-status-alert.jpg",
+    "caption": "The “Paving Reconstruction Project” alert refers utility or contractor work to “Construction Status Inquiry/Status”.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 316,
+      "y": 401,
+      "width": 392,
+      "height": 223
+    },
+    "marks": [
+      {
+        "type": "rect",
+        "x": 17.59375,
+        "y": 77,
+        "width": 358,
+        "height": 84
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 932,
+    "height": 1004,
+    "figure": 36
+  },
+  {
+    "question": 20,
+    "file": "q20-current-encampment-suggestion.jpg",
+    "caption": "Live recheck: the popup offers “Homeless Encampment” with “Switch To This Service”, unlike the earlier saved observation.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 478,
+      "y": 487,
+      "width": 330,
+      "height": 170
+    },
+    "marks": [
+      {
+        "type": "rect",
+        "x": 17.75,
+        "y": 37.1015625,
+        "width": 295.625,
+        "height": 26
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 932,
+    "height": 1004,
+    "figure": 37
+  },
+  {
+    "question": 20,
+    "file": "q20-encampment-exclusion.jpg",
+    "caption": "The “Park Maintenance/Misc” form says Parks and Recreation does not address encampments.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 466,
+      "y": 85,
+      "width": 365,
+      "height": 65
+    },
+    "marks": [
+      {
+        "type": "underline",
+        "x": 2.625,
+        "y": 33,
+        "width": 360.875,
+        "height": 0
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 932,
+    "height": 1004,
+    "figure": 38
+  },
+  {
+    "question": 20,
+    "file": "q20-loose-dog-limit.jpg",
+    "caption": "The “Park Maintenance/Misc” form says Park Rangers cannot capture loose dogs after “No” is selected for ownership.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 265,
+      "y": 85,
+      "width": 510,
+      "height": 65
+    },
+    "marks": [
+      {
+        "type": "underline",
+        "x": 35.015625,
+        "y": 32.5,
+        "width": 439.15625,
+        "height": 0
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 932,
+    "height": 1004,
+    "figure": 39
+  },
+  {
+    "question": 21,
+    "file": "q21-cart-description-fee.jpg",
+    "caption": "The description lists a $15.51 charge for an additional residential garbage cart.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 814,
+      "y": 150,
+      "width": 451,
+      "height": 570
+    },
+    "marks": [
+      {
+        "type": "underline",
+        "x": 180.109375,
+        "y": 333,
+        "width": 50.59375,
+        "height": 0
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 1280,
+    "height": 720,
+    "figure": 40
+  },
+  {
+    "question": 21,
+    "file": "q21-current-cart-fee-alert.jpg",
+    "caption": "Live recheck: the additional-cart alert now says $15.51, matching the description; the saved form had said $35.81.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 316,
+      "y": 410,
+      "width": 392,
+      "height": 204
+    },
+    "marks": [
+      {
+        "type": "rect",
+        "x": 17.59375,
+        "y": 77.75,
+        "width": 358,
+        "height": 64.5
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 932,
+    "height": 1004,
+    "figure": 41
+  },
+  {
+    "question": 22,
+    "file": "q22-dowdy-ferry-illegal-dumping.jpg",
+    "caption": "In “Sanitation Dead Animal Pick Up”, selecting “Yes” for Dowdy Ferry/Teagarden produces an “Illegal Dumping” instruction.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 270,
+      "y": 243,
+      "width": 468,
+      "height": 312
+    },
+    "marks": [
+      {
+        "type": "rect",
+        "x": 51.59375,
+        "y": 227.546875,
+        "width": 366.359375,
+        "height": 63
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 932,
+    "height": 1004,
+    "figure": 42
+  },
+  {
+    "question": 23,
+    "file": "q23-sand-location-choices.jpg",
+    "caption": "The “Sand Removal Request” location choices do not include “Secondary thoroughfare”.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 274,
+      "y": 122,
+      "width": 460,
+      "height": 298
+    },
+    "marks": [
+      {
+        "type": "ellipse",
+        "x": 17.59375,
+        "y": 77,
+        "width": 426,
+        "height": 199
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 932,
+    "height": 1004,
+    "figure": 43
+  },
+  {
+    "question": 23,
+    "file": "q23-secondary-sweep-schedule.jpg",
+    "caption": "The description says secondary thoroughfares are swept within 30 days.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 814,
+      "y": 150,
+      "width": 451,
+      "height": 290
+    },
+    "marks": [
+      {
+        "type": "underline",
+        "x": 155.96875,
+        "y": 165,
+        "width": 234.953125,
+        "height": 0
+      },
+      {
+        "type": "underline",
+        "x": 25,
+        "y": 187,
+        "width": 171.015625,
+        "height": 0
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 1280,
+    "height": 720,
+    "figure": 44
+  },
+  {
+    "question": 24,
+    "file": "q24-cost-plus-alert.jpg",
+    "caption": "The annual exemption form blocks another exemption but says “Cost-Plus” is still available.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 270,
+      "y": 224,
+      "width": 468,
+      "height": 350
+    },
+    "marks": [
+      {
+        "type": "rect",
+        "x": 51.59375,
+        "y": 278.296875,
+        "width": 366.359375,
+        "height": 50.5
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 932,
+    "height": 1004,
+    "figure": 45
+  },
+  {
+    "question": 25,
+    "file": "q25-dark-signals-online-button.jpg",
+    "caption": "The same “Traffic Signal - Lights Out All Directions” panel also offers “Request This Service”.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 558,
+      "y": 672,
+      "width": 267,
+      "height": 242
+    },
+    "marks": [
+      {
+        "type": "rect",
+        "x": 17.453125,
+        "y": 167.5,
+        "width": 232.09375,
+        "height": 53
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 932,
+    "height": 1004,
+    "figure": 46
+  },
+  {
+    "question": 25,
+    "file": "q25-dark-signals-phone-online.jpg",
+    "caption": "“Traffic Signal - Lights Out All Directions” says the request must be dispatched and tells residents to call 311.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 814,
+      "y": 150,
+      "width": 451,
+      "height": 282
+    },
+    "marks": [
+      {
+        "type": "underline",
+        "x": 298.265625,
+        "y": 135,
+        "width": 116.4375,
+        "height": 0
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 1280,
+    "height": 720,
+    "figure": 47
+  },
+  {
+    "question": 26,
+    "file": "q26-resurfacing-alert.jpg",
+    "caption": "The “Street Resurface Program” alert tells first-time requesters to enter “Street Repair (Routine)”.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 316,
+      "y": 420,
+      "width": 392,
+      "height": 184
+    },
+    "marks": [
+      {
+        "type": "rect",
+        "x": 17.59375,
+        "y": 77.5,
+        "width": 358,
+        "height": 45
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 932,
+    "height": 1004,
+    "figure": 48
+  },
+  {
+    "question": 27,
+    "file": "q27-emergency-yes-choice.jpg",
+    "caption": "The nonemergency “Storm Drainage/Flooding Complaint” form accepts “Yes” for flooding happening now without showing an alert at this step.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 274,
+      "y": 362,
+      "width": 460,
+      "height": 237
+    },
+    "marks": [
+      {
+        "type": "rect",
+        "x": 17.59375,
+        "y": 112.375,
+        "width": 426,
+        "height": 51.5
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 932,
+    "height": 1004,
+    "figure": 49
+  },
+  {
+    "question": 27,
+    "file": "q27-flooding-nonemergency.jpg",
+    "caption": "The flooding complaint description limits the service to nonemergency concerns.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 814,
+      "y": 150,
+      "width": 451,
+      "height": 260
+    },
+    "marks": [
+      {
+        "type": "underline",
+        "x": 92.453125,
+        "y": 201,
+        "width": 296.921875,
+        "height": 0
+      },
+      {
+        "type": "underline",
+        "x": 25,
+        "y": 223,
+        "width": 33.015625,
+        "height": 0
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 1280,
+    "height": 720,
+    "figure": 50
+  },
+  {
+    "question": 28,
+    "file": "q28-natural-gas-choice.jpg",
+    "caption": "In “Water/Sanitary Sewer Construction Project”, the form accepts “Utility Work - Natural gas” as the work type.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 274,
+      "y": 365,
+      "width": 460,
+      "height": 189
+    },
+    "marks": [
+      {
+        "type": "rect",
+        "x": 17.59375,
+        "y": 107.375,
+        "width": 426,
+        "height": 60
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 932,
+    "height": 1004,
+    "figure": 51
+  },
+  {
+    "question": 28,
+    "file": "q28-water-project-scope.jpg",
+    "caption": "The water construction description covers water and wastewater projects.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 466,
+      "y": 150,
+      "width": 451,
+      "height": 238
+    },
+    "marks": [
+      {
+        "type": "rect",
+        "x": 22,
+        "y": 110,
+        "width": 407,
+        "height": 114
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 932,
+    "height": 1004,
+    "figure": 52
+  },
+  {
+    "question": 29,
+    "file": "q29-street-light-referral.jpg",
+    "caption": "The “Traffic Signal - New” form uses the literal referral name “Street Light - Maintenance/New SR”.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 296,
+      "y": 157,
+      "width": 292,
+      "height": 84
+    },
+    "marks": [
+      {
+        "type": "underline",
+        "x": 168.71875,
+        "y": 43,
+        "width": 88.546875,
+        "height": 0
+      },
+      {
+        "type": "underline",
+        "x": 35.59375,
+        "y": 62,
+        "width": 143.703125,
+        "height": 0
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 932,
+    "height": 1004,
+    "figure": 53
+  },
+  {
+    "question": 30,
+    "file": "q30-business-selected.jpg",
+    "caption": "The commercial-service form lists “Business/Commercial” among its property types.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 274,
+      "y": 122,
+      "width": 460,
+      "height": 298
+    },
+    "marks": [
+      {
+        "type": "rect",
+        "x": 17.59375,
+        "y": 77,
+        "width": 426,
+        "height": 49.75
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 932,
+    "height": 1004,
+    "figure": 54
+  },
+  {
+    "question": 30,
+    "file": "q30-dumpster-choice.jpg",
+    "caption": "With “Business/Commercial” selected in “Sanitation Commercial Services”, the form allows “Dumpster Service” to be chosen.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 274,
+      "y": 365,
+      "width": 460,
+      "height": 189
+    },
+    "marks": [
+      {
+        "type": "rect",
+        "x": 17.59375,
+        "y": 107.375,
+        "width": 426,
+        "height": 60
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 932,
+    "height": 1004,
+    "figure": 55
+  },
+  {
+    "question": 30,
+    "file": "q30-dumpster-eligibility.jpg",
+    "caption": "The commercial service description limits dumpster requests to City facilities.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 814,
+      "y": 150,
+      "width": 451,
+      "height": 502
+    },
+    "marks": [
+      {
+        "type": "underline",
+        "x": 101.640625,
+        "y": 245,
+        "width": 281.0625,
+        "height": 0
+      },
+      {
+        "type": "underline",
+        "x": 25,
+        "y": 267,
+        "width": 143.46875,
+        "height": 0
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 1280,
+    "height": 720,
+    "figure": 56
+  },
+  {
+    "question": 31,
+    "file": "q31-urgent-pollution-phone.jpg",
+    "caption": "The urgent pollution page ends with “Please call 311 for more information” and has no request button in this panel.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 466,
+      "y": 150,
+      "width": 451,
+      "height": 675
+    },
+    "marks": [
+      {
+        "type": "rect",
+        "x": 4,
+        "y": 635,
+        "width": 443,
+        "height": 26.5
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 932,
+    "height": 1004,
+    "figure": 57
+  },
+  {
+    "question": 32,
+    "file": "q32-code-concerns-suggestion.jpg",
+    "caption": "Selecting “Private property” in “Tree down/Low Limbs - Hazardous” produces a “Code Concerns” suggestion.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 478,
+      "y": 487,
+      "width": 330,
+      "height": 170
+    },
+    "marks": [
+      {
+        "type": "rect",
+        "x": 17.75,
+        "y": 37.1015625,
+        "width": 295.625,
+        "height": 26
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 932,
+    "height": 1004,
+    "figure": 58
+  },
+  {
+    "question": 32,
+    "file": "q32-private-tree-responsibility.jpg",
+    "caption": "The hazardous-tree description assigns private-property trees to the owner.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 814,
+      "y": 150,
+      "width": 451,
+      "height": 304
+    },
+    "marks": [
+      {
+        "type": "underline",
+        "x": 305.4375,
+        "y": 223,
+        "width": 98.5625,
+        "height": 0
+      },
+      {
+        "type": "underline",
+        "x": 25,
+        "y": 245,
+        "width": 326.171875,
+        "height": 0
+      },
+      {
+        "type": "underline",
+        "x": 25,
+        "y": 267,
+        "width": 105.921875,
+        "height": 0
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 1280,
+    "height": 720,
+    "figure": 59
+  },
+  {
+    "question": 33,
+    "file": "q33-email-vs-phone.jpg",
+    "caption": "In “Mosquito Beekeeper Notification”, the email notice promise remains above the selected “Phone” choice.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 274,
+      "y": 89,
+      "width": 460,
+      "height": 472
+    },
+    "marks": [
+      {
+        "type": "rect",
+        "x": 17.59375,
+        "y": 337.171875,
+        "width": 426,
+        "height": 103
+      },
+      {
+        "type": "rect",
+        "x": 44.59375,
+        "y": 8.375,
+        "width": 360.40625,
+        "height": 65
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 932,
+    "height": 1004,
+    "figure": 60
+  },
+  {
+    "question": 34,
+    "file": "q34-hazardous-debris-referral.jpg",
+    "caption": "The sweeping description tells residents to call 311 for hazardous debris on residential streets.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 814,
+      "y": 150,
+      "width": 451,
+      "height": 436
+    },
+    "marks": [
+      {
+        "type": "underline",
+        "x": 25,
+        "y": 223,
+        "width": 213.9375,
+        "height": 0
+      },
+      {
+        "type": "underline",
+        "x": 342.265625,
+        "y": 223,
+        "width": 49.0625,
+        "height": 0
+      },
+      {
+        "type": "underline",
+        "x": 25,
+        "y": 245,
+        "width": 250.375,
+        "height": 0
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 1280,
+    "height": 720,
+    "figure": 61
+  },
+  {
+    "question": 35,
+    "file": "q35-required-other-field.jpg",
+    "caption": "“Concrete broken” is selected, while “If other, please describe:” still has a required asterisk.",
+    "url": "https://dallascrm.my.site.com/public/s/",
+    "captured": "2026-10-17",
+    "framing": {
+      "x": 274,
+      "y": 186,
+      "width": 460,
+      "height": 729
+    },
+    "marks": [
+      {
+        "type": "rect",
+        "x": 17.59375,
+        "y": 607.375,
+        "width": 426,
+        "height": 120
+      },
+      {
+        "type": "ellipse",
+        "x": 396.59375,
+        "y": 100.6875,
+        "width": 42,
+        "height": 42
+      },
+      {
+        "type": "rect",
+        "x": 17.59375,
+        "y": 529.375,
+        "width": 426,
+        "height": 81
+      }
+    ],
+    "rawFull": true,
+    "nativeCapture": true,
+    "width": 932,
+    "height": 1004,
+    "figure": 62
+  }
+]

@@ -1,0 +1,190 @@
+{
+  "title": "Animal Lack of Care",
+  "categories": [
+    "Animal Care and Control"
+  ],
+  "description": "Use this request to report animals that are sick, injured, in critical condition, left in extreme temperatures, or lacking care (food, water, shelter, etc.). Service requests of this nature are dispatched and responded to based on priority. Priority 2: Instances in which there exists an immediate threat to the life of an animal (domestic or wildlife) will be responded to within 2 hours. Priority 2: Instances in which an animal is subjected to temperatures below 32 degrees Fahrenheit or a heat advisory has been issued will be responded to within 2 hours. Priority 4: Instances in which an animal is sick or has a non-life-threatening injury will be responded to within 6 hours.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/79f3de90-4782-11ee-a643-c967669f66a7.PNG"
+  ],
+  "department": "Dallas Animal Services",
+  "resolutionEstimate": "2 Calendar Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "options": [
+          "Cat",
+          "Dog",
+          "Livestock",
+          "Wildlife",
+          "DAS Only"
+        ],
+        "prompt": "Type of animal?",
+        "type": "radio",
+        "required": true
+      },
+      {
+        "tooltip": "size, color, breed, gender, markings",
+        "prompt": "Description of the animal:",
+        "type": "text",
+        "required": true
+      },
+      {
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "prompt": "Is the animal owned?",
+        "type": "radio",
+        "required": true
+      },
+      {
+        "tooltip": "This information helps Animals Services locate and make contact with the animal owner.",
+        "when": {
+          "equals": "Yes",
+          "field": "Is the animal owned?"
+        },
+        "prompt": "Where does the animal live? (Address, description of house, etc.)",
+        "type": "text",
+        "required": true
+      },
+      {
+        "options": [
+          "Sick/injured",
+          "Critical condition - Immediate threat to loss of life",
+          "Animal lacking food or water or shelter or care",
+          "Domestic Animal left in extreme temperatures",
+          "Animal Cruelty",
+          "DAS Only"
+        ],
+        "prompt": "What is the condition of the animal?",
+        "type": "select",
+        "required": true
+      },
+      {
+        "options": [
+          "Hit by car",
+          "Severe laceration/active bleeding",
+          "Bone exposed",
+          "Unresponsive but breathing",
+          "Minimal to No Movement",
+          "Unable to walk on two or more legs"
+        ],
+        "when": {
+          "equals": "Critical condition - Immediate threat to loss of life",
+          "field": "What is the condition of the animal?"
+        },
+        "prompt": "What is the critical condition of the animal?",
+        "type": "select",
+        "required": true
+      },
+      {
+        "options": [
+          "Pooper scooper",
+          "Too many animals in living space",
+          "Spay/neuter violation",
+          "Vaccination violation",
+          "Unsanitary conditions",
+          "Microchip",
+          "Tethering violation",
+          "None of these"
+        ],
+        "when": {
+          "equals": "Animal lacking food or water or shelter or care",
+          "field": "What is the condition of the animal?"
+        },
+        "prompt": "Does your service request involve any of the following?",
+        "type": "select",
+        "required": true
+      },
+      {
+        "prompt": "Where is the animal now? (If applicable, give cross street, direction of travel, even/odd, etc.)",
+        "type": "text",
+        "required": true
+      },
+      {
+        "prompt": "Additional Information",
+        "type": "text",
+        "required": false
+      }
+    ],
+    "unexplored": null,
+    "observedInstructions": [
+      {
+        "when": {
+          "equals": "Critical condition - Immediate threat to loss of life",
+          "field": "What is the condition of the animal?"
+        },
+        "text": "Please only use this call type for truly critical animals; lower-priority calls may interfere with the response time to an animal with an immediately threatened by loss of life.",
+        "kind": "validation_alert"
+      },
+      {
+        "when": {
+          "equals": "Domestic Animal left in extreme temperatures",
+          "field": "What is the condition of the animal?"
+        },
+        "text": "Please only submit this request if the animal being reported is owned and there is an active heat advisory or the temperature is below 32 degrees Fahrenheit.",
+        "kind": "validation_alert"
+      },
+      {
+        "when": {
+          "equals": "Animal Cruelty",
+          "field": "What is the condition of the animal?"
+        },
+        "text": "Please hang up and dial 911 to report animal cruelty.",
+        "kind": "validation_alert"
+      }
+    ],
+    "pathCoverage": {
+      "contactStepReached": true,
+      "animalTypeOwnedConditionCombinationsTested": 60,
+      "criticalConditionOptionsTested": 6,
+      "detailsContinueReached": true,
+      "lackOfCareSuboptionsTested": 8,
+      "contactDataEntered": false,
+      "requestSubmitted": false
+    }
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "conditional_paths_explored",
+  "contactStep": {
+    "disabled": [
+      "City",
+      "State",
+      "Zipcode"
+    ],
+    "optional": [
+      "Email",
+      "Address"
+    ],
+    "required": [
+      "First Name",
+      "Last Name",
+      "Phone Number"
+    ]
+  },
+  "actions": [
+    {
+      "tagline": "Submit a 311 request for an animal that is sick, injured, or lacking care.",
+      "why": "Report a domestic or wild animal that is sick, injured, in a truly critical condition, or lacking food, water, shelter, or care. Critical examples in the 311 request form include being hit by a car, active bleeding, exposed bone, unresponsiveness while breathing, little or no movement, or inability to walk on two or more legs. The 311 request form also covers an owned domestic animal left below 32 degrees Fahrenheit or during an active heat advisory, and asks about ownership, the animal’s location, and related care concerns such as tethering or unsanitary conditions.",
+      "why_not": "The online form for \"Animal Lack of Care\" requests is not the route the 311 request form gives for animal cruelty, and its extreme-temperature option applies only to owned domestic animals during an active heat advisory or temperatures below 32 degrees Fahrenheit. If the concern is animal cruelty, then call 911.",
+      "what": "Submit 311 request",
+      "who": "Dallas Animal Services",
+      "how": "Go to Dallas 311 > Choose \"Animal Care and Control\" > Choose \"Animal Lack of Care\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Animal Care and Control\" > Choose \"Animal Lack of Care\""
+    },
+    {
+      "tagline": "Call 911 to report animal cruelty.",
+      "why": "For animal cruelty. The 311 request form for \"Animal Lack of Care\" requests directs people who select Animal Cruelty to hang up and dial 911.",
+      "why_not": null,
+      "what": "Call",
+      "who": "911 emergency dispatch",
+      "how": "Call 911",
+      "how_formatted": "Call [911](tel:911)"
+    }
+  ]
+}

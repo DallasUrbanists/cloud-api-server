@@ -1,0 +1,64 @@
+{
+  "title": "Street Lamp/Light - New/Relocation",
+  "categories": [
+    "Traffic Signs and Signals"
+  ],
+  "description": "Use this service request to request additional street lighting or a street light where none has existed. Also, to relocate an existing street light. The estimated response time (ERT) for this service request is 10 business days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/4c46c270-42df-11ee-b426-a529e94762e8.JPG"
+  ],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "70 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "intro": "*** If location is an Intersection ENTER in alpha order i.e. Akard @ Young ***",
+    "observedQuestions": [
+      {
+        "question": "What is the specific location of the street light for this request?",
+        "required": false,
+        "type": "free_text"
+      },
+      {
+        "question": "What side of street is the request for?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "East side of street",
+          "North side of street",
+          "South side of street",
+          "West side of street"
+        ]
+      },
+      {
+        "question": "Would you like to be contacted?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ]
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Specific location supplied; side = West; contact = No; Details Continue reached Contact",
+    "contactStepObservation": "First Name, Last Name, and Phone Number marked required",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request for a new street light or relocation of an existing light.",
+      "why": "For an additional street light, a light where none existed, or relocation of an existing street light. The 311 request form asks for the specific location and side of the street and says to enter intersection street names in alphabetical order.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Traffic Signs and Signals\" > Choose \"Street Lamp/Light - New/Relocation\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Traffic Signs and Signals\" > Choose \"Street Lamp/Light - New/Relocation\""
+    }
+  ]
+}

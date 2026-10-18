@@ -1,0 +1,91 @@
+{
+  "title": "Traffic Construction Signs",
+  "categories": [
+    "Traffic Signs and Signals"
+  ],
+  "description": "Use this service request to report a problem with signage, signs, or cones of ongoing construction on City of Dallas streets. (Ex. - signs that may be missing, moved or knocked over or signs that were left at a construction site once work has been completed.) The estimated response time (ERT) for this service request is 1 business day.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/dc1590c0-4203-11ee-bc29-f1f98f2cf413.JPG"
+  ],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "5 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "Construction sign problem?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Construction is complete - sign still at location",
+          "Other",
+          "Sign has been damaged",
+          "Sign in wrong location",
+          "Sign is missing"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Other",
+            "reveals": "If Other, please describe:"
+          }
+        ]
+      },
+      {
+        "question": "When did you notice the problem?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Now",
+          "Last 48 hours",
+          "Other"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Other",
+            "reveals": "If Other, please describe:"
+          }
+        ]
+      },
+      {
+        "question": "If Other, please describe:",
+        "required": true,
+        "type": "free_text",
+        "when": "Construction sign problem = Other or When noticed = Other"
+      },
+      {
+        "question": "What is the intersection being reported or the nearest cross street?",
+        "required": false,
+        "type": "free_text"
+      },
+      {
+        "question": "Would you like to be contacted?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ]
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Problem = Sign is missing; noticed = Other with description; intersection supplied; contact = No; Details Continue reached Contact",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request about misplaced, missing, damaged, or leftover construction signs.",
+      "why": "For a sign, cone, or construction warning on a City street that is missing, damaged, moved, in the wrong location, or left after work was completed. The 311 request form asks what happened, when it was noticed, and the nearest intersection or cross street.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Traffic Signs and Signals\" > Choose \"Traffic Construction Signs\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Traffic Signs and Signals\" > Choose \"Traffic Construction Signs\""
+    }
+  ]
+}

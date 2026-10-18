@@ -1,0 +1,119 @@
+{
+  "title": "Sanitation Property Damage",
+  "categories": [
+    "Garbage, Recycle, and Brush/Bulky Item Collection"
+  ],
+  "description": "Use this service request to report all property damages ONLY caused by sanitation trucks. For damaged roll carts, use the Sanitation Roll Cart Maintenance/Delivery service request. If a customer would like to file a complaint against a sanitation driver/employee, use the Complaint/Compliment – 311 service request type. The estimated response time (ERT) for this service request is 3 business days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/174bc600-5f23-11ee-8932-8b0765cde3fc.jpg"
+  ],
+  "department": "Sanitation Services",
+  "resolutionEstimate": "10 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "prompt": "What property was damaged?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Easment",
+          "Fence",
+          "Gate",
+          "Landscape",
+          "Mailbox",
+          "Retaining wall",
+          "Sprinkler",
+          "Tree",
+          "Vehicle",
+          "Yard",
+          "Other"
+        ],
+        "conditional": "Other showed no extra question"
+      },
+      {
+        "prompt": "Describe the damage:",
+        "type": "text",
+        "required": true
+      },
+      {
+        "prompt": "Date and time damage occurred:",
+        "type": "date_time",
+        "required": true,
+        "dateFormat": "MM/DD/YYYY",
+        "timePeriodOptions": [
+          "AM",
+          "PM"
+        ]
+      },
+      {
+        "prompt": "Which Sanitation vehicle was involved?",
+        "type": "single_select",
+        "required": true,
+        "options": [
+          "Brush truck",
+          "Garbage truck",
+          "Recycling truck",
+          "Other"
+        ],
+        "branches": {
+          "Other": "Ask If Other, please describe:"
+        }
+      },
+      {
+        "prompt": "If Other, please describe:",
+        "type": "text",
+        "required": true,
+        "when": "Sanitation vehicle = Other"
+      },
+      {
+        "prompt": "Would you like to be contacted?",
+        "type": "single_select",
+        "required": false,
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ]
+      }
+    ],
+    "staticMessage": "In the event that we need additional information, the responsible department may contact you. Please provide your name and phone number.",
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Property = Other; vehicle = Brush truck; contact preference = Yes - prior to work being completed",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request for property damage caused by a Sanitation truck.",
+      "why": "Report property damage caused by a Sanitation brush, garbage, or recycling truck. The 311 request form asks what property was damaged, what the damage was, when it occurred, and which Sanitation vehicle was involved.",
+      "why_not": "The online form for \"Sanitation Property Damage\" requests is only for property damage caused by Sanitation trucks. If a roll cart is damaged, then submit a \"Sanitation Roll Cart Maintenance/Delivery\" 311 request instead. If the concern is a complaint about a Sanitation driver or employee rather than property damage, then submit a \"Complaint/Compliment\" 311 request instead.",
+      "what": "Submit 311 request",
+      "who": "Sanitation Services",
+      "how": "Go to Dallas 311 > Choose \"Garbage, Recycle, and Brush/Bulky Item Collection\" > Choose \"Sanitation Property Damage\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Garbage, Recycle, and Brush/Bulky Item Collection\" > Choose \"Sanitation Property Damage\""
+    },
+    {
+      "tagline": "Submit a 311 request about a damaged Sanitation roll cart.",
+      "why": "For a damaged Sanitation garbage or recycling roll cart. The description for \"Sanitation Property Damage\" requests on the Dallas 311 website directs damaged roll carts to this service, which handles roll-cart repairs and replacements.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Sanitation Services",
+      "how": "Go to Dallas 311 > Choose \"Garbage, Recycle, and Brush/Bulky Item Collection\" > Choose \"Sanitation Roll Cart Maintenance/Delivery\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Garbage, Recycle, and Brush/Bulky Item Collection\" > Choose \"Sanitation Roll Cart Maintenance/Delivery\""
+    },
+    {
+      "tagline": "Submit a 311 complaint about a Sanitation driver or employee.",
+      "why": "For a complaint about a Sanitation driver or employee, including employee conduct or unsafe driving. The description for \"Sanitation Property Damage\" requests on the Dallas 311 website directs driver/employee complaints to this service type.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Office of Communications & Customer Experience/311",
+      "how": "Go to Dallas 311 > Under \"Other Requests\", choose \"Complaint/Compliment\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Under \"Other Requests\", choose \"Complaint/Compliment\""
+    }
+  ]
+}

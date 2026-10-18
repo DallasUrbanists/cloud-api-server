@@ -1,0 +1,137 @@
+{
+  "title": "Sidewalk Replacement Program",
+  "categories": [
+    "Streets, Medians, Sidewalks and Alleys"
+  ],
+  "description": "Use this service request to obtain a petition to participate in a cost share residential sidewalk replacement program that assists in replacing existing deteriorated residential sidewalks. ** Sidewalks are the responsibility of the home owner. ** This is a cost share program between the City and the citizen (home owner). Not for businesses. ** For updates or additional information Click Here  The estimated response time (ERT) for this service request is 3 business days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/a4ab3b60-3cb0-11ee-ae50-773537b2e1cd.JPG"
+  ],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "6 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "Are you the property owner?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "No",
+            "reveals": "Is the sidewalk hazardous?"
+          },
+          {
+            "when": "Yes",
+            "reveals": [
+              "What is the problem with the sidewalk or curb?",
+              "If other, please describe:",
+              "Please provide the address where petition should be mailed:"
+            ]
+          }
+        ]
+      },
+      {
+        "question": "Is the sidewalk hazardous?",
+        "required": true,
+        "type": "single_choice",
+        "when": "Are you the property owner? = No",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Yes",
+            "instruction": "Oops, not the owner - create a Code Concern - CCS or if hazardous call 3-1-1. Sidewalk Replacement Program assists residential property owners in repairing damaged sidewalks."
+          }
+        ]
+      },
+      {
+        "question": "What is the problem with the sidewalk or curb?",
+        "required": true,
+        "type": "single_choice",
+        "when": "Are you the property owner? = Yes",
+        "options": [
+          "Concrete broken",
+          "Concrete raised",
+          "Other",
+          "Sunken",
+          "Tree root raised sidewalk"
+        ]
+      },
+      {
+        "question": "If other, please describe:",
+        "required": true,
+        "type": "free_text",
+        "when": "Are you the property owner? = Yes; displayed and required regardless of problem choice"
+      },
+      {
+        "question": "Please provide the address where petition should be mailed:",
+        "required": true,
+        "type": "free_text",
+        "when": "Are you the property owner? = Yes"
+      },
+      {
+        "question": "Would you like to be contacted?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ]
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Property owner = Yes; problem = Other; descriptive text and mailing address supplied; contact = No; Details Continue reached Contact",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request to join the residential sidewalk cost-share program.",
+      "why": "For an owner seeking a petition to replace an existing deteriorated residential sidewalk, including broken, raised, or sunken concrete or damage from tree roots. The 311 request form asks whether you own the property, the sidewalk or curb problem, and where the petition should be mailed; the program is a City and homeowner cost share and is not for businesses.",
+      "why_not": "The online form for \"Sidewalk Replacement Program\" requests is not for businesses or for people who do not own the property. If you are not the owner and the sidewalk concern is not hazardous, then submit a \"Code Concerns\" 311 request instead. If the sidewalk is hazardous, then call 311 by phone instead of submitting a 311 request online.",
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Sidewalk Replacement Program\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Sidewalk Replacement Program\""
+    },
+    {
+      "tagline": "Submit a 311 request about a sidewalk concern if you are not the property owner.",
+      "why": "For a sidewalk concern when you are not the property owner and the sidewalk is not hazardous. The 311 request form for \"Sidewalk Replacement Program\" requests directs nonowners to \"Code Concern\"; the saved matching service type is \"Code Concerns\" and its description covers code concerns such as substandard conditions.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Code Compliance",
+      "how": "Go to Dallas 311 > Choose \"City Code Violations\" > Choose \"Code Concerns\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"City Code Violations\" > Choose \"Code Concerns\""
+    },
+    {
+      "tagline": "Call Dallas 311 by phone about a hazardous sidewalk if you are not the owner.",
+      "why": "For a hazardous sidewalk when you are not the property owner. The 311 request form for \"Sidewalk Replacement Program\" directs nonowners with a hazardous sidewalk to call 311 by phone.",
+      "why_not": null,
+      "what": "Call 311 by phone",
+      "who": "Dallas 311",
+      "how": "Call 311",
+      "how_formatted": "Call [311](tel:311)"
+    },
+    {
+      "tagline": "Visit the City of Dallas Sidewalk Replacement Program website for updates.",
+      "why": "For updates or additional information about the residential sidewalk replacement program. The description for \"Sidewalk Replacement Program\" requests on the Dallas 311 website directs people to its \"Click Here\" link for this information.",
+      "why_not": null,
+      "what": "Visit website",
+      "who": "City of Dallas Sidewalk Replacement Program",
+      "how": "Use the \"Click Here\" link in the \"Sidewalk Replacement Program\" description to view updates or additional information",
+      "how_formatted": "Use the \"Click Here\" link in the \"Sidewalk Replacement Program\" description to view updates or additional information"
+    }
+  ]
+}

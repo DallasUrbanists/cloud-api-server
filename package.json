@@ -16,6 +16,8 @@
     "docs:preview": "node scripts/docs.mjs preview docs",
     "test": "tsx --test tests/*.test.ts",
     "migrate:staff-claims": "tsx src/scripts/migrateStaffClaims.ts",
+    "migrate:recommendable-actions": "tsx src/scripts/migrateRecommendableActions.ts",
+    "backfill:recommendable-photos": "tsx src/scripts/backfillRecommendablePhotos.ts",
     "start": "node dist/index.js",
     "proxy": "cloud-sql-proxy urbanists-mixer-slides-helper:us-south1:contacts-relationships-db --port 5432",
     "deploy": "gcloud run deploy urbanists-cloud-api-server --source . --region us-central1 --allow-unauthenticated --add-cloudsql-instances=urbanists-mixer-slides-helper:us-south1:contacts-relationships-db --update-env-vars SUGGESTION_PHOTOS_BUCKET=urbanists-suggestion-photos,DB_USER=postgres,DB_NAME=postgres,INSTANCE_CONNECTION_NAME=urbanists-mixer-slides-helper:us-south1:contacts-relationships-db --update-secrets DB_PASSWORD=contacts-db-password:latest",
@@ -24,7 +26,8 @@
     "patch": "npm version patch && git push origin main --tags",
     "worker:boundaries": "tsx src/scripts/boundaryWorker.ts",
     "scan:recommendables": "tsx src/scripts/recommendableWorker.ts",
-    "seed:boundaries": "tsx src/scripts/seedBoundaries.ts"
+    "seed:boundaries": "tsx src/scripts/seedBoundaries.ts",
+    "seed:dallas311-recommendables": "tsx src/scripts/seedDallas311Recommendables.ts"
   },
   "dependencies": {
     "@google-cloud/firestore": "^9.2.0",
@@ -35,6 +38,7 @@
     "acorn": "^8.19.0",
     "cheerio": "^1.2.0",
     "cors": "^2.8.6",
+    "dompurify": "^3.4.17",
     "dotenv": "^16.4.7",
     "express": "^5.2.1",
     "firebase": "^12.19.0",

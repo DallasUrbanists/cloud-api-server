@@ -1,0 +1,35 @@
+{
+  "title": "School Crossing Guard",
+  "categories": [
+    "Other Requests"
+  ],
+  "description": "Use to request a school crossing guard or report a crossing guard not at their post. Also use to report complaints, compliments and concerns related to school crossing guards, i.e., employee conduct, safety issues, information about the program, etc. The estimated response time (ERT) for this service request is 3 business days.",
+  "photoUrls": [],
+  "department": "Municipal Court & Detention Services",
+  "resolutionEstimate": "6 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [],
+    "unexplored": null,
+    "additionalInformation": "Optional free-text; the Details step showed only this unnumbered field.",
+    "conditionalPaths": [],
+    "completedContactPath": "Selected 1500 MARILLA ST, DALLAS, TX, 75201; Details contained only unnumbered Additional Information, then continued to Contact. No Contact data entered.",
+    "contactStepObserved": "Contact step displayed How can we reach you? and an email verification instruction. Contact information is optional and may be enabled by a checkbox. Fields shown: First Name, Last Name, Email, Phone Number, Address, City, State, Zipcode."
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request for a crossing guard or to report a crossing-guard concern.",
+      "why": "For requesting a school crossing guard, reporting a guard absent from the post, or reporting a compliment, complaint, employee-conduct issue, safety concern, or question about the crossing-guard program.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Municipal Court & Detention Services",
+      "how": "Go to Dallas 311 > Under \"Other Requests\", choose \"School Crossing Guard\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Under \"Other Requests\", choose \"School Crossing Guard\""
+    }
+  ]
+}

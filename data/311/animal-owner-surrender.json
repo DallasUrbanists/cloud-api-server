@@ -1,0 +1,55 @@
+{
+  "title": "Animal Owner Surrender",
+  "categories": [
+    "Animal Care and Control"
+  ],
+  "description": "Surrendering your pet to the shelter is not an easy decision and should be your last resort. Please visit BeDallas90 for more information and options for rehoming your pet. Here you can also connect with our partner, Spay Neuter Network, to schedule an owner surrender appointment.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/82fa57c0-477e-11ee-a643-c967669f66a7.PNG"
+  ],
+  "department": "Dallas Animal Services",
+  "resolutionEstimate": "1 Business Days",
+  "detailsForm": {
+    "observedQuestions": [],
+    "status": "instructions_only",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "requestThisService": false,
+  "instructions": [
+    "Please visit BeDallas90 for more information and options for rehoming your pet.",
+    "Here you can also connect with our partner, Spay Neuter Network, to schedule an owner surrender appointment.",
+    "Please call 311 for more information"
+  ],
+  "captureStatus": "instructions_only",
+  "actions": [
+    {
+      "tagline": "Visit the Dallas Animal Services website for pet rehoming options.",
+      "why": "For a pet owner considering surrendering an animal to the shelter. The description for \"Animal Owner Surrender\" requests on the Dallas 311 website calls surrender a last resort and directs the owner to BeDallas90 for rehoming information and alternatives.",
+      "why_not": null,
+      "what": "Visit website",
+      "who": "Dallas Animal Services",
+      "how": "Visit BeDallas90",
+      "how_formatted": "Visit [BeDallas90](https://BeDallas90.org/rehome/)"
+    },
+    {
+      "tagline": "Schedule a pet surrender appointment with Spay Neuter Network.",
+      "why": "For a pet owner seeking an owner surrender appointment after considering rehoming options. The description for \"Animal Owner Surrender\" requests on the Dallas 311 website identifies Spay Neuter Network as the partner that can schedule the appointment through BeDallas90.",
+      "why_not": null,
+      "what": "Schedule owner surrender appointment",
+      "who": "Spay Neuter Network",
+      "how": "Connect with Spay Neuter Network through BeDallas90",
+      "how_formatted": "Connect with Spay Neuter Network through [BeDallas90](https://BeDallas90.org/rehome/)"
+    },
+    {
+      "tagline": "Call Dallas 311 by phone for more information about pet surrender.",
+      "why": "For more information about owner surrender, including the rehoming options and appointment process described in this service guidance.",
+      "why_not": null,
+      "what": "Call 311 by phone",
+      "who": "Dallas 311",
+      "how": "Call 311",
+      "how_formatted": "Call [311](tel:311)"
+    }
+  ]
+}

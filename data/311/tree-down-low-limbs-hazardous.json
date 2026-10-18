@@ -1,0 +1,153 @@
+{
+  "title": "Tree down/Low Limbs - Hazardous",
+  "categories": [
+    "Streets, Medians, Sidewalks and Alleys"
+  ],
+  "description": "Use this request to report hazardous trees down in the street or alley, leaning trees that are about to fall into the street, alley, or onto the public right of way, and hazardous low limbs hanging over into the street or sidewalk. ** Trees/Limbs on private property are property owner's responsibility. ** The estimated response time (ERT) for this service request is 12 hours.",
+  "photoUrls": [],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "1 Calendar Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "What is the nature of your problem?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Low hanging limbs",
+          "Other",
+          "Tree down"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Other",
+            "reveals": "If Other, please describe:"
+          },
+          {
+            "when": "Low hanging limbs",
+            "reveals": [
+              "Are there any phone lines or electrical lines on the tree or limbs?",
+              "Are the tree limbs/tree blocking the street/alley?"
+            ]
+          },
+          {
+            "when": "Tree down",
+            "reveals": "Are there any phone lines or electrical lines on the tree or limbs?"
+          }
+        ]
+      },
+      {
+        "question": "If Other, please describe:",
+        "required": true,
+        "type": "free_text",
+        "when": "Nature = Other or Location = Other"
+      },
+      {
+        "question": "What is the location?",
+        "required": true,
+        "type": "select",
+        "options": [
+          "Alley",
+          "Other",
+          "Private property",
+          "Sidewalk",
+          "Street",
+          "Unknown"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Other",
+            "reveals": "If Other, please describe:"
+          },
+          {
+            "when": "Private property",
+            "suggestedService": "Code Concerns"
+          }
+        ]
+      },
+      {
+        "question": "Are there any phone lines or electrical lines on the tree or limbs?",
+        "required": false,
+        "type": "single_choice",
+        "when": "Nature = Low hanging limbs or Tree down",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Yes",
+            "instruction": "Sorry, please advise the citizen to contact the appropriate utility company for trimming of trees/limbs near utility lines or property owner."
+          }
+        ]
+      },
+      {
+        "question": "Are the tree limbs/tree blocking the street/alley?",
+        "required": false,
+        "type": "single_choice",
+        "when": "Nature = Low hanging limbs",
+        "options": [
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "question": "Would you like to be contacted?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ]
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Nature = Low hanging limbs; location = Unknown; utility lines = No; blocking = No; contact = No; Details Continue reached Contact",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request about a hazardous fallen tree or low limb in a public way.",
+      "why": "For a tree down in a street or alley, a tree leaning toward the public right-of-way, or low limbs posing a hazard over a street or sidewalk. The 311 request form asks whether the concern is a fallen tree or low limbs, where it is, whether utility lines are on it, and whether it blocks the street or alley.",
+      "why_not": "The online form for \"Tree down/Low Limbs - Hazardous\" requests does not apply to trees or limbs confined to private property or trimming near utility lines. If utility lines are on or near the tree or limbs, then contact the appropriate utility company. If the tree or limb is on private property, then contact the property owner.",
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Tree down/Low Limbs - Hazardous\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Tree down/Low Limbs - Hazardous\""
+    },
+    {
+      "tagline": "Contact the appropriate utility company about limbs near its lines.",
+      "why": "For a tree or limbs touching or near phone or electrical lines. The Tree down/Low Limbs - Hazardous form directs people who answer Yes to lines on the tree or limbs to contact the appropriate utility company for trimming.",
+      "why_not": null,
+      "what": "Contact",
+      "who": "Appropriate utility company",
+      "how": "Contact the phone or electric utility company responsible for the lines",
+      "how_formatted": "Contact the phone or electric utility company responsible for the lines"
+    },
+    {
+      "tagline": "Contact the property owner about a hazardous tree on private property.",
+      "why": "For a tree or limb on private property rather than in the public right-of-way. The service description says private-property trees and limbs are the owner’s responsibility, and the 311 request form mentions contacting the property owner for trimming near lines.",
+      "why_not": null,
+      "what": "Contact",
+      "who": "Property owner",
+      "how": "Contact the property owner about the tree or limb",
+      "how_formatted": "Contact the property owner about the tree or limb"
+    },
+    {
+      "tagline": "Consider submitting a 311 request about a private-property tree code concern.",
+      "why": "For a private-property tree concern. When Private property is selected, the Tree down/Low Limbs - Hazardous form suggests \"Code Concerns\"; the suggestion does not establish that the City will remove a private-property tree.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Code Compliance",
+      "how": "Go to Dallas 311 > Choose \"City Code Violations\" > Choose \"Code Concerns\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"City Code Violations\" > Choose \"Code Concerns\""
+    }
+  ]
+}

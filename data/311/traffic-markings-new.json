@@ -1,0 +1,128 @@
+{
+  "title": "Traffic Markings - New",
+  "categories": [
+    "Traffic Signs and Signals"
+  ],
+  "description": "Use this service request for concerns related to new traffic markings. Including: lane line striping, edge lines, crosswalks, stop legends, etc. This can also be used to remove existing markings. A name, address, and daytime phone are required for this request. ** For highways or freeways please contact Texas Department of Transportation (TXDOT). ** The estimated response time (ERT) for this service request is 10 business days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/80c25ef0-42e5-11ee-b797-25547d8b54e6.JPG"
+  ],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "60 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "intro": "*** If location is an Intersection ENTER in alpha order i.e. Akard @ Young ***",
+    "observedQuestions": [
+      {
+        "question": "What is the placement of the marking?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "City roadway",
+          "Highway/freeway (contact txdot)",
+          "Parking lot (property owner's responsibility)"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Highway/freeway (contact txdot)",
+            "instruction": "Uh oh, please contact TXDOT (800) 558-9368 for highway/freeway markings."
+          },
+          {
+            "when": "Parking lot (property owner's responsibility)",
+            "instruction": "Oops, it is the owner's responsibility to maintain parking lots."
+          },
+          {
+            "when": "City roadway",
+            "reveals": "Are the markings needed because of a current/recent construction project?"
+          }
+        ]
+      },
+      {
+        "question": "Are the markings needed because of a current/recent construction project?",
+        "required": true,
+        "type": "single_choice",
+        "when": "Placement = City roadway",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Yes",
+            "instruction": "** If striping or markings are missing because of a street construction project - see Paving Reconstruction Project SR **",
+            "suggestedService": "Paving Reconstruction Project"
+          },
+          {
+            "when": "No",
+            "reveals": "What type of marking?"
+          }
+        ]
+      },
+      {
+        "question": "What type of marking?",
+        "required": true,
+        "type": "select",
+        "when": "Placement = City roadway and construction = No",
+        "options": [
+          "Road humps",
+          "Small reflective buttons/markers",
+          "Center line stripe",
+          "Intersection lane control use",
+          "Left/right turn arrow",
+          "Other",
+          "Pedestrian crosswalk",
+          "Stop bar stripe",
+          "Traffic lane line"
+        ]
+      },
+      {
+        "question": "Would you like to be contacted?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ]
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Placement = City roadway; construction = No; marking = Traffic lane line; contact = No; Details Continue reached Contact",
+    "contactStepObservation": "First Name, Last Name, and Phone Number marked required",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request for new or removed traffic markings on a Dallas city street.",
+      "why": "For new traffic markings such as lane lines, edge lines, crosswalks, stop legends, or for removing existing markings on a Dallas city roadway. The 311 request form asks whether markings are needed because of a current or recent construction project; if not, it asks the marking type. A name, address, and daytime phone are required.",
+      "why_not": "The online form for \"Traffic Markings - New\" requests does not apply to highways, freeways, or parking lots. If markings are missing because of a current or recent City construction project, then consider the \"Paving Reconstruction Project\" 311 request identified by the Dallas 311 website. If the marking is for a highway or freeway, then contact TxDOT at 800-558-9368.",
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Traffic Signs and Signals\" > Choose \"Traffic Markings - New\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Traffic Signs and Signals\" > Choose \"Traffic Markings - New\""
+    },
+    {
+      "tagline": "Contact TxDOT about highway or freeway traffic markings.",
+      "why": "For new or removed traffic markings on a highway or freeway. The 311 request form directs this selection to TxDOT at the number shown in its instruction.",
+      "why_not": null,
+      "what": "Contact",
+      "who": "TxDOT",
+      "how": "Call TxDOT at 800-558-9368",
+      "how_formatted": "Call [800-558-9368](tel:8005589368)"
+    },
+    {
+      "tagline": "Submit a 311 request about missing markings caused by a construction project.",
+      "why": "For markings missing because of a current or recent construction project when the concern involves a City reconstruction project. People who answer Yes to the construction-project question see a Paving Reconstruction Project instruction. The public \"Paving Reconstruction Project\" service has an online request form for City reconstruction projects.",
+      "why_not": "The online form for \"Paving Reconstruction Project\" requests applies to reconstruction work performed by the City or complaints about a City reconstruction project; it does not apply to non-City reconstruction work.",
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Paving Reconstruction Project\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Paving Reconstruction Project\""
+    }
+  ]
+}

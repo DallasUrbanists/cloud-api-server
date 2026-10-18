@@ -1,0 +1,66 @@
+{
+  "title": "Building Permits Violation",
+  "categories": [
+    "Other Requests"
+  ],
+  "description": "Use this service request to report violations regarding active construction being performed that is not covered under the permit. Construction of accessory structures less than 200 SF, with no electric or plumbing work, does not require a permit. The estimated response time for a service request of this nature is 2 business days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/b32e7df0-5e2a-11ee-bf7f-3de98a985773.PNG"
+  ],
+  "department": "Planning & Development Department",
+  "resolutionEstimate": "10 Business Days",
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "label": "What building permit violation are you reporting?",
+        "options": [
+          "Building within the setbacks",
+          "Construction is more extensive than what is covered by permit",
+          "Construction not according to approved plans",
+          "Contractor complaint",
+          "Other"
+        ],
+        "type": "radio",
+        "required": true
+      },
+      {
+        "label": "If other, please describe:",
+        "condition": "Violation Other",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "Would you like to be contacted?",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ],
+        "type": "radio",
+        "required": false
+      }
+    ],
+    "observedInstructions": [
+      "All five violation types and three contact-preference answers were tested. Other adds a required description; no other violation type or contact-preference answer adds fields or routing messages."
+    ],
+    "contactStepObserved": "Contact step showed optional consent; First Name, Last Name, Email, Phone Number, Address, City, State, Zipcode were disabled by default.",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "requestThisService": true,
+  "captureStatus": "conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request about construction that violates a building permit.",
+      "why": "Report active construction that goes beyond a permit, differs from approved plans, builds within setbacks, or raises a contractor or other building-permit concern. The 311 request form asks which violation is being reported.",
+      "why_not": "A small accessory structure under 200 square feet with no electrical or plumbing work does not require a permit under the description for \"Building Permits Violation\" requests on the Dallas 311 website.",
+      "what": "Submit 311 request",
+      "who": "Planning & Development Department",
+      "how": "Go to Dallas 311 > Under \"Other Requests\", choose \"Building Permits Violation\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Under \"Other Requests\", choose \"Building Permits Violation\""
+    }
+  ]
+}

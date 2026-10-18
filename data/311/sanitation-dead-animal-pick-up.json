@@ -1,0 +1,339 @@
+{
+  "title": "Sanitation Dead Animal Pick Up",
+  "categories": [
+    "Animal Care and Control"
+  ],
+  "description": "Use this service request to request the removal of dead animals. Place the deceased animal in a plastic bag (if possible) and relocate it to the front curb of your property for removal. A $125 service fee will be applied to the Dallas Water Utility account number associated with the service address if the animal weighs more than 100 pounds. Requests received Monday-Friday after 5PM, Saturday after 2:30PM, or Sunday after 1:30PM are resolved the next business day. The estimated response time for a service request of this nature is 1 business day.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/8c2c80c0-a2c1-11f0-8bde-152aa7df474f.jpg"
+  ],
+  "department": "Sanitation Services",
+  "resolutionEstimate": "1 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "options": [
+          "Freeway/Median",
+          "Apartment Complex",
+          "Street/Median",
+          "Vacant Lot",
+          "Sidewalk",
+          "Alley",
+          "Private Property"
+        ],
+        "prompt": "Where is the animal located?",
+        "type": "select",
+        "required": true
+      },
+      {
+        "when": {
+          "equals": "Street/Median",
+          "field": "Where is the animal located?"
+        },
+        "prompt": "What is the closest cross street?",
+        "type": "text",
+        "required": true
+      },
+      {
+        "when": {
+          "field": "Where is the animal located?",
+          "equalsAny": [
+            "Vacant Lot",
+            "Private Property"
+          ]
+        },
+        "prompt": "Please provide animal(s) exact address and animal location on the property.",
+        "type": "text",
+        "required": true
+      },
+      {
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "when": {
+          "equals": "Private Property",
+          "field": "Where is the animal located?"
+        },
+        "prompt": "Are you over the age of 65 or have a physical disability that will prevent you from moving the animal to the front parkway for pickup?",
+        "type": "radio",
+        "required": true
+      },
+      {
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "prompt": "Are you the owner?",
+        "type": "radio",
+        "required": true
+      },
+      {
+        "options": [
+          "Passerby",
+          "Witness",
+          "Other"
+        ],
+        "when": {
+          "equals": "No",
+          "field": "Are you the owner?"
+        },
+        "prompt": "How was the dead animal encountered/found?",
+        "type": "radio",
+        "required": true
+      },
+      {
+        "when": {
+          "equals": "Other",
+          "field": "How was the dead animal encountered/found?"
+        },
+        "prompt": "If Other, please describe:",
+        "type": "text",
+        "required": true
+      },
+      {
+        "options": [
+          "Yes",
+          "No",
+          "Unknown"
+        ],
+        "prompt": "Has the deceased animal bitten anyone in the last 10 days?",
+        "type": "radio",
+        "required": true
+      },
+      {
+        "options": [
+          "Yes",
+          "No",
+          "Unknown"
+        ],
+        "prompt": "Do you believe that an intentional act of violence was the cause of death?",
+        "type": "radio",
+        "required": true
+      },
+      {
+        "options": [
+          "No",
+          "Yes"
+        ],
+        "prompt": "Is the animal in the Dowdy Ferry/Teagarden area?",
+        "type": "radio",
+        "required": true
+      },
+      {
+        "options": [
+          "Cat",
+          "Cow",
+          "Coyote",
+          "Dog",
+          "Fox",
+          "Goat",
+          "Horse",
+          "Opossum",
+          "Pig",
+          "Raccoon",
+          "Sheep",
+          "Skunk",
+          "Squirrel",
+          "Bat",
+          "Other"
+        ],
+        "prompt": "What kind of animal is it?",
+        "type": "select",
+        "required": true
+      },
+      {
+        "options": [
+          "Less than 100 lb",
+          "More than 100 lb"
+        ],
+        "when": {
+          "field": "What kind of animal is it?",
+          "equalsAny": [
+            "Cow",
+            "Dog",
+            "Goat",
+            "Horse",
+            "Pig",
+            "Sheep",
+            "Other"
+          ]
+        },
+        "prompt": "What is the animal's estimated weight?",
+        "type": "radio",
+        "required": true
+      },
+      {
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "when": {
+          "field": "What kind of animal is it?",
+          "equalsAny": [
+            "Coyote",
+            "Fox",
+            "Raccoon",
+            "Skunk",
+            "Bat"
+          ]
+        },
+        "prompt": "Have you had any physical contact with this animal?",
+        "type": "radio",
+        "required": true
+      },
+      {
+        "prompt": "Additional Information",
+        "type": "text",
+        "required": false
+      }
+    ],
+    "unexplored": null,
+    "observedInstructions": [
+      {
+        "when": "Freeway/Median location",
+        "text": "At this time we are unable to proceed with this request. Please refer to TXDOT (214-319-3601).",
+        "kind": "inline_block"
+      },
+      {
+        "when": "Apartment Complex location",
+        "text": "Please place the deceased animal inside a plastic bag and place it on the front curb/parkway. Do not place the animal in the trash/dumpster.",
+        "kind": "validation_alert"
+      },
+      {
+        "when": "Private Property location and age/disability No",
+        "text": "Please be advised that customers must be over the age of 65 or physically disabled for Dallas Animal Services to remove a deceased animal from private property. Customer must be present on the property at the time of pick up.",
+        "kind": "inline_block"
+      },
+      {
+        "when": "Private Property location",
+        "text": "Requests for pick ups on private property require a good contact number to be left in the contact details and for someone to be present during the pick up. Failure to leave contact information on this request may result in the service request being closed if Dallas Animal Services is unable to locate the animal.",
+        "kind": "validation_alert"
+      },
+      {
+        "when": "Deceased animal bit someone in last 10 days: Yes",
+        "text": "This request cannot be submitted on Dead Animal. Please choose Animal Bite to continue entering your request.",
+        "kind": "inline_block"
+      },
+      {
+        "when": "Intentional violence believed to be cause of death: Yes",
+        "text": "Please contact 911 to report this concern.",
+        "kind": "validation_alert"
+      },
+      {
+        "when": "Dowdy Ferry/Teagarden area: Yes",
+        "text": "This request cannot be submitted on Dead Animal. Please choose Illegal Dumping to continue entering your request.",
+        "kind": "inline_block"
+      },
+      {
+        "when": "Estimated weight: More than 100 lb",
+        "text": "If more than 100 pounds and on private property, there will be a $125 fee for removal applied to the associated Dallas Water Utilities account number.",
+        "kind": "inline_information"
+      },
+      {
+        "when": "Physical contact with coyote, fox, raccoon, skunk, or bat: Yes",
+        "text": "This request cannot be submitted on Dead Animal. Please choose Animal Bite to continue entering your request.",
+        "kind": "inline_block"
+      },
+      {
+        "when": "All paths",
+        "text": "To report an animal that is sick or injured, please submit Animal Lack of Care. Requests received during Monday-Friday after 5PM, Saturday after 2:30PM, or Sunday after 1:30PM are resolved the next day.",
+        "kind": "information"
+      }
+    ],
+    "pathCoverage": {
+      "locationOptionsTested": 7,
+      "dowdyOptionsTested": 2,
+      "foundOptionsTested": 3,
+      "detailsContinueReached": true,
+      "ownerOptionsTested": 2,
+      "contactStepReached": true,
+      "intentionalViolenceOptionsTested": 3,
+      "weightOptionsTested": 2,
+      "privatePropertyAgeDisabilityOptionsTested": 2,
+      "physicalContactOptionsTested": 2,
+      "requestSubmitted": false,
+      "speciesOptionsTested": 15,
+      "contactDataEntered": false,
+      "biteOptionsTested": 3
+    }
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "conditional_paths_explored",
+  "contactStep": {
+    "disabled": [
+      "City",
+      "State",
+      "Zipcode"
+    ],
+    "optional": [
+      "Address"
+    ],
+    "required": [
+      "First Name",
+      "Last Name",
+      "Email",
+      "Phone Number"
+    ]
+  },
+  "actions": [
+    {
+      "tagline": "Submit a 311 request for pickup of a deceased animal.",
+      "why": "For removal of a deceased animal from an eligible location, such as a street, sidewalk, alley, lot, apartment complex, or private property. The 311 request form asks where it is, species, ownership, bite or physical-contact history, suspected intentional violence, and whether it is in the Dowdy Ferry/Teagarden area. Private-property pickup by Dallas Animal Services requires the customer to be over 65 or physically disabled, provide a contact number, and be present. An animal over 100 pounds on private property carries a $125 charge to the Dallas Water Utilities account.",
+      "why_not": "The online form for \"Sanitation Dead Animal Pick Up\" requests cannot continue for freeway or freeway-median locations, an animal that bit someone in the last 10 days, physical contact with a coyote, fox, raccoon, skunk, or bat, or an animal in the Dowdy Ferry/Teagarden area. Private-property pickup is limited to customers over 65 or physically disabled who can provide a contact number and be present; this service is not the directed route for a sick or injured living animal or suspected intentional violence. If an animal bit someone recently or one of the listed wild animals was touched, then submit an \"Animal Bite\" 311 request instead. If the animal is sick or injured, then submit an \"Animal Lack of Care\" 311 request instead. If intentional violence may have caused the death, then call 911. If the location is a freeway or freeway median, then contact TxDOT.",
+      "what": "Submit 311 request",
+      "who": "Sanitation Services",
+      "how": "Go to Dallas 311 > Choose \"Animal Care and Control\" > Choose \"Sanitation Dead Animal Pick Up\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Animal Care and Control\" > Choose \"Sanitation Dead Animal Pick Up\""
+    },
+    {
+      "tagline": "Place a deceased animal in a bag at the front curb when possible.",
+      "why": "For a deceased animal that can be moved safely for City pickup. The service description asks people to put the animal in a plastic bag if possible and move it to the front curb; the apartment-complex instruction says not to place it in a trash container.",
+      "why_not": "This preparation does not apply when the resident cannot move the animal; the 311 request form separately asks whether a private-property customer is over 65 or physically disabled.",
+      "what": "Move animal to curb",
+      "who": "Resident",
+      "how": "If possible, bag the deceased animal and place it at the front curb or parkway; do not place it in a trash container",
+      "how_formatted": "If possible, bag the deceased animal and place it at the front curb or parkway; do not place it in a trash container"
+    },
+    {
+      "tagline": "Contact TxDOT about a deceased animal on a freeway or freeway median.",
+      "why": "For a deceased animal on a freeway or freeway median. The Sanitation Dead Animal Pick Up form says it cannot proceed for that location and refers people to TxDOT at 214-319-3601.",
+      "why_not": null,
+      "what": "Contact",
+      "who": "TxDOT",
+      "how": "Call TxDOT at 214-319-3601",
+      "how_formatted": "Call TxDOT at [214-319-3601](tel:12143193601)"
+    },
+    {
+      "tagline": "Submit a 311 request for an animal bite or contact with a listed wild animal.",
+      "why": "For a deceased animal that bit someone within the last 10 days, or physical contact with a coyote, fox, raccoon, skunk, or bat. The Sanitation Dead Animal Pick Up form says it cannot continue and directs people to \"Animal Bite\".",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Dallas Animal Services",
+      "how": "Go to Dallas 311 > Choose \"Animal Care and Control\" > Choose \"Animal Bite\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Animal Care and Control\" > Choose \"Animal Bite\""
+    },
+    {
+      "tagline": "Call 911 about suspected intentional violence that caused an animal’s death.",
+      "why": "For a deceased animal believed to have died from an intentional act of violence. The Sanitation Dead Animal Pick Up form directs people who answer Yes to this question to contact 911.",
+      "why_not": null,
+      "what": "Call",
+      "who": "Emergency dispatch",
+      "how": "Call 911",
+      "how_formatted": "Call [911](tel:911)"
+    },
+    {
+      "tagline": "Submit a 311 request about a sick or injured living animal.",
+      "why": "For an animal that is sick or injured rather than deceased. The Sanitation Dead Animal Pick Up form directs people to \"Animal Lack of Care\" for this concern.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Dallas Animal Services",
+      "how": "Go to Dallas 311 > Choose \"Animal Care and Control\" > Choose \"Animal Lack of Care\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Animal Care and Control\" > Choose \"Animal Lack of Care\""
+    }
+  ]
+}

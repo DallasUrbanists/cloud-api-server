@@ -1,0 +1,103 @@
+{
+  "title": "Street Resurface Program",
+  "categories": [
+    "Streets, Medians, Sidewalks and Alleys"
+  ],
+  "description": "Use this service request to inquire about a street resurfacing (asphalt) project that is currently under construction and being performed by the city. The estimated response time (ERT) for this service request is 3 business days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/729258f0-3ca8-11ee-ae50-773537b2e1cd.JPG"
+  ],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "10 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "prompt": "Are you asking to have the street resurfaced for the first time?",
+        "type": "single_select",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "required": true,
+        "branches": {
+          "No": "Ask lane striping question",
+          "Yes": "Validation Alert: first time requests should use Street Repair (Routine)"
+        }
+      },
+      {
+        "prompt": "Is your concern related to lane striping or missing markings because of construction?",
+        "type": "single_select",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "required": true,
+        "when": "first time = No",
+        "branches": {
+          "No": "Ask if construction ongoing"
+        }
+      },
+      {
+        "prompt": "Is the construction ongoing?",
+        "type": "single_select",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "required": true,
+        "when": "lane striping concern = No",
+        "branches": {
+          "No": "Validation Alert: consider Street Repair (Routine)",
+          "Yes": "Ask performer and project location"
+        }
+      },
+      {
+        "prompt": "Who is performing the work?",
+        "type": "single_select",
+        "options": [
+          "City of Dallas Department",
+          "Utility Company",
+          "Private Contractor"
+        ],
+        "required": false,
+        "when": "construction ongoing = Yes"
+      },
+      {
+        "prompt": "Where is the construction project located (address/street block)?",
+        "type": "text",
+        "required": false,
+        "when": "construction ongoing = Yes"
+      },
+      {
+        "prompt": "Would you like to be contacted?",
+        "type": "single_select",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ],
+        "required": false
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "First time = No; lane striping concern = No; construction ongoing = Yes",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request about an ongoing City street-resurfacing project.",
+      "why": "For an inquiry about a City of Dallas asphalt street-resurfacing project currently under construction. The 311 request form asks whether this is a first-time resurfacing request, whether lane markings are affected, whether construction is ongoing, who is doing the work, and the location.",
+      "why_not": "The online form for \"Street Resurface Program\" requests does not describe a first-time request to resurface a street or work that is no longer underway. The 311 request form suggests \"Street Repair (Routine)\" for those answers.",
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Street Resurface Program\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Street Resurface Program\""
+    }
+  ]
+}

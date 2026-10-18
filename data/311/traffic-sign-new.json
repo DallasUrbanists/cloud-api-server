@@ -1,0 +1,126 @@
+{
+  "title": "Traffic Sign - New",
+  "categories": [
+    "Traffic Signs and Signals"
+  ],
+  "description": "Use this service request to request the installation of a new traffic sign or to request the removal of a sign. **Signs for trails and trail crossings must be submitted to the Park & Recreation department using “Park Maintenance/Misc – PKR”. Signs include - school zone, dip, yield, stop, no parking, one way, speed limit, and street name blades. **A name, address and daytime phone are required. ** Signs for Buildings/Parking lots are the owner's responsibility. Highway signs contact TXDOT. The estimated response time (ERT) for this service request is 35 business days.",
+  "photoUrls": [],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "65 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "intro": "*** If location is an Intersection ENTER in alpha order i.e. Akard @ Young ***",
+    "observedQuestions": [
+      {
+        "question": "Is the request for a sign or signal?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Sign",
+          "Signal"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Signal",
+            "suggestedService": "Traffic Signal - New"
+          },
+          {
+            "when": "Sign",
+            "reveals": "Type of Sign?"
+          }
+        ]
+      },
+      {
+        "question": "Type of Sign?",
+        "required": true,
+        "type": "select",
+        "when": "Request = Sign",
+        "options": [
+          "2 way stop",
+          "Dip",
+          "Do not enter",
+          "Lane designation",
+          "Loading zone",
+          "Multi-way stop",
+          "No parking (resd/comm)",
+          "No trucks",
+          "Other",
+          "School zone",
+          "Speed limit",
+          "Street name",
+          "Street ends/no outlet",
+          "Chevron"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Other",
+            "reveals": "If Other, please describe:"
+          }
+        ]
+      },
+      {
+        "question": "If Other, please describe:",
+        "required": true,
+        "type": "free_text",
+        "when": "Sign type = Other"
+      },
+      {
+        "question": "Would you like to be contacted?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ]
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Request = Sign; type = Other with description; contact = No; Details Continue reached Contact",
+    "contactStepObservation": "First Name, Last Name, and Phone Number marked required",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request to install or remove a traffic sign on a Dallas street.",
+      "why": "For installing a new traffic sign or removing an existing sign on a Dallas city street, such as a stop, yield, school-zone, speed-limit, no-parking, one-way, or street-name sign. The 311 request form separates signs from signals, asks the sign type, and requires a name, address, and daytime phone.",
+      "why_not": "The online form for \"Traffic Sign - New\" requests is not for signs for trails or trail crossings, signs on buildings or parking lots, or highway signs. If the request is for a signal rather than a sign, then consider the \"Traffic Signal - New\" 311 request suggested by the Dallas 311 website. If a trail or trail crossing needs a sign, then submit a \"Park Maintenance/Misc\" 311 request instead. If the sign is on a highway, then contact TxDOT.",
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Traffic Signs and Signals\" > Choose \"Traffic Sign - New\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Traffic Signs and Signals\" > Choose \"Traffic Sign - New\""
+    },
+    {
+      "tagline": "Submit a 311 request to install or remove a traffic signal.",
+      "why": "For requesting a new traffic signal where none has existed or removing an existing traffic signal. People who select Signal in the \"Traffic Sign - New\" form see a \"Traffic Signal - New\" service suggestion. The public \"Traffic Signal - New\" service has an online request form for new signals or removal.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Traffic Signs and Signals\" > Choose \"Traffic Signal - New\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Traffic Signs and Signals\" > Choose \"Traffic Signal - New\""
+    },
+    {
+      "tagline": "Submit a 311 request for a sign at a trail or trail crossing.",
+      "why": "For a traffic sign needed on a trail or at a trail crossing. The description for \"Traffic Sign - New\" requests on the Dallas 311 website directs these signs to \"Park Maintenance/Misc\". The public \"Park Maintenance/Misc\" service has an online request form for park and trail maintenance concerns.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Park & Recreation",
+      "how": "Go to Dallas 311 > Choose \"City Parks and Trails\" > Choose \"Park Maintenance/Misc\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"City Parks and Trails\" > Choose \"Park Maintenance/Misc\""
+    },
+    {
+      "tagline": "Contact TxDOT about a highway traffic sign.",
+      "why": "For a highway sign. The description for \"Traffic Sign - New\" requests on the Dallas 311 website directs highway sign concerns to TxDOT.",
+      "why_not": null,
+      "what": "Contact",
+      "who": "TxDOT",
+      "how": "Contact TxDOT",
+      "how_formatted": "Contact TxDOT"
+    }
+  ]
+}

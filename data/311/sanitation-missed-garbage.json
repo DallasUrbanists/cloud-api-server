@@ -1,0 +1,141 @@
+{
+  "title": "Sanitation Missed Garbage",
+  "categories": [
+    "Garbage, Recycle, and Brush/Bulky Item Collection"
+  ],
+  "description": "Use this service request to report missed garbage collection. Sanitation Services has until 8:00 P.M. on the scheduled collection day to pick up garbage from the service location. If you have received an Orange Tag on your garbage roll cart(s), a collection violation was identified and needs to be corrected in order for your location to be serviced. Collection will be attempted on your next scheduled day of service or week. Visit DallasCityHall.com/Sanitation to Contact Us online or by phone. The estimated initial response time for a service request of this nature is 2 business days. Missed garbage services are resolved within 3 business days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/09e91b70-5f23-11ee-b5ea-bf93c94ffce7.jpg"
+  ],
+  "department": "Sanitation Services",
+  "resolutionEstimate": "3 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "Is this for a business or a residence?",
+        "type": "single_select",
+        "required": true,
+        "options": [
+          "Business",
+          "Residence"
+        ]
+      },
+      {
+        "question": "What is the name of the business?",
+        "type": "text",
+        "required": true,
+        "shownWhen": "Business"
+      },
+      {
+        "question": "Is there an orange tag on the missed items?",
+        "type": "single_select",
+        "required": true,
+        "options": [
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "question": "What is your current day of service?",
+        "type": "single_select",
+        "required": true,
+        "options": [
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday"
+        ]
+      },
+      {
+        "question": "Provide the date your collection was missed:",
+        "type": "date",
+        "required": true,
+        "placeholder": "MM/DD/YYYY"
+      },
+      {
+        "question": "Is it currently before 8:00 P.M. on your scheduled pick up day?",
+        "type": "single_select",
+        "required": true,
+        "options": [
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "question": "What type of service do you have?",
+        "type": "single_select",
+        "required": true,
+        "options": [
+          "Helping Hands",
+          "Commercial/Business",
+          "Pack Out",
+          "Residential"
+        ]
+      },
+      {
+        "question": "Is this for a Roll cart or Dumpster?",
+        "type": "single_select",
+        "required": true,
+        "options": [
+          "Roll Cart",
+          "Dumpster"
+        ]
+      },
+      {
+        "question": "Additional Information",
+        "type": "text",
+        "required": false
+      }
+    ],
+    "conditionalInstructions": [
+      {
+        "when": "Orange tag = Yes",
+        "text": "If you have received an Orange Tag on your garbage roll cart(s), a collection violation was identified and needs to be corrected in order for your location to be serviced. Collection will be attempted on your next scheduled day of service or week. Visit DallasCityHall.com/Sanitation to Contact Us online or by phone."
+      },
+      {
+        "when": "Before 8 PM = Yes",
+        "text": "As a reminder, Sanitation Services has until 8:00 P.M. on the scheduled collection day to pick up garbage from the service location. If it is currently before 8:00 P.M., Sanitation Services may still be picking up collections. To request Sanitation service for this issue please submit this service type after 8 P.M. on your scheduled pick up day."
+      },
+      {
+        "when": "Before 8 PM = No",
+        "text": "If you answer No, and the service request is submitted before 8:00 P.M., your service request will be closed with no further action. A new service request will need to be submitted after the stated time."
+      }
+    ],
+    "observedInstructions": [
+      "Please do not remove your roll cart from service location. Missed garbage/recycle services are resolved within 3 business days.",
+      "In the event that we need additional information, the responsible department may contact you. Please provide your name and phone number."
+    ],
+    "pathCoverage": [
+      "Both business/residence answers; both orange-tag answers; all five service weekdays; both cutoff answers; all four service types; Roll Cart and Dumpster.",
+      "Mock missed date entered; Continue advanced to Contact. Contact requires First Name, Last Name, Email, and Phone Number; no contact data entered."
+    ],
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request for missed garbage collection.",
+      "why": "Report missed garbage collection for a residential, business/commercial, Helping Hands, or Pack Out service, for a roll cart or dumpster. The 311 request form asks for the scheduled service day, date collection was missed, Orange Tag status, and whether it is before 8:00 P.M. on the scheduled collection day; Sanitation may still collect until 8:00 P.M.; the Dallas 311 website says to leave the roll cart at the service location.",
+      "why_not": "The online form for \"Sanitation Missed Garbage\" requests does not apply before 8:00 P.M. on the scheduled collection day; Sanitation may still be collecting and a request submitted earlier may be closed. An Orange Tag identifies a violation that must be corrected before the next collection attempt. If an Orange Tag is present, then correct the violation before the next scheduled service day or week.",
+      "what": "Submit 311 request",
+      "who": "Sanitation Services",
+      "how": "Go to Dallas 311 > Choose \"Garbage, Recycle, and Brush/Bulky Item Collection\" > Choose \"Sanitation Missed Garbage\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Garbage, Recycle, and Brush/Bulky Item Collection\" > Choose \"Sanitation Missed Garbage\""
+    },
+    {
+      "tagline": "Contact Dallas Sanitation for help with an Orange Tag garbage collection violation.",
+      "why": "For garbage collection with an Orange Tag identifying a violation. The Dallas 311 website says the violation must be corrected before service and directs customers to Contact Us online or by phone for more information.",
+      "why_not": null,
+      "what": "Contact",
+      "who": "Dallas Sanitation",
+      "how": "Visit DallasCityHall.com/Sanitation and choose Contact Us online or by phone",
+      "how_formatted": "Visit DallasCityHall.com/Sanitation and choose Contact Us online or by phone"
+    }
+  ]
+}

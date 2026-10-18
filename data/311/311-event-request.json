@@ -1,0 +1,106 @@
+{
+  "title": "311 Event Request",
+  "categories": [
+    "Other Requests"
+  ],
+  "description": "Use this service request to request the 311 City Hall on the Go van and team or a 311 guest speaker to attend your event. The estimated response time for this service request is 2 business days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/59550ac0-46c2-11ef-b305-6d1b9c5a4e05.png"
+  ],
+  "department": "Office of Communications & Customer Experience/311",
+  "resolutionEstimate": "5 Business Days",
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "label": "What type of service are you requesting?",
+        "options": [
+          "City Hall on the Go",
+          "311 Guest Speaker"
+        ],
+        "type": "radio",
+        "required": true
+      },
+      {
+        "label": "Name of event:",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "Event date:",
+        "type": "date",
+        "required": true
+      },
+      {
+        "label": "Event hours:",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "Name of organization:",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "What is the topic and target audience?",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "Estimated number of audience:",
+        "type": "number",
+        "required": true
+      },
+      {
+        "label": "Name of building/location:",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "Is the venue indoor or outdoor?",
+        "options": [
+          "Indoor",
+          "Outdoor"
+        ],
+        "type": "radio",
+        "required": true
+      },
+      {
+        "label": "If applicable, what is the name of the City official (Mayor, Councilmember, etc.) initiating the request?",
+        "type": "text",
+        "required": false
+      },
+      {
+        "label": "Would you like to be contacted?",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ],
+        "type": "radio",
+        "required": false
+      }
+    ],
+    "observedInstructions": [
+      "Both service types and both venue types were checked; they did not change the Details questions. Contact preference options likewise did not reveal more questions."
+    ],
+    "contactStepObserved": "Contact page required First Name, Last Name, and Phone Number; Email and Address were optional; City, State, Zipcode were disabled.",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "requestThisService": true,
+  "captureStatus": "conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request for City Hall on the Go or a 311 guest speaker at an event.",
+      "why": "Request the 311 City Hall on the Go van and team or a 311 guest speaker to attend an event. The 311 request form asks for the event name, date, hours, organization, topic, target audience, estimated audience size, venue, and whether it is indoors or outdoors; it also allows the name of a City official initiating the request.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Office of Communications & Customer Experience/311",
+      "how": "Go to Dallas 311 > Under \"Other Requests\", choose \"311 Event Request\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Under \"Other Requests\", choose \"311 Event Request\""
+    }
+  ]
+}

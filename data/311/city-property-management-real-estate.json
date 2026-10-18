@@ -1,0 +1,58 @@
+{
+  "title": "City Property Management/ Real Estate",
+  "categories": [
+    "Streets, Medians, Sidewalks and Alleys"
+  ],
+  "description": "Use this service request to report violations on city-owned surplus properties, tax foreclosed properties or violations at Hensley Field or to inquire about any of the services provided by the Real Estate Division of Facilities Management. The estimated response time for a request of this nature is 5 business days. To check for properties Click Here",
+  "photoUrls": [],
+  "department": "Facilities Management",
+  "resolutionEstimate": "15 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "prompt": "What is the nature of your concern?",
+        "type": "text",
+        "required": true
+      },
+      {
+        "prompt": "Would you like to be contacted?",
+        "type": "single_select",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ],
+        "required": false
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Concern supplied",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request about City-owned property or Real Estate Division services.",
+      "why": "To report violations on City-owned surplus or tax-foreclosed properties, report violations at Hensley Field, or ask about services provided by the Facilities Management Real Estate Division. The 311 request form asks for the nature of the concern.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Facilities Management",
+      "how": "Go to Dallas 311 > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"City Property Management/ Real Estate\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"City Property Management/ Real Estate\""
+    },
+    {
+      "tagline": "Visit the City of Dallas Real Estate Division website to check properties.",
+      "why": "To check properties while researching City-owned surplus or tax-foreclosed property. The description for \"City Property Management/ Real Estate\" requests on the Dallas 311 website points to a \"Click Here\" link for checking properties.",
+      "why_not": null,
+      "what": "Visit website",
+      "who": "City of Dallas Real Estate Division",
+      "how": "Use the \"Click Here\" property-check link in the Dallas 311 service description",
+      "how_formatted": "Use the \"Click Here\" property-check link in the Dallas 311 service description"
+    }
+  ]
+}

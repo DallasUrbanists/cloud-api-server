@@ -1,0 +1,82 @@
+{
+  "title": "Wheel Chair Ramp/Curb Street Cuts",
+  "categories": [
+    "Streets, Medians, Sidewalks and Alleys"
+  ],
+  "description": "Use this service request for concerns regarding the installation of a Wheel Chair Ramp, Curb Cut, or Barrier Free Ramp at a city street intersection. The estimated response time (ERT) for this service request is 6 business days. *** To check current or reported locations: Click Here (Enter address location as an intersection - Corinth St and Morrell Ave - on the project site) ***",
+  "photoUrls": [],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "30 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "Location or intersection for ramp/curb cut:",
+        "required": true,
+        "type": "free_text"
+      },
+      {
+        "question": "What public building, facility or transportation center is near the address?",
+        "required": false,
+        "type": "select",
+        "options": [
+          "City/government facility",
+          "Hospital",
+          "Retirement center/facility",
+          "Minor health care facility (clinic/doctor's office)",
+          "Commercial area",
+          "Bus stop/transportation center",
+          "School",
+          "Residential area"
+        ]
+      },
+      {
+        "question": "Is the request on behalf of someone physically challenged?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "question": "Would you like to be contacted?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ]
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Intersection supplied; nearby facility = Residential area; physically challenged = No; contact = No; Details Continue reached Contact",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request about a wheelchair ramp or curb cut at a city street intersection.",
+      "why": "For concerns about installing a wheelchair ramp, curb cut, or barrier-free ramp at a City street intersection. The 311 request form asks for the intersection, nearby public building or transportation facility, and whether the request is on behalf of someone who is physically challenged.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Wheel Chair Ramp/Curb Street Cuts\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Wheel Chair Ramp/Curb Street Cuts\""
+    },
+    {
+      "tagline": "Visit the project site to check current or reported ramp and curb-cut locations.",
+      "why": "To check current or reported wheelchair ramp or curb-cut locations. The description for \"Wheel Chair Ramp/Curb Street Cuts\" requests on the Dallas 311 website directs people to the project site and says to enter the address as an intersection, such as Corinth St and Morrell Ave.",
+      "why_not": null,
+      "what": "Visit website",
+      "who": "Transportation and Public Works Department project site",
+      "how": "Visit the project site using the \"Click Here\" link in the service description; enter the address as an intersection.",
+      "how_formatted": "Visit the project site using the \"Click Here\" link in the service description; enter the address as an intersection."
+    }
+  ]
+}

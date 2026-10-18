@@ -1,0 +1,104 @@
+{
+  "title": "Creek/Culvert Blockage",
+  "categories": [
+    "Creeks, Streams, Storm Drains, and Waterways"
+  ],
+  "description": "Use this service request to report problems with culverts or creeks. The maintenance of creeks, drainage ways, channels and streams are the responsibility of the property owner. The Water Department is responsible for maintaining creeks and drainage ways that are owned by the City of Dallas only. The estimated response time (ERT) for this service request is 10 business days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/957007e0-5e3c-11ee-b65c-c33ce0246595.png"
+  ],
+  "department": "Dallas Water Utilities",
+  "resolutionEstimate": "20 Business Days",
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "label": "Is this request related to the recent storm?",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "type": "radio",
+        "required": true
+      },
+      {
+        "label": "What needs to be cleaned?",
+        "options": [
+          "Creek",
+          "Culvert",
+          "Other"
+        ],
+        "type": "radio",
+        "required": true
+      },
+      {
+        "label": "If other, please describe:",
+        "condition": "What needs to be cleaned = Other",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "Is there flooding?",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "type": "radio",
+        "required": false
+      },
+      {
+        "label": "What is causing the blockage?",
+        "options": [
+          "Debris/trash",
+          "Downed tree",
+          "Mud",
+          "Other"
+        ],
+        "type": "radio",
+        "required": true
+      },
+      {
+        "label": "If Other, please describe:",
+        "condition": "What is causing the blockage = Other",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "Description of blockage location:",
+        "type": "text",
+        "required": false
+      },
+      {
+        "label": "Would you like to be contacted?",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ],
+        "type": "radio",
+        "required": false
+      }
+    ],
+    "contactStepObserved": "Contact page showed optional consent; fields First Name, Last Name, Email, Phone Number, Address, City, State, Zipcode were disabled by default.",
+    "observedInstructions": [
+      "Across combinations of recent storm Yes/No, cleanup type Creek/Culvert/Other, flooding Yes/No, and blockage cause Debris/trash/Downed tree/Mud/Other, no routing alerts or extra fields were observed. Cleanup Other and cause Other each independently add their own required description. The contact preference options add no additional questions."
+    ],
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "requestThisService": true,
+  "captureStatus": "conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request about a blocked City-owned creek or culvert.",
+      "why": "Report a blockage or cleaning need in a creek or culvert owned by the City of Dallas, including debris or trash, a downed tree, mud, or another obstruction. The 311 request form asks whether a recent storm caused it, whether flooding is present, and where the blockage is located.",
+      "why_not": "The online form for \"Creek/Culvert Blockage\" requests does not cover maintenance of creeks, channels, streams, or drainage ways on private property; the service description assigns that maintenance to the property owner.",
+      "what": "Submit 311 request",
+      "who": "Dallas Water Utilities",
+      "how": "Go to Dallas 311 > Choose \"Creeks, Streams, Storm Drains, and Waterways\" > Choose \"Creek/Culvert Blockage\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Creeks, Streams, Storm Drains, and Waterways\" > Choose \"Creek/Culvert Blockage\""
+    }
+  ]
+}

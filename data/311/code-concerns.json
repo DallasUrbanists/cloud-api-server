@@ -1,0 +1,464 @@
+{
+  "title": "Code Concerns",
+  "categories": [
+    "City Code Violations"
+  ],
+  "description": "Use this service request to report code concerns and or violations, i.e., high weeds, litter, illegal dumping, graffiti, substandard conditions, etc. The estimated response time may vary depending on the violation reported or violations found by Code Inspector upon conducting a comprehensive inspection.",
+  "photoUrls": [],
+  "department": "Code Compliance",
+  "resolutionEstimate": "",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "options": [
+          "Yes",
+          "No",
+          "Unknown"
+        ],
+        "prompt": "Is this a Rental Home/Condominium Unit?",
+        "type": "radio",
+        "required": true
+      },
+      {
+        "options": [
+          "Yes",
+          "No",
+          "Unknown"
+        ],
+        "when": {
+          "equals": "Yes",
+          "field": "Is this a Rental Home/Condominium Unit?"
+        },
+        "prompt": "Is it believed this property is operating as an Airbnb, VRBO, or similar short-term rental?",
+        "type": "radio",
+        "required": true
+      },
+      {
+        "options": [
+          "Yes",
+          "No",
+          "Unknown"
+        ],
+        "when": {
+          "equals": "Yes",
+          "field": "Is it believed this property is operating as an Airbnb, VRBO, or similar short-term rental?"
+        },
+        "prompt": "Is it believed the occupant has a lease shorter than 30 days?",
+        "type": "radio",
+        "required": true
+      },
+      {
+        "options": [
+          "Yes",
+          "No",
+          "Unknown"
+        ],
+        "prompt": "Is this concern related to noise, illegal vending, and/or Certificate of Occupancy violations occurring during night hours?",
+        "type": "radio",
+        "required": true
+      },
+      {
+        "options": [
+          "Yes",
+          "No",
+          "Unknown"
+        ],
+        "when": {
+          "equals": "Yes",
+          "field": "Is this concern related to noise, illegal vending, and/or Certificate of Occupancy violations occurring during night hours?"
+        },
+        "prompt": "Does this concern occur inside or emanate from a bar, pub, club, or restaurant?",
+        "type": "radio",
+        "required": true
+      },
+      {
+        "options": [
+          "Residential",
+          "Multi-Family/Apartments",
+          "Business",
+          "Median Right-of-Way",
+          "Vacant Building",
+          "Vacant Lot"
+        ],
+        "prompt": "What type of property is it?",
+        "type": "select",
+        "required": true
+      },
+      {
+        "options": [
+          "House",
+          "Condo",
+          "Duplex",
+          "Mobile Home"
+        ],
+        "when": {
+          "equals": "Residential",
+          "field": "What type of property is it?"
+        },
+        "prompt": "What type of Residential Property is it?",
+        "type": "radio",
+        "required": true
+      },
+      {
+        "when": {
+          "equals": "Multi-Family/Apartments",
+          "field": "What type of property is it?"
+        },
+        "prompt": "What is the unit #?",
+        "type": "text",
+        "required": true
+      },
+      {
+        "options": [
+          "Appliances (eg: refrigerator, stove)",
+          "Electricity (eg: a/c, heat, exposed wire)",
+          "Nuisance (eg: bulky trash, dumping, graffiti, high weeds, litter, noise)",
+          "Pests/Bugs (eg: bedbugs, mosquitoes)",
+          "Repair (eg: electronic, home, vehicle)",
+          "Safety (eg: fire hazard, lighting, obstruction, pool)",
+          "Structural (eg: plumbing, roof, open/vacant)",
+          "Vehicle (eg: inoperable, parking, sales, repair)",
+          "Water (eg: water conservation, no hot water)",
+          "Zoning (eg: storage, vending)",
+          "Other"
+        ],
+        "prompt": "What is this issue related to?",
+        "type": "checkboxes",
+        "required": true
+      },
+      {
+        "prompt": "Additional Information",
+        "type": "text",
+        "required": false
+      }
+    ],
+    "unexplored": null,
+    "observedIssueGroupFollowups": [
+      "What is the appliance issue?",
+      "What is the electricity issue?",
+      "What is the nuisance issue?",
+      "What pests/bugs are present?",
+      "What is the repair issue?",
+      "What is the safety issue?",
+      "What is the structural issue?",
+      "What is the vehicle issue?",
+      "What is the water issue?",
+      "What is the zoning issue?",
+      "If other, please describe:"
+    ],
+    "issueGroups": [
+      {
+        "group": "Appliances (eg: refrigerator, stove)",
+        "options": [
+          "Dryer",
+          "Freezer",
+          "Microwave",
+          "Refrigerator",
+          "Oven",
+          "Stove",
+          "Washer"
+        ],
+        "followup": "What is the appliance issue?",
+        "type": "checkboxes",
+        "required": true
+      },
+      {
+        "group": "Electricity (eg: a/c, heat, exposed wire)",
+        "options": [
+          "A/C",
+          "Heat",
+          "Electricity/Gas Cut Off",
+          "Exposed Wire"
+        ],
+        "followup": "What is the electricity issue?",
+        "type": "checkboxes",
+        "required": true
+      },
+      {
+        "followup": "What is the nuisance issue?",
+        "conditionalFollowups": [
+          {
+            "when": "Garage Sale selected alone",
+            "prompt": "What Day of the week and time does this usually occur?",
+            "type": "dateTime",
+            "required": false
+          },
+          {
+            "options": [
+              "Loud Music (Commercial/Business)",
+              "Construction During Prohibited Hours",
+              "Garbage Pick-up During Prohibited Hours",
+              "Mechanical Noise"
+            ],
+            "when": "Noise Complaint selected alone",
+            "prompt": "Type of noise violation?",
+            "type": "radio",
+            "required": true
+          },
+          {
+            "when": "Noise Complaint selected alone or with another nuisance",
+            "prompt": "What day/time does the noise violation occur?",
+            "type": "dateTime",
+            "required": false
+          },
+          {
+            "options": [
+              "Residential",
+              "Business/Commercial"
+            ],
+            "when": "Loud Music (Commercial/Business) selected",
+            "prompt": "Is this a residential or business area?",
+            "type": "radio",
+            "required": true
+          }
+        ],
+        "type": "checkboxes",
+        "required": true,
+        "options": [
+          "Bulky Trash",
+          "Garage Sale",
+          "Graffiti",
+          "High Weeds",
+          "Handbills/Fliers",
+          "Illegal Dumping",
+          "Illegal Vending",
+          "Litter",
+          "Noise Complaint",
+          "Outside Storage",
+          "Signs",
+          "Street/Alley/Sidewalk Obstruction",
+          "Vegetation Obstruction"
+        ],
+        "group": "Nuisance (eg: bulky trash, dumping, graffiti, high weeds, litter, noise)"
+      },
+      {
+        "followup": "What pests/bugs are present?",
+        "conditionalFollowups": [
+          {
+            "options": [
+              "YES, property is unoccupied/vacant",
+              "NO, property is not unoccupied/vacant",
+              "Not a residential property"
+            ],
+            "when": "Mosquitoes selected alone",
+            "prompt": "IF RESIDENTIAL, is the property unoccupied or vacant?",
+            "type": "radio",
+            "required": true
+          }
+        ],
+        "type": "checkboxes",
+        "required": true,
+        "options": [
+          "Bed Bugs",
+          "Infestation",
+          "Mosquitoes",
+          "Roaches",
+          "Rodent"
+        ],
+        "group": "Pests/Bugs (eg: bedbugs, mosquitoes)"
+      },
+      {
+        "group": "Repair (eg: electronic, home, vehicle)",
+        "options": [
+          "Electronic Repair Licensing",
+          "Home Repair Licensing",
+          "Motor Vehicle Repair Licensing"
+        ],
+        "followup": "What is the repair issue?",
+        "type": "checkboxes",
+        "required": true
+      },
+      {
+        "followup": "What is the safety issue?",
+        "conditionalFollowups": [
+          {
+            "when": "Dangerous Condition selected",
+            "prompt": "Please Describe the Dangerous Condition:",
+            "type": "text",
+            "required": true
+          }
+        ],
+        "type": "checkboxes",
+        "required": true,
+        "options": [
+          "Construction Rest Break",
+          "Dangerous Condition",
+          "Fire Hazard (Dry Grass Over 12 inches)",
+          "Inadequate Lighting",
+          "Light Glare",
+          "Open Well",
+          "Pool Complaint",
+          "Raw Sewage",
+          "Refrigerator",
+          "No House Number",
+          "Visibility Obstruction"
+        ],
+        "group": "Safety (eg: fire hazard, lighting, obstruction, pool)"
+      },
+      {
+        "followup": "What is the structural issue?",
+        "conditionalFollowups": [
+          {
+            "when": "Exterior Issues selected",
+            "prompt": "Please Describe the Exterior Issues:",
+            "type": "text",
+            "required": true
+          },
+          {
+            "when": "Interior Issues selected",
+            "prompt": "Please Describe the Interior Issues:",
+            "type": "text",
+            "required": true
+          }
+        ],
+        "type": "checkboxes",
+        "required": true,
+        "options": [
+          "Balcony",
+          "Exterior Issues",
+          "Interior Issues",
+          "Landings",
+          "Fences",
+          "No Permit",
+          "Open & Vacant",
+          "Plumbing",
+          "Porch",
+          "Railings",
+          "Roofs",
+          "Rental Registration - Single Family",
+          "Stairs & Steps"
+        ],
+        "group": "Structural (eg: plumbing, roof, open/vacant)"
+      },
+      {
+        "group": "Vehicle (eg: inoperable, parking, sales, repair)",
+        "options": [
+          "Auto Repair at a Residence",
+          "Auto Sales at a Residence",
+          "Inoperable Vehicle",
+          "Parking on unapproved surface"
+        ],
+        "followup": "What is the vehicle issue?",
+        "type": "checkboxes",
+        "required": true
+      },
+      {
+        "group": "Water (eg: water conservation, no hot water)",
+        "options": [
+          "No Hot Water",
+          "Water Conservation (prohibited watering, running water, sprinklers, etc.)",
+          "Water Cut Off"
+        ],
+        "followup": "What is the water issue?",
+        "type": "checkboxes",
+        "required": true
+      },
+      {
+        "followup": "What is the zoning issue?",
+        "conditionalFollowups": [
+          {
+            "when": "Illegal Vending selected alone",
+            "prompt": "What Day of the week and time does this usually occur?",
+            "type": "dateTime",
+            "required": false
+          }
+        ],
+        "type": "checkboxes",
+        "required": true,
+        "options": [
+          "Outside Storage",
+          "Illegal Land Use",
+          "Illegal Vending"
+        ],
+        "group": "Zoning (eg: storage, vending)"
+      },
+      {
+        "group": "Other",
+        "followup": "If other, please describe:",
+        "type": "text",
+        "required": true
+      }
+    ],
+    "observedInstructions": [
+      {
+        "when": "Issue group selected",
+        "text": "The following violation types are responded to within 24 hours, 7 days a week: No A/C; No Heat; Electricity/Gas Cut Off; Exposed Wires; Fire Hazard; Pool Complaint; Raw Sewage; No Hot Water.",
+        "kind": "inline_information"
+      },
+      {
+        "when": "Type of noise violation: Loud Music (Commercial/Business)",
+        "text": "Loud Music from a RESIDENCE and or Cars need to be reported to Police as a Chronic Noise Complaint - DPD",
+        "kind": "validation_alert"
+      },
+      {
+        "when": "Type of noise violation: Construction During Prohibited Hours",
+        "text": "Construction hours are between 7:00 am and 7:00 pm Monday - Friday and between 8:00 am and 7:00 pm on Saturdays and Holidays",
+        "kind": "validation_alert"
+      },
+      {
+        "when": "Type of noise violation: Garbage Pick-up During Prohibited Hours",
+        "text": "Garbage collection is between the hours of 7:00 am and 8:00 pm (or within 300 feet of any residence)",
+        "kind": "validation_alert"
+      }
+    ],
+    "pathCoverage": {
+      "rentalNightPropertyCombinationsTested": 54,
+      "airbnbBarResidentialTypeCombinationsTested": 36,
+      "requestSubmitted": false,
+      "otherSuboptionCombinationsSampled": true,
+      "issueSuboptionsTested": 66,
+      "nuisanceSuboptionPairsTested": 78,
+      "noiseViolationOptionsTested": 4,
+      "leaseOptionsTested": 3,
+      "contactStepReached": true,
+      "mosquitoVacancyOptionsTested": 3,
+      "issueGroupsTested": 11,
+      "issueGroupPairsTested": 55,
+      "allIssueGroupsSelectedTested": true,
+      "detailsContinueReached": true,
+      "contactDataEntered": false,
+      "loudMusicAreaOptionsTested": 2
+    }
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "conditional_paths_explored",
+  "contactStep": {
+    "contactInformationOptional": true,
+    "fields": [
+      "First Name",
+      "Last Name",
+      "Email",
+      "Phone Number",
+      "Address"
+    ],
+    "disabled": [
+      "City",
+      "State",
+      "Zipcode"
+    ]
+  },
+  "actions": [
+    {
+      "tagline": "Submit a 311 request about a code violation.",
+      "why": "Report property or neighborhood code concerns such as high weeds, litter, illegal dumping, graffiti, substandard conditions, pests, electrical or structural hazards, vehicle violations, water problems, zoning, or commercial noise. The 311 request form distinguishes rental homes and short-term rentals, night-hour noise or illegal vending, residential, multifamily, business and vacant properties, and detailed issue groups. It says reports of no air conditioning or heat, utility cutoff, exposed wires, fire hazard, pool complaint, raw sewage, and no hot water are responded to within 24 hours, seven days a week.",
+      "why_not": "The online form for \"Code Concerns\" requests does not apply to loud music from a residence or car. If the noise is loud music from a residence or car, then report it to Dallas Police as a chronic noise complaint.",
+      "what": "Submit 311 request",
+      "who": "Code Compliance",
+      "how": "Go to Dallas 311 > Choose \"City Code Violations\" > Choose \"Code Concerns\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"City Code Violations\" > Choose \"Code Concerns\""
+    },
+    {
+      "tagline": "Report chronic loud music from a residence or car to Dallas Police.",
+      "why": "For loud music from a residence or car. The 311 request form for \"Code Concerns\" requests directs this concern to Police as a Chronic Noise Complaint - DPD.",
+      "why_not": null,
+      "what": "Report to Police",
+      "who": "Dallas Police",
+      "how": "Report the concern to Dallas Police as a \"Chronic Noise Complaint - DPD\"",
+      "how_formatted": "Report the concern to Dallas Police as a \"Chronic Noise Complaint - DPD\""
+    }
+  ]
+}

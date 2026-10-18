@@ -1,0 +1,136 @@
+{
+  "title": "Historic District Violation",
+  "categories": [
+    "Other Requests"
+  ],
+  "description": "Use this service request to report structures that do not comply with the historic district preservation criteria. Historic districts are a type of zoning district designation that helps to preserve and protect the character of Dallas architecturally unique neighborhoods. If this is a substandard structure in a Historical or Conservation District please use report it to Code Compliance. The estimated response time for a request of this nature is 2 business days",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/abafecd0-5df8-11ee-b430-93f372796878.jpg"
+  ],
+  "department": "Planning & Development Department",
+  "resolutionEstimate": "10 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "Is the building under construction now?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "question": "Is it new construction, an addition, or remodeling?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "New construction",
+          "An addition",
+          "Remodel"
+        ],
+        "when": "Is the building under construction now? = Yes"
+      },
+      {
+        "question": "Please select the Historical District you would like to report a concern in:",
+        "required": true,
+        "type": "select",
+        "options": [
+          "Wheatley Place/South Blvd/Park Row",
+          "Winnetka/Lake Cliff/Tenth St",
+          "Swiss Avenue/Munger Place/Junius Heights",
+          "Peak's Suburban/Edison/La vista",
+          "State Thomas/Wilson Block",
+          "Downtown(CBD)/West End/Fair Park",
+          "Individual Landmarks/Others",
+          "Conservation District"
+        ]
+      },
+      {
+        "question": "Is the Certificate of Appropriateness posted?”",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "question": "What is the violation you are reporting related to? (Select all that apply)",
+        "required": true,
+        "type": "multi_choice",
+        "options": [
+          "Windows/Doors",
+          "Fencing/Hardscaping/Landscaping",
+          "Siding/Trim/skirting Repair or replacement",
+          "Paint/Stucco",
+          "Roofing",
+          "Gutters/solar panels",
+          "Signs",
+          "Accessory structures/carports/Pergolas",
+          "Pillars/burglar bars",
+          "Sidewalk/driveways",
+          "Foundation repair/stairs/steps",
+          "Exterior Alterations/additions/new construction",
+          "Other"
+        ]
+      }
+    ],
+    "unexplored": null,
+    "conditionalPaths": [
+      {
+        "when": "Is the building under construction now? = No",
+        "reveals": "Is it new construction, an addition, or remodeling? is hidden."
+      },
+      {
+        "when": "Is the building under construction now? = Yes",
+        "reveals": "Required construction type question appears; New construction, An addition, and Remodel did not reveal different questions."
+      },
+      {
+        "when": "Historical District = Conservation District",
+        "suggestedService": "New Service Type Suggestion for Historic District Violation with the same observed service description; Keep Current used."
+      },
+      {
+        "when": "Historical District = any of Wheatley Place/South Blvd/Park Row, Winnetka/Lake Cliff/Tenth St, Swiss Avenue/Munger Place/Junius Heights, Peak's Suburban/Edison/La vista, State Thomas/Wilson Block, Downtown(CBD)/West End/Fair Park, or Individual Landmarks/Others",
+        "reveals": "No additional question or suggestion appeared."
+      },
+      {
+        "when": "Is the Certificate of Appropriateness posted? = Yes or No",
+        "reveals": "No additional questions, alerts, instructions, or suggestions."
+      },
+      {
+        "when": "Each violation checkbox selected alone; Other alone; and Other combined with each other checkbox option",
+        "reveals": "No additional question, alert, instruction, or service suggestion."
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "contactStepObserved": "Contact information is optional; First Name, Last Name, Email, Phone Number, Address, City, State, and Zipcode fields were disabled.",
+    "completedContactPath": "Selected Yes for under construction, Remodel, Conservation District, No for certificate posted, and Windows/Doors; entered a mock violation description, then continued to Contact. No Contact data entered."
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request to report a structure that violates historic-district preservation criteria.",
+      "why": "To report a structure that does not comply with preservation criteria in a Dallas Historic District and affects the character of an architecturally unique neighborhood. The 311 request form asks which Historic District, whether the building is under construction now and, if Yes, whether it is new construction, an addition, or remodeling, whether a Certificate of Appropriateness is posted, and which issue applies, such as windows or doors, fencing or landscaping, siding, paint, roofing, signs, exterior alterations, or another violation.",
+      "why_not": "The online form for \"Historic District Violation\" requests does not apply to a substandard structure in a Historic or Conservation District. If the structure is substandard, then submit a \"Code Concerns\" 311 request instead.",
+      "what": "Submit 311 request",
+      "who": "Planning & Development Department",
+      "how": "Go to Dallas 311 > Choose \"Other Requests\" > Choose \"Historic District Violation\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Other Requests\" > Choose \"Historic District Violation\""
+    },
+    {
+      "tagline": "Submit a 311 request about a substandard structure in a Historic or Conservation District.",
+      "why": "For a substandard structure in a Historic or Conservation District. The description for \"Historic District Violation\" requests on the Dallas 311 website directs these concerns to Code Compliance, and the saved \"Code Concerns\" record accepts reports of substandard conditions.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Code Compliance",
+      "how": "Go to Dallas 311 > Choose \"City Code Violations\" > Choose \"Code Concerns\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"City Code Violations\" > Choose \"Code Concerns\""
+    }
+  ]
+}

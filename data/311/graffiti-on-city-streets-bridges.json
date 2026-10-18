@@ -1,0 +1,90 @@
+{
+  "title": "Graffiti on City Streets & Bridges",
+  "categories": [
+    "Streets, Medians, Sidewalks and Alleys"
+  ],
+  "description": "Use this service request to report graffiti on sidewalks, alleys, bridges, retaining walls and/or streets only. For graffiti on major freeways contact TXDOT. Private property is the owner's responsibility. The estimated response time (ERT) for this service request is 7 business days.",
+  "photoUrls": [],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "14 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "prompt": "Where is the graffiti located?",
+        "type": "select",
+        "options": [
+          "Alley",
+          "Bridge",
+          "Pillar(s)",
+          "Retaining wall",
+          "Sidewalk",
+          "Street"
+        ],
+        "required": true,
+        "branchFinding": "All locations showed the same remaining questions"
+      },
+      {
+        "prompt": "Direction of Travel?",
+        "type": "select",
+        "options": [
+          "Eastbound and westbound",
+          "Eastbound",
+          "Left turn lane",
+          "North and southbound",
+          "Northbound",
+          "Northeast",
+          "Northwest",
+          "Southbound",
+          "Southeast",
+          "Southwest",
+          "Westbound"
+        ],
+        "required": false
+      },
+      {
+        "prompt": "What is the intersection being reported or the nearest cross street?",
+        "type": "text",
+        "required": false
+      },
+      {
+        "prompt": "Would you like to be contacted?",
+        "type": "single_select",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ],
+        "required": false
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Graffiti location = Street",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request to report graffiti on public streets, sidewalks, alleys, bridges, or retaining walls.",
+      "why": "To report graffiti on public sidewalks, alleys, bridges, pillars, retaining walls, or streets. The 311 request form asks for the location type and may collect direction of travel and the intersection or nearest cross street.",
+      "why_not": "The online form for \"Graffiti on City Streets & Bridges\" requests does not apply to graffiti on major freeways or private property. If the graffiti is on a major freeway, then contact TxDOT.",
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Graffiti on City Streets & Bridges\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Graffiti on City Streets & Bridges\""
+    },
+    {
+      "tagline": "Contact TxDOT about graffiti on a major freeway.",
+      "why": "For graffiti on a major freeway. The description for \"Graffiti on City Streets & Bridges\" requests on the Dallas 311 website directs these concerns to TxDOT.",
+      "why_not": null,
+      "what": "Contact",
+      "who": "TxDOT",
+      "how": "Contact TxDOT about graffiti on a major freeway",
+      "how_formatted": "Contact TxDOT about graffiti on a major freeway"
+    }
+  ]
+}

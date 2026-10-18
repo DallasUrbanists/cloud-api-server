@@ -1,0 +1,137 @@
+{
+  "title": "Boarding Home Complaint - CCS",
+  "categories": [
+    "City Code Violations"
+  ],
+  "description": "Use this service request to report Boarding Home Facilities that have unsafe and unsanitary conditions, are operating without a valid license and/or other violations. What is a Boarding Home Facility: Boarding Home Facility is an establishment that furnishes, lodging to three (3) or more persons (unrelated to the owner by blood or marriage). The facility must provide one or more services: community meals, meal preparation, laundry services, light housework, grocery shopping, money management, transportation, or assistance with self-administration of medication, etc. The estimated response time for this service request is 7 business days. Service Level Agreement 45 Business Days",
+  "photoUrls": [],
+  "department": "Code Compliance",
+  "resolutionEstimate": "45 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "options": [
+          "Residential",
+          "Business",
+          "Vacant Lot",
+          "Multi-Family/Apartments"
+        ],
+        "prompt": "What type of property?",
+        "type": "radio",
+        "required": true
+      },
+      {
+        "options": [
+          "Boarding Home",
+          "Other"
+        ],
+        "prompt": "Type of Facility?",
+        "type": "radio",
+        "required": true
+      },
+      {
+        "when": {
+          "equals": "Other",
+          "field": "Type of Facility?"
+        },
+        "prompt": "If other, please describe:",
+        "type": "text",
+        "required": true
+      },
+      {
+        "options": [
+          "Infestation",
+          "No valid license/permit",
+          "Overcrowding",
+          "Unsafe environment",
+          "Other"
+        ],
+        "prompt": "What is the nature of your concern?",
+        "type": "checkboxes",
+        "required": true
+      },
+      {
+        "when": {
+          "field": "What is the nature of your concern?",
+          "selectedOnly": "Infestation"
+        },
+        "prompt": "Describe the Infestation:",
+        "type": "text",
+        "required": true
+      },
+      {
+        "when": {
+          "field": "What is the nature of your concern?",
+          "selectedOnly": "Unsafe environment"
+        },
+        "prompt": "Please explain the safety issue:",
+        "type": "text",
+        "required": true
+      },
+      {
+        "when": {
+          "field": "What is the nature of your concern?",
+          "selectedOnly": "Other"
+        },
+        "prompt": "If Other, please describe:",
+        "type": "text",
+        "required": true
+      },
+      {
+        "prompt": "How many adults are living at the location?",
+        "type": "text",
+        "required": true
+      },
+      {
+        "prompt": "Additional Information",
+        "type": "text",
+        "required": false
+      }
+    ],
+    "unexplored": null,
+    "pathCoverage": {
+      "facilityOptionsTested": 2,
+      "requestSubmitted": false,
+      "detailsContinueReached": true,
+      "contactStepReached": true,
+      "multiConcernSelectionSuppressesSingleConcernFollowups": true,
+      "propertyOptionsTested": 4,
+      "contactDataEntered": false,
+      "propertyFacilitySingleConcernCombinationsTested": 40,
+      "concernCheckboxSubsetsTested": 31,
+      "concernOptionsTested": 5
+    }
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "conditional_paths_explored",
+  "contactStep": {
+    "contactInformationOptional": true,
+    "fields": [
+      "First Name",
+      "Last Name",
+      "Email",
+      "Phone Number",
+      "Address"
+    ],
+    "disabled": [
+      "City",
+      "State",
+      "Zipcode"
+    ]
+  },
+  "actions": [
+    {
+      "tagline": "Submit a 311 complaint about an unsafe or unlicensed boarding home.",
+      "why": "Report unsafe or unsanitary conditions, infestation, overcrowding, operation without a valid license or permit, or another violation at a boarding home. A boarding home lodges at least three people unrelated to the owner and provides services such as meals, laundry, housekeeping, shopping, money management, transportation, or medication assistance. The 311 request form asks about property and facility type, the nature of the concern, and the number of adults living there.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Code Compliance",
+      "how": "Go to Dallas 311 > Choose \"City Code Violations\" > Choose \"Boarding Home Complaint - CCS\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"City Code Violations\" > Choose \"Boarding Home Complaint - CCS\""
+    }
+  ]
+}

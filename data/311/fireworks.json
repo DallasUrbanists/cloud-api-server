@@ -1,0 +1,54 @@
+{
+  "title": "Fireworks",
+  "categories": [
+    "Non-Emergency Police and Fire Services"
+  ],
+  "description": "Use this request to report instances where fireworks are being used inside the city limits. Service requests of this nature are responded to based on priority and are usually resolved within 1- 3 days. ** Call 911 if this is a life threatening emergency. **",
+  "photoUrls": [],
+  "department": "Dallas Police",
+  "resolutionEstimate": "3 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "intro": "***Be advised that this service request is not monitored on a 24-hour basis. If you have an emergency and require immediate assistance, please call 911.***",
+    "observedQuestions": [
+      {
+        "question": "Please provide the actual incident location or additional details of where incident is occurring or occurred?",
+        "required": true,
+        "type": "free_text"
+      },
+      {
+        "question": "Give any additional information regarding individuals and activities that would assist in locating concern:",
+        "required": true,
+        "type": "free_text"
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Both required details supplied; Details Continue reached Contact",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request to report fireworks inside Dallas city limits.",
+      "why": "To report fireworks being used within Dallas city limits. The 311 request form asks for the actual incident location and details about individuals or activities that may help locate the concern.",
+      "why_not": "The online form for \"Fireworks\" requests does not apply to a life-threatening emergency or a situation requiring immediate assistance. If fireworks create a life-threatening emergency or require immediate assistance, then call 911 instead of submitting a 311 request online.",
+      "what": "Submit 311 request",
+      "who": "Dallas Police",
+      "how": "Go to Dallas 311 > Choose \"Non-Emergency Police and Fire Services\" > Choose \"Fireworks\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Non-Emergency Police and Fire Services\" > Choose \"Fireworks\""
+    },
+    {
+      "tagline": "Call emergency dispatch for a life-threatening fireworks emergency.",
+      "why": "For a life-threatening emergency involving fireworks or another condition requiring immediate assistance; the service guidance directs residents to 911.",
+      "why_not": null,
+      "what": "Call",
+      "who": "Emergency dispatch",
+      "how": "Call 911",
+      "how_formatted": "Call [911](tel:911)"
+    }
+  ]
+}

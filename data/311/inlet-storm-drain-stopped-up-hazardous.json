@@ -1,0 +1,33 @@
+{
+  "title": "Inlet/Storm Drain Stopped Up - Hazardous",
+  "categories": [
+    "Other Requests"
+  ],
+  "description": "Use this service request to report an inlet/storm drain that is stopped up and creating hazardous condition. The estimated response time for this service request is 1 business day.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/fc1b04c0-5e39-11ee-bf7f-3de98a985773.png"
+  ],
+  "department": "Dallas Water Utilities",
+  "resolutionEstimate": "1 Business Days",
+  "requestThisService": false,
+  "instructions": "Please call 311 for more information",
+  "detailsForm": {
+    "status": "instructions_only",
+    "observedQuestions": [],
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "instructions_only",
+  "actions": [
+    {
+      "tagline": "Call Dallas 311 about a hazardous stopped-up inlet or storm drain.",
+      "why": "For an inlet or storm drain that is stopped up and creating a hazardous condition. The description for \"Inlet/Storm Drain Stopped Up - Hazardous\" requests on the Dallas 311 website and its instructions direct people to call 311.",
+      "why_not": null,
+      "what": "Call 311 by phone",
+      "who": "Dallas 311",
+      "how": "Call 311",
+      "how_formatted": "Call [311](tel:311)"
+    }
+  ]
+}

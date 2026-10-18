@@ -1,0 +1,103 @@
+{
+  "title": "Bike Lane Marking Maintenance",
+  "categories": [
+    "Streets, Medians, Sidewalks and Alleys",
+    "Traffic Signs and Signals"
+  ],
+  "description": "Use this service request to report marking visibility issues on bike lanes, cycle lanes, or sharrows printed on the street. This is not to be used for general pavement markings, surface repairs of bike lanes, or bike lane sweeping. The Estimated Response Time for this service request is 7 business days. ** Park bike or walking paths/trails/routes - use Park Maintenance/Misc. Lane sweeping- use Street Sweeping or Street/surface repair - use Street Repair - Routine **",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/3b8d7a40-4218-11ee-bc29-f1f98f2cf413.JPG"
+  ],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "14 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "prompt": "Where is the bike/cycle lane located?",
+        "type": "single_select",
+        "options": [
+          "Bike/Walking path or trail inside park",
+          "On Street (Bike Lane/Cycle Track/Sharrow)"
+        ],
+        "required": true,
+        "branches": {
+          "Bike/Walking path or trail inside park": "Guidance: For paths/trails/routes in or near parks - use Park Maintenance/Misc; service type suggestion popup",
+          "On Street (Bike Lane/Cycle Track/Sharrow)": "Validation Alert: vehicle parked in bike lane should use Parking - Report a Violation"
+        }
+      },
+      {
+        "prompt": "Please explain your concern with the bike path/route:",
+        "type": "text",
+        "required": true
+      },
+      {
+        "prompt": "Would you like to be contacted?",
+        "type": "single_select",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ],
+        "required": false
+      }
+    ],
+    "staticMessage": "*** If location is an Intersection ENTER in alpha order i.e. Akard @ Young ***",
+    "conditionalMessage": "*** If reporting a vehicle Parked in a bike lane please stop and enter a Parking - Report a Violation - TPW - this request is only for bike lane maintenance ***",
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "On Street; concern description supplied",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request for faded or unclear on-street bike lane markings.",
+      "why": "Report poor visibility or maintenance of markings painted on an on-street bike lane, cycle track, or sharrow. The 311 request form distinguishes an on-street lane from a bike or walking path inside a park and asks for a description of the marking concern.",
+      "why_not": "The online form for \"Bike Lane Marking Maintenance\" requests is not for general pavement markings, bike-lane surface repairs, bike-lane sweeping, park paths or trails, or vehicles parked in bike lanes. If a vehicle is parked in a bike lane, then submit a \"Parking Report a Violation\" 311 request instead. If a bike lane on a major thoroughfare needs sweeping, then submit a \"Street Sweeping - Thoroughfares\" 311 request instead. If the bike-lane surface needs repair, then submit a \"Street Repair\" 311 request instead. If the concern involves a bike or walking path inside or near a park, then submit a \"Park Maintenance/Misc\" 311 request instead.",
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Bike Lane Marking Maintenance\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Bike Lane Marking Maintenance\""
+    },
+    {
+      "tagline": "Submit a 311 request for maintenance of a park path or trail.",
+      "why": "For a bike or walking path, trail, or route inside or near a park rather than an on-street painted bike lane. People who select a path or trail inside a park in the 311 request form see a Park Maintenance/Misc suggestion on the Dallas 311 website.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Park & Recreation",
+      "how": "Go to Dallas 311 > Choose \"City Parks and Trails\" > Choose \"Park Maintenance/Misc\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"City Parks and Trails\" > Choose \"Park Maintenance/Misc\""
+    },
+    {
+      "tagline": "Submit a 311 request for bike lane sweeping on a major thoroughfare.",
+      "why": "For sweeping debris from a bike lane on a major thoroughfare. The description for \"Bike Lane Marking Maintenance\" requests on the Dallas 311 website directs lane sweeping to Street Sweeping; the saved Street Sweeping service covers major thoroughfares.",
+      "why_not": "The online form for \"Street Sweeping - Thoroughfares\" requests does not apply to residential streets, private property, or parking lots.",
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Street Sweeping - Thoroughfares\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Street Sweeping - Thoroughfares\""
+    },
+    {
+      "tagline": "Submit a 311 request for damaged bike lane pavement.",
+      "why": "For a bike-lane street surface that needs repair rather than marking visibility work, such as a pothole, standing water, or damaged pavement. The description for \"Bike Lane Marking Maintenance\" requests on the Dallas 311 website directs surface repairs to Street Repair.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Street Repair\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Street Repair\""
+    },
+    {
+      "tagline": "Submit a 311 request for a vehicle parked in a bike lane.",
+      "why": "For a vehicle parked in or obstructing a bike lane. The Dallas 311 website directs people reporting parked vehicles to Parking Report a Violation.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Parking, Vehicle, Bicycle and Scooter Concerns\" > Choose \"Parking Report a Violation\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Parking, Vehicle, Bicycle and Scooter Concerns\" > Choose \"Parking Report a Violation\""
+    }
+  ]
+}

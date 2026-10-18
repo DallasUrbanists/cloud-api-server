@@ -1,0 +1,106 @@
+{
+  "title": "Noise Complaint (Residential)",
+  "categories": [
+    "Non-Emergency Police and Fire Services"
+  ],
+  "description": "Use this service request to report noise complaints of a chronic or reoccurring nature, i.e. continuous complaints about loud music/disturbances at a residential property. **Do not use to report noisy animals, construction noise or noise issues at clubs/bars. See Animal - Noisy or Code Concern ** The estimated response time (ERT) for this service request is 3 business days. *** Call 9-1-1 if this is the first-time reporting the location or if the noise is occurring now ***",
+  "photoUrls": [],
+  "department": "Dallas Police",
+  "resolutionEstimate": "9 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "intro": "***Be advised that this service request is not monitored on a 24-hour basis. If you have an emergency and require immediate assistance, please call 911.***",
+    "observedQuestions": [
+      {
+        "question": "Is this a recurring problem?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "No",
+            "instruction": "Oops, if this is the first time reporting loud noise at this residence please call 9-1-1 to report. Use only if it reoccurs often at same location.."
+          }
+        ]
+      },
+      {
+        "question": "What is the nature of your request?",
+        "required": true,
+        "type": "free_text"
+      },
+      {
+        "question": "What specific day(s) or time(s) does it occur?",
+        "required": true,
+        "type": "free_text"
+      },
+      {
+        "question": "Would you like to be contacted?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ]
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Recurring = Yes; nature and day/time supplied; contact = No; Details Continue reached Contact",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request about recurring noise at a residence.",
+      "why": "To report chronic or recurring noise at the same residential location, such as ongoing loud music or disturbances. The 311 request form asks whether the problem recurs, what the noise is, and which days or times it occurs.",
+      "why_not": "The online form for \"Noise Complaint (Residential)\" requests does not apply to noisy animals, construction noise, noise at clubs or bars, a first-time report at a location, or noise occurring now. If the concern is construction noise or noise at a club or bar, then submit a \"Code Concerns\" 311 request instead. If the concern is a noisy animal, then view the \"Animal - Noisy\" 311 guidance instead. If this is the first report at that location, then call 911 instead of submitting a 311 request online. If the noise is occurring now, then call 911 instead of submitting a 311 request online.",
+      "what": "Submit 311 request",
+      "who": "Dallas Police",
+      "how": "Go to Dallas 311 > Choose \"Non-Emergency Police and Fire Services\" > Choose \"Noise Complaint (Residential)\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Non-Emergency Police and Fire Services\" > Choose \"Noise Complaint (Residential)\""
+    },
+    {
+      "tagline": "Submit a 311 request for construction noise or noise at a club or bar directed to Code Concerns.",
+      "why": "For construction noise or noise issues at clubs or bars. The description for \"Noise Complaint (Residential)\" requests on the Dallas 311 website directs these concerns to Code Concern; the \"Code Concerns\" 311 request covers nuisance complaints including noise.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Code Compliance",
+      "how": "Go to Dallas 311 > Choose \"City Code Violations\" > Choose \"Code Concerns\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"City Code Violations\" > Choose \"Code Concerns\""
+    },
+    {
+      "tagline": "Call 911 for a first-time noise report at a residence.",
+      "why": "For the first report of loud noise at a residential location. The description for \"Noise Complaint (Residential)\" requests on the Dallas 311 website and the 311 request form direct first-time reports to 911.",
+      "why_not": null,
+      "what": "Call",
+      "who": "Emergency dispatch",
+      "how": "Call 911",
+      "how_formatted": "Call [911](tel:911)"
+    },
+    {
+      "tagline": "Call 911 about noise occurring now.",
+      "why": "For noise that is occurring now at a residence. The description for \"Noise Complaint (Residential)\" requests on the Dallas 311 website directs currently occurring noise to 911.",
+      "why_not": null,
+      "what": "Call",
+      "who": "Emergency dispatch",
+      "how": "Call 911",
+      "how_formatted": "Call [911](tel:911)"
+    },
+    {
+      "tagline": "View Dallas 311 guidance for noisy animals.",
+      "why": "For a noisy-animal concern rather than recurring noise from music or other residential activity. The description for \"Noise Complaint (Residential)\" requests on the Dallas 311 website names \"Animal - Noisy\" as an alternate service.",
+      "why_not": null,
+      "what": "View 311 guidance",
+      "who": "Dallas 311",
+      "how": "Go to Dallas 311 and look for \"Animal - Noisy\" guidance",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) and look for \"Animal - Noisy\" guidance"
+    }
+  ]
+}

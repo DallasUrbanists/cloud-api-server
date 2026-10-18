@@ -1,0 +1,241 @@
+{
+  "title": "Landlord Retaliation After Reported Code Violation",
+  "categories": [
+    "City Code Violations"
+  ],
+  "description": "Use this service request to report retaliatory actions by a landlord/Owner after a Code violation was reported, i.e., complaints of decreased or diminished services, access to amenities, increased rent, eviction, etc. The estimated response time (ERT) for this service request is 13 business days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/ac2f1b90-3ec2-11ee-b42e-b19cc2e262fe.jpg"
+  ],
+  "department": "City Attorney",
+  "resolutionEstimate": "17 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "options": [
+          "Appliances (e.g: refrigerator, stove)",
+          "Electricity (e.g: a/c, heat, exposed wire)",
+          "Nuisance (e.g: dumping, graffiti, high weeds, litter, noise)",
+          "Pests/Bugs (e.g: bedbugs, mosquitoes)",
+          "Safety (e.g: lighting, pool)",
+          "Structural (e.g: plumbing, interior/exterior issues)",
+          "Vehicle (e.g: inoperable, parking)",
+          "Water (e.g: no hot water)",
+          "Zoning (e.g: storage, vending)",
+          "Other"
+        ],
+        "prompt": "What is your original reported Code Violation(s)?",
+        "type": "checkboxes",
+        "required": true
+      },
+      {
+        "when": {
+          "field": "What is your original reported Code Violation(s)?",
+          "includes": "Other"
+        },
+        "prompt": "If Other, please describe:",
+        "type": "text",
+        "required": true
+      },
+      {
+        "prompt": "Please provide the original Service Request Number(s) of the Code violation:",
+        "type": "text",
+        "required": false
+      },
+      {
+        "prompt": "What date did you report the Code violation?",
+        "type": "date",
+        "required": false
+      },
+      {
+        "options": [
+          "Attempted Eviction",
+          "Rent Increased",
+          "Services Diminished/Reduced",
+          "Other"
+        ],
+        "prompt": "Why do you believe you are being retaliated against?",
+        "type": "radio",
+        "required": true
+      },
+      {
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "when": {
+          "equals": "Attempted Eviction",
+          "field": "Why do you believe you are being retaliated against?"
+        },
+        "prompt": "Have you received an eviction letter, notice to vacate, or lease violation since reporting your Code Complaint?",
+        "type": "radio",
+        "required": true
+      },
+      {
+        "when": {
+          "equals": "Rent Increased",
+          "field": "Why do you believe you are being retaliated against?"
+        },
+        "prompt": "What date was the rent increased?",
+        "type": "date",
+        "required": false
+      },
+      {
+        "when": {
+          "equals": "Services Diminished/Reduced",
+          "field": "Why do you believe you are being retaliated against?"
+        },
+        "prompt": "Why do you believe your services have been diminished/reduced?",
+        "type": "text",
+        "required": true
+      },
+      {
+        "when": {
+          "equals": "Other",
+          "field": "Why do you believe you are being retaliated against?"
+        },
+        "prompt": "If other, please describe:",
+        "type": "text",
+        "required": true
+      },
+      {
+        "prompt": "What date did the retaliation begin?",
+        "type": "date",
+        "required": false
+      },
+      {
+        "options": [
+          "Landlord/ Property Owner",
+          "Property Management",
+          "Other"
+        ],
+        "prompt": "Who do you believe discriminated against you?",
+        "type": "radio",
+        "required": true
+      },
+      {
+        "when": {
+          "equals": "Landlord/ Property Owner",
+          "field": "Who do you believe discriminated against you?"
+        },
+        "prompt": "Landlord/Property Owner's Name",
+        "type": "text",
+        "required": false
+      },
+      {
+        "when": {
+          "equals": "Landlord/ Property Owner",
+          "field": "Who do you believe discriminated against you?"
+        },
+        "prompt": "Landlord/Property Owner's Phone Number:",
+        "type": "phone",
+        "required": false
+      },
+      {
+        "when": {
+          "equals": "Property Management",
+          "field": "Who do you believe discriminated against you?"
+        },
+        "prompt": "Property Manager's Name",
+        "type": "text",
+        "required": false
+      },
+      {
+        "when": {
+          "equals": "Property Management",
+          "field": "Who do you believe discriminated against you?"
+        },
+        "prompt": "Property Manager Phone Number:",
+        "type": "phone",
+        "required": false
+      },
+      {
+        "when": {
+          "equals": "Other",
+          "field": "Who do you believe discriminated against you?"
+        },
+        "prompt": "If Other, Please Provide Name and Phone Number:",
+        "type": "text",
+        "required": false
+      },
+      {
+        "options": [
+          "Apartment",
+          "Business",
+          "Duplex",
+          "Single-Family Home"
+        ],
+        "prompt": "What type of property is this?",
+        "type": "radio",
+        "required": true
+      },
+      {
+        "when": {
+          "equals": "Apartment",
+          "field": "What type of property is this?"
+        },
+        "prompt": "Name of Apartment Complex:",
+        "type": "text",
+        "required": false
+      },
+      {
+        "when": {
+          "equals": "Business",
+          "field": "What type of property is this?"
+        },
+        "prompt": "What is the name of the business?",
+        "type": "text",
+        "required": false
+      },
+      {
+        "prompt": "Additional Information",
+        "type": "text",
+        "required": false
+      }
+    ],
+    "unexplored": null,
+    "pathCoverage": {
+      "otherWithAdditionalViolationTested": true,
+      "retaliationReasonActorPropertyCombinationsTested": 48,
+      "originalViolationOptionsTested": 10,
+      "evictionNoticeOptionsTested": 2,
+      "contactStepReached": true,
+      "contactDataEntered": false,
+      "requestSubmitted": false,
+      "detailsContinueReached": true
+    }
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "conditional_paths_explored",
+  "contactStep": {
+    "disabled": [
+      "City",
+      "State",
+      "Zipcode"
+    ],
+    "optional": [
+      "Email",
+      "Address"
+    ],
+    "required": [
+      "First Name",
+      "Last Name",
+      "Phone Number"
+    ]
+  },
+  "actions": [
+    {
+      "tagline": "Submit a 311 request for suspected landlord or owner retaliation after a reported code violation, including reduced services or amenity access, increased rent, or eviction.",
+      "why": "For suspected landlord or owner retaliation after a reported Code violation, including reduced services or amenity access, increased rent, or eviction. The request form asks about the original violation and service request number/date, the alleged retaliation and date, the landlord/property manager or other actor, property type, and details such as an eviction notice or diminished services.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "City Attorney",
+      "how": "Go to Dallas 311 > Choose \"City Code Violations\" > Choose \"Landlord Retaliation After Reported Code Violation\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"City Code Violations\" > Choose \"Landlord Retaliation After Reported Code Violation\""
+    }
+  ]
+}

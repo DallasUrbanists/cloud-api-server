@@ -1,0 +1,382 @@
+{
+  "air-pollution-complaint": [
+    {
+      "tagline": "Submit a 311 request to report outdoor air pollution.",
+      "why": "To report outdoor air pollution such as odor, dust, smoke, outdoor burning, or another regulatory concern, including gas or fumes, spray-painting emissions, and sand-blasting emissions. The 311 request form asks when the incident occurred, how long and how often it occurred (once, daily, weekly, or monthly), the weather, the alleged source, and effects on health, property, finances, or the environment, including no alleged effects.",
+      "why_not": "The online form for \"Air Pollution Complaint\" requests is not to be used for indoor pollution, smells inside a residence or business, mold, or asbestos. If an odor is coming from the sewer, then contact Dallas Water Utilities by calling 311 by phone instead of submitting a 311 request online. If you smell natural gas, then contact Atmos Energy or emergency dispatch.",
+      "what": "Submit 311 request",
+      "who": "Office of Environmental Quality & Sustainability",
+      "how": "Go to Dallas 311 > Choose \"Environmental Quality Concerns\" > Choose \"Air Pollution Complaint\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Environmental Quality Concerns\" > Choose \"Air Pollution Complaint\""
+    },
+    {
+      "tagline": "Call Atmos Energy about a natural gas odor.",
+      "why": "For a natural gas odor. The description for \"Air Pollution Complaint\" requests on the Dallas 311 website directs natural gas odors to Atmos Energy instead of treating them as ordinary outdoor odor, dust, smoke, or burning complaints.",
+      "why_not": "Calling Atmos Energy is not the route for an odor coming from the sewer. If the odor comes from the sewer, then contact Dallas Water Utilities by calling 311 by phone.",
+      "what": "Call",
+      "who": "Atmos Energy",
+      "how": "Call 1-888-286-6700",
+      "how_formatted": "Call [1-888-286-6700](tel:18882866700)"
+    },
+    {
+      "tagline": "Call 911 for an emergency involving a natural gas odor.",
+      "why": "For a natural gas odor that needs emergency dispatch; the description for \"Air Pollution Complaint\" requests on the Dallas 311 website offers 911 as an alternative to contacting Atmos Energy.",
+      "why_not": null,
+      "what": "Call",
+      "who": "Emergency dispatch",
+      "how": "Call 911",
+      "how_formatted": "Call [911](tel:911)"
+    },
+    {
+      "tagline": "Contact Dallas Water Utilities about a sewer odor.",
+      "why": "If the odor is coming from the sewer rather than from an outdoor air-pollution source. The description for \"Air Pollution Complaint\" requests on the Dallas 311 website directs sewer-odor concerns to Dallas Water Utilities by calling 311.",
+      "why_not": null,
+      "what": "Contact",
+      "who": "Dallas Water Utilities",
+      "how": "Call 311",
+      "how_formatted": "Call [311](tel:311)"
+    }
+  ],
+  "animal-owner-surrender": [
+    {
+      "tagline": "Visit the Dallas Animal Services website for pet rehoming options.",
+      "why": "For a pet owner considering surrendering an animal to the shelter. The description for \"Animal Owner Surrender\" requests on the Dallas 311 website calls surrender a last resort and directs the owner to BeDallas90 for rehoming information and alternatives.",
+      "why_not": null,
+      "what": "Visit website",
+      "who": "Dallas Animal Services",
+      "how": "Visit BeDallas90",
+      "how_formatted": "Visit [BeDallas90](https://BeDallas90.org/rehome/)"
+    },
+    {
+      "tagline": "Schedule a pet surrender appointment with Spay Neuter Network.",
+      "why": "For a pet owner seeking an owner surrender appointment after considering rehoming options. The description for \"Animal Owner Surrender\" requests on the Dallas 311 website identifies Spay Neuter Network as the partner that can schedule the appointment through BeDallas90.",
+      "why_not": null,
+      "what": "Schedule owner surrender appointment",
+      "who": "Spay Neuter Network",
+      "how": "Connect with Spay Neuter Network through BeDallas90",
+      "how_formatted": "Connect with Spay Neuter Network through [BeDallas90](https://BeDallas90.org/rehome/)"
+    },
+    {
+      "tagline": "Call Dallas 311 by phone for more information about pet surrender.",
+      "why": "For more information about owner surrender, including the rehoming options and appointment process described in this service guidance.",
+      "why_not": null,
+      "what": "Call 311 by phone",
+      "who": "Dallas 311",
+      "how": "Call 311",
+      "how_formatted": "Call [311](tel:311)"
+    }
+  ],
+  "complaint-compliment": [
+    {
+      "tagline": "Submit a 311 request to complain about a City service, department, or employee.",
+      "why": "To report a complaint about a City of Dallas service request, department, or employee. The 311 request form covers unresolved or prematurely closed service requests, incorrect information, exceeded response time or service agreement, poor work quality, City policy or procedures, employee conduct, property damage, technology, unsafe driving, and Sanitation collection, roll-cart, or worker issues.",
+      "why_not": "The online form for \"Complaint/Compliment\" requests is not the recommended route for Sanitation Services Alley to Curb changes or a repeat report of the same closed service request before 30 days have passed. If your concern involves Sanitation Services Alley to Curb changes, then submit the Sanitation form or email Sanitation Services. If you are reporting the same issue less than 30 days after a service request was closed, then wait until 30 days have passed from its closure before reporting it again.",
+      "what": "Submit 311 request",
+      "who": "Office of Communications & Customer Experience/311",
+      "how": "Go to Dallas 311 > Under \"Other Requests\", choose \"Complaint/Compliment\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Under \"Other Requests\", choose \"Complaint/Compliment\""
+    },
+    {
+      "tagline": "Submit a 311 request to compliment a City service, department, or employee.",
+      "why": "To recognize a City of Dallas service request, department, or employee for positive service. The 311 request form offers compliment topics such as customer service, timely response, attention to detail, helpful information, quality of work, safe driving, or another topic, and asks what compliments the requester has for the department.",
+      "why_not": "The online form for a \"Complaint/Compliment\" request is not the directed route for a compliment about Sanitation Services Alley to Curb changes. If the compliment concerns Sanitation Services Alley to Curb changes, then submit the Sanitation form or email Sanitation Services.",
+      "what": "Submit 311 request",
+      "who": "Office of Communications & Customer Experience/311",
+      "how": "Go to Dallas 311 > Under \"Other Requests\", choose \"Complaint/Compliment\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Under \"Other Requests\", choose \"Complaint/Compliment\""
+    },
+    {
+      "tagline": "Contact Sanitation Services about Alley to Curb changes.",
+      "why": "For a complaint or compliment about Sanitation Services Alley to Curb changes. The 311 request form asks whether the collection service is Brush/Bulk, Garbage, Recycling, or Other; the Dallas 311 website then directs people who answer Yes to a Sanitation form or email.",
+      "why_not": null,
+      "what": "Contact",
+      "who": "Sanitation Services",
+      "how": "Submit the Sanitation Alley to Curb form or email SAN.CurbTransition@dallas.gov",
+      "how_formatted": "Submit the [Sanitation Alley to Curb form](https://forms.office.com/Pages/ResponsePage.aspx?id=nnA1KQzBCUijAoUtNp-HAIsiy0iNucBJkpI55OlFnQpURTRRTFBOV1FJV1BOMUk1NTVaWkVXQ1RTMSQlQCN0PWcu) or email [SAN.CurbTransition@dallas.gov](mailto:SAN.CurbTransition@dallas.gov)"
+    }
+  ],
+  "street-lamp-light-maintenance": [
+    {
+      "tagline": "Submit a 311 request for street, pedestrian, or highway lighting maintenance.",
+      "why": "To report maintenance needed for street, pedestrian, highway, or freeway lighting, including high mast and underpass lights. The 311 request form covers a bulb that is out, a light cycling on and off, a knocked-down pole, a row of lights out, or another lighting problem; a pole number can be supplied if available.",
+      "why_not": "The online form for \"Street Lamp/Light Maintenance\" requests is not the route for lights on wooden poles, traffic signals, school flashers, or warning flashers. If the issue concerns a traffic signal, school flasher, or warning flasher, then call 311 by phone instead of submitting a 311 request online. If the street light is mounted on a wooden pole, then report it directly to Oncor.",
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Traffic Signs and Signals\" > Choose \"Street Lamp/Light Maintenance\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Traffic Signs and Signals\" > Choose \"Street Lamp/Light Maintenance\""
+    },
+    {
+      "tagline": "Report a wooden-pole street light to Oncor.",
+      "why": "For maintenance of a street light mounted on a wooden pole. The description for \"Street Lamp/Light Maintenance\" requests on the Dallas 311 website directs this specific pole type to Oncor by phone or website.",
+      "why_not": null,
+      "what": "Report street light",
+      "who": "Oncor",
+      "how": "Call 1-888-313-4747 or visit Oncor Streetlight",
+      "how_formatted": "Call [1-888-313-4747](tel:18883134747) or visit [Oncor Streetlight](https://www.oncorstreetlight.com/)"
+    },
+    {
+      "tagline": "Call Dallas 311 by phone about a traffic signal, school flasher, or warning flasher issue.",
+      "why": "If the selected lighting type is Traffic Signal or School Flasher or Warning Flasher. The Dallas 311 website directs people with these issues to call 311 by phone instead of submitting the street-light maintenance request online.",
+      "why_not": null,
+      "what": "Call 311 by phone",
+      "who": "Dallas 311",
+      "how": "Call 311",
+      "how_formatted": "Call [311](tel:311)"
+    }
+  ],
+  "animal-confined": [
+    {
+      "tagline": "Submit a 311 request for a confined animal.",
+      "why": "Report a confined stray cat, dog, livestock animal, or wild animal; examples include an animal in a vehicle or truck bed, a stray in a yard or humane trap, an animal trapped in a culvert, drain, or pipe, or a rabies-vector species such as a bat, fox, raccoon, skunk, or coyote confined in a home. The 311 request form distinguishes the confinement location, whether food, water, and protection from weather are available, whether an adult will be present, and whether an animal in a culvert or truck bed is in immediate danger.",
+      "why_not": "The online form for \"Animal Confined\" requests is not the recommended route for sick or injured wildlife, infant or juvenile wild animals, pets being surrendered by their owners, non-rabies-vector wildlife confined inside a home, or coyotes reported in the area. If a pet is being surrendered by its owner, then view the \"Animal Owner Surrender\" 311 guidance instead. If a wild animal is sick, injured, infant, or juvenile, then submit an \"Animal Lack of Care\" 311 request instead. If non-rabies-vector wildlife is confined inside a home, then consult BeDallas90.org/wildlife. If coyotes are being reported in the area, then call the Coyote Hotline.",
+      "what": "Submit 311 request",
+      "who": "Dallas Animal Services",
+      "how": "Go to Dallas 311 > Choose \"Animal Care and Control\" > Choose \"Animal Confined\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Animal Care and Control\" > Choose \"Animal Confined\""
+    },
+    {
+      "tagline": "Bring a safely transportable animal to Dallas Animal Services.",
+      "why": "For a confined animal that a resident can safely transport to the shelter during normal business hours.",
+      "why_not": null,
+      "what": "Bring animal to shelter",
+      "who": "Dallas Animal Services",
+      "how": "Bring the animal to the shelter at 1818 N Westmoreland Rd during normal business hours",
+      "how_formatted": "Bring the animal to the shelter at 1818 N Westmoreland Rd during normal business hours"
+    },
+    {
+      "tagline": "Submit a 311 request for sick, injured, or juvenile wildlife.",
+      "why": "For wildlife that is sick or injured, or an infant or juvenile wild animal. The Animal Confined wildlife alert explicitly directs those concerns to Animal Lack of Care.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Dallas Animal Services",
+      "how": "Go to Dallas 311 > Choose \"Animal Care and Control\" > Choose \"Animal Lack of Care\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Animal Care and Control\" > Choose \"Animal Lack of Care\""
+    },
+    {
+      "tagline": "View Dallas Animal Services guidance for pet owner surrender.",
+      "why": "For a pet confined because its owner wants to surrender it. The Dallas 311 website directs people to Animal Owner Surrender; that service type has guidance and no online request button.",
+      "why_not": null,
+      "what": "View 311 guidance",
+      "who": "Dallas Animal Services",
+      "how": "Go to Dallas 311 > Choose \"Animal Care and Control\" > Choose \"Animal Owner Surrender\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Animal Care and Control\" > Choose \"Animal Owner Surrender\""
+    },
+    {
+      "tagline": "Visit the Dallas Animal Services website for wildlife guidance.",
+      "why": "For general details about confined animals, removal instructions for other wildlife confined in a home, or other wildlife concerns. The Dallas 311 website directs people with these concerns to Dallas Animal Services information and the BeDallas90.org/wildlife FAQ.",
+      "why_not": null,
+      "what": "Visit website",
+      "who": "Dallas Animal Services",
+      "how": "Visit the Dallas Animal Services website; consult BeDallas90.org/wildlife for wildlife removal instructions",
+      "how_formatted": "Visit the [Dallas Animal Services website](https://dallascityhall.com/departments/dallas-animal-services/Pages/default.aspx); consult BeDallas90.org/wildlife for wildlife removal instructions"
+    },
+    {
+      "tagline": "Call the Coyote Hotline to report coyotes in your area.",
+      "why": "To report coyotes in your area, as directed by the Animal Confined wildlife alert.",
+      "why_not": null,
+      "what": "Call",
+      "who": "Coyote Hotline",
+      "how": "Call 469-676-9813",
+      "how_formatted": "Call [469-676-9813](tel:4696769813)"
+    }
+  ],
+  "bike-lane-marking-maintenance": [
+    {
+      "tagline": "Submit a 311 request for faded or unclear on-street bike lane markings.",
+      "why": "Report poor visibility or maintenance of markings painted on an on-street bike lane, cycle track, or sharrow. The 311 request form distinguishes an on-street lane from a bike or walking path inside a park and asks for a description of the marking concern.",
+      "why_not": "The online form for \"Bike Lane Marking Maintenance\" requests is not for general pavement markings, bike-lane surface repairs, bike-lane sweeping, park paths or trails, or vehicles parked in bike lanes. If a vehicle is parked in a bike lane, then submit a \"Parking Report a Violation\" 311 request instead. If a bike lane on a major thoroughfare needs sweeping, then submit a \"Street Sweeping - Thoroughfares\" 311 request instead. If the bike-lane surface needs repair, then submit a \"Street Repair\" 311 request instead. If the concern involves a bike or walking path inside or near a park, then submit a \"Park Maintenance/Misc\" 311 request instead.",
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Bike Lane Marking Maintenance\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Bike Lane Marking Maintenance\""
+    },
+    {
+      "tagline": "Submit a 311 request for maintenance of a park path or trail.",
+      "why": "For a bike or walking path, trail, or route inside or near a park rather than an on-street painted bike lane. People who select a path or trail inside a park in the 311 request form see a Park Maintenance/Misc suggestion on the Dallas 311 website.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Park & Recreation",
+      "how": "Go to Dallas 311 > Choose \"City Parks and Trails\" > Choose \"Park Maintenance/Misc\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"City Parks and Trails\" > Choose \"Park Maintenance/Misc\""
+    },
+    {
+      "tagline": "Submit a 311 request for bike lane sweeping on a major thoroughfare.",
+      "why": "For sweeping debris from a bike lane on a major thoroughfare. The description for \"Bike Lane Marking Maintenance\" requests on the Dallas 311 website directs lane sweeping to Street Sweeping; the saved Street Sweeping service covers major thoroughfares.",
+      "why_not": "The online form for \"Street Sweeping - Thoroughfares\" requests does not apply to residential streets, private property, or parking lots.",
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Street Sweeping - Thoroughfares\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Street Sweeping - Thoroughfares\""
+    },
+    {
+      "tagline": "Submit a 311 request for damaged bike lane pavement.",
+      "why": "For a bike-lane street surface that needs repair rather than marking visibility work, such as a pothole, standing water, or damaged pavement. The description for \"Bike Lane Marking Maintenance\" requests on the Dallas 311 website directs surface repairs to Street Repair.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Street Repair\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Street Repair\""
+    },
+    {
+      "tagline": "Submit a 311 request for a vehicle parked in a bike lane.",
+      "why": "For a vehicle parked in or obstructing a bike lane. The Dallas 311 website directs people reporting parked vehicles to Parking Report a Violation.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Parking, Vehicle, Bicycle and Scooter Concerns\" > Choose \"Parking Report a Violation\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Parking, Vehicle, Bicycle and Scooter Concerns\" > Choose \"Parking Report a Violation\""
+    }
+  ],
+  "city-building-maintenance": [
+    {
+      "tagline": "Submit a 311 request for maintenance in a City-owned building.",
+      "why": "Request maintenance in a City-owned building. The description for \"City Building Maintenance\" requests on the Dallas 311 website says this type is for City of Dallas employees; the 311 request form asks whether the requester is a City employee or tenant in a City-owned facility and asks for the building, floor, room or suite, and issue. Issue categories include carpentry, custodial work, electrical service, HVAC, plumbing, roofing, and miscellaneous building services such as elevators or fire extinguisher systems.",
+      "why_not": "The online form for \"City Building Maintenance\" requests is not for people who answer No to being a City employee or tenant in a City-owned facility; maintenance emergencies and Park & Recreation center maintenance have separate routes. If the issue concerns a Park & Recreation center, then submit a \"Park Maintenance/Misc\" 311 request instead. If you answer No to being a City employee or tenant, then call 311 by phone instead of submitting a 311 request online. If a City employee is reporting a maintenance emergency or checking request status, then call 214-671-8071.",
+      "what": "Submit 311 request",
+      "who": "Facilities Management",
+      "how": "Go to Dallas 311 > Under \"Other Requests\", choose \"City Building Maintenance\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Under \"Other Requests\", choose \"City Building Maintenance\""
+    },
+    {
+      "tagline": "Call Facilities Management about an urgent City building issue or request status.",
+      "why": "For a City employee reporting an emergency maintenance situation in a City building, or for checking the status of a City Building Maintenance request.",
+      "why_not": null,
+      "what": "Call",
+      "who": "Facilities Management",
+      "how": "Call 214-671-8071",
+      "how_formatted": "Call [214-671-8071](tel:2146718071)"
+    },
+    {
+      "tagline": "Call Dallas 311 by phone about a City facility issue if you are not an employee or tenant.",
+      "why": "If the requester is not a City of Dallas employee or tenant in a City-owned facility. People who answer No are instructed by the Dallas 311 website not to continue this request and to call 311 by phone.",
+      "why_not": null,
+      "what": "Call 311 by phone",
+      "who": "Dallas 311",
+      "how": "Call 311",
+      "how_formatted": "Call [311](tel:311)"
+    },
+    {
+      "tagline": "Submit a 311 request for recreation center maintenance.",
+      "why": "For maintenance of a recreation center handled by the Park & Recreation department. The Dallas 311 website directs people with that recreation center issue to Park Maintenance/Misc.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Park & Recreation",
+      "how": "Go to Dallas 311 > Choose \"City Parks and Trails\" > Choose \"Park Maintenance/Misc\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"City Parks and Trails\" > Choose \"Park Maintenance/Misc\""
+    }
+  ],
+  "sanitation-litter-cans": [
+    {
+      "tagline": "Submit a 311 request for a City metal litter can needing service.",
+      "why": "Report a City metal litter can at a median stop light or on the sidewalk in front of a business that is damaged, needs a liner, needs emptying, or has another service problem. The 311 request form asks where the can is located and what kind of can problem is occurring.",
+      "why_not": "The online form for \"Sanitation Litter Cans\" requests is not the route for cans on DART property, in City parks, or on service roads, or for grey garbage or blue recycling roll carts. If the can is in a City park, then submit a \"Park Maintenance/Misc\" 311 request instead. If the item is a grey garbage cart or blue recycling cart, then submit a \"Sanitation Roll Cart Maintenance/Delivery\" 311 request instead. If the can is on a service road, then call TxDOT. If the can is at a DART property, station, or bus stop, then call DART.",
+      "what": "Submit 311 request",
+      "who": "Sanitation Services",
+      "how": "Go to Dallas 311 > Choose \"Garbage, Recycle, and Brush/Bulky Item Collection\" > Choose \"Sanitation Litter Cans\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Garbage, Recycle, and Brush/Bulky Item Collection\" > Choose \"Sanitation Litter Cans\""
+    },
+    {
+      "tagline": "Call DART about a litter can at a station or bus stop.",
+      "why": "For a litter can at a DART property, station, or bus stop. Both the description for \"Sanitation Litter Cans\" requests on the Dallas 311 website and the location-specific guidance on the Dallas 311 website direct these concerns to DART.",
+      "why_not": null,
+      "what": "Call",
+      "who": "DART",
+      "how": "Call 214-749-3333",
+      "how_formatted": "Call [214-749-3333](tel:2147493333)"
+    },
+    {
+      "tagline": "Submit a 311 request for a litter can in a City park.",
+      "why": "For a litter can located in a City park. People who select City park in the 311 request form see a Park Maintenance/Misc service suggestion on the Dallas 311 website.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Park & Recreation",
+      "how": "Go to Dallas 311 > Choose \"City Parks and Trails\" > Choose \"Park Maintenance/Misc\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"City Parks and Trails\" > Choose \"Park Maintenance/Misc\""
+    },
+    {
+      "tagline": "Call TxDOT about a litter can on a service road.",
+      "why": "For a litter can on a service road. The Dallas 311 website directs people who select Service road in the 311 request form to report the litter can to TxDOT at this number.",
+      "why_not": null,
+      "what": "Call",
+      "who": "TxDOT",
+      "how": "Call 214-320-6200",
+      "how_formatted": "Call [214-320-6200](tel:2143206200)"
+    },
+    {
+      "tagline": "Submit a 311 request for a garbage or recycling roll cart.",
+      "why": "For a grey garbage roll cart or blue recycling roll cart that needs maintenance or delivery, rather than a metal litter can. The description for \"Sanitation Litter Cans\" requests on the Dallas 311 website explicitly points roll-cart concerns to this service.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Sanitation Services",
+      "how": "Go to Dallas 311 > Choose \"Garbage, Recycle, and Brush/Bulky Item Collection\" > Choose \"Sanitation Roll Cart Maintenance/Delivery\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Garbage, Recycle, and Brush/Bulky Item Collection\" > Choose \"Sanitation Roll Cart Maintenance/Delivery\""
+    }
+  ],
+  "street-spillage-debris-in-right-of-way": [
+    {
+      "tagline": "Submit a 311 request for hazardous debris blocking a public right of way.",
+      "why": "Report hazardous spills or debris blocking a public right of way, street, alley, sidewalk, driving lane, or other travel lane. The 311 request form asks what debris is present, whether a Sanitation truck caused the spill, and, for street or freeway locations, the direction of travel and affected lane.",
+      "why_not": "The online form for \"Street Spillage/Debris in Right of Way\" requests is not the directed route for nonblocking litter or debris on a grassy or dirt roadside area; freeway routing is ambiguous because the description for \"Street Spillage/Debris in Right of Way\" requests on the Dallas 311 website assigns responsibility to TxDOT while the 311 request form still offers Freeway as a location. If a Sanitation truck caused property damage, then submit a \"Sanitation Property Damage\" 311 request instead. If litter or debris is on a grassy or dirt area without blocking a travel lane, then submit a \"Median/Right of Way Maintenance\" 311 request instead. If the concern is on a freeway, then contact TxDOT.",
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Environmental Quality Concerns\" > Choose \"Street Spillage/Debris in Right of Way\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Environmental Quality Concerns\" > Choose \"Street Spillage/Debris in Right of Way\""
+    },
+    {
+      "tagline": "Contact TxDOT about a hazardous spill or debris on a freeway.",
+      "why": "For hazardous debris or spillage on a freeway. The description for \"Street Spillage/Debris in Right of Way\" requests on the Dallas 311 website states that freeways are the responsibility of the Texas Department of Transportation.",
+      "why_not": null,
+      "what": "Contact",
+      "who": "TxDOT",
+      "how": "Contact TxDOT",
+      "how_formatted": "Contact TxDOT"
+    },
+    {
+      "tagline": "Submit a 311 request for debris on a median or grassy right of way.",
+      "why": "For litter or debris on a grassy or dirt area alongside or within a highway, freeway, street, or intersection, instead of debris blocking a driving or travel lane. The Dallas 311 website directs people with debris in that location to Median/Right of Way Maintenance.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Median/Right of Way Maintenance\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Median/Right of Way Maintenance\""
+    },
+    {
+      "tagline": "Submit a 311 request for property damage caused by a Sanitation truck.",
+      "why": "For property damage caused by a Sanitation truck. When people answer Yes to the Sanitation-truck question in the 311 request form, the Dallas 311 website suggests Sanitation Property Damage; the description for \"Sanitation Property Damage\" requests on the Dallas 311 website limits its use to property damage caused by sanitation trucks.",
+      "why_not": "The online form for \"Sanitation Property Damage\" requests is not to be used for spills without property damage; the description for \"Sanitation Property Damage\" requests on the Dallas 311 website limits this service to property damage caused by sanitation trucks.",
+      "what": "Submit 311 request",
+      "who": "Sanitation Services",
+      "how": "Go to Dallas 311 > Choose \"Garbage, Recycle, and Brush/Bulky Item Collection\" > Choose \"Sanitation Property Damage\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Garbage, Recycle, and Brush/Bulky Item Collection\" > Choose \"Sanitation Property Damage\""
+    }
+  ],
+  "water-payments-billing-inquiry": [
+    {
+      "tagline": "Submit a 311 request about a water bill or account payment.",
+      "why": "Ask about a monthly Dallas Water Utilities bill or a payment made to a water account. Billing examples include a bill not received or a request to explain charges; payment questions can identify the payment date and method, such as automatic draft, online bank or City water e-pay, phone, mail, drop box, pay station, walk-in, or courier. The 311 request form asks for the account number and, if different, the service address.",
+      "why_not": "The online form for \"Water Payments & Billing Inquiry\" requests is not for water service restoration, discontinuance, new service, theft of water, or garbage pickup questions. If the question is about garbage pickup, then call 311 by phone instead of submitting a 311 request online. If the concern involves service restoration, discontinuance, new service, or theft of water, then call Water Customer Service at 214-651-1441.",
+      "what": "Submit 311 request",
+      "who": "Office of Communications & Customer Experience/311",
+      "how": "Go to Dallas 311 > Choose \"Water Inquiries and Line Locates\" > Choose \"Water Payments & Billing Inquiry\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Water Inquiries and Line Locates\" > Choose \"Water Payments & Billing Inquiry\""
+    },
+    {
+      "tagline": "Call Dallas Water Utilities Customer Service about water service or theft.",
+      "why": "For restoration of water service, service discontinuance, starting new service, or reporting theft of water. The description for \"Water Payments & Billing Inquiry\" requests on the Dallas 311 website explicitly sends these requests to Water Customer Service instead of the online 311 billing/payment request.",
+      "why_not": null,
+      "what": "Call",
+      "who": "Dallas Water Utilities Customer Service",
+      "how": "Call 214-651-1441",
+      "how_formatted": "Call [214-651-1441](tel:2146511441)"
+    },
+    {
+      "tagline": "Call Dallas 311 by phone about a garbage pickup question.",
+      "why": "For a question about garbage pickup rather than a monthly water bill or payment. The description for \"Water Payments & Billing Inquiry\" requests on the Dallas 311 website directs garbage pickup questions to 311.",
+      "why_not": null,
+      "what": "Call 311 by phone",
+      "who": "Dallas 311",
+      "how": "Call 311",
+      "how_formatted": "Call [311](tel:311)"
+    }
+  ]
+}

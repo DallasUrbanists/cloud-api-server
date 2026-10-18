@@ -1,0 +1,141 @@
+{
+  "title": "Traffic Signals and Lighting - Line Locate",
+  "categories": [
+    "Traffic Signs and Signals"
+  ],
+  "description": "Use this service request to request a traffic signaling (pedestrian and vehicle signals, flashers, message signs, signal communication) or street lighting line-locate at an intersection or within a street block. A line-locate is most often needed when construction requires a vertical bore/trench or a horizontal bore/trench. Any activity that requires digging near a street or easement shall have a line-locate prior to digging. Line-locates are occasionally requested so that construction can proceed without impacting existing infrastructure. *** Upload the 811 request email confirmation and photos of work site or marked up map where line-locates are requested *** The estimated response time (ERT) for this service request is 5 business days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/6a8e4ce0-77fc-11f0-aad6-73d823a92164.jpg"
+  ],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "10 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "Excavator information (Name of the company doing the work)?",
+        "required": true,
+        "type": "free_text"
+      },
+      {
+        "question": "Phone Number:",
+        "required": true,
+        "type": "free_text"
+      },
+      {
+        "question": "Site Contact (person at the jobsite):",
+        "required": true,
+        "type": "free_text"
+      },
+      {
+        "question": "Site Contact Phone:",
+        "required": true,
+        "type": "free_text"
+      },
+      {
+        "question": "Site contact email:",
+        "required": true,
+        "type": "free_text"
+      },
+      {
+        "question": "Days/Times reachable:",
+        "required": true,
+        "type": "free_text"
+      },
+      {
+        "question": "Who is the work for?",
+        "required": true,
+        "type": "free_text"
+      },
+      {
+        "question": "Nature of the work (Description of work):",
+        "required": true,
+        "type": "free_text"
+      },
+      {
+        "question": "Duration (how long will it take)?",
+        "required": true,
+        "type": "free_text"
+      },
+      {
+        "question": "Directional Boring?",
+        "required": true,
+        "type": "free_text"
+      },
+      {
+        "question": "Excavation Depth?",
+        "required": true,
+        "type": "free_text"
+      },
+      {
+        "question": "Excavation Length?",
+        "required": true,
+        "type": "free_text"
+      },
+      {
+        "question": "City and County?",
+        "required": true,
+        "type": "free_text"
+      },
+      {
+        "question": "What is the nearest cross street/intersection?",
+        "required": true,
+        "type": "free_text"
+      },
+      {
+        "question": "Work site locate instructions? (clearly describe where the locaters need to mark. Be sure to provide the entire scope of proposed excavation area)",
+        "required": true,
+        "type": "free_text"
+      },
+      {
+        "question": "Is your work area marked or white lined?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "question": "What type of line locate are you requesting?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Emergency",
+          "Mark and go",
+          "Schedule meet"
+        ]
+      },
+      {
+        "question": "Would you like to be contacted?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ]
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "All 17 required questions answered with mock values; white lined = No; line locate = Schedule meet; contact = No; Details Continue reached Contact",
+    "contactStepObservation": "First Name, Last Name, Email, and Phone Number marked required",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request to locate traffic-signal or street-lighting lines before excavation.",
+      "why": "For locating buried traffic-signal, pedestrian-signal, flasher, message-sign, communication, or street-lighting infrastructure before boring or trenching near a street or easement. The description asks for the 811 request email confirmation and work-site photos or a marked map. The 311 request form asks for excavator and site contacts, work scope and depth, marked area, cross streets, and whether the locate is emergency, mark-and-go, or a scheduled meeting.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Traffic Signs and Signals\" > Choose \"Traffic Signals and Lighting - Line Locate\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Traffic Signs and Signals\" > Choose \"Traffic Signals and Lighting - Line Locate\""
+    }
+  ]
+}

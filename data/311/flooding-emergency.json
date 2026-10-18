@@ -1,0 +1,32 @@
+{
+  "title": "Flooding Emergency",
+  "categories": [
+    "Streets, Medians, Sidewalks and Alleys",
+    "Water Inquiries and Line Locates"
+  ],
+  "description": "This request must be dispatched. Please call 311 to report hazardous/emergency flooding conditions. The estimated response time (ERT) for this service request is 1 calendar day.",
+  "photoUrls": [],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "3 Calendar Days",
+  "requestThisService": false,
+  "instructions": "Call 311 to report hazardous or emergency flooding conditions. This request must be dispatched.",
+  "detailsForm": {
+    "status": "instructions_only",
+    "observedQuestions": [],
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "instructions_only",
+  "actions": [
+    {
+      "tagline": "Call Dallas 311 by phone about hazardous or emergency flooding.",
+      "why": "Report hazardous or emergency flooding conditions. The description for \"Flooding Emergency\" requests on the Dallas 311 website says this service must be dispatched by phone.",
+      "why_not": null,
+      "what": "Call 311 by phone",
+      "who": "Dallas 311",
+      "how": "Call 311",
+      "how_formatted": "Call [311](tel:311)"
+    }
+  ]
+}

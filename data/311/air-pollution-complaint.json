@@ -1,0 +1,154 @@
+{
+  "title": "Air Pollution Complaint",
+  "categories": [
+    "Environmental Quality Concerns"
+  ],
+  "description": "Use this service request to report outdoor air pollution, including but not limited to emissions of smoke, dust, gas, fumes, offensive odors, burning emissions, spray painting emissions, and sand blasting emissions. Do not use this request for indoor pollution (smells inside a residence/business), mold, or asbestos. NOTE: Natural Gas odors - please contact Atmos Energy at 1-888-286-6700 or call 911. If odor is coming from the sewer, please contact Dallas Water Utilities by calling 311. The estimated response time for a request of this nature is 5 business days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/6483fae0-5f1f-11ee-b5ea-bf93c94ffce7.jpg"
+  ],
+  "department": "Office of Environmental Quality & Sustainability",
+  "resolutionEstimate": "14 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "What is the nature of the complaint?",
+        "type": "multi_select",
+        "required": true,
+        "options": [
+          "Odor",
+          "Dust",
+          "Smoke",
+          "Outdoor Burning",
+          "Other (regulatory)"
+        ]
+      },
+      {
+        "question": "What were the weather conditions at the time of the incident?",
+        "type": "text",
+        "required": false
+      },
+      {
+        "question": "When did the incident occur?",
+        "type": "date_time",
+        "required": true,
+        "fields": [
+          "MM/DD/YYYY",
+          "time",
+          "AM",
+          "PM"
+        ],
+        "validation": "Please enter a time."
+      },
+      {
+        "question": "What is the duration for which the incident was observed or experienced?",
+        "type": "single_select",
+        "required": false,
+        "options": [
+          "A few minutes",
+          "Less than 10 minutes",
+          "Less than 1 hour",
+          "Between 1 hour to 4 hours",
+          "12 hours"
+        ]
+      },
+      {
+        "question": "What was the effect of the incident?",
+        "type": "multi_select",
+        "required": false,
+        "options": [
+          "Environmental",
+          "Financial",
+          "General",
+          "Health",
+          "Property",
+          "No alleged effects"
+        ]
+      },
+      {
+        "question": "How frequently does the incident occur?",
+        "type": "single_select",
+        "required": false,
+        "options": [
+          "Single Occurrence (first time)",
+          "Daily (every day)",
+          "Weekly (once a week)",
+          "Monthly (once a month)"
+        ]
+      },
+      {
+        "question": "Describe what you experienced (observed or detected), what was the impact to your persons or property, and who or what the alleged source is?",
+        "type": "text",
+        "required": true
+      },
+      {
+        "question": "Would you like to be contacted?",
+        "type": "single_select",
+        "required": false,
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ]
+      },
+      {
+        "question": "Additional Information",
+        "type": "text",
+        "required": false
+      }
+    ],
+    "observedInstructions": [
+      "In the event that we need additional information, the responsible department may contact you. Please provide your name and phone number."
+    ],
+    "pathCoverage": [
+      "Each complaint-nature and effect checkbox tried individually; no additional question revealed.",
+      "All duration, frequency, and contact-preference choices tried; no additional question revealed.",
+      "Required nature, incident date and time, and description completed with mock values; Continue advanced to Contact. No contact data entered."
+    ],
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request to report outdoor air pollution.",
+      "why": "To report outdoor air pollution such as odor, dust, smoke, outdoor burning, or another regulatory concern, including gas or fumes, spray-painting emissions, and sand-blasting emissions. The 311 request form asks when the incident occurred, how long and how often it occurred (once, daily, weekly, or monthly), the weather, the alleged source, and effects on health, property, finances, or the environment, including no alleged effects.",
+      "why_not": "The online form for \"Air Pollution Complaint\" requests is not to be used for indoor pollution, smells inside a residence or business, mold, or asbestos. If an odor is coming from the sewer, then contact Dallas Water Utilities by calling 311 by phone instead of submitting a 311 request online. If you smell natural gas, then contact Atmos Energy or emergency dispatch.",
+      "what": "Submit 311 request",
+      "who": "Office of Environmental Quality & Sustainability",
+      "how": "Go to Dallas 311 > Choose \"Environmental Quality Concerns\" > Choose \"Air Pollution Complaint\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Environmental Quality Concerns\" > Choose \"Air Pollution Complaint\""
+    },
+    {
+      "tagline": "Call Atmos Energy about a natural gas odor.",
+      "why": "For a natural gas odor. The description for \"Air Pollution Complaint\" requests on the Dallas 311 website directs natural gas odors to Atmos Energy instead of treating them as ordinary outdoor odor, dust, smoke, or burning complaints.",
+      "why_not": "Calling Atmos Energy is not the route for an odor coming from the sewer. If the odor comes from the sewer, then contact Dallas Water Utilities by calling 311 by phone.",
+      "what": "Call",
+      "who": "Atmos Energy",
+      "how": "Call 1-888-286-6700",
+      "how_formatted": "Call [1-888-286-6700](tel:18882866700)"
+    },
+    {
+      "tagline": "Call 911 for an emergency involving a natural gas odor.",
+      "why": "For a natural gas odor that needs emergency dispatch; the description for \"Air Pollution Complaint\" requests on the Dallas 311 website offers 911 as an alternative to contacting Atmos Energy.",
+      "why_not": null,
+      "what": "Call",
+      "who": "Emergency dispatch",
+      "how": "Call 911",
+      "how_formatted": "Call [911](tel:911)"
+    },
+    {
+      "tagline": "Contact Dallas Water Utilities about a sewer odor.",
+      "why": "If the odor is coming from the sewer rather than from an outdoor air-pollution source. The description for \"Air Pollution Complaint\" requests on the Dallas 311 website directs sewer-odor concerns to Dallas Water Utilities by calling 311.",
+      "why_not": null,
+      "what": "Contact",
+      "who": "Dallas Water Utilities",
+      "how": "Call 311",
+      "how_formatted": "Call [311](tel:311)"
+    }
+  ]
+}

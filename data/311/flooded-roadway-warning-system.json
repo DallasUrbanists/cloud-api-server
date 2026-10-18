@@ -1,0 +1,78 @@
+{
+  "title": "Flooded Roadway Warning System",
+  "categories": [
+    "Creeks, Streams, Storm Drains, and Waterways"
+  ],
+  "description": "Use this service request to report a high water sign or location needing maintenance or repair. NOTE: There are 42 Flooding Roadway Warning Systems high water locations throughout the City of Dallas. The estimated response time (ERT) for this service request is 5 business days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/9ffe8c50-5f17-11ee-8932-8b0765cde3fc.png"
+  ],
+  "department": "Dallas Water Utilities",
+  "resolutionEstimate": "30 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "What is the nature of your request?",
+        "type": "single_select",
+        "required": false,
+        "options": [
+          "Sign damaged",
+          "Sign knocked down",
+          "Warning lights not flashing",
+          "Warning lights stuck",
+          "Other"
+        ],
+        "conditional": "Other reveals required \"If other, please describe:\" text field"
+      },
+      {
+        "question": "If other, please describe:",
+        "type": "text",
+        "required": true,
+        "shownWhen": "What is the nature of your request? = Other"
+      },
+      {
+        "question": "What is the nearest cross street/intersection?",
+        "type": "text",
+        "required": true
+      },
+      {
+        "question": "Would you like to be contacted?",
+        "type": "single_select",
+        "required": false,
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ]
+      },
+      {
+        "question": "Additional Information",
+        "type": "text",
+        "required": false
+      }
+    ],
+    "pathCoverage": [
+      "All five request-nature answers tried; only Other revealed a field.",
+      "All three contact-preference answers tried; no fields revealed.",
+      "Required fields filled with mock values; Continue advanced to Contact. No contact data entered."
+    ],
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request to repair a flooded-roadway warning sign or light.",
+      "why": "Report maintenance or repair needed at a City high-water or flooded-roadway warning location. The 311 request form covers a damaged or knocked-down sign, warning lights that fail to flash or remain stuck, and other system problems, and asks for the nearest cross street or intersection.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Dallas Water Utilities",
+      "how": "Go to Dallas 311 > Choose \"Creeks, Streams, Storm Drains, and Waterways\" > Choose \"Flooded Roadway Warning System\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Creeks, Streams, Storm Drains, and Waterways\" > Choose \"Flooded Roadway Warning System\""
+    }
+  ]
+}

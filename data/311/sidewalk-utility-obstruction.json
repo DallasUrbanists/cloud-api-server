@@ -1,0 +1,112 @@
+{
+  "title": "Sidewalk Utility Obstruction",
+  "categories": [
+    "Streets, Medians, Sidewalks and Alleys"
+  ],
+  "description": "Use this service request to report sidewalks obstructed by the positioning of a utility pole, fire hydrant, in ground/above ground utility box or permanent signage and does not meet ADA specifications. ** Call 3-1-1 for hazardous sidewalks. ** The estimated response time (ERT) for this service request is 10 business days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/085138d0-3cb2-11ee-902e-4788c31e8f09.jpg"
+  ],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "30 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "Does the sidewalk have a 3 feet clearance for pedestrian traffic?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Yes",
+          "No",
+          "Unknown"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Yes",
+            "instruction": "This request is only for sidewalks that are obstructed by utility poles or devices. Thank you!"
+          },
+          {
+            "when": "No or Unknown",
+            "reveals": [
+              "Type of Utility Obstruction?",
+              "How long has the obstruction been there?"
+            ]
+          }
+        ]
+      },
+      {
+        "question": "Type of Utility Obstruction?",
+        "required": true,
+        "type": "single_choice",
+        "when": "Clearance = No or Unknown",
+        "options": [
+          "Utility Pole",
+          "Fire Hydrant",
+          "In ground/above ground utility box",
+          "Other",
+          "Permanent signage/sign(s)"
+        ],
+        "conditionalPaths": [
+          {
+            "when": "Other",
+            "instruction": "Note: For 'other' obstructions search our knowledge or see the listed service request types: Obstruction Alley/Sidewalk/Street, Bulky Trash Violation, Barricades, Bike/Scooter Share, Construction Right of Way/Status, or Signs."
+          }
+        ]
+      },
+      {
+        "question": "How long has the obstruction been there?",
+        "required": false,
+        "type": "free_text",
+        "when": "Clearance = No or Unknown"
+      },
+      {
+        "question": "Would you like to be contacted?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ]
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Clearance = Unknown; type = Permanent signage/sign(s); contact = No; Details Continue reached Contact",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request about a sidewalk blocked by a utility device or permanent sign.",
+      "why": "For a sidewalk obstructed by the placement of a utility pole, fire hydrant, in-ground or above-ground utility box, or permanent sign so that it does not meet ADA clearance expectations. The 311 request form asks whether three feet of pedestrian clearance remains, the obstruction type, and how long it has been there.",
+      "why_not": "The online form for \"Sidewalk Utility Obstruction\" requests does not cover hazardous sidewalks or other obstruction types outside the listed utility devices and permanent signage. If the sidewalk condition is hazardous, then call 311 by phone instead of submitting a 311 request online.",
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Sidewalk Utility Obstruction\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Sidewalk Utility Obstruction\""
+    },
+    {
+      "tagline": "Call Dallas 311 by phone about a hazardous sidewalk obstruction.",
+      "why": "For a hazardous sidewalk condition involving a utility obstruction. The description for \"Sidewalk Utility Obstruction\" requests on the Dallas 311 website explicitly directs hazardous sidewalks to 3-1-1.",
+      "why_not": null,
+      "what": "Call 311 by phone",
+      "who": "Dallas 311",
+      "how": "Call 311",
+      "how_formatted": "Call [311](tel:311)"
+    },
+    {
+      "tagline": "Review other Dallas 311 services for a different sidewalk obstruction.",
+      "why": "For a sidewalk obstruction that is not a utility pole, fire hydrant, utility box, or permanent sign. When people select Other, the Sidewalk Utility Obstruction form points them to other service types involving alley or street obstruction, bulky trash, barricades, shared bikes or scooters, right-of-way construction, or signs.",
+      "why_not": null,
+      "what": "Review other 311 services",
+      "who": "Dallas 311",
+      "how": "On Dallas 311, open \"Sidewalk Utility Obstruction\" and review the guidance shown when \"Other\" is selected",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Sidewalk Utility Obstruction\" > Review guidance for \"Other\""
+    }
+  ]
+}

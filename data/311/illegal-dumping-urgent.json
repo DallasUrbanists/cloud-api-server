@@ -1,0 +1,35 @@
+{
+  "title": "Illegal Dumping Urgent",
+  "categories": [
+    "Creeks, Streams, Storm Drains, and Waterways",
+    "Environmental Quality Concerns",
+    "Water Inquiries and Line Locates"
+  ],
+  "description": "This request must be dispatched. Please call 311 to report abandoned/illegally dumped drums or containers or leaves, grass clippings, yard and garden debris, and/or brush that has been deliberately dumped/blown into the street, alley, ditch, creek/creek channel, lake, river or storm drain/inlet. The estimated response time (ERT) for this service request is 3 business days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/72d26500-5f1f-11ee-8932-8b0765cde3fc.JPG"
+  ],
+  "department": "Dallas Water Utilities",
+  "resolutionEstimate": "3 Business Days",
+  "requestThisService": false,
+  "instructions": "This request must be dispatched. Please call 311 to report abandoned/illegally dumped drums or containers or leaves, grass clippings, yard and garden debris, and/or brush that has been deliberately dumped/blown into the street, alley, ditch, creek/creek channel, lake, river or storm drain/inlet. Please call 311 for more information.",
+  "detailsForm": {
+    "status": "instructions_only",
+    "observedQuestions": [],
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "instructions_only",
+  "actions": [
+    {
+      "tagline": "Call Dallas 311 to report dumped material in a street, drainage area, or waterway.",
+      "why": "For abandoned or illegally dumped drums or containers, or leaves, grass clippings, yard or garden debris, or brush deliberately dumped or blown into a street, alley, ditch, creek or creek channel, lake, river, or storm drain/inlet. The description and instructions for \"Illegal Dumping Urgent\" direct people to call 311 because this request must be dispatched.",
+      "why_not": null,
+      "what": "Call 311 by phone",
+      "who": "Dallas 311",
+      "how": "Call 311",
+      "how_formatted": "Call [311](tel:311)"
+    }
+  ]
+}

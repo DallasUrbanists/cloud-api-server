@@ -1,0 +1,63 @@
+{
+  "title": "Steel Plates in Street (Covering Utility Street Cuts/Excavation)",
+  "categories": [
+    "Streets, Medians, Sidewalks and Alleys",
+    "Traffic Signs and Signals"
+  ],
+  "description": "Use this service request to report loose or shifted steel plates over street excavation. The estimated response time (ERT) for this service request is 1 calendar day.",
+  "photoUrls": [],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "3 Calendar Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "Have you noticed utility work at the location?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "question": "Has the plate shifted off the excavation or is it just loose?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Plate shifted off ecavation",
+          "Plate is loose"
+        ]
+      },
+      {
+        "question": "Would you like to be contacted?",
+        "required": false,
+        "type": "single_choice",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ]
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Utility work = Yes; plate is loose; contact = No; Details Continue reached Contact",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request about a loose or shifted steel plate over street excavation.",
+      "why": "For a steel plate covering a street cut or excavation that is loose or has shifted away from the opening. The 311 request form asks whether utility work is visible and whether the plate is loose or shifted.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Steel Plates in Street (Covering Utility Street Cuts/Excavation)\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Streets, Medians, Sidewalks and Alleys\" > Choose \"Steel Plates in Street (Covering Utility Street Cuts/Excavation)\""
+    }
+  ]
+}

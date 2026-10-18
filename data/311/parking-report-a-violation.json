@@ -1,0 +1,166 @@
+{
+  "title": "Parking Report a Violation",
+  "categories": [
+    "Parking, Vehicle, Bicycle and Scooter Concerns"
+  ],
+  "description": "Use this request to report parking violations on a public street, alley or sidewalk. Please use block numbers when entering vehicle location (i.e. 1300 Main). The estimated response time (ERT) for this service request is 4 hours.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/b6c91070-42b8-11ee-b797-25547d8b54e6.JPG"
+  ],
+  "department": "Transportation and Public Works Department",
+  "resolutionEstimate": "2 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "prompt": "Is the vehicle parked on a public street/alley/sidewalk or private property?",
+        "type": "single_select",
+        "options": [
+          "Private property",
+          "Public street/alley/sidewalk"
+        ],
+        "required": true,
+        "branches": {
+          "Public street/alley/sidewalk": "Ask violation and vehicle details; show blocked driveway guidance",
+          "Private property": "Validation Alert: ** If vehicle is on private property use Code Concerns - CCS **"
+        }
+      },
+      {
+        "prompt": "What type of violation?",
+        "type": "select",
+        "options": [
+          "24 Hour violation",
+          "Commercial/Oversized Vehicle in Residential zone",
+          "Expired Meter or Exceeding the Posted Time Limit",
+          "Facing Wrong side of the Road",
+          "For Sale Sign",
+          "No Parking/No Standing",
+          "Obstructing a Bike Lane",
+          "Obstructing a Fire Hydrant",
+          "Obstructing a Sidewalk",
+          "Other"
+        ],
+        "required": true,
+        "when": "Public street/alley/sidewalk",
+        "branches": {
+          "Other": "Ask If other, please describe:"
+        }
+      },
+      {
+        "prompt": "If other, please describe:",
+        "type": "text",
+        "required": true,
+        "when": "violation = Other"
+      },
+      {
+        "prompt": "What is the Make of the Vehicle?",
+        "type": "select",
+        "options": [
+          "Acura",
+          "Audi",
+          "BMW",
+          "Buick",
+          "Cadillac",
+          "Chevrolet",
+          "Chrysler",
+          "Dodge",
+          "Ford",
+          "Honda",
+          "GMC",
+          "Hyundai",
+          "Infiniti",
+          "Jaguar",
+          "Jeep",
+          "Kia",
+          "Land Rover",
+          "Lexus",
+          "Lincoln",
+          "Mazda",
+          "Mercedes-Benz",
+          "Mercury",
+          "Mitsubishi",
+          "Nissan",
+          "Oldsmobile",
+          "Plymouth",
+          "Pontiac",
+          "Saturn",
+          "Subaru",
+          "Suzuki",
+          "Tesla",
+          "Toyota",
+          "Volkswagen",
+          "Other"
+        ],
+        "required": true,
+        "when": "Public street/alley/sidewalk",
+        "branchFinding": "Other showed no additional question"
+      },
+      {
+        "prompt": "Model of vehicle:",
+        "type": "text",
+        "required": true,
+        "when": "Public street/alley/sidewalk"
+      },
+      {
+        "prompt": "Color of vehicle:",
+        "type": "text",
+        "required": true,
+        "when": "Public street/alley/sidewalk"
+      },
+      {
+        "prompt": "License plate # and state:",
+        "type": "text",
+        "required": true,
+        "when": "Public street/alley/sidewalk"
+      },
+      {
+        "prompt": "Would you like to be contacted?",
+        "type": "single_select",
+        "options": [
+          "Yes - prior to work being completed",
+          "Yes - once the work is completed",
+          "No"
+        ],
+        "required": false
+      }
+    ],
+    "conditionalMessage": "** If reporting a blocked driveway use Street/Road/Driveway Blockage - TPW **",
+    "additionalInformation": "Optional free-text",
+    "completedContactPath": "Public street/alley/sidewalk; violation = Other; make = Other",
+    "unexplored": null
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request about a parking violation on a public street, alley, or sidewalk.",
+      "why": "For parking violations on a public street, alley, or sidewalk, including posted-limit, wrong-way, no-parking, bike-lane, hydrant, and sidewalk obstruction concerns. The 311 request form asks for the violation and vehicle make, model, color, plate, and state; the description asks for a block number in the location.",
+      "why_not": "The online form for \"Parking Report a Violation\" requests does not apply to vehicles on private property or a blocked driveway. If the vehicle is on private property, then submit a \"Code Concerns\" 311 request instead. If a vehicle blocks a driveway without an emergency or freeway concern, then call 311 by phone instead of submitting a 311 request online.",
+      "what": "Submit 311 request",
+      "who": "Transportation and Public Works Department",
+      "how": "Go to Dallas 311 > Choose \"Parking, Vehicle, Bicycle and Scooter Concerns\" > Choose \"Parking Report a Violation\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Parking, Vehicle, Bicycle and Scooter Concerns\" > Choose \"Parking Report a Violation\""
+    },
+    {
+      "tagline": "Submit a 311 request about a vehicle on private property through Code Concerns.",
+      "why": "For a parking concern involving a vehicle on private property. The Parking Report a Violation form directs this answer to \"Code Concerns\".",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Code Compliance",
+      "how": "Go to Dallas 311 > Choose \"City Code Violations\" > Choose \"Code Concerns\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"City Code Violations\" > Choose \"Code Concerns\""
+    },
+    {
+      "tagline": "Call Dallas 311 by phone about a non-emergency vehicle blocking a driveway.",
+      "why": "For a non-emergency vehicle blocking a driveway. The Parking Report a Violation form directs blocked-driveway concerns to \"Street, Road or Driveway Blockage\"; that service must be dispatched by calling 311.",
+      "why_not": null,
+      "what": "Call 311 by phone",
+      "who": "Dallas 311",
+      "how": "Call 311",
+      "how_formatted": "Call [311](tel:311)"
+    }
+  ]
+}

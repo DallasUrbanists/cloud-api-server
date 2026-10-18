@@ -1,0 +1,111 @@
+{
+  "title": "Conservation District Violation",
+  "categories": [
+    "Other Requests"
+  ],
+  "description": "Use this service request to report structures that do not comply with the conservation district preservation criteria. Conservation districts are a type of zoning district designation that helps to preserve and protect the character of Dallas architecturally unique neighborhoods. If this is a substandard structure in a Historical or Conservation District please report it to Code Compliance. The estimated response time for a request of this nature is 15 business days.",
+  "photoUrls": [
+    "https://stoprodtxmgt.blob.core.usgovcloudapi.net/dallascrm/03e28c90-5dfa-11ee-b65c-c33ce0246595.jpg"
+  ],
+  "department": "Planning & Development Department",
+  "resolutionEstimate": "45 Business Days",
+  "requestThisService": true,
+  "instructions": null,
+  "detailsForm": {
+    "status": "conditional_paths_explored",
+    "observedQuestions": [
+      {
+        "question": "Is the building under construction now?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "question": "Is it new construction, an addition, or remodeling?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "New construction",
+          "An addition",
+          "Remodel"
+        ],
+        "when": "Is the building under construction now? = Yes"
+      },
+      {
+        "question": "Is the building located in a historic or conservation district?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Historic",
+          "Conservation"
+        ]
+      },
+      {
+        "question": "Is there a permit posted?",
+        "required": true,
+        "type": "single_choice",
+        "options": [
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "question": "What is the violation that you are reporting?",
+        "required": true,
+        "type": "free_text"
+      }
+    ],
+    "unexplored": null,
+    "conditionalPaths": [
+      {
+        "when": "Is the building under construction now? = No",
+        "reveals": "The new construction/addition/remodeling question is hidden."
+      },
+      {
+        "when": "Is the building under construction now? = Yes",
+        "reveals": "Required question Is it new construction, an addition, or remodeling? appears; each of its three options shows no further question."
+      },
+      {
+        "when": "Is the building located in a historic or conservation district? = Historic",
+        "suggestedService": "New Service Type Suggestion: Conservation District Violation, with the same service description; selected Keep Current to continue this item."
+      },
+      {
+        "when": "Is the building located in a historic or conservation district? = Conservation",
+        "reveals": "No service suggestion or additional question appeared."
+      },
+      {
+        "when": "Is there a permit posted? = Yes or No",
+        "reveals": "No additional questions, instructions, alerts, or service suggestions."
+      }
+    ],
+    "additionalInformation": "Optional free-text",
+    "contactStepObserved": "Contact information is optional; First Name, Last Name, Email, Phone Number, Address, City, State, and Zipcode fields were disabled.",
+    "completedContactPath": "Selected Yes for under-construction, Remodel, Conservation, and No for permit posted; entered a mock violation description, then continued to Contact. No Contact data entered."
+  },
+  "sourcePortalUrl": "https://dallascrm.my.site.com/public/s/",
+  "serviceRequestUrl": "https://dallascrm.my.site.com/public/s/",
+  "captureStatus": "details_form_conditional_paths_explored",
+  "actions": [
+    {
+      "tagline": "Submit a 311 request to report a structure that violates conservation criteria.",
+      "why": "To report a structure that does not comply with preservation criteria in a Dallas conservation district, which protects the character of architecturally unique neighborhoods. The 311 request form asks whether the building is currently under construction; if Yes, whether work is new construction, an addition, or remodeling; whether the district is Historic or Conservation; whether a permit is posted; and what violation occurred.",
+      "why_not": "The online form for \"Conservation District Violation\" requests does not apply to a substandard structure in a Historic or Conservation District. If the structure is substandard, then submit a \"Code Concerns\" 311 request to Code Compliance instead.",
+      "what": "Submit 311 request",
+      "who": "Planning & Development Department",
+      "how": "Go to Dallas 311 > Choose \"Other Requests\" > Choose \"Conservation District Violation\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"Other Requests\" > Choose \"Conservation District Violation\""
+    },
+    {
+      "tagline": "Submit a 311 request about a substandard structure in a historic or conservation district.",
+      "why": "For a substandard structure in a Historic or Conservation District. The description for \"Conservation District Violation\" requests on the Dallas 311 website directs this concern to Code Compliance.",
+      "why_not": null,
+      "what": "Submit 311 request",
+      "who": "Code Compliance",
+      "how": "Go to Dallas 311 > Choose \"City Code Violations\" > Choose \"Code Concerns\"",
+      "how_formatted": "[Go to Dallas 311](https://dallascrm.my.site.com/public/s/) > Choose \"City Code Violations\" > Choose \"Code Concerns\""
+    }
+  ]
+}
