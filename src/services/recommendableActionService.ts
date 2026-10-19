@@ -303,8 +303,6 @@ export class RecommendableActionService {
     };
     try {
       combined.throwIfAborted();
-      const threshold = Number(process.env.RECOMMENDABLE_MATCH_THRESHOLD ?? '0.9');
-      if (!Number.isFinite(threshold) || threshold < 0 || threshold > 1) throw Object.assign(new Error('RECOMMENDABLE_MATCH_THRESHOLD must be between 0 and 1.'), { status: 503 });
       const catalog = getPublicImprovementsDb().collection(ACTIONS);
       const approved: RecommendableAction[] = [];
       let after: string | undefined;
@@ -320,7 +318,7 @@ export class RecommendableActionService {
       const boundaries: MatchResult['diagnostics']['boundaries'] = [];
       const model = process.env.TYPESAFE_MODEL ?? 'jev-latest';
       const result: MatchResult = { data: [], eligibleActions: [], count: 0, diagnostics: {
-        catalogCount: approved.length, eligibleCount: 0, threshold, boundaries, model, bypassJevCache: input.bypassJevCache ?? false,
+        catalogCount: approved.length, eligibleCount: 0, threshold: 0.04, boundaries, model, bypassJevCache: input.bypassJevCache ?? false,
         totalDurationMs: 0, relevance: { durationMs: 0, cacheHit: false, networkRequestCount: 0 }, comparisons: RecommendableComparisonService.emptyDiagnostics(),
       } };
       const finish = () => { result.diagnostics.totalDurationMs = performance.now() - started; return result; };
@@ -414,7 +412,13 @@ export class RecommendableActionService {
       const compared = await RecommendableComparisonService.filter(result.eligibleActions, input, model, apiKey, combined);
       result.eligibleActions = compared.actions;
       result.diagnostics.comparisons = compared.diagnostics;
+      // Choose the strongest available bucket after redundancy filtering. Lower
+      // buckets never fill unused slots in a stronger bucket.
+      const bestProbability = result.eligibleActions[0]?.matchProbability ?? 0;
+      const threshold = bestProbability >= 0.8 ? 0.8 : bestProbability >= 0.15 ? 0.15 : 0.04;
+      result.diagnostics.threshold = threshold;
       result.data = result.eligibleActions.filter(action => action.matchProbability >= threshold);
+      if (threshold < 0.8) result.data = result.data.slice(0, 5);
       result.count = result.data.length;
       return finish();
     } catch (error) {

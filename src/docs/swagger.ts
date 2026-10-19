@@ -970,11 +970,11 @@ Endpoint policies:
         responses: {
           200: { description: 'Matches sorted by descending probability; nothing is persisted.', content: { 'application/json': { schema: {
             type: 'object', required: ['data', 'eligibleActions', 'count', 'diagnostics'], properties: {
-              data: { type: 'array', items: { allOf: [{ $ref: '#/components/schemas/RecommendableAction' }, { type: 'object', required: ['matchProbability'], properties: { matchProbability: { type: 'number', minimum: 0, maximum: 1 } } }] } },
+              data: { type: 'array', description: 'After redundancy filtering, returns all matches at or above 80% when available, otherwise up to five at or above 15%, otherwise up to five at or above 4%. Floors are inclusive; weaker buckets do not fill unused slots. Sorted by descending probability then ID.', items: { allOf: [{ $ref: '#/components/schemas/RecommendableAction' }, { type: 'object', required: ['matchProbability'], properties: { matchProbability: { type: 'number', minimum: 0, maximum: 1 } } }] } },
               eligibleActions: { type: 'array', description: 'Geographically eligible actions remaining after redundancy filtering, including scores below the acceptance threshold, sorted highest first. diagnostics.eligibleCount counts actions before this filtering.', items: { allOf: [{ $ref: '#/components/schemas/RecommendableAction' }, { type: 'object', required: ['matchProbability'], properties: { matchProbability: { type: 'number', minimum: 0, maximum: 1 } } }] } },
               count: { type: 'integer' },
               diagnostics: { type: 'object', required: ['catalogCount', 'eligibleCount', 'threshold', 'boundaries', 'model', 'bypassJevCache', 'totalDurationMs', 'relevance', 'comparisons'], properties: {
-                catalogCount: { type: 'integer' }, eligibleCount: { type: 'integer' }, threshold: { type: 'number' },
+                catalogCount: { type: 'integer' }, eligibleCount: { type: 'integer' }, threshold: { type: 'number', enum: [0.8, 0.15, 0.04], description: 'Selected inclusive bucket floor; empty results use 0.04.' },
                 model: { type: 'string' }, bypassJevCache: { type: 'boolean' }, totalDurationMs: { type: 'number', minimum: 0 },
                 relevance: { type: 'object', required: ['durationMs', 'cacheHit', 'networkRequestCount'], properties: {
                   durationMs: { type: 'number', minimum: 0 }, cacheHit: { type: 'boolean' }, networkRequestCount: { type: 'integer', minimum: 0 },

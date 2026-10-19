@@ -59,7 +59,7 @@ dialog{width:min(700px,calc(100% - 2rem));max-height:85vh;padding:1.25rem;border
 <main><h1>Search Actions &amp; Representatives</h1>
 <form id="match-form"><fieldset id="form-controls">
 <label for="text">Describe your idea, observation, request, or concern.</label><textarea id="text" name="text" maxlength="10000" required></textarea>
-<div class="description-tools" role="toolbar" aria-label="Description samples"><button id="random-description" type="button"><span aria-hidden="true">↻</span><span class="toolbar-label"> Randomize</span></button><button id="choose-sample" type="button" aria-haspopup="dialog"><svg class="toolbar-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg><span class="toolbar-label">Choose sample...</span></button><details id="testing-options" class="testing-options"><summary id="testing-options-button" aria-controls="testing-options-panel" aria-expanded="false"><svg class="toolbar-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m9 3 1-2h4l1 2 2 1 2.3-.1 2 3.4-1.2 2 .1 2.4 1.2 2-2 3.4-2.4-.1-2 1-1 2h-4l-1-2-2-1-2.3.1-2-3.4 1.2-2V9.3l-1.2-2 2-3.4L7 4Z"/><circle cx="12" cy="10.5" r="3"/></svg><span class="toolbar-label">Testing options</span></summary><div id="testing-options-panel" class="testing-options-panel"><label class="result-toggle"><input id="bypass-jev-cache" type="checkbox"> Run without JEV cache</label><label id="low-toggle" class="result-toggle"><input id="show-all" type="checkbox" disabled> Show low matches (20% to 50% probability)</label></div></details></div>
+<div class="description-tools" role="toolbar" aria-label="Description samples"><button id="random-description" type="button"><span aria-hidden="true">↻</span><span class="toolbar-label"> Randomize</span></button><button id="choose-sample" type="button" aria-haspopup="dialog"><svg class="toolbar-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg><span class="toolbar-label">Choose sample...</span></button><details id="testing-options" class="testing-options"><summary id="testing-options-button" aria-controls="testing-options-panel" aria-expanded="false"><svg class="toolbar-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m9 3 1-2h4l1 2 2 1 2.3-.1 2 3.4-1.2 2 .1 2.4 1.2 2-2 3.4-2.4-.1-2 1-1 2h-4l-1-2-2-1-2.3.1-2-3.4 1.2-2V9.3l-1.2-2 2-3.4L7 4Z"/><circle cx="12" cy="10.5" r="3"/></svg><span class="toolbar-label">Testing options</span></summary><div id="testing-options-panel" class="testing-options-panel"><label class="result-toggle"><input id="bypass-jev-cache" type="checkbox"> Run without JEV cache</label><label id="low-toggle" class="result-toggle"><input id="show-all" type="checkbox" disabled> Show low matches (including 0%)</label></div></details></div>
 <fieldset class="location-picker" aria-label="Location">
 <div id="coordinate-fields" class="coordinates" hidden><div><label for="latitude">Latitude</label><input id="latitude" name="latitude" type="number" min="-90" max="90" step="any" value="32.781162" disabled></div>
 <div><label for="longitude">Longitude</label><input id="longitude" name="longitude" type="number" min="-180" max="180" step="any" value="-96.794861" disabled></div></div>
@@ -378,16 +378,19 @@ function setCardExpanded(card, expanded) {
 function renderResult(result) {
     output.replaceChildren();
     const d = result.diagnostics;
-    const hasLowMatches = result.eligibleActions.some(action => action.matchProbability >= 0.2 && action.matchProbability < 0.5);
+    const acceptedIds = new Set(result.data.map(action => action.id));
+    const hasLowMatches = result.eligibleActions.some(action => !acceptedIds.has(action.id));
     showAll.disabled = !hasLowMatches;
     if (!hasLowMatches) showAll.checked = false;
-    const actions = result.eligibleActions.filter(action => action.matchProbability >= (showAll.checked ? 0.2 : 0.5));
+    const actions = (showAll.checked ? result.eligibleActions : result.data)
+      .slice()
+      .sort((a, b) => b.matchProbability - a.matchProbability || a.id.localeCompare(b.id));
     const is311Action = action => /\\b311\\b/.test([action.summary, action.instructions].join(' '));
     const count311 = actions.filter(is311Action).length;
     let seen311 = 0;
     const extra311Cards = [];
     heading.hidden = !actions.length;
-    status.textContent = !d.catalogCount ? 'The approved catalog is empty.' : !d.eligibleCount ? 'No actions are geographically eligible for this test.' : !actions.length ? (showAll.checked ? 'No actions reached 20%.' : (hasLowMatches ? 'No actions reached 50%. Open Testing options to show low matches.' : 'No actions reached 20%.')) : '';
+    status.textContent = !d.catalogCount ? 'The approved catalog is empty.' : !d.eligibleCount ? 'No actions are geographically eligible for this test.' : !actions.length ? (hasLowMatches ? 'No actions reached 4%. Open Testing options to show low matches.' : 'No matching actions were returned.') : '';
     for (const action of actions) {
       const related311 = is311Action(action);
       if (related311) seen311++;

@@ -78,11 +78,11 @@ test('full catalog pagination, approved-only filtering, batches and bounded conc
 test('global and geographic eligibility; threshold inclusive and deterministic ordering', async t => {
   catalog(t, [action('a'), action('b', [20]), action('c', [99]), action('d'), action('e')]);
   t.mock.method(BoundaryService, 'findAll', async () => [{ id: 20, entityName: 'Dallas', bodyName: 'Council', districtName: '1' }] as any);
-  jev(t, id => id === 'd' ? .8999 : id === 'b' ? .99 : .9);
+  jev(t, id => id === 'd' ? .7999 : id === 'b' ? .99 : .8);
   const result = await Service.findMatches({ text: 'x', latitude: 32.7767, longitude: -96.797 });
   assert.deepEqual(result.data.map(a => a.id), ['b', 'a', 'e']);
   assert.deepEqual(result.eligibleActions.map(a => a.id), ['b', 'a', 'e', 'd']);
-  assert.equal(result.eligibleActions[3].matchProbability, .8999);
+  assert.equal(result.eligibleActions[3].matchProbability, .7999);
   assert.equal(result.diagnostics.eligibleCount, 4);
   assert.deepEqual(result.diagnostics.boundaries, [{ id: 20, name: 'Dallas / Council / 1', representatives: [] }]);
   const without = await Service.findMatches({ text: 'x' });
@@ -94,6 +94,37 @@ test('boundary pagination includes overlaps beyond first 1000', async t => {
   t.mock.method(BoundaryService, 'findAll', async (search: any) => Array.from({ length: search.offset === 0 ? 1000 : 1 }, (_, i) => ({ id: search.offset + i + 1, entityName: 'District' })) as any);
   const result = await Service.findMatches({ text: 'x', latitude: 0, longitude: 0 });
   assert.equal(result.count, 1); assert.equal(result.diagnostics.boundaries.length, 1001);
+});
+
+test('dynamic buckets use inclusive floors, cap fallback results, and never backfill weaker matches', async t => {
+  const cases = [
+    { scores: [.95, .9, .88, .85, .82, .8, .79999, .15, .04], ids: ['0', '1', '2', '3', '4', '5'], threshold: .8 },
+    { scores: [.8, .79, .7, .15, .04], ids: ['0'], threshold: .8 },
+    { scores: [.79999, .7, .6, .4, .3, .2, .15, .14999, .04], ids: ['0', '1', '2', '3', '4'], threshold: .15 },
+    { scores: [.15, .14999, .1, .04], ids: ['0'], threshold: .15 },
+    { scores: [.14999, .12, .1, .08, .06, .04, .03999, 0], ids: ['0', '1', '2', '3', '4'], threshold: .04 },
+    { scores: [.04, .03999, 0], ids: ['0'], threshold: .04 },
+    { scores: [.03999, .01, 0], ids: [], threshold: .04 },
+    { scores: [.15, .15, .15, .15, .15, .15], ids: ['0', '1', '2', '3', '4'], threshold: .15 },
+    { scores: [], ids: [], threshold: .04 },
+  ];
+  for (const scenario of cases) await t.test(JSON.stringify(scenario.scores), async t => {
+    catalog(t, scenario.scores.map((_, i) => action(String(i))));
+    const fetch = jev(t, id => scenario.scores[Number(id)]);
+    // Legacy deployments may still have this variable; fixed buckets supersede it.
+    process.env.RECOMMENDABLE_MATCH_THRESHOLD = '.99';
+    const first = await Service.findMatches({ text: 'Bucket selection' });
+    assert.deepEqual(first.data.map(a => a.id), scenario.ids);
+    assert.equal(first.count, scenario.ids.length);
+    assert.equal(first.diagnostics.threshold, scenario.threshold);
+    assert.equal(first.eligibleActions.length, scenario.scores.length);
+    assert.ok(first.data.every(a => a.matchProbability >= .04));
+    const requests = fetch.mock.callCount();
+    const cached = await Service.findMatches({ text: 'Bucket selection' });
+    assert.deepEqual(cached.data, first.data);
+    assert.equal(cached.diagnostics.threshold, scenario.threshold);
+    assert.equal(fetch.mock.callCount(), requests);
+  });
 });
 
 test('representatives are paginated, current-only, and grouped by boundary', async t => {
@@ -119,8 +150,6 @@ test('empty catalog and no eligible actions avoid JEV; configuration errors are 
   assert.equal((await Service.findMatches({ text: 'x' })).diagnostics.eligibleCount, 0);
   catalog(t, [action('a')]); delete process.env.TYPESAFE_API_KEY;
   await assert.rejects(Service.findMatches({ text: 'x' }), /not configured/);
-  process.env.RECOMMENDABLE_MATCH_THRESHOLD = 'bad';
-  await assert.rejects(Service.findMatches({ text: 'x' }), /between 0 and 1/);
 });
 
 test('empty catalog with Dallas coordinates skips boundaries; boundary failures are actionable', async t => {
@@ -188,7 +217,8 @@ test('fresh runs bypass both caches without overwriting them, and diagnostic cou
   assert.equal(fetch.mock.callCount(), 2);
   score = .85;
   const fresh = await Service.findMatches({ ...input, bypassJevCache: true });
-  assert.equal(fresh.count, 0);
+  assert.equal(fresh.count, 2);
+  assert.equal(fresh.data[0].matchProbability, .85);
   assert.equal(fresh.diagnostics.bypassJevCache, true);
   assert.equal(fresh.diagnostics.relevance.cacheHit, false);
   assert.equal(fresh.diagnostics.comparisons.cacheHits, 0);
@@ -216,10 +246,11 @@ test('empty and single-candidate runs have zero comparison counts', async t => {
   assert.equal(single.diagnostics.comparisons.networkRequestCount, 0);
 });
 
-test('catalog content, eligibility, and model changes invalidate JEV cache; threshold and photos stay fresh', async t => {
+test('catalog content, eligibility, and model changes invalidate JEV cache; bucket selection and photos stay fresh', async t => {
   const rows = [{ ...action('a'), photos: ['https://example.org/old.jpg'] }];
   catalog(t, rows); const fetch = jev(t, () => .85);
-  const first = await Service.findMatches({ text: 'x' }); assert.equal(first.count, 0);
+  const first = await Service.findMatches({ text: 'x' }); assert.equal(first.count, 1);
+  assert.equal(first.diagnostics.threshold, .8);
   rows[0].photos = ['https://example.org/new.jpg']; process.env.RECOMMENDABLE_MATCH_THRESHOLD = '.8';
   const updated = await Service.findMatches({ text: 'X!' });
   assert.equal(updated.count, 1); assert.deepEqual(updated.data[0].photos, ['https://example.org/new.jpg']);
@@ -242,7 +273,8 @@ test('JEV cache reuses below-threshold scores and evicts least recently used ent
   await Service.findMatches({ text: 'Issue 0' });
   await Service.findMatches({ text: 'Issue 128' });
   const repeated = await Service.findMatches({ text: 'ISSUE 0!' });
-  assert.equal(fetch.mock.callCount(), 129); assert.equal(repeated.count, 0);
+  assert.equal(fetch.mock.callCount(), 129); assert.equal(repeated.count, 1);
+  assert.equal(repeated.diagnostics.threshold, .04);
   assert.equal(repeated.eligibleActions[0].matchProbability, .1);
   await Service.findMatches({ text: 'Issue 1' }); assert.equal(fetch.mock.callCount(), 130);
 });
@@ -334,6 +366,16 @@ test('saved-suggestion wrapper skips existing links and returns only newly creat
   assert.equal(create.mock.calls[0].arguments[1].matchProbability, .95);
 });
 
+test('saved suggestions persist only the top five actions from the fallback bucket', async t => {
+  const scores = [.14, .12, .1, .08, .04, .04, .03999];
+  catalog(t, scores.map((_, i) => action(String(i))));
+  jev(t, id => scores[Number(id)]);
+  const create = t.mock.method(RecommendedActionService, 'create', async () => ({} as any));
+  const saved = await Service.matchSuggestion({ id: 42, content: { summary: 'Geofence policy request' }, location: {} } as any);
+  assert.deepEqual(saved.map(a => a.id), ['0', '1', '2', '3', '4']);
+  assert.deepEqual(create.mock.calls.map(call => call.arguments[1].matchProbability), [.14, .12, .1, .08, .04]);
+});
+
 test('public page and API validate requests and cancel classification on disconnect', async t => {
   const calls: any[] = [];
   const match = t.mock.method(Service, 'findMatches', async (input, signal) => { calls.push(input); return { data: [], count: 0, diagnostics: { catalogCount: 0, eligibleCount: 0, threshold: .9, boundaries: [] } }; });
@@ -401,7 +443,7 @@ test('playground script sends numeric Dallas coordinates, omits cleared inputs, 
     }
     assert.equal(ids.submit.disabled, true); assert.equal(ids['form-controls'].disabled, true); assert.equal(ids.submit.children[0].className, 'spinner'); assert.equal(ids.results.attrs['aria-busy'], 'true'); sent = JSON.parse(init.body); requests++;
     const high = { ...action('a'), photos: ['https://example.org/photo.jpg', 'javascript:alert(1)', 'https://example.org/photo.jpg'], instructions: '1. [Go to Dallas 311](https://dallascrm.my.site.com/public/s/)\n2. Choose **Street**', summary: hostile, matchProbability: .8, sourceUrl: 'javascript:alert(1)' };
-    return { ok: !failure, json: async () => failure ? { message: 'Try again' } : { data: count ? [high] : [], eligibleActions: customActions ?? (eligible ? (count ? [high, { ...high, id: 'b', matchProbability: .5, photos: [], whyNot: '  ', sourceUrl: 'https://dallascrm.my.site.com/public/s/#top' }, { ...high, id: 'c', matchProbability: .49999, sourceUrl: 'https://example.org/source' }, { ...high, id: 'd', matchProbability: .2 }, { ...high, id: 'e', matchProbability: .19999 }, { ...high, id: 'f', matchProbability: .1 }].filter(action => withLow || action.matchProbability >= .5) : [{ ...high, matchProbability: .1 }]) : []), count, diagnostics: { catalogCount: 4, eligibleCount: eligible, threshold: .9, boundaries: customBoundaries ?? [{ id: 20, name: 'Dallas / Council', representatives: [{ name: 'Jane Doe', title: 'Council Member', phones: [{ label: 'Alex Staff — Council Liaison', phone: '2145559999', when_to_use: 'Staff assistance' }, { label: 'Council Member Jane Doe', phone: '2145551234', when_to_use: 'Neighborhood concerns' }], emails: [{ label: 'JANE DOE - Council member', email: 'office@example.org', when_to_use: 'Written requests for neighborhood concerns' }] }] }] } } };
+    return { ok: !failure, json: async () => failure ? { message: 'Try again' } : { data: customActions ?? (count ? [high, { ...high, id: 'b', matchProbability: .8, photos: [], whyNot: '  ', sourceUrl: 'https://dallascrm.my.site.com/public/s/#top' }] : []), eligibleActions: customActions ?? (eligible ? (count ? [high, { ...high, id: 'b', matchProbability: .8, photos: [], whyNot: '  ', sourceUrl: 'https://dallascrm.my.site.com/public/s/#top' }, { ...high, id: 'c', matchProbability: .49999, sourceUrl: 'https://example.org/source' }, { ...high, id: 'd', matchProbability: .2 }, { ...high, id: 'e', matchProbability: .19999 }, { ...high, id: 'f', matchProbability: .1 }, { ...high, id: 'g', matchProbability: 0 }].filter(action => withLow || action.matchProbability >= .5).reverse() : [{ ...high, matchProbability: .03 }]) : []), count, diagnostics: { catalogCount: 4, eligibleCount: eligible, threshold: .9, boundaries: customBoundaries ?? [{ id: 20, name: 'Dallas / Council', representatives: [{ name: 'Jane Doe', title: 'Council Member', phones: [{ label: 'Alex Staff — Council Liaison', phone: '2145559999', when_to_use: 'Staff assistance' }, { label: 'Council Member Jane Doe', phone: '2145551234', when_to_use: 'Neighborhood concerns' }], emails: [{ label: 'JANE DOE - Council member', email: 'office@example.org', when_to_use: 'Written requests for neighborhood concerns' }] }] }] } } };
   } });
   const submit = () => ids['match-form'].handler({ preventDefault() {} });
   assert.equal(ids['show-all'].disabled, true); assert.equal(ids['show-all'].checked, false);
@@ -438,7 +480,7 @@ test('playground script sends numeric Dallas coordinates, omits cleared inputs, 
   assert.equal(ids.output.children[1].children[2].children.length, 1);
   assert.equal(ids.output.children[1].children[2].children[0].textContent, 'Helps');
   assert.equal(card.className, 'card match-primary');
-  assert.equal(ids.output.children[1].className, 'card match-secondary');
+  assert.equal(ids.output.children[1].className, 'card match-primary');
   assert.equal(ids.output.children.length, 3);
   assert.ok(!ids.output.children.includes(ids['low-toggle']));
   assert.match(playgroundHtml, /<details id="testing-options" class="testing-options">[\s\S]*?id="low-toggle"[\s\S]*?<\/details>/);
@@ -457,9 +499,10 @@ test('playground script sends numeric Dallas coordinates, omits cleared inputs, 
   assert.equal(representative.children[1].children[1].textContent, 'office@example.org');
   assert.equal(table.children[2].children[0].children[1].children[1].children[0].textContent, 'Alex Staff — Council Liaison');
   ids['show-all'].checked = true; ids['show-all'].handler();
-  assert.equal(requests, 1); assert.equal(ids.output.children.length, 6);
+  assert.equal(requests, 1); assert.equal(ids.output.children.length, 9);
   assert.equal(ids.status.textContent, '');
-  assert.equal(ids.output.children[5].className, 'boundaries');
+  assert.equal(ids.output.children[8].className, 'boundaries');
+  assert.deepEqual(ids.output.children.filter(node => node.className.startsWith('card ')).map(node => node.children[0].children[0].textContent), ['80% match', '80% match', '50% match', '20% match', '20% match', '10% match', '0% match']);
   assert.equal(ids.output.children[3].className, 'card match-tertiary');
   assert.equal(ids.output.children[4].children[0].children[0].textContent, '20% match');
   assert.equal(ids.output.children[3].children.at(-1)?.textContent, 'View source');
@@ -479,8 +522,17 @@ test('playground script sends numeric Dallas coordinates, omits cleared inputs, 
   assert.equal(ids.output.children.length, 3);
   withLow = true;
   ids['clear-location'].handler(); count = 0;
-  await submit(); assert.deepEqual(sent, { text: 'Street improvements', bypassJevCache: false }); assert.match(ids.status.textContent, /No actions reached 20%/);
-  assert.equal(ids['show-all'].disabled, true); assert.equal(ids['show-all'].checked, false);
+  await submit(); assert.deepEqual(sent, { text: 'Street improvements', bypassJevCache: false }); assert.match(ids.status.textContent, /No actions reached 4%/);
+  assert.equal(ids['show-all'].disabled, false); assert.equal(ids['show-all'].checked, false);
+  ids['show-all'].checked = true; ids['show-all'].handler();
+  assert.equal(ids.output.children[0].children[0].children[0].textContent, '3% match');
+  assert.equal(ids.status.textContent, '');
+  customActions = [{ ...action('fallback'), matchProbability: .04 }];
+  await submit();
+  assert.equal(ids['show-all'].checked, false);
+  assert.equal(ids.output.children[0].children[0].children[0].textContent, '4% match');
+  assert.equal(ids.status.textContent, '');
+  customActions = undefined;
   eligible = 0; await submit(); assert.match(ids.status.textContent, /geographically eligible/);
   failure = true; await submit(); assert.equal(ids.status.textContent, 'Try again'); assert.equal(ids.output.children.length, 0);
   assert.equal(ids['results-heading'].hidden, true);

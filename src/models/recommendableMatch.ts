@@ -26,7 +26,9 @@ export interface MatchResult {
   eligibleActions: Array<RecommendableAction & { matchProbability: number }>;
   count: number;
   diagnostics: {
-    catalogCount: number; eligibleCount: number; threshold: number;
+    catalogCount: number; eligibleCount: number;
+    /** Selected inclusive bucket floor: 0.8, 0.15, or 0.04 (also used for empty results). */
+    threshold: number;
     model: string; bypassJevCache: boolean; totalDurationMs: number;
     relevance: { durationMs: number; cacheHit: boolean; networkRequestCount: number };
     comparisons: ComparisonDiagnostics;
