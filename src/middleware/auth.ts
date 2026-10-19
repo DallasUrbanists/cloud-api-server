@@ -51,6 +51,16 @@ async function verifyAppCheck(req: Request): Promise<void> {
   await getAppCheck(firebaseApp()).verifyToken(token);
 }
 
+/** Verifies browser application attestation without disclosing a server API key. */
+export async function appCheckAccess(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    if (process.env.NODE_ENV === 'production') await verifyAppCheck(req);
+    next();
+  } catch {
+    res.status(401).json({ error: 'Unauthorized', message: 'Application verification failed.' });
+  }
+}
+
 export function apiAccess(options: { apiKey: ApiKeyRequirement }): (req: Request, res: Response, next: NextFunction) => Promise<void> {
   return async (req, res, next) => {
     try {

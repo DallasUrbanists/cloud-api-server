@@ -28,7 +28,8 @@
     "scan:recommendables": "tsx src/scripts/recommendableWorker.ts",
     "seed:boundaries": "tsx src/scripts/seedBoundaries.ts",
     "seed:dallas311-recommendables": "tsx src/scripts/seedDallas311Recommendables.ts",
-    "eval:emoji": "tsx src/scripts/evaluateSuggestionEmojis.ts"
+    "eval:emoji": "tsx src/scripts/evaluateSuggestionEmojis.ts",
+    "smoke:streetmix": "tsx src/scripts/streetmixSmoke.ts"
   },
   "dependencies": {
     "@google-cloud/firestore": "^9.2.0",

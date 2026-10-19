@@ -69,6 +69,8 @@ export interface Suggestion {
   author: SuggestionAuthor;
   content: SuggestionContent;
   location: SuggestionLocation;
+  /** Current server-managed drawing; absent legacy records are returned as null. */
+  streetmix?: import('./suggestionStreetmix.js').SuggestionStreetmix | null;
 }
 
 /** Detail view enriched with a recent activity page; list responses deliberately omit this log. */

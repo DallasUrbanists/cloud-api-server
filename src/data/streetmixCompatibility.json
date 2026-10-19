@@ -1,0 +1,15 @@
+{
+  "sourceCommit": "ec096318577dfa6b07fcb8604259d90f8c332e75",
+  "source": "https://github.com/streetmix/streetmix/blob/ec096318577dfa6b07fcb8604259d90f8c332e75/packages/parts/data/segment-lookup.yaml",
+  "schemaVersion": 35,
+  "imperialUnits": 1,
+  "boundaryVariants": ["narrow"],
+  "variants": {
+    "sidewalk": ["empty"],
+    "drive-lane": ["inbound|car", "outbound|car"],
+    "turn-lane": ["outbound|shared"],
+    "parking-lane": ["inbound|left", "outbound|right", "outbound|left", "inbound|right", "sideways|left", "sideways|right", "angled-front-left|left", "angled-front-right|right"],
+    "bike-lane": ["inbound|regular|road", "outbound|regular|road", "inbound|regular|sidewalk", "outbound|regular|sidewalk", "twoway-left|regular|sidewalk", "twoway-right|regular|sidewalk", "twoway-left|regular|road", "twoway-right|regular|road"],
+    "divider": ["median", "striped-buffer"]
+  }
+}

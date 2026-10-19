@@ -11,8 +11,15 @@ import { Router } from 'express';
 import { SuggestionController } from '../controllers/suggestionController.js';
 import { RecommendedActionController } from '../controllers/recommendedActionController.js';
 import { apiAccess, userAuth } from '../middleware/auth.js';
+import { suggestionStreetmixHandler } from '../controllers/suggestionStreetmixController.js';
 
 const router = Router();
+
+router.get('/:suggestionId/streetmix', apiAccess({ apiKey: 'required' }), userAuth('public'), suggestionStreetmixHandler('read'));
+router.post('/:suggestionId/streetmix', apiAccess({ apiKey: 'required' }), userAuth('public'), suggestionStreetmixHandler('initial'));
+router.post('/:suggestionId/streetmix/regenerate', apiAccess({ apiKey: 'required' }), userAuth('private'), suggestionStreetmixHandler('regenerate'));
+router.get('/:suggestionId/streetmix/requests/:requestId', apiAccess({ apiKey: 'required' }), userAuth('public'), suggestionStreetmixHandler('request'));
+router.post('/:suggestionId/streetmix/requests/:requestId/selection', apiAccess({ apiKey: 'required' }), userAuth('public'), suggestionStreetmixHandler('selection'));
 
 // Signed URL Upload Helper
 router.post('/upload-url', apiAccess({ apiKey: 'required' }), userAuth('public'), SuggestionController.getUploadUrl);

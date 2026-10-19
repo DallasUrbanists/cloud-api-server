@@ -19,6 +19,8 @@ This backend API server powers the following client-side applications:
 
 ## Developer Documentation
 
+- [Streetmix service and playground](docs/streetmix.md): generate approximate existing Texas cross-sections with shared caching and street confirmation through `POST /api/streetmix/designs`, and test the service at `/playground/streetmix`. Generation defaults to disabled; see the guide for setup and compatibility checks.
+
 - [Documentation conventions](docs/documentation-conventions.md): comment format, ownership, and incremental rollout.
 - [Feature guides](docs/index.md#feature-guides): Boundaries, Boundary synchronization, Assist, Representatives, Suggestions, and the Recommendable Actions pilot, with system views and links to source/OpenAPI.
 

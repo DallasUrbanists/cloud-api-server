@@ -11,6 +11,8 @@ import userRoutes from './routes/userRoutes.js';
 import representativesRoutes from './routes/representativesRoutes.js';
 import dallasCityCouncilRoutes from './routes/dallasCityCouncilRoutes.js';
 import assistRoutes from './routes/assistRoutes.js';
+import streetmixRoutes from './routes/streetmixRoutes.js';
+import { renderStreetmixPlayground } from './controllers/streetmixPlaygroundController.js';
 import boundariesRoutes from './routes/boundariesRoutes.js';
 import boundaryTickRoutes from './routes/boundaryTickRoutes.js';
 import recommendableActionRoutes from './routes/recommendableActionRoutes.js';
@@ -33,12 +35,14 @@ export function createApp(): Express {
     next();
   });
 
+  app.use('/api/streetmix', (_req, res, next) => { res.set('Cache-Control', 'no-store'); next(); });
+
   // Basic Middleware
   const ordinaryJson = express.json();
   const operationJson = express.json({ limit: '2mb' });
   const assistJson = express.json({ limit: '64kb' });
   app.use((req, res, next) => {
-    if (/^\/api\/assist(?:\/|$)/i.test(req.path)) return assistJson(req, res, next);
+    if (/^\/api\/(?:assist|streetmix)(?:\/|$)/i.test(req.path)) return assistJson(req, res, next);
     const isOperation = req.path === '/api/operation-groups' || req.path.startsWith('/api/operation-groups/');
     return (isOperation || req.header('X-Operation-Group') !== undefined ? operationJson : ordinaryJson)(req, res, next);
   });
@@ -741,6 +745,7 @@ export function createApp(): Express {
   // Homepage: Render README.md with top navigation to GitHub and API Docs
   app.get('/', HomeController.renderHome);
   app.get('/playground/recommendables', RecommendablePlaygroundController.render);
+  app.get('/playground/streetmix', renderStreetmixPlayground);
   app.get('/playground/recommendables/marked.js', RecommendablePlaygroundController.markedScript);
   app.get('/playground/recommendables/purify.js', RecommendablePlaygroundController.purifyScript);
 
@@ -778,6 +783,7 @@ export function createApp(): Express {
   app.use('/api/representatives', representativesRoutes);
   app.use('/api/dallascitycouncil', dallasCityCouncilRoutes);
   app.use('/api/assist', assistRoutes);
+  app.use('/api/streetmix', streetmixRoutes);
   app.use('/api/recommendables', recommendableActionRoutes);
   app.use('/meetup-ical', eventsRoutes);
   app.use('/api/meetup-ical', eventsRoutes);
@@ -792,6 +798,12 @@ export function createApp(): Express {
 
   // Global Error Handler
   app.use((err: any, req: Request, res: Response, _next: NextFunction) => {
+    if (/^\/api\/streetmix(?:\/|$)/i.test(req.path)) {
+      const status = err.status === 413 ? 413 : err.status === 400 ? 400 : 500;
+      res.status(status).json({ error: status === 413 ? 'PAYLOAD_TOO_LARGE' : status === 400 ? 'INVALID_COORDINATES' : 'STREETMIX_INTERNAL_ERROR',
+        message: status === 413 ? 'Request body cannot exceed 64 KiB.' : status === 400 ? 'Request body must be a valid JSON object.' : 'Street generation could not complete.' });
+      return;
+    }
     if (/^\/api\/assist(?:\/|$)/i.test(req.path)) {
       const isClarity = /^\/api\/assist\/clarity\/?$/i.test(req.path);
       const isSummary = /^\/api\/assist\/summarize\/?$/i.test(req.path);

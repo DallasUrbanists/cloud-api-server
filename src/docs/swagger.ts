@@ -3,6 +3,8 @@ import { JsonObject } from 'swagger-ui-express';
 import { operationPaths, operationSchemas, stagingParameters, stagingResponses } from './operations.js';
 import { DEFAULT_SUMMARY_OPTIONS, GRAMMAR_OUTPUT_LIMIT, SUMMARY_SENTENCE_TYPES } from '../models/assist.js';
 import { boundaryPaths, boundarySchemas, boundarySearchParameters } from './boundaries.js';
+import { streetmixPaths, streetmixSchemas } from './streetmix.js';
+import { suggestionStreetmixPaths, suggestionStreetmixSchemas } from './suggestionStreetmix.js';
 
 const require = createRequire(import.meta.url);
 const pkg = require('../../package.json');
@@ -55,6 +57,7 @@ Endpoint policies:
   ],
   security: [{ ApiKeyAuth: [], BearerAuth: [] }],
   tags: [
+    { name: 'Streetmix', description: 'Approximate existing street cross-sections from Dallas coordinates.' },
     {
       name: 'Suggestions',
       description: 'Endpoints for managing suggestions in the public-improvements database.',
@@ -91,6 +94,8 @@ Endpoint policies:
     },
   ],
   paths: {
+      ...streetmixPaths,
+      ...suggestionStreetmixPaths,
       ...operationPaths,
       ...boundaryPaths,
       '/api/health': {
@@ -1686,6 +1691,8 @@ Endpoint policies:
       },
     },
     schemas: {
+          ...streetmixSchemas,
+          ...suggestionStreetmixSchemas,
           ...operationSchemas,
           ...boundarySchemas,
       Representative: {
@@ -2051,6 +2058,7 @@ Endpoint policies:
         type: 'object',
         required: ['id', 'creationDate', 'modificationDate', 'status', 'author', 'content', 'location'],
         properties: {
+          streetmix: { $ref: '#/components/schemas/SuggestionStreetmix' },
           id: {
             type: 'integer',
             example: 1,
