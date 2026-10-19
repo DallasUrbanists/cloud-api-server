@@ -27,7 +27,8 @@
     "worker:boundaries": "tsx src/scripts/boundaryWorker.ts",
     "scan:recommendables": "tsx src/scripts/recommendableWorker.ts",
     "seed:boundaries": "tsx src/scripts/seedBoundaries.ts",
-    "seed:dallas311-recommendables": "tsx src/scripts/seedDallas311Recommendables.ts"
+    "seed:dallas311-recommendables": "tsx src/scripts/seedDallas311Recommendables.ts",
+    "eval:emoji": "tsx src/scripts/evaluateSuggestionEmojis.ts"
   },
   "dependencies": {
     "@google-cloud/firestore": "^9.2.0",

@@ -30,7 +30,7 @@ export class SuggestionController {
   private static async ensureEmoji(suggestion: Suggestion): Promise<Suggestion> {
     if (suggestion.emoji) return suggestion;
     try {
-      const emoji = await SuggestionEmojiService.assign(suggestion.content.summary, suggestion.content.details);
+      const emoji = await SuggestionEmojiService.assign(suggestion.content.summary, suggestion.content.details, { suggestionId: suggestion.id });
       return (await SuggestionService.assignEmojiIfMissing(suggestion.id, emoji)) ?? suggestion;
     } catch (error) {
       console.warn(JSON.stringify({ event: 'suggestion_emoji_assignment_failed', suggestionId: suggestion.id, message: error instanceof Error ? error.message : 'unknown error' }));

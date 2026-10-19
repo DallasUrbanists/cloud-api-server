@@ -1,0 +1,144 @@
+{
+  "createdAt": "2026-10-19T05:54:21.556Z",
+  "rubric": "Listed acceptable emojis are non-exhaustive; review other assignments manually.",
+  "metrics": [
+    {
+      "mode": "lexical",
+      "cases": 6,
+      "assignmentRate": 0.6666666666666666,
+      "acceptableRate": 0.5,
+      "candidateCoverage": 1,
+      "p95LatencyMs": 442
+    },
+    {
+      "mode": "hybrid",
+      "cases": 6,
+      "assignmentRate": 0.8333333333333334,
+      "acceptableRate": 0.5,
+      "candidateCoverage": 1,
+      "p95LatencyMs": 728
+    }
+  ],
+  "rows": [
+    {
+      "id": "submission-24",
+      "mode": "lexical",
+      "assigned": true,
+      "acceptable": false,
+      "candidateCoverage": true,
+      "selectedEmoji": "🧪",
+      "outcome": "assigned",
+      "durationMs": 442
+    },
+    {
+      "id": "submission-24",
+      "mode": "hybrid",
+      "assigned": true,
+      "acceptable": false,
+      "candidateCoverage": true,
+      "selectedEmoji": "🧪",
+      "outcome": "assigned",
+      "durationMs": 728
+    },
+    {
+      "id": "submission-27",
+      "mode": "lexical",
+      "assigned": true,
+      "acceptable": true,
+      "candidateCoverage": true,
+      "selectedEmoji": "🖼️",
+      "outcome": "assigned",
+      "durationMs": 179
+    },
+    {
+      "id": "submission-27",
+      "mode": "hybrid",
+      "assigned": true,
+      "acceptable": true,
+      "candidateCoverage": true,
+      "selectedEmoji": "🖼️",
+      "outcome": "assigned",
+      "durationMs": 495
+    },
+    {
+      "id": "submission-30",
+      "mode": "lexical",
+      "assigned": false,
+      "acceptable": false,
+      "candidateCoverage": true,
+      "selectedEmoji": null,
+      "outcome": "low_confidence",
+      "durationMs": 160
+    },
+    {
+      "id": "submission-30",
+      "mode": "hybrid",
+      "assigned": false,
+      "acceptable": false,
+      "candidateCoverage": true,
+      "selectedEmoji": null,
+      "outcome": "low_confidence",
+      "durationMs": 683
+    },
+    {
+      "id": "submission-32",
+      "mode": "lexical",
+      "assigned": true,
+      "acceptable": true,
+      "candidateCoverage": true,
+      "selectedEmoji": "🚶",
+      "outcome": "assigned",
+      "durationMs": 173
+    },
+    {
+      "id": "submission-32",
+      "mode": "hybrid",
+      "assigned": true,
+      "acceptable": true,
+      "candidateCoverage": true,
+      "selectedEmoji": "🚶",
+      "outcome": "assigned",
+      "durationMs": 497
+    },
+    {
+      "id": "submission-36",
+      "mode": "lexical",
+      "assigned": true,
+      "acceptable": true,
+      "candidateCoverage": true,
+      "selectedEmoji": "🛒",
+      "outcome": "assigned",
+      "durationMs": 135
+    },
+    {
+      "id": "submission-36",
+      "mode": "hybrid",
+      "assigned": true,
+      "acceptable": true,
+      "candidateCoverage": true,
+      "selectedEmoji": "🛒",
+      "outcome": "assigned",
+      "durationMs": 607
+    },
+    {
+      "id": "submission-39",
+      "mode": "lexical",
+      "assigned": false,
+      "acceptable": false,
+      "candidateCoverage": true,
+      "selectedEmoji": null,
+      "outcome": "low_confidence",
+      "durationMs": 191
+    },
+    {
+      "id": "submission-39",
+      "mode": "hybrid",
+      "assigned": true,
+      "acceptable": false,
+      "candidateCoverage": true,
+      "selectedEmoji": "🙆",
+      "outcome": "assigned",
+      "durationMs": 525
+    }
+  ]
+}
