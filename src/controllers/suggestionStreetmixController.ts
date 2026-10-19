@@ -6,9 +6,10 @@
 import type { Request, Response } from 'express';
 import { StreetmixError, streetmixKey } from '../models/streetmix.js';
 import { SuggestionStreetmixService } from '../services/suggestionStreetmixService.js';
+import { readStreetmixThumbnail } from '../services/streetmixThumbnail.js';
 
 /** Builds a route handler without opening database connections at module import time. */
-export function suggestionStreetmixHandler(action: 'read' | 'request' | 'initial' | 'regenerate' | 'selection') {
+export function suggestionStreetmixHandler(action: 'read' | 'request' | 'initial' | 'regenerate' | 'selection' | 'thumbnail') {
   return async (req: Request, res: Response): Promise<void> => {
     const disconnect = new AbortController();
     const close = () => { if (!res.writableEnded) disconnect.abort(); };
@@ -20,6 +21,14 @@ export function suggestionStreetmixHandler(action: 'read' | 'request' | 'initial
       if (requestId && !/^[a-f0-9-]{36}$/.test(requestId)) throw new StreetmixError(400, 'INVALID_REQUEST_ID', 'Invalid request identifier.');
       const signal = AbortSignal.any([disconnect.signal, AbortSignal.timeout(60000)]);
       const service = new SuggestionStreetmixService();
+      if (action === 'thumbnail') {
+        const current = await service.read(id, signal);
+        const attachment = current.body.streetmix as { streetmixId: string } | null;
+        if (!attachment) throw new StreetmixError(404, 'THUMBNAIL_UNAVAILABLE', 'Preview unavailable.');
+        const image = await readStreetmixThumbnail(attachment.streetmixId, signal);
+        if (!disconnect.signal.aborted) res.type('image/png').send(image);
+        return;
+      }
       let outcome;
       if (action === 'read') outcome = await service.read(id, signal);
       else if (action === 'request') outcome = await service.readRequest(id, requestId!, signal);

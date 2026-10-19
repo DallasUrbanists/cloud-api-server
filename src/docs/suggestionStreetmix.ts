@@ -6,7 +6,7 @@ const point = { type: 'object', required: ['latitude', 'longitude'], properties:
 /** Permanent attachment and recoverable workflow response schemas. */
 export const suggestionStreetmixSchemas = {
   SuggestionStreetmix: { type: 'object', nullable: true, description: 'Server-managed current attachment. Legacy suggestions return null. Readable without user sign-in; application access is required.', required: ['streetmixId', 'streetmixUrl', 'selectedStreet', 'coordinate', 'snappedCoordinate', 'generatedAt', 'savedAt', 'requestId', 'revision', 'stale'], properties: {
-    streetmixId: { type: 'string' }, streetmixUrl: { type: 'string', format: 'uri', description: 'HTTPS Streetmix URL suitable for iframe.src. Never append API credentials.' }, selectedStreet: { type: 'object' }, coordinate: point, snappedCoordinate: point,
+    streetmixId: { type: 'string' }, streetmixUrl: { type: 'string', format: 'uri', description: 'HTTPS Streetmix editor URL. Never append API credentials.' }, selectedStreet: { type: 'object' }, coordinate: point, snappedCoordinate: point,
     dividedRoad: { type: 'object' }, generatedAt: { type: 'string', format: 'date-time' }, savedAt: { type: 'string', format: 'date-time' }, requestId: { type: 'string', format: 'uuid' }, revision: { type: 'integer', minimum: 1 }, stale: { type: 'boolean', description: 'Saved coordinates differ from the current suggestion location.' },
   } },
   SuggestionStreetmixWorkflow: { type: 'object', required: ['requestId', 'status', 'statusUrl'], properties: {
@@ -29,6 +29,12 @@ function post(summary: string, description: string, selection = false, regenerat
   };
 }
 const paths = {
+  '/streetmix/thumbnail': {
+    get: { ...common, summary: 'Read the saved design PNG thumbnail', description: 'Relays Streetmix’s thumbnail API because it disallows cross-origin image hotlinking. Uses only the currently saved street UUID. Requires application access, without user sign-in; never forwards application credentials upstream. Does not publish or regenerate designs.', parameters: [id, appCheck], responses: {
+      '200': { description: 'PNG image, up to 5 MiB. Cache-Control: no-store.', content: { 'image/png': { schema: { type: 'string', format: 'binary' } } } },
+      '401': errors['401'], '404': { description: 'Suggestion, attachment, or stored thumbnail unavailable.' }, '503': { description: 'Thumbnail provider unavailable or returned an invalid PNG.' },
+    } },
+  },
   '/streetmix': {
     get: { ...common, summary: 'Read the permanent current Streetmix attachment', parameters: [id, appCheck], responses: { '200': { description: 'Saved result or null, plus active workflow if present. No user sign-in required.', headers: etag, content: json({ type: 'object', required: ['streetmix', 'result', 'activeRequest'], properties: { streetmix: ref('SuggestionStreetmix'), result: { allOf: [ref('StreetmixResult')], nullable: true }, activeRequest: { allOf: [ref('SuggestionStreetmixWorkflow')], nullable: true } } }) }, '401': errors['401'], '404': errors['404'], '409': errors['409'], '503': errors['503'] } },
     post: post('Generate and save the first suggestion Streetmix attachment', 'Uses only stored suggestion coordinates. Anyone with application access can generate the first design. An existing attachment is returned without regenerating. Ambiguity requires explicit selection. Concurrent callers join one workflow. Initial generation uses shared location caching. Writes finish within a 60-second request; recovery uses fenced 90-second leases. No worker is started.'),

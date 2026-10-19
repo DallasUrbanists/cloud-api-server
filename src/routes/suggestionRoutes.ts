@@ -15,7 +15,13 @@ import { suggestionStreetmixHandler } from '../controllers/suggestionStreetmixCo
 
 const router = Router();
 
+// Upgrades are handled by the HTTP server; reserve this path before /:id.
+router.get('/ws', (_req, res) => {
+  res.set('Upgrade', 'websocket').status(426).json({ error: 'UPGRADE_REQUIRED', message: 'Connect using WebSocket.' });
+});
+
 router.get('/:suggestionId/streetmix', apiAccess({ apiKey: 'required' }), userAuth('public'), suggestionStreetmixHandler('read'));
+router.get('/:suggestionId/streetmix/thumbnail', apiAccess({ apiKey: 'required' }), userAuth('public'), suggestionStreetmixHandler('thumbnail'));
 router.post('/:suggestionId/streetmix', apiAccess({ apiKey: 'required' }), userAuth('public'), suggestionStreetmixHandler('initial'));
 router.post('/:suggestionId/streetmix/regenerate', apiAccess({ apiKey: 'required' }), userAuth('private'), suggestionStreetmixHandler('regenerate'));
 router.get('/:suggestionId/streetmix/requests/:requestId', apiAccess({ apiKey: 'required' }), userAuth('public'), suggestionStreetmixHandler('request'));

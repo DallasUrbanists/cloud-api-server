@@ -181,10 +181,10 @@ test('ordinary suggestion updates preserve server metadata and reject deletion',
   await assert.rejects(SuggestionService.update(41, { status: 'completed' }), { status: 409 });
 });
 
-test('OpenAPI exposes five endpoints under both aliases', () => {
+test('OpenAPI exposes Streetmix workflows and PNG thumbnails under both aliases', () => {
   const paths = (swaggerDocument as any).paths;
   for (const prefix of ['/api/suggestions', '/api/public-improvements/suggestions']) {
-    for (const suffix of ['/streetmix', '/streetmix/regenerate', '/streetmix/requests/{requestId}', '/streetmix/requests/{requestId}/selection']) assert.ok(paths[`${prefix}/{suggestionId}${suffix}`]);
+    for (const suffix of ['/streetmix', '/streetmix/thumbnail', '/streetmix/regenerate', '/streetmix/requests/{requestId}', '/streetmix/requests/{requestId}/selection']) assert.ok(paths[`${prefix}/{suggestionId}${suffix}`]);
   }
 });
 
@@ -198,13 +198,35 @@ test('HTTP aliases require application access and reject coordinates, extra fiel
   const base = `http://127.0.0.1:${(server.address() as any).port}`;
   const headers = { 'X-API-Key': 'test-application', 'Content-Type': 'application/json', 'Idempotency-Key': 'http-key-00000000001' };
   assert.equal((await fetch(`${base}/api/suggestions/41/streetmix`)).status, 401);
+  assert.equal((await fetch(`${base}/api/suggestions/41/streetmix/thumbnail`)).status, 401);
   for (const prefix of ['/api/suggestions', '/api/public-improvements/suggestions']) {
     const response = await fetch(`${base}${prefix}/41/streetmix`, { headers });
     assert.equal(response.status, 200); assert.equal(response.headers.get('etag'), '"streetmix-41-0"');
+    assert.equal((await fetch(`${base}${prefix}/41/streetmix/thumbnail`, { headers })).status, 404);
     assert.equal((await fetch(`${base}${prefix}/41/streetmix`, { method: 'POST', headers, body: JSON.stringify(point) })).status, 400);
     assert.equal((await fetch(`${base}${prefix}/41/streetmix`, { method: 'POST', headers: { ...headers, 'Idempotency-Key': '' }, body: '{}' })).status, 400);
     assert.equal((await fetch(`${base}${prefix}/41/streetmix/regenerate`, { method: 'POST', headers, body: '{}' })).status, 401);
   }
+  const uuid = 'c13a6af0-8888-4444-8888-0bbee0cc1122', png = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10, 0]);
+  t.mock.method(SuggestionStreetmixService.prototype, 'read', async () => ({ status: 200, body: { streetmix: { streetmixId: uuid } } }));
+  const originalFetch = globalThis.fetch;
+  let relayed = 0;
+  t.mock.method(globalThis, 'fetch', async (url: any, init?: RequestInit) => {
+    if (String(url).startsWith('https://streetmix.net/')) {
+      relayed++;
+      assert.equal(url, `https://streetmix.net/api/v1/streets/${uuid}/image`);
+      assert.deepEqual(init?.headers, { Accept: 'image/png' });
+      return new Response(png, { headers: { 'Content-Type': 'image/png', 'Cross-Origin-Resource-Policy': 'same-origin' } });
+    }
+    return originalFetch(url, init);
+  });
+  for (const prefix of ['/api/suggestions', '/api/public-improvements/suggestions']) {
+    const response = await fetch(`${base}${prefix}/41/streetmix/thumbnail?streetId=ignored`, { headers });
+    assert.equal(response.status, 200); assert.equal(response.headers.get('content-type'), 'image/png');
+    assert.equal(response.headers.get('cache-control'), 'no-store');
+    assert.deepEqual(Buffer.from(await response.arrayBuffer()), png);
+  }
+  assert.equal(relayed, 2);
 });
 
 test('invalid suggestion coordinates and out-of-Texas locations never publish', async () => {
