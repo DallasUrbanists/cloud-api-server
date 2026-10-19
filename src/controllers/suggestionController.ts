@@ -208,7 +208,7 @@ export class SuggestionController {
         return;
       }
 
-      suggestion = await this.ensureEmoji(suggestion);
+      suggestion = await SuggestionController.ensureEmoji(suggestion);
 
       const logPage = await RecommendedActionService.getLog(id, 50);
       res.status(200).json({ data: { ...suggestion, log: logPage.data }, logNextCursor: logPage.nextCursor, logHasMore: logPage.hasMore });
@@ -236,7 +236,7 @@ export class SuggestionController {
       }
 
       let created = await SuggestionService.create(validation.data);
-      created = await this.ensureEmoji(created);
+      created = await SuggestionController.ensureEmoji(created);
       // Suggestions remain available if the external matcher is temporarily unavailable.
       try { await RecommendableActionService.matchSuggestion(created); }
       catch (error) { console.warn(JSON.stringify({ event: 'recommendable_match_failed', suggestionId: created.id, message: error instanceof Error ? error.message : 'unknown error' })); }

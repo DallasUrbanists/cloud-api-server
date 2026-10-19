@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { SuggestionController } from '../src/controllers/suggestionController.js';
-import { SuggestionEmojiService } from '../src/services/suggestionEmojiService.js';
+import { findEmojiCandidates, SuggestionEmojiService } from '../src/services/suggestionEmojiService.js';
 import { SuggestionService } from '../src/services/suggestionService.js';
 import { RecommendedActionService } from '../src/services/recommendedActionService.js';
 import { RecommendableActionService } from '../src/services/recommendableActionService.js';
@@ -36,7 +36,8 @@ function successResponse(emoji = '🚲') {
     const body = JSON.parse(init.body);
     assert.equal(body.model, 'jev-latest');
     assert.deepEqual(body.state, { summary: 'Add a protected bike lane', details: 'The road feels unsafe for cyclists.' });
-    assert.ok(Object.keys(body.questions).length > 10);
+    assert.ok(Object.keys(body.questions).length > 0 && Object.keys(body.questions).length <= 32);
+    assert.match(body.questions.emoji_0.instructions.question, /🚲 \(bicycle\)/);
     const answers = Object.fromEntries(Object.keys(body.questions).map(id => [id, { type: 'noul', noul: id === 'emoji_0' && emoji === '🚲' ? 0.98 : 0.1 }]));
     return new Response(JSON.stringify({ answers }));
   };
@@ -65,7 +66,16 @@ test('emoji classification rejects unavailable configuration and low-confidence 
   await assert.rejects(SuggestionEmojiService.assign('A suggestion', ''), /not configured/);
   process.env.TYPESAFE_API_KEY = 'test-key';
   t.mock.method(globalThis, 'fetch', async () => new Response(JSON.stringify({ answers: { emoji_0: { type: 'noul', noul: 0.5 } } })));
-  await assert.rejects(SuggestionEmojiService.assign('A suggestion', ''), /sufficiently relevant/);
+  await assert.rejects(SuggestionEmojiService.assign('Add a bike lane', ''), /sufficiently relevant/);
+});
+
+test('candidate retrieval supports the complete Unicode Emoji 18.0 catalog with a bounded JEV shortlist', () => {
+  const bicycle = findEmojiCandidates('Create a protected bicycle lane');
+  const pickle = findEmojiCandidates('Install pickle-shaped neighborhood art');
+  assert.ok(bicycle.some(entry => entry.emoji === '🚲'));
+  assert.ok(pickle.some(entry => entry.emoji === '🥒'));
+  assert.ok(bicycle.length <= 32);
+  assert.ok(pickle.length > 0);
 });
 
 test('legacy Firestore suggestions map without emoji and stored emojis are exposed', async t => {
@@ -89,14 +99,15 @@ test('emoji cannot be supplied through create or update validation', () => {
   assert.deepEqual(updated.data, {});
 });
 
-test('creation persists and returns an assigned emoji when JEV succeeds', async t => {
+test('unbound creation handler persists and returns an assigned emoji when JEV succeeds', async t => {
   setupEnv(t);
   t.mock.method(SuggestionService, 'create', async () => makeSuggestion());
   t.mock.method(SuggestionService, 'assignEmojiIfMissing', async (_id: number, emoji: string) => makeSuggestion(emoji));
   t.mock.method(RecommendableActionService, 'matchSuggestion', async () => [] as any);
   t.mock.method(globalThis, 'fetch', successResponse());
   const res = fakeResponse();
-  await SuggestionController.create({ body: {
+  const create = SuggestionController.create;
+  await create({ body: {
     author: { email: 'resident@example.com', name: 'Resident' },
     content: { summary: 'Add a protected bike lane', details: 'The road feels unsafe for cyclists.' },
   } } as any, res as any, error => { throw error; });
@@ -122,14 +133,15 @@ test('creation remains successful when JEV fails', async t => {
   assert.equal('emoji' in res.payload.data, false);
 });
 
-test('individual GET assigns a missing emoji and persists it before returning', async t => {
+test('unbound individual GET assigns a missing emoji and persists it before returning', async t => {
   setupEnv(t);
   t.mock.method(SuggestionService, 'getById', async () => makeSuggestion());
   t.mock.method(SuggestionService, 'assignEmojiIfMissing', async (_id: number, emoji: string) => makeSuggestion(emoji));
   t.mock.method(RecommendedActionService, 'getLog', async () => ({ data: [], nextCursor: null, hasMore: false }));
   t.mock.method(globalThis, 'fetch', successResponse());
   const res = fakeResponse();
-  await SuggestionController.getById({ params: { id: '41' } } as any, res as any, error => { throw error; });
+  const getById = SuggestionController.getById;
+  await getById({ params: { id: '41' } } as any, res as any, error => { throw error; });
   assert.equal(res.payload.data.emoji, '🚲');
 });
 
