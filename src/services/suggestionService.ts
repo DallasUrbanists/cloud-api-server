@@ -58,6 +58,7 @@ function mapDocToSuggestion(docData: any, docId: string): Suggestion {
 
   return {
     id: idNumber,
+    ...(typeof docData.emoji === 'string' && docData.emoji ? { emoji: docData.emoji } : {}),
     boundaryIds: Array.isArray(docData.boundaryIds) ? docData.boundaryIds : [],
     creationDate: toIsoDateString(docData.creationDate),
     modificationDate: toIsoDateString(docData.modificationDate),
@@ -149,6 +150,19 @@ export class SuggestionService {
     }
 
     return mapDocToSuggestion(doc.data(), doc.id);
+  }
+
+  /** Stores a server-assigned emoji only if the suggestion does not already have one. */
+  static async assignEmojiIfMissing(id: number, emoji: string): Promise<Suggestion | null> {
+    const db = getPublicImprovementsDb();
+    const docRef = db.collection(COLLECTION_NAME).doc(id.toString());
+    return db.runTransaction(async transaction => {
+      const snapshot = await transaction.get(docRef);
+      if (!snapshot.exists) return null;
+      const data = snapshot.data() || {};
+      if (typeof data.emoji !== 'string' || !data.emoji) transaction.update(docRef, { emoji });
+      return mapDocToSuggestion({ ...data, emoji: typeof data.emoji === 'string' && data.emoji ? data.emoji : emoji }, snapshot.id);
+    });
   }
 
   /**

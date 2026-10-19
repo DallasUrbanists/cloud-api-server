@@ -2056,6 +2056,11 @@ Endpoint policies:
             example: 1,
             description: 'Unique integer identifier for the suggestion',
           },
+          emoji: {
+            type: 'string',
+            example: '🚲',
+            description: 'Optional server-assigned emoji describing the suggestion content. Assigned with JEV on creation or on an individual read when missing.',
+          },
           creationDate: {
             type: 'string',
             format: 'date-time',

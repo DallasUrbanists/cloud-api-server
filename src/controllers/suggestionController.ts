@@ -8,6 +8,7 @@
  */
 import { Request, Response, NextFunction } from 'express';
 import { SuggestionService } from '../services/suggestionService.js';
+import { SuggestionEmojiService } from '../services/suggestionEmojiService.js';
 import { RecommendedActionService } from '../services/recommendedActionService.js';
 import { RecommendableActionService } from '../services/recommendableActionService.js';
 import { StorageService } from '../services/storageService.js';
@@ -18,12 +19,25 @@ import { hasRole } from '../middleware/auth.js';
 import {
   validateCreateSuggestion,
   validateUpdateSuggestion,
+  Suggestion,
   SuggestionStatus,
   VALID_SUGGESTION_STATUSES,
 } from '../models/suggestion.js';
 
 /** Coordinates base persistence, optional next-step matching, and safe authorization checks. */
 export class SuggestionController {
+  /** Attempts to fill a missing emoji without making suggestion reads or writes depend on JEV. */
+  private static async ensureEmoji(suggestion: Suggestion): Promise<Suggestion> {
+    if (suggestion.emoji) return suggestion;
+    try {
+      const emoji = await SuggestionEmojiService.assign(suggestion.content.summary, suggestion.content.details);
+      return (await SuggestionService.assignEmojiIfMissing(suggestion.id, emoji)) ?? suggestion;
+    } catch (error) {
+      console.warn(JSON.stringify({ event: 'suggestion_emoji_assignment_failed', suggestionId: suggestion.id, message: error instanceof Error ? error.message : 'unknown error' }));
+      return suggestion;
+    }
+  }
+
   /** Returns the boundary records associated with a persisted suggestion. */
   static async getBoundaries(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
@@ -185,7 +199,7 @@ export class SuggestionController {
         return;
       }
 
-      const suggestion = await SuggestionService.getById(id);
+      let suggestion = await SuggestionService.getById(id);
       if (!suggestion) {
         res.status(404).json({
           error: 'Not Found',
@@ -193,6 +207,8 @@ export class SuggestionController {
         });
         return;
       }
+
+      suggestion = await this.ensureEmoji(suggestion);
 
       const logPage = await RecommendedActionService.getLog(id, 50);
       res.status(200).json({ data: { ...suggestion, log: logPage.data }, logNextCursor: logPage.nextCursor, logHasMore: logPage.hasMore });
@@ -219,7 +235,8 @@ export class SuggestionController {
         return;
       }
 
-      const created = await SuggestionService.create(validation.data);
+      let created = await SuggestionService.create(validation.data);
+      created = await this.ensureEmoji(created);
       // Suggestions remain available if the external matcher is temporarily unavailable.
       try { await RecommendableActionService.matchSuggestion(created); }
       catch (error) { console.warn(JSON.stringify({ event: 'recommendable_match_failed', suggestionId: created.id, message: error instanceof Error ? error.message : 'unknown error' })); }

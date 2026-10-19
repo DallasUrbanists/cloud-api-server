@@ -364,6 +364,7 @@ Documents in the `suggestion` collection inside the `public-improvements` Firest
 | Field | Type | Description |
 |---|---|---|
 | `id` | `integer` | Unique sequential integer identifier |
+| `emoji` | `string` (optional) | Server-assigned emoji describing the suggestion; JEV assigns it at creation and on individual reads when missing |
 | `creationDate` | `string` (ISO 8601) | Timestamp when suggestion was created |
 | `modificationDate` | `string` (ISO 8601) | Timestamp of most recent update |
 | `status` | `enum` | `'new'` \| `'inprogress'` \| `'stalled'` \| `'withdrawn'` \| `'completed'` |

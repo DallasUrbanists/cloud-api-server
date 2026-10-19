@@ -59,6 +59,8 @@ export interface SuggestionLocation {
  */
 export interface Suggestion {
   id: number;
+  /** Optional server-assigned emoji describing the suggestion content. */
+  emoji?: string;
   /** IDs of effective boundaries matching the suggestion's location when it was created. */
   boundaryIds: number[];
   creationDate: string; // ISO 8601 string representation for API responses & JSON

@@ -4,7 +4,7 @@
 
 Let's imagine a neighbor wants a shady bench beside a bus stop. A suggestion gives that idea a home, with a description, a place, and photos. Next steps and a history of progress can help people turn the idea into something real.
 
-This slice includes base suggestions, attached Recommended Actions, activity, image-upload signing, and integration with the existing [Recommendable Actions catalog](recommendable-actions.md). The [OpenAPI definition](../src/docs/swagger.ts) remains the HTTP contract; the [app](../src/app.ts) mounts the same router at both the public-improvements prefix and its shorter suggestions alias.
+This slice includes base suggestions, JEV-assigned suggestion emojis, attached Recommended Actions, activity, image-upload signing, and integration with the existing [Recommendable Actions catalog](recommendable-actions.md). The [OpenAPI definition](../src/docs/swagger.ts) remains the HTTP contract; the [app](../src/app.ts) mounts the same router at both the public-improvements prefix and its shorter suggestions alias.
 
 ## System view
 
@@ -34,7 +34,7 @@ flowchart TD
 
 ## Base suggestion lifecycle
 
-Create validation trims known text and supplies defaults. It is not a strict unknown-property schema validator. Coordinate checks currently verify number types, not full geographic ranges, paired coordinates, or finiteness. A photo URL is a stored reference, not proof of a completed or safe image upload. Missing photo timestamps use the current clock.
+Create validation trims known text and supplies defaults. It is not a strict unknown-property schema validator. Coordinate checks currently verify number types, not full geographic ranges, paired coordinates, or finiteness. A photo URL is a stored reference, not proof of a completed or safe image upload. Missing photo timestamps use the current clock. The server asks JEV to select a relevant emoji from the suggestion summary and details. Individual reads attempt the same assignment when an emoji is absent; JEV errors are logged and do not block creation or reading. Lists do not trigger assignment. The emoji is server-managed and is not accepted through create or update validation.
 
 The service lowercases author emails and allocates automatic integer identifiers in a transaction. Allocation and the subsequent suggestion write are separate, so failed writes can leave gaps. Explicit identifier creation uses read-before-set, not an atomic uniqueness lock. Update uses read/merge/write, not optimistic concurrency protection.
 
