@@ -283,7 +283,7 @@ export class RecommendableActionService {
   }
 
   /** Read-only classification over the complete approved catalog. No suggestion is needed. */
-  static async findMatches(input: MatchInput, signal?: AbortSignal): Promise<MatchResult> {
+  static async findMatches(input: MatchInput, signal?: AbortSignal, options: { ignoreBoundaryRequirement?: boolean } = {}): Promise<MatchResult> {
     const started = performance.now();
     const validation = validateMatchInput(input);
     if (validation.error) throw Object.assign(new Error(validation.error), { status: 400 });
@@ -357,7 +357,9 @@ export class RecommendableActionService {
           if (page.length < 1000) break;
         }
       }
-      const eligible = approved.filter(a => anyBoundaryOverlap(a.boundaries, ids));
+      const eligible = options.ignoreBoundaryRequirement
+        ? approved
+        : approved.filter(a => anyBoundaryOverlap(a.boundaries, ids));
       result.diagnostics.eligibleCount = eligible.length;
       if (!eligible.length) return finish();
       const apiKey = process.env.TYPESAFE_API_KEY?.trim();
@@ -426,7 +428,7 @@ export class RecommendableActionService {
   static async matchSuggestion(suggestion: Suggestion): Promise<RecommendableAction[]> {
     const { latitude, longitude } = suggestion.location;
     const result = await this.findMatches({ text: [suggestion.content.summary, suggestion.content.details].filter(Boolean).join('\n\n'),
-      ...(Number.isFinite(latitude) && Number.isFinite(longitude) ? { latitude, longitude } : {}) });
+      ...(Number.isFinite(latitude) && Number.isFinite(longitude) ? { latitude, longitude } : {}) }, undefined, { ignoreBoundaryRequirement: true });
     if (!result.count) return [];
     const existing = await getPublicImprovementsDb().collection(`suggestion/${suggestion.id}/recommendedActions`).get();
     const alreadyCreated = new Set(existing.docs.map(doc => doc.get('recommendableId')).filter(Boolean));
