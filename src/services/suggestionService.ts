@@ -81,6 +81,40 @@ export function mapDocToSuggestion(docData: any, docId: string, fallbackDate = n
 
 /** Stores base suggestions; callers perform input validation and mutation authorization. */
 export class SuggestionService {
+  /** Reads one public presentation source record, excluding an in-progress deletion. */
+  static async getForPresentation(id: number): Promise<Suggestion | null> {
+    if (!Number.isSafeInteger(id) || id < 1) return null;
+    const snapshot = await getPublicImprovementsDb().collection(COLLECTION_NAME).doc(String(id)).get();
+    if (!snapshot.exists || snapshot.get('_deleting') === true) return null;
+    return mapDocToSuggestion(snapshot.data(), snapshot.id);
+  }
+
+  /** Returns a stable numeric-ID page for presentation catalogs, omitting records being deleted. */
+  static async getPresentationPage(afterId: string | null, limit: number): Promise<{ items: Suggestion[]; nextCursor: string | null }> {
+    const db = getPublicImprovementsDb();
+    const after = afterId === null ? undefined : Number(afterId);
+    let query = db.collection(COLLECTION_NAME).orderBy('id', 'asc') as FirebaseFirestore.Query;
+    if (after !== undefined) query = query.startAfter(after);
+    let cursor = after;
+    const items: Suggestion[] = [];
+    while (items.length <= limit) {
+      let page = query.limit(Math.max(limit + 1, 25));
+      if (cursor !== undefined) page = db.collection(COLLECTION_NAME).orderBy('id', 'asc').startAfter(cursor).limit(Math.max(limit + 1, 25)) as FirebaseFirestore.Query;
+      const snapshot = await page.get();
+      if (snapshot.empty) break;
+      for (const doc of snapshot.docs) {
+        cursor = Number(doc.get('id') ?? doc.id);
+        if (doc.get('_deleting') === true) continue;
+        items.push(mapDocToSuggestion(doc.data(), doc.id));
+        if (items.length > limit) break;
+      }
+      if (items.length > limit || snapshot.size < Math.max(limit + 1, 25)) break;
+    }
+    const hasMore = items.length > limit;
+    const visible = hasMore ? items.slice(0, limit) : items;
+    return { items: visible, nextCursor: hasMore ? visible.at(-1)!.id.toString() : null };
+  }
+
   /**
    * Generates the next sequential integer ID atomically using Firestore transactions.
    */

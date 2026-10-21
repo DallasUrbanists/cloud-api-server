@@ -20,11 +20,17 @@ import { swaggerDocument } from './docs/swagger.js';
 import { RecommendablePlaygroundController } from './controllers/recommendablePlaygroundController.js';
 import { HomeController } from './controllers/homeController.js';
 import { formatResponseIntegers } from './utils/responseFormatting.js';
+import { createPresentationRouter } from './routes/presentationRoutes.js';
+import { PresentationService } from './services/presentationService.js';
+import { FirestorePresentationStore } from './services/presentationStore.js';
+import { getPublicImprovementsDb } from './config/firestore.js';
 
 dotenv.config();
 
-export function createApp(): Express {
+export function createApp(options: { presentationService?: PresentationService } = {}): Express {
   const app = express();
+
+  app.use('/api/public-improvements/presentation', (_req, res, next) => { res.set('Cache-Control', 'no-store'); next(); });
 
   app.use('/api/assist', (req, res, next) => {
     res.setHeader('Cache-Control', 'no-store');
@@ -41,7 +47,9 @@ export function createApp(): Express {
   const ordinaryJson = express.json();
   const operationJson = express.json({ limit: '2mb' });
   const assistJson = express.json({ limit: '64kb' });
+  const presentationJson = express.json({ limit: '32kb', strict: true });
   app.use((req, res, next) => {
+    if (/^\/api\/public-improvements\/presentation(?:\/|$)/i.test(req.path)) return presentationJson(req, res, next);
     if (/^\/api\/(?:assist|streetmix)(?:\/|$)/i.test(req.path)) return assistJson(req, res, next);
     const isOperation = req.path === '/api/operation-groups' || req.path.startsWith('/api/operation-groups/');
     return (isOperation || req.header('X-Operation-Group') !== undefined ? operationJson : ordinaryJson)(req, res, next);
@@ -773,6 +781,8 @@ export function createApp(): Express {
   // API Routes
   app.use('/api/public-improvements/suggestions', suggestionRoutes);
   app.use('/api/suggestions', suggestionRoutes); // Also register alias /api/suggestions for convenience
+  const presentationService = options.presentationService ?? new PresentationService(new FirestorePresentationStore(getPublicImprovementsDb()));
+  app.use('/api/public-improvements/presentation', createPresentationRouter(presentationService));
   app.use('/api/contacts', contactRoutes);
   app.use('/api/checkins', checkinRoutes);
   app.use('/api/operation-groups', operationGroupRoutes);
@@ -798,6 +808,11 @@ export function createApp(): Express {
 
   // Global Error Handler
   app.use((err: any, req: Request, res: Response, _next: NextFunction) => {
+    if (/^\/api\/public-improvements\/presentation(?:\/|$)/i.test(req.path)) {
+      const status = err.status === 413 ? 413 : 422;
+      res.status(status).json({ error: status === 413 ? 'PAYLOAD_TOO_LARGE' : 'INVALID_PRESENTATION_REQUEST', message: status === 413 ? 'Request body cannot exceed 32 KiB.' : 'Request body must be a valid JSON object.' });
+      return;
+    }
     if (/^\/api\/streetmix(?:\/|$)/i.test(req.path)) {
       const status = err.status === 413 ? 413 : err.status === 400 ? 400 : 500;
       res.status(status).json({ error: status === 413 ? 'PAYLOAD_TOO_LARGE' : status === 400 ? 'INVALID_COORDINATES' : 'STREETMIX_INTERNAL_ERROR',

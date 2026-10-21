@@ -8,6 +8,7 @@ Start with a feature guide below, then explore the [generated module and symbol 
 - [Boundary synchronization](boundary-synchronization.md): durable jobs, leases, providers, and evidence-backed refresh.
 - [Boundary sync deployment](boundary-sync-deployment.md): provider secrets, scheduled Cloud Run worker, and production enablement using Bash.
 - [Assist](assist.md): grammar, clarity, summaries, validation, and shared quota accounting.
+- [TV presentation sessions](presentation.md): capability authentication, receiver/controller/audience lifecycle, state synchronization, and local setup.
 - [Streetmix](streetmix.md): coordinate-based street reconstruction, public designs, retries, and the testing playground.
 - [Representatives](representatives.md): public office/contact lookup using shared geography and tenure history.
 - [Suggestions](suggestions.md): civic ideas, photos, next steps, and activity.

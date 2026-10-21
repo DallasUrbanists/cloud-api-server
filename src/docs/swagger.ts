@@ -5,6 +5,7 @@ import { DEFAULT_SUMMARY_OPTIONS, GRAMMAR_OUTPUT_LIMIT, SUMMARY_SENTENCE_TYPES }
 import { boundaryPaths, boundarySchemas, boundarySearchParameters } from './boundaries.js';
 import { streetmixPaths, streetmixSchemas } from './streetmix.js';
 import { suggestionStreetmixPaths, suggestionStreetmixSchemas } from './suggestionStreetmix.js';
+import { presentationApiPaths, presentationSchemas } from './presentation.js';
 
 const require = createRequire(import.meta.url);
 const pkg = require('../../package.json');
@@ -92,6 +93,7 @@ Endpoint policies:
       name: 'Assist',
       description: 'Server-side AI assistance for prose, with validation and shared quotas.',
     },
+    { name: 'Presentation', description: 'Accountless capability-authenticated sessions connecting a TV receiver, presenter, and independent audience viewers. Disabled by default with PRESENTATION_ENABLED=false.' },
   ],
   paths: {
     '/api/suggestions/ws': {
@@ -110,6 +112,7 @@ Endpoint policies:
     },
       ...streetmixPaths,
       ...suggestionStreetmixPaths,
+      ...presentationApiPaths,
       ...operationPaths,
       ...boundaryPaths,
       '/api/health': {
@@ -1707,6 +1710,7 @@ Endpoint policies:
     schemas: {
           ...streetmixSchemas,
           ...suggestionStreetmixSchemas,
+          ...presentationSchemas,
           ...operationSchemas,
           ...boundarySchemas,
       Representative: {
