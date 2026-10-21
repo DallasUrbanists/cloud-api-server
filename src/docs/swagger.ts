@@ -94,6 +94,20 @@ Endpoint policies:
     },
   ],
   paths: {
+    '/api/suggestions/ws': {
+      get: {
+        tags: ['Suggestions'],
+        summary: 'Connect to real-time suggestion notices (WebSocket)',
+        description: 'Upgrade using a WebSocket client, then send {type:"authenticate",apiKey,appCheckToken} within five seconds. Production requires App Check. After {type:"ready",protocolVersion:1}, receive suggestion.created, suggestion.updated, and suggestion.deleted messages with suggestionId. Refetch REST data on every ready; no replay history. Alias: /api/public-improvements/suggestions/ws. Authentication is in the first frame, not URL parameters. See [protocol and browser example](https://github.com/DallasUrbanists/cloud-api-server/blob/main/docs/suggestion-notices.md).',
+        security: [],
+        responses: {
+          '101': { description: 'WebSocket upgraded; application authentication is still required before receiving notices.' },
+          '426': { description: 'Ordinary HTTP requests must use WebSocket upgrade.' },
+          '403': { description: 'Upgrade origin rejected.' },
+          '503': { description: 'Connection capacity reached; retry later.' },
+        },
+      },
+    },
       ...streetmixPaths,
       ...suggestionStreetmixPaths,
       ...operationPaths,

@@ -36,6 +36,7 @@ export default defineConfig({
           { text: 'Streetmix', link: '/streetmix' },
           { text: 'Representatives', link: '/representatives' },
           { text: 'Suggestions', link: '/suggestions' },
+          { text: 'Real-time suggestion notices', link: '/suggestion-notices' },
           { text: 'Recommendable Actions', link: '/recommendable-actions' },
           { text: 'Documentation conventions', link: '/documentation-conventions' },
           { text: 'Generated code reference', link: '/reference/' },

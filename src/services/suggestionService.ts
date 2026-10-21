@@ -24,8 +24,8 @@ const COUNTER_DOC_PATH = '_metadata/counters';
 /**
  * Converts known timestamp forms; missing values use now, while other values are stringified rather than validated.
  */
-function toIsoDateString(val: any): string {
-  if (!val) return new Date().toISOString();
+function toIsoDateString(val: any, fallback: string): string {
+  if (!val) return fallback;
   if (val instanceof Timestamp) {
     return val.toDate().toISOString();
   }
@@ -41,7 +41,7 @@ function toIsoDateString(val: any): string {
 /**
  * Projects stored fields with legacy defaults; does not validate persisted status or coordinate values.
  */
-function mapDocToSuggestion(docData: any, docId: string): Suggestion {
+export function mapDocToSuggestion(docData: any, docId: string, fallbackDate = new Date().toISOString()): Suggestion {
   const idNumber = typeof docData.id === 'number' ? docData.id : parseInt(docId, 10) || 0;
 
   const content: SuggestionContent = {
@@ -53,7 +53,7 @@ function mapDocToSuggestion(docData: any, docId: string): Suggestion {
     content.photos = docData.content.photos.map((p: any) => ({
       url: p.url || '',
       caption: p.caption || '',
-      timestamp: toIsoDateString(p.timestamp),
+      timestamp: toIsoDateString(p.timestamp, fallbackDate),
     }));
   }
 
@@ -61,8 +61,8 @@ function mapDocToSuggestion(docData: any, docId: string): Suggestion {
     id: idNumber,
     ...(typeof docData.emoji === 'string' && docData.emoji ? { emoji: docData.emoji } : {}),
     boundaryIds: Array.isArray(docData.boundaryIds) ? docData.boundaryIds : [],
-    creationDate: toIsoDateString(docData.creationDate),
-    modificationDate: toIsoDateString(docData.modificationDate),
+    creationDate: toIsoDateString(docData.creationDate, fallbackDate),
+    modificationDate: toIsoDateString(docData.modificationDate, fallbackDate),
     status: docData.status as SuggestionStatus,
     author: {
       email: docData.author?.email || '',

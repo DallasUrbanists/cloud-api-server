@@ -1,5 +1,7 @@
 # Suggestions
 
+API-key validated applications can receive [real-time suggestion notices](./suggestion-notices.md) over WebSocket and refresh records through these REST endpoints.
+
 ## What this feature does
 
 Let's imagine a neighbor wants a shady bench beside a bus stop. A suggestion gives that idea a home, with a description, a place, and photos. Next steps and a history of progress can help people turn the idea into something real.

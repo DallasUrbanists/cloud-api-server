@@ -46,9 +46,28 @@ function keysEqual(left: string, right: string): boolean {
 }
 
 async function verifyAppCheck(req: Request): Promise<void> {
-  const token = req.header('X-Firebase-AppCheck');
+  await verifyAppCheckToken(req.header('X-Firebase-AppCheck'));
+}
+
+async function verifyAppCheckToken(token: string | undefined): Promise<void> {
   if (!token) throw new Error('Missing Firebase App Check token.');
   await getAppCheck(firebaseApp()).verifyToken(token);
+}
+
+/** A safe application-authentication failure suitable for an HTTP response. */
+export class ApplicationAccessError extends Error {}
+
+/** Shared application verification for HTTP headers and WebSocket authentication frames. */
+export async function verifyApplicationAccess(
+  credentials: { apiKey?: string; appCheckToken?: string },
+  requirement: ApiKeyRequirement = 'required',
+  verifyToken: (token: string | undefined) => Promise<unknown> = verifyAppCheckToken,
+): Promise<{ name?: string } | undefined> {
+  const client = credentials.apiKey ? configuredApiKeys().find(entry => keysEqual(entry.key, credentials.apiKey!)) : undefined;
+  if (requirement === 'required' && !client) throw new ApplicationAccessError('A valid API key is required.');
+  if (credentials.apiKey && !client) throw new ApplicationAccessError('The supplied API key is invalid.');
+  if (process.env.NODE_ENV === 'production' && requirement === 'required') await verifyToken(credentials.appCheckToken);
+  return client ? { name: client.name } : undefined;
 }
 
 /** Verifies browser application attestation without disclosing a server API key. */
@@ -64,27 +83,12 @@ export async function appCheckAccess(req: Request, res: Response, next: NextFunc
 export function apiAccess(options: { apiKey: ApiKeyRequirement }): (req: Request, res: Response, next: NextFunction) => Promise<void> {
   return async (req, res, next) => {
     try {
-      const suppliedKey = req.header('X-API-Key');
-      const keys = configuredApiKeys();
-      const client = suppliedKey ? keys.find((entry) => keysEqual(entry.key, suppliedKey)) : undefined;
-
-      if (options.apiKey === 'required' && !client) {
-        res.status(401).json({ error: 'Unauthorized', message: 'A valid API key is required.' });
-        return;
-      }
-      if (suppliedKey && !client) {
-        res.status(401).json({ error: 'Unauthorized', message: 'The supplied API key is invalid.' });
-        return;
-      }
-
-      if (client) req.apiClient = { name: client.name };
-
-      const appCheckRequired = process.env.NODE_ENV === 'production' && options.apiKey === 'required';
-      if (appCheckRequired) await verifyAppCheck(req);
+      const client = await verifyApplicationAccess({ apiKey: req.header('X-API-Key'), appCheckToken: req.header('X-Firebase-AppCheck') }, options.apiKey);
+      if (client) req.apiClient = client;
       next();
     } catch (error) {
       console.warn('Request application verification failed.');
-      res.status(401).json({ error: 'Unauthorized', message: 'Application verification failed.' });
+      res.status(401).json({ error: 'Unauthorized', message: error instanceof ApplicationAccessError ? error.message : 'Application verification failed.' });
     }
   };
 }

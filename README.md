@@ -586,6 +586,7 @@ Endpoints for managing civic improvement suggestions and photo uploads in Firest
 |---|---|---|
 | `POST` | `/api/suggestions/upload-url` | Generate a pre-signed GCS URL for direct photo upload |
 | `GET` | `/api/suggestions` | List suggestions (supports `?status=`, `?authorEmail=`, `?limit=`) |
+| `GET` (WebSocket upgrade) | `/api/suggestions/ws` | Receive authenticated real-time create/update/delete notices; see [protocol and browser example](docs/suggestion-notices.md) |
 | `POST` | `/api/suggestions` | Create a new suggestion record |
 | `GET` | `/api/suggestions/:id` | Get suggestion details by integer ID |
 | `PUT` | `/api/suggestions/:id` | Update an existing suggestion by ID |
