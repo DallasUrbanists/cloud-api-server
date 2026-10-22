@@ -1,7 +1,8 @@
 import { recommendableMockDescriptions } from '../data/recommendableMockDescriptions.js';
-import type { Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 import { createRequire } from 'node:module';
 import path from 'node:path';
+import { SuggestionService } from '../services/suggestionService.js';
 
 const require = createRequire(import.meta.url);
 
@@ -15,8 +16,26 @@ export class RecommendablePlaygroundController {
     res.sendFile(path.join(path.dirname(require.resolve('dompurify')), 'purify.min.js'));
   }
 
-  static render(_req: Request, res: Response): void {
-    res.type('html').send(playgroundHtml);
+  static async render(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const rawIdeaId = req.query.idea;
+      let initialDescription: string | undefined;
+      if (typeof rawIdeaId === 'string' && /^\d+$/.test(rawIdeaId)) {
+        const ideaId = Number(rawIdeaId);
+        if (Number.isSafeInteger(ideaId) && ideaId > 0) {
+          const suggestion = await SuggestionService.getById(ideaId);
+          if (suggestion) {
+            initialDescription = [suggestion.content.summary, suggestion.content.details]
+              .filter(text => text.trim())
+              .join('\n\n');
+          }
+        }
+      }
+      const initialDescriptionScript = JSON.stringify(initialDescription ?? null).replace(/</g, '\\u003c');
+      res.type('html').send(playgroundHtml.replace('const initialDescription = null;', `const initialDescription = ${initialDescriptionScript};`));
+    } catch (error) {
+      next(error);
+    }
   }
 }
 
@@ -85,6 +104,7 @@ showAll.checked = false;
 const heading = document.getElementById('results-heading');
 const controls = document.getElementById('form-controls');
 const textarea = document.getElementById('text');
+const initialDescription = null;
 const latitudeInput = document.getElementById('latitude');
 const longitudeInput = document.getElementById('longitude');
 const addressInput = document.getElementById('address');
@@ -170,6 +190,7 @@ function stopDescriptionTransition() { descriptionTransition?.cancel(); descript
 function setDescription(text) { stopDescriptionTransition(); textarea.value = text; resizeDescription(); updateSubmit(); }
 textarea.addEventListener('input', () => { stopDescriptionTransition(); resizeDescription(); updateSubmit(); });
 window.addEventListener('resize', resizeDescription);
+if (initialDescription) setDescription(initialDescription);
 resizeDescription(); updateSubmit();
 document.getElementById('random-description').addEventListener('click', () => {
   stopDescriptionTransition();
