@@ -1,10 +1,16 @@
 import { createApp } from './app.js';
 import { createServer } from 'node:http';
 import { attachSuggestionWebSocket } from './suggestionWebSocket.js';
+import { PresentationWebSocketServer } from './presentationWebSocket.js';
+import { PresentationService } from './services/presentationService.js';
+import { FirestorePresentationStore } from './services/presentationStore.js';
+import { getPublicImprovementsDb } from './config/firestore.js';
 
-const app = createApp();
+const presentationService = new PresentationService(new FirestorePresentationStore(getPublicImprovementsDb()));
+const app = createApp({ presentationService });
 const server = createServer(app);
-const closeSockets = attachSuggestionWebSocket(server);
+const presentationSockets = new PresentationWebSocketServer(presentationService);
+const closeSockets = attachSuggestionWebSocket(server, { presentation: presentationSockets });
 
 // Cloud Run passes the port via the PORT environment variable
 const port = parseInt(process.env.PORT || '8080', 10);
@@ -21,8 +27,7 @@ function stop(): void {
   stopping = true;
   const deadline = setTimeout(() => process.exit(1), 8000);
   deadline.unref();
-  server.close(() => { void closeSockets().then(() => process.exit(0)); });
-  void closeSockets();
+  void closeSockets().finally(() => server.close(() => process.exit(0)));
 }
 process.on('SIGTERM', stop);
 process.on('SIGINT', stop);

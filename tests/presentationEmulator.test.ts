@@ -15,7 +15,9 @@ test('two independent Firestore-backed services serialize presenter claims in th
   const emulatorHostname = emulatorUrl.hostname.replace(/^\[|\]$/g, '');
   if (!['localhost', '127.0.0.1', '::1'].includes(emulatorHostname)) throw new Error('FIRESTORE_EMULATOR_HOST must point to a local emulator.');
   const projectId = `demo-presentation-${randomUUID().slice(0, 8)}`;
-  const databaseId = 'presentation-emulator-test';
+  // The local Firestore emulator currently supports only its default database.
+  // The unique demo project above supplies isolation for this test run.
+  const databaseId = '(default)';
   const firstDb = new Firestore({ projectId, databaseId });
   const secondDb = new Firestore({ projectId, databaseId });
   t.after(async () => {

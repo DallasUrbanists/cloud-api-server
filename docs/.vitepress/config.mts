@@ -10,6 +10,8 @@ export default defineConfig({
   title: 'Dallas Urbanists Cloud API',
   description: 'System guides and generated developer reference.',
   outDir: '../docs-site',
+  // Generated API pages share output directories; serialize rendering for reliable Windows builds.
+  buildConcurrency: 1,
   srcExclude: ['operation-groups.md', 'public/**', 'reference/_media/**'],
   themeConfig: {
     nav: [

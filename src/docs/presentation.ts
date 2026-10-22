@@ -16,7 +16,7 @@ const errors = Object.fromEntries(['401', '403', '404', '409', '410', '422', '42
     '410': 'Pairing code or session expired, or session ended.', '422': 'Invalid request fields or state.',
     '426': 'Protocol version is unsupported.', '429': 'Admission rate limit reached; includes Retry-After.',
     '503': 'Presentation persistence or provider unavailable.',
-  } as Record<string, string>)[status], headers: status === '429' ? { 'Retry-After': { schema: { type: 'integer', minimum: 1 } } } : undefined,
+  } as Record<string, string>)[status], headers: ['429', '503'].includes(status) ? { 'Retry-After': { schema: { type: 'integer', minimum: 1 } } } : undefined,
   content: json(ref('PresentationError')),
 }]));
 const enrollment = {
@@ -69,6 +69,15 @@ export const presentationSchemas = {
 };
 
 export const presentationApiPaths = {
+  '/api/public-improvements/presentation/ws': { get: {
+    tags: ['Presentation'], security: [], summary: 'Connect to capability-authenticated presentation updates (WebSocket)',
+    description: 'This path accepts a WebSocket upgrade only. An ordinary HTTP GET returns 426 when both PRESENTATION_ENABLED and PRESENTATION_WEBSOCKET_ENABLED are true, or 404 when disabled. After upgrade, send the exact authenticate frame from the [presentation protocol guide](https://github.com/DallasUrbanists/cloud-api-server/blob/main/docs/presentation.md#presentation-websocket-v1) within five seconds. The server derives role from the existing durable participant capability; no API key, Firebase token, or App Check token is used. State frames are full JSON snapshots, not a normal HTTP JSON stream. The socket accepts presence only; all presentation commands remain HTTPS requests.',
+    responses: {
+      '101': { description: 'WebSocket upgraded; application capability authentication and listener initialization are still required before presentation data is sent.' },
+      '403': { description: 'Upgrade origin rejected.' }, '404': { description: 'Presentation WebSockets are disabled or the path is unavailable.' },
+      '426': { description: 'Ordinary HTTP requests must use WebSocket upgrade.' }, '503': { description: 'Connection capacity or listener availability reached; retry later.' },
+    },
+  } },
   '/api/public-improvements/presentation/sessions': { post: bootstrapPost('Create a receiver session', enrollment, ref('PresentationEnrollment')) },
   '/api/public-improvements/presentation/pair': { post: bootstrapPost('Claim presenter authority', { ...enrollment, required: [...enrollment.required, 'code'] }, ref('PresentationEnrollment')) },
   '/api/public-improvements/presentation/audience/join': { post: bootstrapPost('Join as an audience viewer', { ...enrollment, required: [...enrollment.required, 'code'] }, ref('PresentationEnrollment')) },

@@ -6,7 +6,7 @@ import {
   PresentationError, PRESENTATION_PROTOCOL_VERSION, publicPresentationIdea, validateUuid,
   validateWritableState, type PresentationIdea, type PresentationRole, type PresentationState,
 } from '../models/presentation.js';
-import { presentationPaths, type PresentationStore } from './presentationStore.js';
+import { presentationPaths, type PresentationStore, type StoredDocument } from './presentationStore.js';
 import type { Suggestion } from '../models/suggestion.js';
 
 const TEN_MINUTES = 10 * 60_000;
@@ -48,6 +48,11 @@ export interface SyncRequest {
   lastRevision: number;
   lastContentVersion: string | null;
   presence?: PresenceReport;
+}
+export interface PresentationWatchSnapshot { session: Record<string, any> | undefined; participants: StoredDocument[]; }
+export interface PresentationWatchCallbacks {
+  change(snapshot: PresentationWatchSnapshot): void;
+  error(error: unknown): void;
 }
 
 function sha(value: string): string { return createHash('sha256').update(value).digest('hex'); }
@@ -293,6 +298,83 @@ export class PresentationService {
     return { sessionId, participantId, role: participant.role, session, participant };
   }
 
+  /** Watches one session and its participant collection; callers should share this per session. */
+  watchSessionSources(sessionId: string, callbacks: PresentationWatchCallbacks): () => void {
+    if (!this.store.watchDocument || !this.store.watchCollection) throw new Error('Presentation store does not support durable watches.');
+    let active = true, started = false, sessionReady = false, participantsReady = false;
+    let session: Record<string, any> | undefined;
+    let participants: StoredDocument[] = [];
+    let stopSession: (() => void) | undefined, stopParticipants: (() => void) | undefined;
+    const emit = () => {
+      if (active && started && sessionReady && participantsReady) callbacks.change({ session, participants });
+    };
+    const fail = (error: unknown) => {
+      if (!active) return;
+      active = false;
+      stopSession?.(); stopParticipants?.();
+      callbacks.error(error);
+    };
+    const install = (watch: () => () => void, assign: (stop: () => void) => void) => {
+      const stop = watch();
+      if (active) assign(stop); else stop();
+    };
+    install(() => this.store.watchDocument!(presentationPaths.session(sessionId), value => {
+      session = value; sessionReady = true; emit();
+    }, fail), stop => { stopSession = stop; });
+    install(() => this.store.watchCollection!(presentationPaths.participantCollection(sessionId), value => {
+      participants = value; participantsReady = true; emit();
+    }, fail), stop => { stopParticipants = stop; });
+    started = true;
+    emit();
+    return () => {
+      if (!active) return;
+      active = false;
+      stopSession?.(); stopParticipants?.();
+    };
+  }
+
+  /** Produces a full socket envelope after fresh capability authorization and existing content maintenance. */
+  async socketSnapshot(sessionId: string, participantId: string, participantToken: string): Promise<Record<string, any>> {
+    await this.authorize(sessionId, participantId, participantToken);
+    await this.maybeRefreshContent(sessionId);
+    const context = await this.authorize(sessionId, participantId, participantToken);
+    const roster = context.role === 'controller' ? await this.store.list(presentationPaths.participantCollection(sessionId)) : [];
+    const envelope = this.envelopeFromRecord(context.session, context.role, roster, this.now());
+    if (context.session.state?.selectedIdeaId == null) envelope.content = null;
+    return envelope;
+  }
+
+  /** Runs the same five-second selected-content refresh and an idle absolute-expiry check used by REST traffic. */
+  async maintainSocketSession(sessionId: string): Promise<void> {
+    await this.expireSocketSession(sessionId);
+    await this.refreshSocketContent(sessionId);
+  }
+
+  /** Expires a room only when its absolute deadline has arrived; it never extends the deadline. */
+  async expireSocketSession(sessionId: string): Promise<void> {
+    const now = this.now();
+    await this.store.runTransaction(async tx => {
+      const path = presentationPaths.session(sessionId), session = await tx.get(path);
+      if (session && session.expiresAtMs <= now && session.status !== 'ended' && session.status !== 'expired') {
+        tx.update(path, { status: 'expired', expiredAtMs: now });
+      }
+    });
+  }
+
+  /** Refreshes selected public content through the existing cross-instance lease. */
+  async refreshSocketContent(sessionId: string): Promise<void> {
+    await this.maybeRefreshContent(sessionId);
+  }
+
+  /** Uses the service's injected wall clock so timer scheduling remains testable. */
+  millisecondsUntilExpiry(expiresAtMs: number): number { return Math.max(0, expiresAtMs - this.now()); }
+
+  /** Reauthorizes each presence write; a socket close is deliberately not a membership change. */
+  async recordSocketPresence(sessionId: string, participantId: string, participantToken: string, presence: PresenceReport): Promise<void> {
+    const context = await this.authorize(sessionId, participantId, participantToken);
+    await this.recordPresence(context, presence);
+  }
+
   private assertRole(context: PresentationParticipantContext, roles: PresentationRole[]): void {
     if (!roles.includes(context.role)) throw new PresentationError(403, 'ROLE_FORBIDDEN', 'Your presentation role cannot perform this action.');
   }
@@ -356,7 +438,10 @@ export class PresentationService {
     const now = this.now(), path = presentationPaths.participant(context.sessionId, context.participantId), sessionPath = presentationPaths.session(context.sessionId);
     await this.store.runTransaction(async tx => {
       const participant = await tx.get(path), session = await tx.get(sessionPath);
-      if (!participant || participant.revoked || !session || session.expiresAtMs <= now) return;
+      if (!participant || participant.revoked || !session || session.status === 'ended' || session.status === 'expired'
+        || session.expiresAtMs <= now || participant.role !== context.role
+        || !equalDigest(participant.tokenDigest, String(context.participant.tokenDigest))
+        || (context.role === 'controller' && session.controllerId !== context.participantId)) return;
       const update: Record<string, any> = {};
       if (now - Number(participant.lastSeenAtMs ?? 0) >= PRESENCE_WRITE_INTERVAL) update.lastSeenAtMs = now;
       if (context.role === 'audience' && presence?.localView !== undefined && participant.localView !== presence.localView) update.localView = presence.localView;
@@ -504,7 +589,10 @@ export class PresentationService {
         contentSnapshot: snapshot, contentVersion: snapshot?.contentVersion ?? null,
       };
       const response = this.envelopeFromRecord(updatedSession, 'controller', roster, this.now());
-      tx.update(sessionPath, { state: nextState, revision: nextState.revision, contentSnapshot: snapshot, contentVersion: snapshot?.contentVersion ?? null });
+      tx.update(sessionPath, {
+        state: nextState, revision: nextState.revision, contentSnapshot: snapshot, contentVersion: snapshot?.contentVersion ?? null,
+        contentLastCheckedAtMs: this.now(),
+      });
       tx.set(receiptPath, { operation: 'state', fingerprint: writeFingerprint, participantId: context.participantId, response, createdAtMs: this.now(), expiresAtMs: session.expiresAtMs, expiresAt: new Date(session.expiresAtMs) });
       return { session: updatedSession, response };
     });

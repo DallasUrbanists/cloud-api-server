@@ -657,7 +657,7 @@ The nested routes are also available under `/api/public-improvements/suggestions
 
 ### Presentation (`Presentation` Tag)
 
-Capability-authenticated sessions connect one TV receiver, one presenter, and independent audience viewers. The feature is disabled by default; configure `PRESENTATION_ENABLED=true` after deploying a compatible client. Requests use `/api/public-improvements/presentation`, require no Firebase account or application API key, and use `Authorization: Bearer <participantToken>` plus `X-Presentation-Participant` after enrollment. See the [Presentation API guide](docs/presentation.md) for enrollment, state, expiry, limits, and local setup.
+Capability-authenticated sessions connect one TV receiver, one presenter, and independent audience viewers. REST remains available with `PRESENTATION_ENABLED=true`; presentation WebSockets require the additional `PRESENTATION_WEBSOCKET_ENABLED=true`, and both switches default off. Requests use `/api/public-improvements/presentation`, require no Firebase account or application API key, and use `Authorization: Bearer <participantToken>` plus `X-Presentation-Participant` after enrollment. See the [Presentation API guide](docs/presentation.md) for enrollment, the socket protocol, state, expiry, limits, and isolated local setup.
 
 | Method | Endpoint | Description |
 |---|---|---|
@@ -665,6 +665,7 @@ Capability-authenticated sessions connect one TV receiver, one presenter, and in
 | `POST` | `/api/public-improvements/presentation/pair` | Claim presenter control with a pairing code |
 | `POST` | `/api/public-improvements/presentation/audience/join` | Join as an audience viewer |
 | `POST` | `/api/public-improvements/presentation/sessions/:sessionId/sync` | Poll state, content, and role-specific presence |
+| `GET` (WebSocket upgrade) | `/api/public-improvements/presentation/ws` | Receive capability-authenticated full snapshots and send role-scoped presence; see [protocol guide](docs/presentation.md#presentation-websocket-v1) |
 | `PUT` | `/api/public-improvements/presentation/sessions/:sessionId/state` | Write canonical presenter state with revision checks |
 | `GET` | `/api/public-improvements/presentation/sessions/:sessionId/ideas` | Page through the controller's public idea catalog |
 | `GET` | `/api/public-improvements/presentation/sessions/:sessionId/ideas/:ideaId` | Read a public idea DTO within role visibility rules |

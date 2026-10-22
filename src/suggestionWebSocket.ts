@@ -5,9 +5,14 @@ import { WebSocket, WebSocketServer } from 'ws';
 import { isOriginAllowed } from './middleware/cors.js';
 import { verifyApplicationAccess } from './middleware/auth.js';
 import { SuggestionNoticeService } from './services/suggestionNoticeService.js';
+import type { PresentationUpgradeHandler } from './presentationWebSocket.js';
+import { rejectPresentationUpgrade } from './presentationWebSocket.js';
+import { PRESENTATION_SOCKET_PATH } from './services/presentationSocketProtocol.js';
 
 export interface SuggestionSocketOptions {
   notices?: SuggestionNoticeService;
+  presentation?: PresentationUpgradeHandler;
+  suggestionsEnabled?: boolean;
   verify?: typeof verifyApplicationAccess;
   authTimeoutMs?: number;
   readyTimeoutMs?: number;
@@ -67,11 +72,19 @@ export function attachSuggestionWebSocket(server: Server, options: SuggestionSoc
     let url: URL;
     try { url = new URL(req.url ?? '/', 'http://localhost'); }
     catch { reject(socket, 400, 'Bad Request'); return; }
-    if (!['/api/suggestions/ws', '/api/public-improvements/suggestions/ws'].includes(url.pathname)) {
+    const suggestionPath = ['/api/suggestions/ws', '/api/public-improvements/suggestions/ws'].includes(url.pathname);
+    const presentationPath = url.pathname === PRESENTATION_SOCKET_PATH;
+    if (!suggestionPath && !presentationPath) {
       reject(socket, 404, 'Not Found'); return;
     }
     if (url.search) { reject(socket, 400, 'Bad Request'); return; }
     if (!isOriginAllowed(req.headers.origin)) { reject(socket, 403, 'Forbidden'); return; }
+    if (suggestionPath && options.suggestionsEnabled === false) { reject(socket, 404, 'Not Found'); return; }
+    if (presentationPath) {
+      if (!options.presentation) { rejectPresentationUpgrade(socket, 404, 'Not Found'); return; }
+      options.presentation.handleUpgrade(req, socket, head);
+      return;
+    }
     if (shuttingDown || count(false) >= (options.maxPending ?? 50) || count(true) >= (options.maxAuthenticated ?? 500)) {
       reject(socket, 503, 'Service Unavailable'); return;
     }
@@ -159,10 +172,10 @@ export function attachSuggestionWebSocket(server: Server, options: SuggestionSoc
     clearInterval(heartbeat);
     for (const [ws, c] of connections) close(ws, c, 1001, 'Server shutting down.');
     notices.stop();
-    shutdown = new Promise(resolve => wss.close(() => {
+    const presentationShutdown = options.presentation?.close() ?? Promise.resolve();
+    shutdown = Promise.all([new Promise<void>(resolve => wss.close(() => resolve())), presentationShutdown]).then(() => {
       server.off('upgrade', upgrade);
-      resolve();
-    }));
+    });
     return shutdown;
   };
 }

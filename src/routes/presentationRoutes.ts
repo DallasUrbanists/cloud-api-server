@@ -2,10 +2,10 @@
 import { Router, type Request, type Response, type NextFunction } from 'express';
 import { StreetmixError } from '../models/streetmix.js';
 import { PresentationError, validateUuid } from '../models/presentation.js';
-import { PresentationService, type EnrollmentRequest, type PresenceReport, type PresentationParticipantContext, type SyncRequest } from '../services/presentationService.js';
+import { PresentationService, type EnrollmentRequest, type PresentationParticipantContext, type SyncRequest } from '../services/presentationService.js';
 import { readStreetmixThumbnail } from '../services/streetmixThumbnail.js';
+import { validatePresentationPresence } from '../services/presentationPresence.js';
 
-const RENDER_ERRORS = new Set(['TILE_UNAVAILABLE', 'IMAGE_UNAVAILABLE', 'RENDER_FAILED', 'NETWORK_ERROR', 'TIMEOUT', 'UNKNOWN']);
 const own = (value: object, key: string) => Object.prototype.hasOwnProperty.call(value, key);
 
 function objectBody(value: unknown): Record<string, any> {
@@ -24,24 +24,6 @@ function protocol(value: unknown): number {
 function idempotencyKey(req: Request): string | undefined { return req.header('Idempotency-Key'); }
 function clientIp(req: Request): string { return req.ip || req.socket.remoteAddress || 'unknown'; }
 function pathParam(value: string | string[] | undefined): string { return Array.isArray(value) ? value[0] ?? '' : value ?? ''; }
-
-function validatePresence(input: unknown, role: PresentationParticipantContext['role']): PresenceReport | undefined {
-  if (input === undefined) return undefined;
-  const presence = objectBody(input);
-  const permitted = role === 'audience' ? ['localView'] : role === 'receiver' ? ['appliedRevision', 'viewport', 'renderStatus', 'renderError'] : [];
-  if (Object.keys(presence).some(key => !permitted.includes(key))) throw new PresentationError(422, 'INVALID_PRESENTATION_REQUEST', 'Presence contains fields that are not available to this role.');
-  if (role === 'audience' && presence.localView !== undefined && !['map', 'photo', 'description'].includes(presence.localView)) throw new PresentationError(422, 'INVALID_PRESENTATION_REQUEST', 'localView is invalid.');
-  if (role !== 'receiver' || !permitted.length) return presence as PresenceReport;
-  if (presence.appliedRevision !== undefined && (!Number.isSafeInteger(presence.appliedRevision) || presence.appliedRevision < 0)) throw new PresentationError(422, 'INVALID_PRESENTATION_REQUEST', 'appliedRevision must be a nonnegative integer.');
-  if (presence.viewport !== undefined) {
-    const viewport = objectBody(presence.viewport);
-    exactKeys(viewport, ['width', 'height']);
-    if (![viewport.width, viewport.height].every((v: unknown) => typeof v === 'number' && Number.isFinite(v) && v > 0 && v <= 16384)) throw new PresentationError(422, 'INVALID_PRESENTATION_REQUEST', 'Viewport dimensions must be finite positive values no greater than 16384.');
-  }
-  if (presence.renderStatus !== undefined && !['loading', 'ready', 'error'].includes(presence.renderStatus)) throw new PresentationError(422, 'INVALID_PRESENTATION_REQUEST', 'renderStatus is invalid.');
-  if (presence.renderError !== undefined && presence.renderError !== null && (typeof presence.renderError !== 'string' || !RENDER_ERRORS.has(presence.renderError))) throw new PresentationError(422, 'INVALID_PRESENTATION_REQUEST', 'renderError is not an allowed code.');
-  return presence as PresenceReport;
-}
 
 function bearer(req: Request): string | undefined {
   const value = req.header('Authorization');
@@ -73,6 +55,7 @@ export function createPresentationRouter(service: PresentationService): Router {
         res.status(error.status).json({ error: error.code, message: error.message });
         return;
       }
+      res.set('Retry-After', '5');
       res.status(503).json({ error: 'PRESENTATION_UNAVAILABLE', message: 'Presentation sessions are temporarily unavailable.' });
     }
   };
@@ -95,6 +78,14 @@ export function createPresentationRouter(service: PresentationService): Router {
   router.post('/pair', enroll('pair'));
   router.post('/audience/join', enroll('audience'));
 
+  router.get('/ws', (_req, res) => {
+    if (process.env.PRESENTATION_WEBSOCKET_ENABLED !== 'true') {
+      res.status(404).json({ error: 'PRESENTATION_DISABLED', message: 'Presentation updates are not enabled on this server.' });
+      return;
+    }
+    res.set('Upgrade', 'websocket').status(426).json({ error: 'UPGRADE_REQUIRED', message: 'Connect to this endpoint using the presentation WebSocket protocol.' });
+  });
+
   const authorized = (handler: (req: Request, res: Response, context: PresentationParticipantContext) => Promise<void>) => run(async (req, res) => {
     const sessionId = validateUuid(pathParam(req.params.sessionId), 'sessionId');
     const participantId = req.header('X-Presentation-Participant');
@@ -106,7 +97,7 @@ export function createPresentationRouter(service: PresentationService): Router {
     const body = objectBody(req.body);
     exactKeys(body, ['protocolVersion', 'lastRevision', 'lastContentVersion'], ['presence']);
     protocol(body.protocolVersion);
-    const presence = validatePresence(body.presence, context.role);
+    const presence = validatePresentationPresence(body.presence, context.role);
     const result = await service.sync(context, { ...body, presence } as SyncRequest);
     res.status(200).json(result);
   }));

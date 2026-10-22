@@ -12,6 +12,8 @@ export interface PresentationStore {
   runTransaction<T>(operation: (transaction: PresentationTransaction) => Promise<T>): Promise<T>;
   get(path: string): Promise<Record<string, any> | undefined>;
   list(collectionPath: string): Promise<StoredDocument[]>;
+  watchDocument?(path: string, onChange: (document: Record<string, any> | undefined) => void, onError: (error: unknown) => void): () => void;
+  watchCollection?(collectionPath: string, onChange: (documents: StoredDocument[]) => void, onError: (error: unknown) => void): () => void;
 }
 
 export const presentationPaths = {
@@ -52,5 +54,17 @@ export class FirestorePresentationStore implements PresentationStore {
   async list(collectionPath: string): Promise<StoredDocument[]> {
     const snapshot = await this.db.collection(collectionPath).get();
     return snapshot.docs.map(doc => ({ id: doc.id, data: doc.data() as Record<string, any> }));
+  }
+
+  watchDocument(path: string, onChange: (document: Record<string, any> | undefined) => void, onError: (error: unknown) => void): () => void {
+    return this.db.doc(path).onSnapshot(snapshot => {
+      onChange(snapshot.exists ? snapshot.data() as Record<string, any> : undefined);
+    }, onError);
+  }
+
+  watchCollection(collectionPath: string, onChange: (documents: StoredDocument[]) => void, onError: (error: unknown) => void): () => void {
+    return this.db.collection(collectionPath).onSnapshot(snapshot => {
+      onChange(snapshot.docs.map(doc => ({ id: doc.id, data: doc.data() as Record<string, any> })));
+    }, onError);
   }
 }
