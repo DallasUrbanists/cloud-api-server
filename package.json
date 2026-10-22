@@ -17,6 +17,7 @@
     "test": "tsx --test tests/*.test.ts",
     "migrate:staff-claims": "tsx src/scripts/migrateStaffClaims.ts",
     "migrate:recommendable-actions": "tsx src/scripts/migrateRecommendableActions.ts",
+    "delete:presentation-test-suggestions": "tsx src/scripts/deletePresentationTestSuggestions.ts",
     "backfill:recommendable-photos": "tsx src/scripts/backfillRecommendablePhotos.ts",
     "start": "node dist/index.js",
     "proxy": "cloud-sql-proxy urbanists-mixer-slides-helper:us-south1:contacts-relationships-db --port 5432",

@@ -10,6 +10,16 @@ export type PresentationMode = 'map' | 'photo' | 'description';
 export type PresentationView = PresentationMode;
 
 export interface PresentationFrame { scale: number; centerX: number; centerY: number; }
+export type PresentationAnimationEasing = 'linear' | 'ease' | 'ease-in' | 'ease-out' | 'ease-in-out';
+export interface PresentationIconStyle {
+  size: number;
+  animationEnabled: boolean;
+  pulseSize: number;
+  pulseSpeed: number;
+  bobbingRotation: number;
+  bobbingSpeed: number;
+  animationEasing: PresentationAnimationEasing;
+}
 export interface PresentationState {
   revision: number;
   ideaEpoch: number;
@@ -24,6 +34,7 @@ export interface PresentationState {
   captionVisible: boolean;
   descriptionPage: number;
   audienceDisplay: { showQr: boolean; showCode: boolean };
+  iconStyle: PresentationIconStyle;
 }
 
 export interface PresentationIdea {
@@ -33,6 +44,7 @@ export interface PresentationIdea {
   status: string;
   summary: string;
   details: string;
+  authorName?: string;
   descriptionPages: string[];
   location: { latitude: number | null; longitude: number | null; address: string; description: string };
   emoji?: string;
@@ -60,6 +72,7 @@ export const initialPresentationState = (): PresentationState => ({
   mapStyle: 'streets', railVisible: true, theme: 'dark', albumItemId: null,
   photoFrame: { scale: 1, centerX: 0.5, centerY: 0.5 }, captionVisible: true,
   descriptionPage: 0, audienceDisplay: { showQr: false, showCode: false },
+  iconStyle: { size: 100, animationEnabled: true, pulseSize: 1, pulseSpeed: 1, bobbingRotation: 0, bobbingSpeed: 1, animationEasing: 'ease-in-out' },
 });
 
 export function canonicalDescriptionPages(description: string): string[] {
@@ -76,13 +89,17 @@ export function canonicalDescriptionPages(description: string): string[] {
 
     const maxEnd = start + DESCRIPTION_PAGE_CODE_POINTS;
     let paragraph = -1;
-    let whitespace = -1;
     for (let i = start; i < maxEnd; i++) {
-      if (!/\s/u.test(chars[i])) continue;
-      whitespace = i;
       if (chars[i] === '\n' && (chars[i + 1] === '\n' || chars[i - 1] === '\n')) paragraph = i;
     }
-    const boundary = paragraph >= start ? paragraph : whitespace;
+
+    const sentenceEnd = lastPunctuationBoundary(chars, start, maxEnd, '.!?。！？…');
+    const clauseEnd = lastPunctuationBoundary(chars, start, maxEnd, ',;，；');
+    const naturalEnd = Math.max(paragraph, sentenceEnd);
+    let boundary = naturalEnd >= start ? naturalEnd : clauseEnd;
+    if (boundary < start) {
+      for (let i = start; i < maxEnd; i++) if (/\s/u.test(chars[i])) boundary = i;
+    }
     const end = boundary >= start ? boundary : maxEnd;
     const page = chars.slice(start, end).join('').trimEnd();
     if (page || pages.length === 0) pages.push(page);
@@ -90,6 +107,22 @@ export function canonicalDescriptionPages(description: string): string[] {
     while (start < chars.length && /\s/u.test(chars[start])) start++;
   }
   return pages.length ? pages : [''];
+}
+
+function lastPunctuationBoundary(chars: string[], start: number, maxEnd: number, punctuation: string): number {
+  const marks = new Set(Array.from(punctuation));
+  const closingMarks = new Set(Array.from("\"'”’»)]}"));
+  let boundary = -1;
+  for (let i = start; i < maxEnd; i++) {
+    if (!marks.has(chars[i])) continue;
+    let end = i + 1;
+    while (end < chars.length && marks.has(chars[end])) end++;
+    if (punctuation.includes('.') || punctuation.includes('!') || punctuation.includes('?')) {
+      while (end < chars.length && closingMarks.has(chars[end])) end++;
+    }
+    if (end <= maxEnd && (end === chars.length || /\s/u.test(chars[end]))) boundary = end;
+  }
+  return boundary;
 }
 
 function sha256(value: string): string { return createHash('sha256').update(value).digest('hex'); }
@@ -137,6 +170,7 @@ export function publicPresentationIdea(suggestion: any, sessionId = '{sessionId}
     status: typeof suggestion.status === 'string' ? suggestion.status : 'new',
     summary: typeof suggestion.content?.summary === 'string' ? suggestion.content.summary : '',
     details: typeof suggestion.content?.details === 'string' ? suggestion.content.details : '',
+    ...(typeof suggestion.author?.name === 'string' && suggestion.author.name.trim() ? { authorName: suggestion.author.name.trim() } : {}),
     descriptionPages: canonicalDescriptionPages(typeof suggestion.content?.details === 'string' ? suggestion.content.details : ''),
     location: {
       latitude: finiteCoordinate(suggestion.location?.latitude, -90, 90) ? suggestion.location.latitude : null,
@@ -165,11 +199,11 @@ export function validateUuid(value: unknown, field: string): string {
   return value.toLowerCase();
 }
 
-const stateKeys = ['selectedIdeaId', 'mode', 'camera', 'mapStyle', 'railVisible', 'theme', 'albumItemId', 'photoFrame', 'captionVisible', 'descriptionPage', 'audienceDisplay'];
-export function validateWritableState(input: unknown): Omit<PresentationState, 'revision' | 'ideaEpoch'> {
+const stateKeys = ['selectedIdeaId', 'mode', 'camera', 'mapStyle', 'railVisible', 'theme', 'albumItemId', 'photoFrame', 'captionVisible', 'descriptionPage', 'audienceDisplay', 'iconStyle'];
+export function validateWritableState(input: unknown, previousIconStyle?: PresentationIconStyle): Omit<PresentationState, 'revision' | 'ideaEpoch'> {
   if (!input || typeof input !== 'object' || Array.isArray(input)) throw new PresentationError(422, 'INVALID_PRESENTATION_STATE', 'State must be a complete object.');
   const state = input as Record<string, any>;
-  if (Object.keys(state).some(key => !stateKeys.includes(key)) || stateKeys.some(key => !(key in state))) throw new PresentationError(422, 'INVALID_PRESENTATION_STATE', 'State must contain only the documented writable fields.');
+  if (Object.keys(state).some(key => !stateKeys.includes(key)) || stateKeys.some(key => key !== 'iconStyle' && !(key in state))) throw new PresentationError(422, 'INVALID_PRESENTATION_STATE', 'State must contain only the documented writable fields.');
   const id = state.selectedIdeaId;
   if (id !== null && (typeof id !== 'string' || !/^[1-9]\d*$/.test(id) || !Number.isSafeInteger(Number(id)))) throw new PresentationError(422, 'INVALID_PRESENTATION_STATE', 'Selected idea ID is invalid.');
   if (!['map', 'photo', 'description'].includes(state.mode)) throw new PresentationError(422, 'INVALID_PRESENTATION_STATE', 'Presentation mode is invalid.');
@@ -185,8 +219,20 @@ export function validateWritableState(input: unknown): Omit<PresentationState, '
   const audienceDisplay = state.audienceDisplay;
   if (!audienceDisplay || typeof audienceDisplay !== 'object' || Array.isArray(audienceDisplay) || Object.keys(audienceDisplay).sort().join(',') !== 'showCode,showQr'
       || typeof audienceDisplay.showQr !== 'boolean' || typeof audienceDisplay.showCode !== 'boolean') throw new PresentationError(422, 'INVALID_PRESENTATION_STATE', 'Audience display settings are invalid.');
+  const iconStyle = state.iconStyle ?? previousIconStyle ?? initialPresentationState().iconStyle;
+  const legacyIconStyleKeys = 'animationEnabled,bobbingRotation,bobbingSpeed,pulseSize,pulseSpeed,size';
+  const iconStyleKeys = 'animationEasing,animationEnabled,bobbingRotation,bobbingSpeed,pulseSize,pulseSpeed,size';
+  const normalizedAnimationEasing = iconStyle?.animationEasing ?? 'ease-in-out';
+  if (!iconStyle || typeof iconStyle !== 'object' || Array.isArray(iconStyle)
+      || ![legacyIconStyleKeys, iconStyleKeys].includes(Object.keys(iconStyle).sort().join(','))
+      || !finiteCoordinate(iconStyle.size, 50, 400) || typeof iconStyle.animationEnabled !== 'boolean'
+      || !finiteCoordinate(iconStyle.pulseSize, 1, 3) || !finiteCoordinate(iconStyle.pulseSpeed, 0.5, 3)
+      || !finiteCoordinate(iconStyle.bobbingRotation, 0, 90) || !finiteCoordinate(iconStyle.bobbingSpeed, 0.5, 3)
+      || !['linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out'].includes(normalizedAnimationEasing)) {
+    throw new PresentationError(422, 'INVALID_PRESENTATION_STATE', 'Icon style settings are invalid.');
+  }
   if (id === null && state.mode !== 'map') throw new PresentationError(422, 'INVALID_PRESENTATION_STATE', 'A cleared selection supports map mode only.');
-  return structuredClone(state) as Omit<PresentationState, 'revision' | 'ideaEpoch'>;
+  return structuredClone({ ...state, iconStyle: { ...iconStyle, animationEasing: normalizedAnimationEasing } }) as Omit<PresentationState, 'revision' | 'ideaEpoch'>;
 }
 
 export function normalizeStateForIdea(
@@ -211,8 +257,7 @@ export function normalizeStateForIdea(
     if (latitude !== null && longitude !== null && latitude >= -85.05112878 && latitude <= 85.05112878) next.camera = { latitude, longitude, zoom: 16 };
     if (idea.album.length === 0) next.mode = 'description';
   }
-  if (idea.descriptionPages.length === 0) next.descriptionPage = 0;
-  else if (next.descriptionPage >= idea.descriptionPages.length) next.descriptionPage = idea.descriptionPages.length - 1;
+  next.descriptionPage = Math.min(next.descriptionPage, idea.descriptionPages.length);
   if (next.albumItemId !== null && !idea.album.some(item => item.id === next.albumItemId)) {
     throw new PresentationError(422, 'INVALID_PRESENTATION_STATE', 'Selected album item is unavailable.');
   }

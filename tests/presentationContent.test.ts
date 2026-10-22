@@ -37,7 +37,8 @@ test('public DTO is narrow, media identity is stable, and duplicate URLs are det
   assert.deepEqual(idea.album.map(item => item.id), [idea.album[0].id, `${idea.album[0].id.split(':').slice(0, 2).join(':')}:2`]);
   assert.ok(idea.album[0].url.startsWith('https://images.example/photo.jpg'));
   assert.equal(new URL(idea.album[0].url).search, '');
-  assert.deepEqual(Object.keys(idea).sort(), ['album', 'contentVersion', 'creationDate', 'descriptionPages', 'details', 'id', 'location', 'status', 'summary']);
+  assert.deepEqual(Object.keys(idea).sort(), ['album', 'authorName', 'contentVersion', 'creationDate', 'descriptionPages', 'details', 'id', 'location', 'status', 'summary']);
+  assert.equal(idea.authorName, 'Resident');
   assert.equal(JSON.stringify(idea).includes('private@example.com'), false);
   assert.equal(JSON.stringify(idea).includes('private-uid'), false);
   assert.equal(JSON.stringify(idea).includes('private request'), false);

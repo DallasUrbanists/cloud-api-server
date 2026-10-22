@@ -336,7 +336,7 @@ export class PresentationService {
           state.albumItemId = refreshed.album[0]?.id ?? null;
           state.photoFrame = { scale: 1, centerX: 0.5, centerY: 0.5 };
         }
-        state.descriptionPage = Math.min(state.descriptionPage, Math.max(0, refreshed.descriptionPages.length - 1));
+        state.descriptionPage = Math.min(state.descriptionPage, refreshed.descriptionPages.length);
         const selected = refreshed.album.find(item => item.id === state.albumItemId);
         if (selected?.kind === 'streetmix') state.photoFrame = { scale: 1, centerX: 0.5, centerY: 0.5 };
       }
@@ -467,7 +467,7 @@ export class PresentationService {
     this.assertRole(context, ['controller']);
     if (!request || request.protocolVersion !== 1) throw new PresentationError(426, 'PROTOCOL_UNSUPPORTED', 'This presentation protocol version is not supported.');
     if (!Number.isSafeInteger(request.baseRevision) || request.baseRevision < 0) throw new PresentationError(422, 'INVALID_PRESENTATION_STATE', 'baseRevision must be a nonnegative integer.');
-    const requested = validateWritableState(request.state);
+    const requested = validateWritableState(request.state, context.session.state.iconStyle);
     const key = validateUuid(idempotencyKey, 'Idempotency-Key'), keyHash = sha(key);
     const writeFingerprint = fingerprint('state', context.participantId, String(context.participant.tokenDigest), { baseRevision: request.baseRevision, state: requested });
     const targetIdea = requested.selectedIdeaId === null
