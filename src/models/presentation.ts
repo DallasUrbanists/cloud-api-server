@@ -3,7 +3,6 @@ import { createHash } from 'node:crypto';
 
 export const PRESENTATION_PROTOCOL_VERSION = 1 as const;
 export const DESCRIPTION_PAGE_CODE_POINTS = 320;
-export const PRESENTER_CODE_ALPHABET = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
 
 export type PresentationRole = 'receiver' | 'controller' | 'audience';
 export type PresentationMode = 'map' | 'photo' | 'description';
@@ -187,8 +186,8 @@ export function publicPresentationIdea(suggestion: any, sessionId = '{sessionId}
 
 export function normalizeCode(value: unknown): string {
   if (typeof value !== 'string') throw new PresentationError(422, 'INVALID_PRESENTATION_REQUEST', 'Enter a valid joining code.');
-  const code = value.replace(/[\s-]/g, '').toUpperCase();
-  if (!/^[23456789ABCDEFGHJKLMNPQRSTUVWXYZ]{8}$/.test(code)) throw new PresentationError(422, 'INVALID_PRESENTATION_REQUEST', 'Enter a valid joining code.');
+  const code = value;
+  if (!/^\d{5}$/.test(code)) throw new PresentationError(422, 'INVALID_PRESENTATION_REQUEST', 'Enter a valid joining code.');
   return code;
 }
 

@@ -24,7 +24,8 @@ test('create, pair, audience join, and lost-response retries return stable safe 
   assert.equal(created.status, 201); assert.equal(replay.status, 200);
   assert.deepEqual(replay.body, created.body);
   assert.equal(created.body.protocolVersion, 1); assert.equal(created.body.role, 'receiver');
-  assert.match(created.body.presenterCode, /^[23456789ABCDEFGHJKLMNPQRSTUVWXYZ]{4}-[23456789ABCDEFGHJKLMNPQRSTUVWXYZ]{4}$/);
+  assert.match(created.body.presenterCode, /^\d{5}$/);
+  assert.match(created.body.audienceCode, /^\d{5}$/);
   assert.equal(created.body.state.revision, 0);
   const controller = participant(), pairKey = randomUUID(), pairRequest = { ...controller, code: created.body.presenterCode };
   const paired = await fixture.service.pair(pairRequest, pairKey, 'pair-ip');
@@ -34,7 +35,7 @@ test('create, pair, audience join, and lost-response retries return stable safe 
   const viewer = participant(), joinKey = randomUUID(), joinRequest = { ...viewer, code: created.body.audienceCode };
   const joined = await fixture.service.joinAudience(joinRequest, joinKey, 'viewer-ip');
   const replayJoin = await fixture.service.joinAudience(joinRequest, joinKey, 'viewer-ip');
-  assert.equal(joined.body.role, 'audience'); assert.match(joined.body.displayName, /^Viewer [23456789A-HJ-NP-Z]{4}$/);
+  assert.equal(joined.body.role, 'audience'); assert.match(joined.body.displayName, /^Viewer \d{4}$/);
   assert.deepEqual(replayJoin.body, joined.body);
   assert.equal('presenterCode' in joined.body, false); assert.equal('participants' in joined.body, false);
   const persisted = JSON.stringify([...fixture.store.documents.entries()]);

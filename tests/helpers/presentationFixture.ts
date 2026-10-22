@@ -20,13 +20,9 @@ export function makeFixture(options: { initialSuggestions?: any[]; now?: number 
   let now = options.now ?? Date.UTC(2026, 9, 21, 18, 0, 0);
   let codeNumber = 1;
   const codes: string[] = [];
-  const alphabet = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
   const makeCode = () => {
     if (codes.length) return codes.shift()!;
-    let current = codeNumber++;
-    let value = '';
-    for (let i = 0; i < 8; i++) { value = alphabet[current & 31] + value; current >>>= 5; }
-    return value;
+    return String(codeNumber++).padStart(5, '0');
   };
   const suggestions = new Map<number, any>((options.initialSuggestions ?? [suggestion()]).map(item => [item.id, item]));
   const service = new PresentationService(store, {

@@ -1,5 +1,5 @@
 /** Durable protocol v1 lifecycle and state operations for TV presentations. */
-import { createHash, randomBytes, randomUUID, timingSafeEqual } from 'node:crypto';
+import { createHash, randomBytes, randomInt, randomUUID, timingSafeEqual } from 'node:crypto';
 import { SuggestionService } from './suggestionService.js';
 import {
   effectiveCaptionVisible, initialPresentationState, normalizeCode, normalizeStateForIdea,
@@ -14,7 +14,6 @@ const FOUR_HOURS = 4 * 60 * 60_000;
 const PRESENCE_WRITE_INTERVAL = 15_000;
 const PRESENCE_CONNECTED_WINDOW = 45_000;
 const CONTENT_REFRESH_INTERVAL = 5_000;
-const CODE_ALPHABET = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
 
 export interface EnrollmentRequest {
   protocolVersion: number;
@@ -65,7 +64,7 @@ function equalDigest(left: unknown, right: string): boolean {
   const a = Buffer.from(left, 'hex'), b = Buffer.from(right, 'hex');
   return a.length === b.length && timingSafeEqual(a, b);
 }
-function formatCode(code: string): string { return `${code.slice(0, 4)}-${code.slice(4)}`; }
+function formatCode(code: string): string { return code; }
 function codeHash(purpose: 'presenter' | 'audience', code: string): string { return sha(`${purpose}:${code}`); }
 function stateOnly(session: Record<string, any>): PresentationState { return structuredClone(session.state) as PresentationState; }
 function iso(ms: number): string { return new Date(ms).toISOString(); }
@@ -84,7 +83,7 @@ export class PresentationService {
   constructor(private readonly store: PresentationStore, options: PresentationServiceOptions = {}) {
     this.now = options.now ?? Date.now;
     this.uuid = options.uuid ?? randomUUID;
-    this.code = options.code ?? (() => Array.from(randomBytes(8), byte => CODE_ALPHABET[byte & 31]).join(''));
+    this.code = options.code ?? (() => String(randomInt(0, 100_000)).padStart(5, '0'));
     this.getSuggestion = options.getSuggestion ?? (id => SuggestionService.getForPresentation(id));
     this.getSuggestionPage = options.getSuggestionPage ?? ((afterId, limit) => SuggestionService.getPresentationPage(afterId, limit));
   }

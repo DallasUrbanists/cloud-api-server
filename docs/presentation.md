@@ -17,7 +17,7 @@ const participantToken = btoa(String.fromCharCode(...bytes))
 
 Authenticated requests send `Authorization: Bearer <participantToken>` and `X-Presentation-Participant: <participantId>`. Never put either value in a URL, QR code, localStorage, analytics, or logs. Bootstrap calls include both values in JSON and require a UUID `Idempotency-Key`; keep and reuse the full request after a timeout. Successful replay returns the original safe enrollment metadata, never a token.
 
-Presenter and audience codes are eight random characters from `23456789ABCDEFGHJKLMNPQRSTUVWXYZ`, shown as `XXXX-XXXX`. Input ignores spaces and hyphens and is case-insensitive. Presenter and audience codes have separate lookup namespaces. A presenter QR should point to `<frontend-base>/remote#pair=<code>`; an audience QR should point to `<frontend-base>/audience#view=<code>`. Keep the participant credentials out of these fragments. Generate QR pixels locally and remove the code fragment after saving the pending enrollment request in sessionStorage.
+Presenter and audience codes are five random numeric digits, shown without separators. Leading zeroes are allowed. Presenter and audience codes have separate lookup namespaces. A presenter QR should point to `<frontend-base>/remote#pair=<code>`; an audience QR should point to `<frontend-base>/audience#view=<code>`. Keep the participant credentials out of these fragments. Generate QR pixels locally and remove the code fragment after saving the pending enrollment request in sessionStorage.
 
 ## Routes
 
@@ -63,9 +63,9 @@ The response contains safe enrollment information, for example:
   "role": "receiver",
   "expiresAt": "2026-10-21T18:10:00.000Z",
   "state": { "revision": 0, "ideaEpoch": 0, "selectedIdeaId": null, "mode": "map" },
-  "presenterCode": "ABCD-EFGH",
+  "presenterCode": "01234",
   "presenterCodeExpiresAt": "2026-10-21T18:10:00.000Z",
-  "audienceCode": "JKLM-NPQR"
+  "audienceCode": "56789"
 }
 ```
 

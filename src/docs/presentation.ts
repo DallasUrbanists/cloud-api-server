@@ -25,7 +25,7 @@ const enrollment = {
   properties: {
     protocolVersion: { type: 'integer', enum: [1] }, participantId: { type: 'string', format: 'uuid' },
     participantToken: { type: 'string', pattern: '^[A-Za-z0-9_-]{43}$', description: 'Client-generated, 32-byte base64url secret. Stored by the API only as a SHA-256 digest.' },
-    code: { type: 'string', pattern: '^[23456789ABCDEFGHJKLMNPQRSTUVWXYZ -]{8,10}$', description: 'Eight characters; spaces and one optional hyphen are ignored.' },
+    code: { type: 'string', pattern: '^\\d{5}$', description: 'Five numeric digits.' },
   },
 };
 const state = {
