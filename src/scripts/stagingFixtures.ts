@@ -52,8 +52,9 @@ export async function runFixtures(args: string[]) {
       generation = Number(metadata.generation);
     }
     if (plan.action === 'seed') {
-      if (!contacts.rows.length) await client.query('INSERT INTO contacts (id,name,emails) VALUES ($1,$2,$3)', [fixtureManifest.sqlId, fixtureManifest.contactName, ['neighbor@example.invalid']]);
-      if (!events.rows.length) await client.query('INSERT INTO events (id,uid,start_at,duration,title,ical_dtstamp) VALUES ($1,$2,$3,$4,$5,$3)', [fixtureManifest.sqlId, fixtureManifest.eventUid, '2030-01-15T18:00:00Z', 'PT1H', 'Staging neighborhood walk']);
+      // The exported foundation uses GENERATED ALWAYS IDs; reserve fixtures without advancing sequences.
+      if (!contacts.rows.length) await client.query('INSERT INTO contacts (id,name,emails) OVERRIDING SYSTEM VALUE VALUES ($1,$2,$3)', [fixtureManifest.sqlId, fixtureManifest.contactName, ['neighbor@example.invalid']]);
+      if (!events.rows.length) await client.query('INSERT INTO events (id,uid,start_at,duration,title,ical_dtstamp) OVERRIDING SYSTEM VALUE VALUES ($1,$2,$3,$4,$5,$3)', [fixtureManifest.sqlId, fixtureManifest.eventUid, '2030-01-15T18:00:00Z', 'PT1H', 'Staging neighborhood walk']);
       if (!exists) await file.save('<svg xmlns="http://www.w3.org/2000/svg" width="160" height="100"><rect width="160" height="100" fill="#83bfa2"/><text x="12" y="55">Staging bus stop</text></svg>', {
         contentType: 'image/svg+xml', metadata: { metadata: { fixture: fixtureManifest.marker } }, preconditionOpts: { ifGenerationMatch: 0 },
       });

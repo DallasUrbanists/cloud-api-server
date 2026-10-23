@@ -1,0 +1,2 @@
+# This reviewed manifest hashes the complete questions string, including line endings.
+data/311-city-staff-questions.md text eol=crlf
