@@ -1,4 +1,5 @@
 import { isDeepStrictEqual } from 'node:util';
+import { isStaging } from '../config/deployment.js';
 import type { Auth } from 'firebase-admin/auth';
 import { hasRecognizedStaff, withStaffClaim } from '../models/staffClaims.js';
 
@@ -17,8 +18,9 @@ export interface StaffMigrationOptions {
   audit?: (entry: { actor: string; target: string; action: string; outcome: string }) => void;
 }
 
-/** No Firebase calls on import. Checkpoint only fully processed pages; retries are idempotent. */
+/** No Firebase calls on import. Apply refuses staging. Checkpoint only fully processed pages; retries are idempotent. */
 export async function migrateStaffClaims(auth: MigrationAuth, options: StaffMigrationOptions) {
+  if (options.apply && isStaging()) throw new Error('Shared user administration is disabled in staging.');
   if (options.apply && !options.saveCheckpoint) throw new Error('Apply requires a checkpoint writer.');
   let cursor = options.cursor;
   let scanned = 0;

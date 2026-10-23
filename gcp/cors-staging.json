@@ -1,0 +1,8 @@
+[
+  {
+    "origin": ["https://map-staging-143738155808.web.app"],
+    "method": ["GET", "PUT", "HEAD"],
+    "responseHeader": ["Content-Type", "Access-Control-Allow-Origin", "ETag"],
+    "maxAgeSeconds": 3600
+  }
+]

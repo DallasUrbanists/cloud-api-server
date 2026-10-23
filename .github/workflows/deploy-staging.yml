@@ -1,0 +1,72 @@
+name: Staging API
+on:
+  pull_request:
+    branches: [staging]
+  push:
+    branches: [staging]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    outputs:
+      sha: ${{ steps.identity.outputs.sha }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+      - id: identity
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+  deploy:
+    needs: checks
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/staging'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: staging
+    concurrency:
+      group: cloud-api-staging-publication
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      STAGING_CPU: ${{ vars.STAGING_CPU }}
+      STAGING_MEMORY: ${{ vars.STAGING_MEMORY }}
+      STAGING_CONCURRENCY: ${{ vars.STAGING_CONCURRENCY }}
+      STAGING_MIN_INSTANCES: ${{ vars.STAGING_MIN_INSTANCES }}
+      STAGING_MAX_INSTANCES: ${{ vars.STAGING_MAX_INSTANCES }}
+      STAGING_INGRESS: ${{ vars.STAGING_INGRESS }}
+      STAGING_CPU_THROTTLING: ${{ vars.STAGING_CPU_THROTTLING }}
+      GITHUB_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ needs.checks.outputs.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - name: Validate reviewed deployment settings (report only)
+        run: npm run deploy:staging
+      - uses: google-github-actions/setup-gcloud@v3
+      - name: Authenticate staging deployer
+        uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: api-staging-deployer@urbanists-mixer-slides-helper.iam.gserviceaccount.com
+      - name: Deploy tested staging commit and verify identity
+        run: npm run deploy:staging -- --apply

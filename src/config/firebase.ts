@@ -1,4 +1,5 @@
 import { getApps, initializeApp } from 'firebase-admin/app';
+import { deploymentConfig } from './deployment.js';
 
 // Existing web application configuration; Admin SDK credentials use ADC.
 const firebaseConfig = {
@@ -10,6 +11,8 @@ const firebaseConfig = {
   appId: "1:143738155808:web:385e87e73d547fdaf49d45"
 };
 
+/** Validates staging identity before reusing or initializing the shared Auth project app. */
 export function firebaseApp() {
+  deploymentConfig();
   return getApps().length > 0 ? getApps()[0] : initializeApp(firebaseConfig);
 }

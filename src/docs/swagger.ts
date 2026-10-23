@@ -2800,6 +2800,9 @@ Endpoint policies:
       HealthResponse: {
         type: 'object',
         properties: {
+          environment: { type: 'string', description: 'Configured deployment environment, falling back to NODE_ENV or unknown.' },
+          buildCommit: { type: 'string', nullable: true, description: 'Configured Git SHA; null on older deployments without build metadata.' },
+          revision: { type: 'string', description: 'Cloud Run revision when available. Configuration identity does not prove store readiness.' },
           status: {
             type: 'string',
             example: 'ok',
@@ -2949,7 +2952,7 @@ swaggerDocument.paths['/api/users/{uid}/claims/staff'] = Object.fromEntries(
   ['put', 'delete'].map(method => [method, {
     tags: ['Users'],
     summary: method === 'put' ? 'Assign canonical staff claim' : 'Remove staff claims and revoke refresh tokens',
-    description: 'Bodyless operation on a Firebase Authentication UID (not a UUID). Requires a valid API key, production App Check, and a verified non-revoked caller with staff:true. System-only and legacy staff roles are insufficient. Self-targeting is forbidden, including no-ops. Unrelated custom claims and roles are preserved; legacy staff entries in role/roles are removed. DELETE revokes refresh tokens on every success, including when staff was already absent. If revocation fails after the claims update, retry DELETE. PUT requires the target to refresh its ID token to observe staff:true.',
+    description: 'Disabled in staging to protect shared users and their sessions. Bodyless operation on a Firebase Authentication UID (not a UUID). Requires a valid API key, production App Check, and a verified non-revoked caller with staff:true. System-only and legacy staff roles are insufficient. Self-targeting is forbidden, including no-ops. Unrelated custom claims and roles are preserved; legacy staff entries in role/roles are removed. DELETE revokes refresh tokens on every success, including when staff was already absent. If revocation fails after the claims update, retry DELETE. PUT requires the target to refresh its ID token to observe staff:true.',
     security: [{ ApiKeyAuth: [], BearerAuth: [], AppCheckAuth: [] }],
     parameters: [{ name: 'uid', in: 'path', required: true, description: 'Firebase Authentication UID; URL-encode as a path segment.', schema: { type: 'string', minLength: 1, maxLength: 128 } }],
     responses: {
@@ -2957,7 +2960,7 @@ swaggerDocument.paths['/api/users/{uid}/claims/staff'] = Object.fromEntries(
       ...Object.fromEntries(Object.entries({
         400: 'Invalid Firebase UID (must contain 1–128 characters).',
         401: 'Missing/invalid API key, ID token (including revoked/disabled users), or production App Check.',
-        403: 'Caller is not canonical staff, or targets their own UID.',
+        403: 'Caller is not canonical staff, targets their own UID, or shared user administration is disabled in staging.',
         404: 'Target Firebase user does not exist.',
         500: 'Claim update or token revocation failed; internal details are not exposed.',
       }).map(([status, description]) => [status, {

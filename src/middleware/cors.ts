@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import cors, { CorsOptions } from 'cors';
+import { deploymentConfig } from '../config/deployment.js';
 
 /**
  * Checks whether an origin is a local development origin.
@@ -29,9 +30,11 @@ const DEFAULT_AUTHORIZED_ORIGINS = [
 ];
 
 /**
- * Retrieves the configured list of authorized domain origins.
+ * Returns staging's explicit origin alone, or the existing default-plus-custom policy elsewhere.
  */
 export function getAuthorizedOrigins(): string[] {
+  const config = deploymentConfig();
+  if (config.staging) return [process.env.ALLOWED_ORIGINS!];
   const envOrigins = process.env.ALLOWED_ORIGINS;
   if (!envOrigins) {
     return DEFAULT_AUTHORIZED_ORIGINS;
@@ -48,13 +51,14 @@ export function getAuthorizedOrigins(): string[] {
  * Verifies if an origin is permitted to access the API.
  */
 export function isOriginAllowed(origin: string | undefined): boolean {
+  const config = deploymentConfig();
   // Allow requests without Origin header (e.g. mobile apps, curl, Postman, server-to-server)
   if (!origin) {
     return true;
   }
 
-  // Always allow local development requests
-  if (isLocalOrigin(origin)) {
+  // Preserve local development access outside staging.
+  if (!config.staging && isLocalOrigin(origin)) {
     return true;
   }
 

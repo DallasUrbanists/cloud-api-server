@@ -1,4 +1,8 @@
 import pg from 'pg';
+import 'dotenv/config';
+import { deploymentConfig } from './deployment.js';
+
+deploymentConfig();
 const { Pool } = pg;
 
 // Define an interface for the pool configuration properties we use

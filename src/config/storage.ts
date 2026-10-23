@@ -1,11 +1,14 @@
 import { Storage } from '@google-cloud/storage';
+import { deploymentConfig } from './deployment.js';
 
 let storageInstance: Storage | null = null;
 
 /**
- * Returns the singleton Google Cloud Storage client.
+ * Validates staging settings before returning the singleton Cloud Storage client.
+ * Client construction does not verify bucket permissions or readiness.
  */
 export function getStorage(): Storage {
+  deploymentConfig();
   if (!storageInstance) {
     storageInstance = new Storage({
       projectId: process.env.GOOGLE_CLOUD_PROJECT || undefined,
@@ -19,5 +22,5 @@ export function getStorage(): Storage {
  * Returns the configured GCS bucket name for suggestion photos.
  */
 export function getSuggestionPhotosBucketName(): string {
-  return process.env.SUGGESTION_PHOTOS_BUCKET || 'urbanists-suggestion-photos';
+  return deploymentConfig().bucket;
 }

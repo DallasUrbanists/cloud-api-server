@@ -4,6 +4,8 @@ Start with a feature guide below, then explore the [generated module and symbol 
 
 ## Feature guides
 
+- [Staging API operations](staging-operations.md): isolated configuration, operator provisioning, deployment, acceptance and rollback.
+
 - [Boundaries](boundaries.md): jurisdiction membership, map geometry, dates, and address lookup.
 - [Boundary synchronization](boundary-synchronization.md): durable jobs, leases, providers, and evidence-backed refresh.
 - [Boundary sync deployment](boundary-sync-deployment.md): provider secrets, scheduled Cloud Run worker, and production enablement using Bash.

@@ -1,9 +1,11 @@
 import type { Request, Response } from 'express';
 import { StaffClaimService } from '../services/staffClaimService.js';
+import { isStaging } from '../config/deployment.js';
 
 export class StaffClaimController {
   constructor(private readonly service: StaffClaimService = new StaffClaimService()) {}
 
+  /** Validates staff administration and blocks staging before calling the shared-user service. */
   update = async (req: Request, res: Response): Promise<void> => {
     const uid = req.params.uid;
     if (typeof uid !== 'string' || uid.length === 0 || uid.length > 128) {
@@ -16,6 +18,10 @@ export class StaffClaimController {
       return;
     }
     try {
+      if (isStaging()) {
+        res.status(403).json({ error: 'Forbidden', message: 'Shared user administration is disabled in staging.' });
+        return;
+      }
       await this.service.setStaff(uid, req.method === 'PUT');
       res.status(204).end();
     } catch (error) {

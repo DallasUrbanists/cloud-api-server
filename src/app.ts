@@ -24,10 +24,12 @@ import { createPresentationRouter } from './routes/presentationRoutes.js';
 import { PresentationService } from './services/presentationService.js';
 import { FirestorePresentationStore } from './services/presentationStore.js';
 import { getPublicImprovementsDb } from './config/firestore.js';
+import { deploymentConfig } from './config/deployment.js';
 
 dotenv.config();
 
 export function createApp(options: { presentationService?: PresentationService } = {}): Express {
+  deploymentConfig();
   const app = express();
 
   app.use('/api/public-improvements/presentation', (_req, res, next) => { res.set('Cache-Control', 'no-store'); next(); });
@@ -770,11 +772,15 @@ export function createApp(options: { presentationService?: PresentationService }
 
   // Health Check
   app.get('/api/health', (_req: Request, res: Response) => {
+    const { environment, buildCommit, revision, database } = deploymentConfig();
     res.status(200).json({
       status: 'ok',
       timestamp: new Date().toISOString(),
       service: 'urbanists-cloud-api-server',
-      databases: ['public-improvements'],
+      databases: [database],
+      environment,
+      buildCommit,
+      ...(revision ? { revision } : {}),
     });
   });
 

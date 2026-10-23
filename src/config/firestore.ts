@@ -1,5 +1,6 @@
 import { Firestore } from '@google-cloud/firestore';
 import dotenv from 'dotenv';
+import { firestoreDatabase } from './deployment.js';
 
 dotenv.config();
 
@@ -13,9 +14,11 @@ const firestoreClients: Map<string, Firestore> = new Map();
  * Returns or initializes a Firestore instance for a given database ID.
  * @param databaseId Name/ID of the Firestore database (e.g. 'public-improvements').
  *                   Defaults to process.env.PUBLIC_IMPROVEMENTS_DB or 'public-improvements'.
+ * @throws When staging configuration is incomplete or an override selects another database.
+ * Validation runs before cache lookup; constructing a client does not verify store readiness.
  */
 export function getFirestoreDb(databaseId?: string): Firestore {
-  const targetDb = databaseId || process.env.PUBLIC_IMPROVEMENTS_DB || 'public-improvements';
+  const targetDb = firestoreDatabase(databaseId);
 
   if (!firestoreClients.has(targetDb)) {
     const options: ConstructorParameters<typeof Firestore>[0] = {

@@ -32,7 +32,10 @@
     "seed:boundaries": "tsx src/scripts/seedBoundaries.ts",
     "seed:dallas311-recommendables": "tsx src/scripts/seedDallas311Recommendables.ts",
     "eval:emoji": "tsx src/scripts/evaluateSuggestionEmojis.ts",
-    "smoke:streetmix": "tsx src/scripts/streetmixSmoke.ts"
+    "smoke:streetmix": "tsx src/scripts/streetmixSmoke.ts",
+    "deploy:staging": "node scripts/deploy-staging.mjs",
+    "seed:staging": "tsx src/scripts/stagingFixtures.ts seed",
+    "reset:staging": "tsx src/scripts/stagingFixtures.ts reset"
   },
   "dependencies": {
     "@google-cloud/firestore": "^9.2.0",

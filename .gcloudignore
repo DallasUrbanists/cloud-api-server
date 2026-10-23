@@ -1,0 +1,11 @@
+# Source allowlist. Never upload local credentials, fixtures, captures, or build output.
+**
+!package.json
+!package-lock.json
+!tsconfig.json
+!src/
+!src/**
+**/.env*
+**/gha-creds-*.json
+**/*.pem
+**/*.key

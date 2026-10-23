@@ -5,6 +5,10 @@ import { PresentationWebSocketServer } from './presentationWebSocket.js';
 import { PresentationService } from './services/presentationService.js';
 import { FirestorePresentationStore } from './services/presentationStore.js';
 import { getPublicImprovementsDb } from './config/firestore.js';
+import { deploymentConfig } from './config/deployment.js';
+
+const { environment, database, bucket, buildCommit, revision } = deploymentConfig();
+console.info(JSON.stringify({ event: 'deployment_identity', environment, database, bucket, buildCommit, revision }));
 
 const presentationService = new PresentationService(new FirestorePresentationStore(getPublicImprovementsDb()));
 const app = createApp({ presentationService });
