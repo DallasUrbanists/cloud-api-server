@@ -36,7 +36,7 @@ export interface MatchResult {
   };
 }
 
-/** Validate a standalone matching request without requiring a persisted suggestion. */
+/** Validate a standalone matching request without requiring a persisted idea. */
 export function validateMatchInput(body: unknown): { data?: MatchInput; error?: string } {
   if (!body || typeof body !== 'object' || Array.isArray(body)) return { error: 'Send a JSON object.' };
   const { text, latitude, longitude, bypassJevCache } = body as Record<string, unknown>;

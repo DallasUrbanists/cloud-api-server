@@ -3,12 +3,15 @@
  * Client factories call this before allocating resources, including during ESM import.
  * @module
  */
+import { getIdeasDataLayout } from './ideas.js';
+
 export const STAGING = {
   project: 'urbanists-mixer-slides-helper',
   service: 'urbanists-cloud-api-staging',
   region: 'us-central1',
   database: 'public-improvements-staging',
   bucket: 'urbanists-suggestion-photos-staging-143738155808',
+  ideaBucket: 'urbanists-idea-photos-staging-143738155808',
   sqlDatabase: 'urbanists_staging',
   sqlUser: 'urbanists_staging',
   instance: 'urbanists-mixer-slides-helper:us-south1:contacts-relationships-db',
@@ -29,17 +32,29 @@ export function isStaging(env: DeploymentEnv = process.env): boolean {
  */
 export function deploymentConfig(env: DeploymentEnv = process.env) {
   const staging = isStaging(env);
+  const ideasLayout = getIdeasDataLayout(env);
+  const configuredIdeaBucket = env.IDEA_PHOTOS_BUCKET;
+  const legacyIdeaBucket = env.SUGGESTION_PHOTOS_BUCKET;
+  if (configuredIdeaBucket && legacyIdeaBucket && configuredIdeaBucket !== legacyIdeaBucket) {
+    throw new Error('IDEA_PHOTOS_BUCKET conflicts with deprecated SUGGESTION_PHOTOS_BUCKET.');
+  }
+  const bucket = configuredIdeaBucket || legacyIdeaBucket
+    || (ideasLayout === 'ideas' ? 'urbanists-idea-photos' : 'urbanists-suggestion-photos');
   if (staging) {
     const required = {
       DEPLOY_ENV: 'staging', NODE_ENV: 'production', GOOGLE_CLOUD_PROJECT: STAGING.project,
       PUBLIC_IMPROVEMENTS_DB: STAGING.database, ASSIST_QUOTA_DB: STAGING.database,
-      SUGGESTION_PHOTOS_BUCKET: STAGING.bucket, DB_NAME: STAGING.sqlDatabase,
+      IDEAS_DATA_LAYOUT: ideasLayout,
+      DB_NAME: STAGING.sqlDatabase,
       DB_USER: STAGING.sqlUser, INSTANCE_CONNECTION_NAME: STAGING.instance,
       ALLOWED_ORIGINS: STAGING.origin,
     };
     for (const [name, expected] of Object.entries(required)) {
       if (env[name] !== expected) throw new Error(`Unsafe staging configuration: ${name}`);
     }
+    if (!configuredIdeaBucket && !legacyIdeaBucket) throw new Error('Unsafe staging configuration: IDEA_PHOTOS_BUCKET');
+    const expectedBucket = ideasLayout === 'ideas' ? STAGING.ideaBucket : STAGING.bucket;
+    if (bucket !== expectedBucket) throw new Error('Unsafe staging configuration: IDEA_PHOTOS_BUCKET');
     if (env.K_SERVICE && env.K_SERVICE !== STAGING.service) throw new Error('Unsafe staging configuration: K_SERVICE');
     if (!/^[a-f0-9]{40}$/.test(env.BUILD_COMMIT ?? '')) throw new Error('Unsafe staging configuration: BUILD_COMMIT');
     if (!env.DB_PASSWORD?.trim()) throw new Error('Unsafe staging configuration: DB_PASSWORD');
@@ -61,9 +76,10 @@ export function deploymentConfig(env: DeploymentEnv = process.env) {
   }
   return {
     staging,
+    ideasLayout,
     environment: env.DEPLOY_ENV || env.NODE_ENV || 'unknown',
     database: env.PUBLIC_IMPROVEMENTS_DB || 'public-improvements',
-    bucket: env.SUGGESTION_PHOTOS_BUCKET || 'urbanists-suggestion-photos',
+    bucket,
     buildCommit: env.BUILD_COMMIT || null,
     ...(env.K_REVISION ? { revision: env.K_REVISION } : {}),
   };

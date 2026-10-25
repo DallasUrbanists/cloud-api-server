@@ -1,6 +1,6 @@
 import { createApp } from './app.js';
 import { createServer } from 'node:http';
-import { attachSuggestionWebSocket } from './suggestionWebSocket.js';
+import { attachIdeaWebSocket } from './ideaWebSocket.js';
 import { PresentationWebSocketServer } from './presentationWebSocket.js';
 import { PresentationService } from './services/presentationService.js';
 import { FirestorePresentationStore } from './services/presentationStore.js';
@@ -14,7 +14,7 @@ const presentationService = new PresentationService(new FirestorePresentationSto
 const app = createApp({ presentationService });
 const server = createServer(app);
 const presentationSockets = new PresentationWebSocketServer(presentationService);
-const closeSockets = attachSuggestionWebSocket(server, { presentation: presentationSockets });
+const closeSockets = attachIdeaWebSocket(server, { presentation: presentationSockets });
 
 // Cloud Run passes the port via the PORT environment variable
 const port = parseInt(process.env.PORT || '8080', 10);

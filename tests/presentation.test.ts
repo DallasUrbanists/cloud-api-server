@@ -172,8 +172,8 @@ test('active content refresh preserves stable album selection and clears a delet
   const next = writable(initialPresentationState()); next.selectedIdeaId = '41'; next.mode = 'photo';
   const selected = await fixture.service.updateState(controllerContext, { protocolVersion: 1, baseRevision: 0, state: next }, randomUUID());
   const originalMediaId = selected.content.album[0].id;
-  fixture.suggestions.set(41, {
-    ...fixture.suggestions.get(41), content: { summary: 'Updated crossing', details: 'Updated details', photos: [
+  fixture.ideas.set(41, {
+    ...fixture.ideas.get(41), content: { summary: 'Updated crossing', details: 'Updated details', photos: [
       { url: 'https://images.example/new-photo.jpg', caption: 'New first image' },
       { url: 'https://images.example/crossing.jpg?changed=ignored', caption: 'Current conditions' },
     ] },
@@ -184,7 +184,7 @@ test('active content refresh preserves stable album selection and clears a delet
   assert.equal(refreshed.state.ideaEpoch, 1);
   assert.equal(refreshed.state.albumItemId, originalMediaId);
   assert.equal(refreshed.content.summary, 'Updated crossing');
-  fixture.suggestions.delete(41);
+  fixture.ideas.delete(41);
   fixture.setNow(fixture.now() + 5001);
   const cleared = await fixture.service.sync(controllerContext, { protocolVersion: 1, lastRevision: 2, lastContentVersion: refreshed.content.contentVersion });
   assert.equal(cleared.state.selectedIdeaId, null);

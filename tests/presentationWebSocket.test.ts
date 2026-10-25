@@ -7,9 +7,9 @@ import { setTimeout as delay } from 'node:timers/promises';
 import { WebSocket } from 'ws';
 import { createApp } from '../src/app.js';
 import { PresentationWebSocketServer, type PresentationWebSocketOptions } from '../src/presentationWebSocket.js';
-import { attachSuggestionWebSocket } from '../src/suggestionWebSocket.js';
+import { attachIdeaWebSocket } from '../src/ideaWebSocket.js';
 import { PresentationError } from '../src/models/presentation.js';
-import { SuggestionNoticeService, type SuggestionSnapshot } from '../src/services/suggestionNoticeService.js';
+import { IdeaNoticeService, type IdeaSnapshot } from '../src/services/ideaNoticeService.js';
 import { validatePresentationPresence } from '../src/services/presentationPresence.js';
 import type { PresentationService } from '../src/services/presentationService.js';
 import { createRoom, makeFixture, participant, writableState } from './helpers/presentationFixture.js';
@@ -29,16 +29,16 @@ async function socketFixture(t: any, options: PresentationWebSocketOptions = {})
   const fixture = makeFixture();
   const app = createApp({ presentationService: fixture.service });
   const server = createServer(app);
-  let noticeNext: ((snapshot: SuggestionSnapshot) => void) | undefined;
-  const notices = new SuggestionNoticeService((next, _error) => {
+  let noticeNext: ((snapshot: IdeaSnapshot) => void) | undefined;
+  const notices = new IdeaNoticeService((next, _error) => {
     noticeNext = next;
     queueMicrotask(() => next({ docChanges: () => [] }));
     return () => { noticeNext = undefined; };
   });
   const presentation = new PresentationWebSocketServer(fixture.service, options);
-  const closeSockets = attachSuggestionWebSocket(server, {
+  const closeSockets = attachIdeaWebSocket(server, {
     presentation, notices, verify: async ({ apiKey }) => {
-      if (apiKey !== 'suggestion-test-key') throw new Error('private credential');
+      if (apiKey !== 'idea-test-key') throw new Error('private credential');
       return { name: 'test' };
     },
   });
@@ -98,7 +98,7 @@ async function roomWithAllRoles(service: PresentationService) {
   return { receiver, controller, audience, sessionId: created.body.sessionId, presenterCode: created.body.presenterCode, audienceCode: created.body.audienceCode };
 }
 
-test('enabled endpoint requires upgrade and dispatches beside both suggestion aliases', async t => {
+test('enabled endpoint requires upgrade and dispatches beside both idea aliases', async t => {
   const h = await socketFixture(t);
   const ordinary = await fetch(`${h.base}/api/public-improvements/presentation/ws`);
   assert.equal(ordinary.status, 426);
@@ -110,10 +110,10 @@ test('enabled endpoint requires upgrade and dispatches beside both suggestion al
   assert.equal(tv.frames[0].type, 'ready');
   assert.equal(tv.frames[0].socketProtocolVersion, 1);
 
-  for (const path of ['/api/suggestions/ws', '/api/public-improvements/suggestions/ws']) {
+  for (const path of ['/api/ideas/ws', '/api/public-improvements/ideas/ws']) {
     const client = await h.open(path);
     const ready = client.next(frame => frame.type === 'ready');
-    client.ws.send(JSON.stringify({ type: 'authenticate', apiKey: 'suggestion-test-key' }));
+    client.ws.send(JSON.stringify({ type: 'authenticate', apiKey: 'idea-test-key' }));
     await ready;
   }
 });
@@ -315,7 +315,7 @@ test('socket flags are independent from the REST feature and disabled upgrades r
   });
   const fixture = makeFixture();
   const server = createServer(createApp({ presentationService: fixture.service }));
-  const closeSockets = attachSuggestionWebSocket(server, { presentation: new PresentationWebSocketServer(fixture.service) });
+  const closeSockets = attachIdeaWebSocket(server, { presentation: new PresentationWebSocketServer(fixture.service) });
   server.listen(0, '127.0.0.1'); await once(server, 'listening');
   t.after(async () => { await closeSockets(); await new Promise<void>(resolve => server.close(() => resolve())); });
   const base = `http://127.0.0.1:${(server.address() as any).port}`;

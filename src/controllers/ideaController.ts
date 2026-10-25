@@ -1,5 +1,5 @@
 /**
- * Suggestion CRUD, upload-link delegation, and detail/activity enrichment for both route aliases.
+ * Idea CRUD, upload-link delegation, and detail/activity enrichment for both route aliases.
  *
  * @remarks
  * Routes apply application/user access; update/delete also compare verified emails
@@ -7,8 +7,8 @@
  * @module
  */
 import { Request, Response, NextFunction } from 'express';
-import { SuggestionService } from '../services/suggestionService.js';
-import { SuggestionEmojiService } from '../services/suggestionEmojiService.js';
+import { IdeaService } from '../services/ideaService.js';
+import { IdeaEmojiService } from '../services/ideaEmojiService.js';
 import { RecommendedActionService } from '../services/recommendedActionService.js';
 import { RecommendableActionService } from '../services/recommendableActionService.js';
 import { StorageService } from '../services/storageService.js';
@@ -17,56 +17,56 @@ import { RepresentativesService } from '../services/representativesService.js';
 import { validDate } from '../utils/boundaryQuery.js';
 import { hasRole } from '../middleware/auth.js';
 import {
-  validateCreateSuggestion,
-  validateUpdateSuggestion,
-  Suggestion,
-  SuggestionStatus,
-  VALID_SUGGESTION_STATUSES,
-} from '../models/suggestion.js';
+  validateCreateIdea,
+  validateUpdateIdea,
+  Idea,
+  IdeaStatus,
+  VALID_IDEA_STATUSES,
+} from '../models/idea.js';
 
 /** Coordinates base persistence, optional next-step matching, and safe authorization checks. */
-export class SuggestionController {
-  /** Attempts to fill a missing emoji without making suggestion reads or writes depend on JEV. */
-  private static async ensureEmoji(suggestion: Suggestion): Promise<Suggestion> {
-    if (suggestion.emoji) return suggestion;
+export class IdeaController {
+  /** Attempts to fill a missing emoji without making idea reads or writes depend on JEV. */
+  private static async ensureEmoji(idea: Idea): Promise<Idea> {
+    if (idea.emoji) return idea;
     try {
-      const emoji = await SuggestionEmojiService.assign(suggestion.content.summary, suggestion.content.details, { suggestionId: suggestion.id });
-      return (await SuggestionService.assignEmojiIfMissing(suggestion.id, emoji)) ?? suggestion;
+      const emoji = await IdeaEmojiService.assign(idea.content.summary, idea.content.details, { ideaId: idea.id });
+      return (await IdeaService.assignEmojiIfMissing(idea.id, emoji)) ?? idea;
     } catch (error) {
-      console.warn(JSON.stringify({ event: 'suggestion_emoji_assignment_failed', suggestionId: suggestion.id, message: error instanceof Error ? error.message : 'unknown error' }));
-      return suggestion;
+      console.warn(JSON.stringify({ event: 'idea_emoji_assignment_failed', ideaId: idea.id, message: error instanceof Error ? error.message : 'unknown error' }));
+      return idea;
     }
   }
 
-  /** Returns the boundary records associated with a persisted suggestion. */
+  /** Returns the boundary records associated with a persisted idea. */
   static async getBoundaries(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const id = Number(req.params.suggestionId);
+      const id = Number(req.params.ideaId);
       if (!Number.isInteger(id) || id < 1) {
-        res.status(400).json({ error: 'Bad Request', message: 'The suggestionId parameter must be a positive integer.' });
+        res.status(400).json({ error: 'Bad Request', message: 'The ideaId parameter must be a positive integer.' });
         return;
       }
 
-      const suggestion = await SuggestionService.getById(id);
-      if (!suggestion) {
-        res.status(404).json({ error: 'Not Found', message: `Suggestion with ID ${id} was not found.` });
+      const idea = await IdeaService.getById(id);
+      if (!idea) {
+        res.status(404).json({ error: 'Not Found', message: `Idea with ID ${id} was not found.` });
         return;
       }
 
-      const boundaries = await Promise.all(suggestion.boundaryIds.map(boundaryId => BoundaryService.findById(boundaryId)));
+      const boundaries = await Promise.all(idea.boundaryIds.map(boundaryId => BoundaryService.findById(boundaryId)));
       res.status(200).json({ data: boundaries, count: boundaries.length });
     } catch (error) {
       next(error);
     }
   }
 
-  /** Returns current representatives for a suggestion's stored boundaries, optionally as of a date. */
+  /** Returns current representatives for an idea's stored boundaries, optionally as of a date. */
   static async getRepresentatives(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const rawId = String(req.params.suggestionId);
+      const rawId = String(req.params.ideaId);
       const id = Number(rawId);
       if (!/^\d+$/.test(rawId) || !Number.isSafeInteger(id) || id < 1) {
-        res.status(400).json({ error: 'Bad Request', message: 'The suggestionId parameter must be a positive integer.' });
+        res.status(400).json({ error: 'Bad Request', message: 'The ideaId parameter must be a positive integer.' });
         return;
       }
 
@@ -90,14 +90,14 @@ export class SuggestionController {
         return;
       }
 
-      const suggestion = await SuggestionService.getById(id);
-      if (!suggestion) {
-        res.status(404).json({ error: 'Not Found', message: `Suggestion with ID ${id} was not found.` });
+      const idea = await IdeaService.getById(id);
+      if (!idea) {
+        res.status(404).json({ error: 'Not Found', message: `Idea with ID ${id} was not found.` });
         return;
       }
 
       const representatives = await RepresentativesService.findAll({
-        boundaryIds: suggestion.boundaryIds,
+        boundaryIds: idea.boundaryIds,
         servingAsOf: servingAsOf as string | undefined,
         limit,
         offset,
@@ -143,20 +143,20 @@ export class SuggestionController {
       const { status, authorEmail, limit } = req.query;
 
       const filters: {
-        status?: SuggestionStatus;
+        status?: IdeaStatus;
         authorEmail?: string;
         limit?: number;
       } = {};
 
       if (status) {
-        if (!VALID_SUGGESTION_STATUSES.includes(status as SuggestionStatus)) {
+        if (!VALID_IDEA_STATUSES.includes(status as IdeaStatus)) {
           res.status(400).json({
             error: 'Bad Request',
-            message: `Invalid status filter "${status}". Allowed: ${VALID_SUGGESTION_STATUSES.join(', ')}`,
+            message: `Invalid status filter "${status}". Allowed: ${VALID_IDEA_STATUSES.join(', ')}`,
           });
           return;
         }
-        filters.status = status as SuggestionStatus;
+        filters.status = status as IdeaStatus;
       }
 
       if (authorEmail && typeof authorEmail === 'string') {
@@ -175,10 +175,10 @@ export class SuggestionController {
         filters.limit = parsedLimit;
       }
 
-      const suggestions = await SuggestionService.getAll(filters);
+      const ideas = await IdeaService.getAll(filters);
       res.status(200).json({
-        data: suggestions,
-        count: suggestions.length,
+        data: ideas,
+        count: ideas.length,
       });
     } catch (error) {
       next(error);
@@ -186,7 +186,7 @@ export class SuggestionController {
   }
 
   /**
-   * Reads the suggestion and newest activity page, exposing cursor metadata for additional history.
+   * Reads the idea and newest activity page, exposing cursor metadata for additional history.
    */
   static async getById(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
@@ -199,19 +199,19 @@ export class SuggestionController {
         return;
       }
 
-      let suggestion = await SuggestionService.getById(id);
-      if (!suggestion) {
+      let idea = await IdeaService.getById(id);
+      if (!idea) {
         res.status(404).json({
           error: 'Not Found',
-          message: `Suggestion with ID ${id} was not found.`,
+          message: `Idea with ID ${id} was not found.`,
         });
         return;
       }
 
-      suggestion = await SuggestionController.ensureEmoji(suggestion);
+      idea = await IdeaController.ensureEmoji(idea);
 
       const logPage = await RecommendedActionService.getLog(id, 50);
-      res.status(200).json({ data: { ...suggestion, log: logPage.data }, logNextCursor: logPage.nextCursor, logHasMore: logPage.hasMore });
+      res.status(200).json({ data: { ...idea, log: logPage.data }, logNextCursor: logPage.nextCursor, logHasMore: logPage.hasMore });
     } catch (error) {
       next(error);
     }
@@ -219,14 +219,14 @@ export class SuggestionController {
 
   /**
    * Validates and saves the idea before attempting reusable-action matching.
-   * @remarks Matcher failures are logged but do not undo successful suggestion creation.
+   * @remarks Matcher failures are logged but do not undo successful idea creation.
    * @example
    * Let's imagine sharing an idea for shade by a bus stop. The idea is saved first;
    * a helper then looks for useful ways the neighbor might move it forward.
    */
   static async create(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const validation = validateCreateSuggestion(req.body);
+      const validation = validateCreateIdea(req.body);
       if (validation.error || !validation.data) {
         res.status(400).json({
           error: 'Bad Request',
@@ -235,13 +235,13 @@ export class SuggestionController {
         return;
       }
 
-      let created = await SuggestionService.create(validation.data);
-      created = await SuggestionController.ensureEmoji(created);
-      // Suggestions remain available if the external matcher is temporarily unavailable.
-      try { await RecommendableActionService.matchSuggestion(created); }
-      catch (error) { console.warn(JSON.stringify({ event: 'recommendable_match_failed', suggestionId: created.id, message: error instanceof Error ? error.message : 'unknown error' })); }
+      let created = await IdeaService.create(validation.data);
+      created = await IdeaController.ensureEmoji(created);
+      // Ideas remain available if the external matcher is temporarily unavailable.
+      try { await RecommendableActionService.matchIdea(created); }
+      catch (error) { console.warn(JSON.stringify({ event: 'recommendable_match_failed', ideaId: created.id, message: error instanceof Error ? error.message : 'unknown error' })); }
       res.status(201).json({
-        message: 'Suggestion created successfully.',
+        message: 'Idea created successfully.',
         data: created,
       });
     } catch (error: any) {
@@ -272,14 +272,14 @@ export class SuggestionController {
         return;
       }
 
-      const existing = await SuggestionService.getById(id);
+      const existing = await IdeaService.getById(id);
       const authorized = Boolean(existing && (hasRole(req, 'staff') || req.user?.emails.some((email) => email.toLowerCase() === existing.author.email.toLowerCase())));
       if (!authorized) {
-        res.status(403).json({ error: 'Forbidden', message: 'You are not authorized to modify this suggestion.' });
+        res.status(403).json({ error: 'Forbidden', message: 'You are not authorized to modify this idea.' });
         return;
       }
 
-      const validation = validateUpdateSuggestion(req.body);
+      const validation = validateUpdateIdea(req.body);
       if (validation.error || !validation.data) {
         res.status(400).json({
           error: 'Bad Request',
@@ -288,17 +288,17 @@ export class SuggestionController {
         return;
       }
 
-      const updated = await SuggestionService.update(id, validation.data);
+      const updated = await IdeaService.update(id, validation.data);
       if (!updated) {
         res.status(404).json({
           error: 'Not Found',
-          message: `Suggestion with ID ${id} was not found.`,
+          message: `Idea with ID ${id} was not found.`,
         });
         return;
       }
 
       res.status(200).json({
-        message: 'Suggestion updated successfully.',
+        message: 'Idea updated successfully.',
         data: updated,
       });
     } catch (error) {
@@ -321,24 +321,24 @@ export class SuggestionController {
         return;
       }
 
-      const existing = await SuggestionService.getById(id);
+      const existing = await IdeaService.getById(id);
       const authorized = Boolean(existing && (hasRole(req, 'staff') || req.user?.emails.some((email) => email.toLowerCase() === existing.author.email.toLowerCase())));
       if (!authorized) {
-        res.status(403).json({ error: 'Forbidden', message: 'You are not authorized to delete this suggestion.' });
+        res.status(403).json({ error: 'Forbidden', message: 'You are not authorized to delete this idea.' });
         return;
       }
 
-      const deleted = await SuggestionService.delete(id);
+      const deleted = await IdeaService.delete(id);
       if (!deleted) {
         res.status(404).json({
           error: 'Not Found',
-          message: `Suggestion with ID ${id} was not found.`,
+          message: `Idea with ID ${id} was not found.`,
         });
         return;
       }
 
       res.status(200).json({
-        message: `Suggestion with ID ${id} has been deleted successfully.`,
+        message: `Idea with ID ${id} has been deleted successfully.`,
       });
     } catch (error) {
       next(error);

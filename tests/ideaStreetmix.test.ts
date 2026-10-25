@@ -1,11 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { FieldValue, type Firestore } from '@google-cloud/firestore';
-import { SuggestionStreetmixService, type SuggestionStreetmixCommand } from '../src/services/suggestionStreetmixService.js';
-import { suggestionStreetmixETag } from '../src/models/suggestionStreetmix.js';
+import { IdeaStreetmixService, type IdeaStreetmixCommand } from '../src/services/ideaStreetmixService.js';
+import { ideaStreetmixETag } from '../src/models/ideaStreetmix.js';
 import { StreetmixError, type StreetmixResult } from '../src/models/streetmix.js';
 import { buildStreetmix } from '../src/services/streetmixBuilder.js';
-import { SuggestionService } from '../src/services/suggestionService.js';
+import { IdeaService } from '../src/services/ideaService.js';
 import { getPublicImprovementsDb } from '../src/config/firestore.js';
 import { swaggerDocument } from '../src/docs/swagger.js';
 import { createApp } from '../src/app.js';
@@ -14,14 +14,14 @@ import { once } from 'node:events';
 const point = { latitude: 32.78014, longitude: -96.79701 };
 const base = () => ({ id: 41, location: point, author: { email: 'resident@example.com', name: 'Resident' }, content: { summary: 'Safer crossing', details: '' } });
 const user = (email = 'resident@example.com', roles: string[] = []): any => ({ uid: email, email, emails: [email], roles });
-const command = (changes: Partial<SuggestionStreetmixCommand> = {}): SuggestionStreetmixCommand => ({ id: '41', application: 'test-application', key: 'request-key-000000001', mode: 'initial', ...changes });
+const command = (changes: Partial<IdeaStreetmixCommand> = {}): IdeaStreetmixCommand => ({ id: '41', application: 'test-application', key: 'request-key-000000001', mode: 'initial', ...changes });
 const signal = () => AbortSignal.timeout(10000);
 const result = (): StreetmixResult => ({ ...buildStreetmix({ id: 10, tags: { name: 'Test Street', highway: 'residential' }, geometry: [point, { ...point, latitude: point.latitude + .001 }] }, point), streetmixId: 'design-one', streetmixUrl: 'https://streetmix.net/-/123', selectedStreet: { osmWayId: 10, name: 'Test Street', highway: 'residential', distanceMeters: 0, carriagewayOnly: false }, snappedCoordinate: point, viewingDirection: { bearingDegrees: 0, description: 'OSM direction' }, generatedAt: new Date().toISOString() });
 const candidate: any = { osmWayId: 10, name: 'Test Street', geometry: [[point]], snappedCoordinate: point };
 
 // Serialize transactions and buffer mutations, including failed-commit rollback.
 class MemoryDb {
-  data = new Map<string, any>([['suggestion/41', base()]]);
+  data = new Map<string, any>([['idea/41', base()]]);
   queue = Promise.resolve();
   failSave = false;
   ref(path: string): any { return { path, id: path.split('/').at(-1), collection: (name: string) => this.collection(`${path}/${name}`) }; }
@@ -33,7 +33,7 @@ class MemoryDb {
         get: async (ref: any) => ({ exists: this.data.has(ref.path), id: ref.id, data: () => structuredClone(this.data.get(ref.path)), get: (key: string) => this.data.get(ref.path)?.[key] }),
         set: (ref: any, value: any) => { writes.push(() => this.data.set(ref.path, structuredClone(value))); },
         update: (ref: any, value: any) => {
-          if (this.failSave && ref.path === 'suggestion/41' && value.streetmix) { this.failSave = false; throw new Error('Injected attachment failure'); }
+          if (this.failSave && ref.path === 'idea/41' && value.streetmix) { this.failSave = false; throw new Error('Injected attachment failure'); }
           writes.push(() => {
             const data = { ...this.data.get(ref.path) };
             for (const [key, val] of Object.entries(value)) {
@@ -55,7 +55,7 @@ function setup(generate?: any) {
   const db = new MemoryDb();
   let publications = 0;
   const scopes: Array<string | undefined> = [];
-  const service = new SuggestionStreetmixService(db as unknown as Firestore, generate || (async (_p, _k, _a, _s, _d, options) => {
+  const service = new IdeaStreetmixService(db as unknown as Firestore, generate || (async (_p, _k, _a, _s, _d, options) => {
     scopes.push(options?.refreshScope); await options?.beforePublish?.(); publications++; return result();
   }), async () => {});
   return { db, service, scopes, publications: () => publications };
@@ -68,12 +68,21 @@ test('anonymous first generation saves permanently, embeds, and subsequent reque
   assert.equal(first.status, 201); assert.equal(first.body.status, 'completed');
   assert.equal((first.body.result as any).streetmixUrl, 'https://streetmix.net/-/123');
   assert.equal(first.etag, '"streetmix-41-1"');
-  assert.equal(db.data.get('suggestion/41')._streetmixActive, undefined);
+  assert.equal(db.data.get('idea/41')._streetmixActive, undefined);
   assert.equal((await service.run(command({ key: 'request-key-000000002' }), signal())).status, 200);
   assert.equal(publications(), 1);
   const request = db.workflow(); request.expiresAtMs = Date.now() - 1;
   assert.equal((await service.read('41', signal())).body.result?.streetmixId, 'design-one');
   await assert.rejects(service.readRequest('41', request.requestId, signal()), { code: 'REQUEST_NOT_FOUND' });
+});
+
+test('new workflows use the Ideas provider identity even through the legacy API adapter', async () => {
+  const db = new MemoryDb();
+  const service = new IdeaStreetmixService(db as unknown as Firestore, async () => result(), async () => {}, 'suggestions');
+  const generated = await service.run(command(), signal());
+  assert.equal(generated.body.status, 'completed');
+  assert.equal(db.workflow().providerNamespace, 'idea');
+  assert.equal(generated.body.statusUrl, `/api/suggestions/41/streetmix/requests/${db.workflow().requestId}`);
 });
 
 test('regeneration requires author or staff, existing attachment, and current ETag', async () => {
@@ -85,9 +94,9 @@ test('regeneration requires author or staff, existing attachment, and current ET
   await assert.rejects(service.run({ ...regen, user: user('other@example.com') }, signal()), { status: 403 });
   await assert.rejects(service.run({ ...regen, user: user() }, signal()), { status: 428 });
   await assert.rejects(service.run({ ...regen, user: user(), ifMatch: '"old"' }, signal()), { status: 412 });
-  const saved = await service.run({ ...regen, user: user('RESIDENT@example.com'), ifMatch: suggestionStreetmixETag('41', 1) }, signal());
+  const saved = await service.run({ ...regen, user: user('RESIDENT@example.com'), ifMatch: ideaStreetmixETag('41', 1) }, signal());
   assert.equal(saved.status, 200); assert.equal(saved.etag, '"streetmix-41-2"'); assert.ok(scopes[1]);
-  const replay = await service.run({ ...regen, user: user(), ifMatch: suggestionStreetmixETag('41', 1) }, signal());
+  const replay = await service.run({ ...regen, user: user(), ifMatch: ideaStreetmixETag('41', 1) }, signal());
   assert.equal(replay.status, 200); assert.equal(publications(), 2);
   await service.run({ ...regen, key: 'regenerate-key-00002', user: user('staff@example.com', ['staff']), ifMatch: saved.etag }, signal());
   assert.equal(publications(), 3);
@@ -106,7 +115,7 @@ test('ambiguous roads wait for offered selection; wrong, expired, and conflictin
   assert.equal((await service.run(select, signal())).status, 200); assert.equal(calls, 1);
   await assert.rejects(service.run({ ...select, osmWayId: 20 }, signal()), { code: 'IDEMPOTENCY_CONFLICT' });
   // A separate pending workflow expires without publication.
-  db.data.set('suggestion/41', base()); db.data.clear(); db.data.set('suggestion/41', base());
+  db.data.set('idea/41', base()); db.data.clear(); db.data.set('idea/41', base());
   const next = await service.run(command(), signal()); db.workflow().selectionExpiresAt = new Date(0).toISOString();
   await assert.rejects(service.run({ ...select, requestId: next.body.requestId as string }, signal()), { code: 'SELECTION_EXPIRED' });
 });
@@ -134,14 +143,14 @@ test('location edits and deletion fence publication; attachment staleness is com
   let db: MemoryDb;
   let calls = 0;
   const fixture = setup(async (_p: any, _k: any, _a: any, _s: any, _d: any, options: any) => {
-    db.data.get('suggestion/41').location = { ...point, latitude: 33 };
+    db.data.get('idea/41').location = { ...point, latitude: 33 };
     await options.beforePublish(); calls++; return result();
   }); db = fixture.db;
-  await assert.rejects(fixture.service.run(command(), signal()), { code: 'SUGGESTION_CHANGED' }); assert.equal(calls, 0);
-  const normal = setup(); await normal.service.run(command(), signal()); normal.db.data.get('suggestion/41').location = { ...point, longitude: -97 };
+  await assert.rejects(fixture.service.run(command(), signal()), { code: 'IDEA_CHANGED' }); assert.equal(calls, 0);
+  const normal = setup(); await normal.service.run(command(), signal()); normal.db.data.get('idea/41').location = { ...point, longitude: -97 };
   assert.equal((await normal.service.read('41', signal())).body.streetmix?.stale, true);
-  normal.db.data.get('suggestion/41')._deleting = true;
-  await assert.rejects(normal.service.run(command(), signal()), { code: 'SUGGESTION_DELETING' });
+  normal.db.data.get('idea/41')._deleting = true;
+  await assert.rejects(normal.service.run(command(), signal()), { code: 'IDEA_DELETING' });
 });
 
 test('uncertain publications retain active workflow and stable refresh across same-key recovery', async () => {
@@ -161,30 +170,30 @@ test('uncertain publications retain active workflow and stable refresh across sa
 
 test('regeneration selection rechecks current ownership and concurrent revision', async () => {
   const { service, db } = setup(); await service.run(command(), signal());
-  const pendingService = new SuggestionStreetmixService(db as any, async () => { throw new StreetmixError(409, 'STREET_SELECTION_REQUIRED', 'Choose', undefined, { candidates: [candidate] }); }, async () => {});
+  const pendingService = new IdeaStreetmixService(db as any, async () => { throw new StreetmixError(409, 'STREET_SELECTION_REQUIRED', 'Choose', undefined, { candidates: [candidate] }); }, async () => {});
   const pending = await pendingService.run(command({ mode: 'regenerate', user: user(), ifMatch: '"streetmix-41-1"' }), signal());
   const select = command({ mode: 'selection', key: 'selection-key-000001', requestId: pending.body.requestId as string, osmWayId: 10 });
   await assert.rejects(pendingService.run(select, signal()), { status: 401 });
-  db.data.get('suggestion/41').author.email = 'new@example.com';
+  db.data.get('idea/41').author.email = 'new@example.com';
   await assert.rejects(pendingService.run({ ...select, user: user() }, signal()), { status: 403 });
-  db.data.get('suggestion/41').streetmix.revision = 2;
-  await assert.rejects(pendingService.run({ ...select, user: user('new@example.com') }, signal()), { code: 'SUGGESTION_CHANGED' });
+  db.data.get('idea/41').streetmix.revision = 2;
+  await assert.rejects(pendingService.run({ ...select, user: user('new@example.com') }, signal()), { code: 'IDEA_CHANGED' });
 });
 
-test('ordinary suggestion updates preserve server metadata and reject deletion', async t => {
+test('ordinary idea updates preserve server metadata and reject deletion', async t => {
   const { db, service } = setup(); await service.run(command(), signal());
   const real = getPublicImprovementsDb();
   t.mock.method(real, 'runTransaction', db.runTransaction.bind(db));
-  const changed = await SuggestionService.update(41, { content: { details: 'Updated details' } });
+  const changed = await IdeaService.update(41, { content: { details: 'Updated details' } });
   assert.equal(changed?.streetmix?.revision, 1); assert.equal(changed?.content.summary, 'Safer crossing');
-  db.data.get('suggestion/41')._deleting = true;
-  await assert.rejects(SuggestionService.update(41, { status: 'completed' }), { status: 409 });
+  db.data.get('idea/41')._deleting = true;
+  await assert.rejects(IdeaService.update(41, { status: 'completed' }), { status: 409 });
 });
 
 test('OpenAPI exposes Streetmix workflows and PNG thumbnails under both aliases', () => {
   const paths = (swaggerDocument as any).paths;
-  for (const prefix of ['/api/suggestions', '/api/public-improvements/suggestions']) {
-    for (const suffix of ['/streetmix', '/streetmix/thumbnail', '/streetmix/regenerate', '/streetmix/requests/{requestId}', '/streetmix/requests/{requestId}/selection']) assert.ok(paths[`${prefix}/{suggestionId}${suffix}`]);
+  for (const prefix of ['/api/ideas', '/api/public-improvements/ideas']) {
+    for (const suffix of ['/streetmix', '/streetmix/thumbnail', '/streetmix/regenerate', '/streetmix/requests/{requestId}', '/streetmix/requests/{requestId}/selection']) assert.ok(paths[`${prefix}/{ideaId}${suffix}`]);
   }
 });
 
@@ -192,14 +201,14 @@ test('HTTP aliases require application access and reject coordinates, extra fiel
   const previousKeys = process.env.API_KEYS_JSON, previousNodeEnv = process.env.NODE_ENV;
   process.env.NODE_ENV = 'test'; process.env.API_KEYS_JSON = JSON.stringify([{ key: 'test-application' }]);
   t.after(() => { if (previousKeys === undefined) delete process.env.API_KEYS_JSON; else process.env.API_KEYS_JSON = previousKeys; if (previousNodeEnv === undefined) delete process.env.NODE_ENV; else process.env.NODE_ENV = previousNodeEnv; });
-  t.mock.method(SuggestionStreetmixService.prototype, 'read', async () => ({ status: 200, etag: '"streetmix-41-0"', body: { streetmix: null, result: null, activeRequest: null } }));
+  t.mock.method(IdeaStreetmixService.prototype, 'read', async () => ({ status: 200, etag: '"streetmix-41-0"', body: { streetmix: null, result: null, activeRequest: null } }));
   const server = createApp().listen(0); await once(server, 'listening');
   t.after(() => { server.closeAllConnections(); server.close(); });
   const base = `http://127.0.0.1:${(server.address() as any).port}`;
   const headers = { 'X-API-Key': 'test-application', 'Content-Type': 'application/json', 'Idempotency-Key': 'http-key-00000000001' };
-  assert.equal((await fetch(`${base}/api/suggestions/41/streetmix`)).status, 401);
-  assert.equal((await fetch(`${base}/api/suggestions/41/streetmix/thumbnail`)).status, 401);
-  for (const prefix of ['/api/suggestions', '/api/public-improvements/suggestions']) {
+  assert.equal((await fetch(`${base}/api/ideas/41/streetmix`)).status, 401);
+  assert.equal((await fetch(`${base}/api/ideas/41/streetmix/thumbnail`)).status, 401);
+  for (const prefix of ['/api/ideas', '/api/public-improvements/ideas']) {
     const response = await fetch(`${base}${prefix}/41/streetmix`, { headers });
     assert.equal(response.status, 200); assert.equal(response.headers.get('etag'), '"streetmix-41-0"');
     assert.equal((await fetch(`${base}${prefix}/41/streetmix/thumbnail`, { headers })).status, 404);
@@ -208,7 +217,7 @@ test('HTTP aliases require application access and reject coordinates, extra fiel
     assert.equal((await fetch(`${base}${prefix}/41/streetmix/regenerate`, { method: 'POST', headers, body: '{}' })).status, 401);
   }
   const uuid = 'c13a6af0-8888-4444-8888-0bbee0cc1122', png = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10, 0]);
-  t.mock.method(SuggestionStreetmixService.prototype, 'read', async () => ({ status: 200, body: { streetmix: { streetmixId: uuid } } }));
+  t.mock.method(IdeaStreetmixService.prototype, 'read', async () => ({ status: 200, body: { streetmix: { streetmixId: uuid } } }));
   const originalFetch = globalThis.fetch;
   let relayed = 0;
   t.mock.method(globalThis, 'fetch', async (url: any, init?: RequestInit) => {
@@ -220,7 +229,7 @@ test('HTTP aliases require application access and reject coordinates, extra fiel
     }
     return originalFetch(url, init);
   });
-  for (const prefix of ['/api/suggestions', '/api/public-improvements/suggestions']) {
+  for (const prefix of ['/api/ideas', '/api/public-improvements/ideas']) {
     const response = await fetch(`${base}${prefix}/41/streetmix/thumbnail?streetId=ignored`, { headers });
     assert.equal(response.status, 200); assert.equal(response.headers.get('content-type'), 'image/png');
     assert.equal(response.headers.get('cache-control'), 'no-store');
@@ -229,12 +238,12 @@ test('HTTP aliases require application access and reject coordinates, extra fiel
   assert.equal(relayed, 2);
 });
 
-test('invalid suggestion coordinates and out-of-Texas locations never publish', async () => {
+test('invalid idea coordinates and out-of-Texas locations never publish', async () => {
   const { db, service, publications } = setup();
-  db.data.get('suggestion/41').location = { latitude: NaN, longitude: -96 };
+  db.data.get('idea/41').location = { latitude: NaN, longitude: -96 };
   await assert.rejects(service.run(command(), signal()), { code: 'INVALID_COORDINATES' });
-  db.data.get('suggestion/41').location = { latitude: 40, longitude: -96 };
-  const outside = new SuggestionStreetmixService(db as any, async () => { throw new Error('Must not generate'); }, async () => { throw new StreetmixError(422, 'OUTSIDE_TEXAS', 'Outside Texas'); });
+  db.data.get('idea/41').location = { latitude: 40, longitude: -96 };
+  const outside = new IdeaStreetmixService(db as any, async () => { throw new Error('Must not generate'); }, async () => { throw new StreetmixError(422, 'OUTSIDE_TEXAS', 'Outside Texas'); });
   await assert.rejects(outside.run(command(), signal()), { code: 'OUTSIDE_TEXAS' });
   assert.equal(publications(), 0);
 });
@@ -245,5 +254,5 @@ test('old completion retries never overwrite a newer attachment', async () => {
   await service.run(command({ mode: 'regenerate', key: 'regenerate-key-0001', ifMatch: '"streetmix-41-1"', user: user() }), signal());
   const old = await service.run(command(), signal());
   assert.equal((old.body.streetmix as any).revision, 1);
-  assert.equal(db.data.get('suggestion/41').streetmix.revision, 2); assert.equal(publications(), 2);
+  assert.equal(db.data.get('idea/41').streetmix.revision, 2); assert.equal(publications(), 2);
 });

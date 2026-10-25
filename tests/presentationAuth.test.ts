@@ -103,8 +103,8 @@ test('disabled presentation namespace returns no-store 404 without opening a ses
 test('thumbnail route uses only the saved assignment and applies selected-idea access checks', async t => {
   const { fixture, base } = await appServer(t);
   const streetmixId = 'c13a6af0-8888-4444-8888-0bbee0cc1122';
-  fixture.suggestions.set(41, { ...fixture.suggestions.get(41), streetmix: { streetmixId, streetmixUrl: 'https://streetmix.net/-/123', stale: true } });
-  fixture.suggestions.set(42, { ...fixture.suggestions.get(41), id: 42, content: { summary: 'Other', details: '', photos: [] }, streetmix: { streetmixId: 'd13a6af0-8888-4444-8888-0bbee0cc1122', streetmixUrl: 'https://streetmix.net/-/456', stale: false } });
+  fixture.ideas.set(41, { ...fixture.ideas.get(41), streetmix: { streetmixId, streetmixUrl: 'https://streetmix.net/-/123', stale: true } });
+  fixture.ideas.set(42, { ...fixture.ideas.get(41), id: 42, content: { summary: 'Other', details: '', photos: [] }, streetmix: { streetmixId: 'd13a6af0-8888-4444-8888-0bbee0cc1122', streetmixUrl: 'https://streetmix.net/-/456', stale: false } });
   const receiver = participant();
   const created = await (await fetch(`${base}/api/public-improvements/presentation/sessions`, { method: 'POST', headers: { ...jsonHeaders, 'Idempotency-Key': randomUUID() }, body: JSON.stringify(receiver) })).json() as any;
   const controller = participant();

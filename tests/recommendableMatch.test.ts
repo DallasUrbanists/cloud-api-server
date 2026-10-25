@@ -19,7 +19,7 @@ function catalog(t: any, rows: ReturnType<typeof action>[], links: string[] = []
   const pages: string[][] = [];
   t.mock.method(getPublicImprovementsDb(), 'collection', (path: string) => {
     if (path !== 'recommendableActions') {
-      assert.match(path, /^suggestion\/\d+\/recommendedActions$/);
+      assert.match(path, /^idea\/\d+\/recommendedActions$/);
       return { get: async () => ({ docs: links.map(id => ({ get: () => id })) }) };
     }
     let after = ''; let limit = 500;
@@ -329,7 +329,7 @@ test('shared matching removes encapsulated actions from playground results and s
   assert.equal(result.count, 2); assert.equal(result.diagnostics.eligibleCount, 3);
   assert.deepEqual(comparisons, ['a:b', 'a:c']);
   const create = t.mock.method(RecommendedActionService, 'create', async () => ({} as any));
-  const saved = await Service.matchSuggestion({ id: 7, content: { summary: 'Issue' }, location: {} } as any);
+  const saved = await Service.matchIdea({ id: 7, content: { summary: 'Issue' }, location: {} } as any);
   assert.deepEqual(saved.map(a => a.id), ['a', 'c']);
   assert.deepEqual(create.mock.calls.map(call => call.arguments[2]), ['recommendable-a', 'recommendable-c']);
   assert.deepEqual(comparisons, ['a:b', 'a:c']);
@@ -352,26 +352,26 @@ test('a failed comparison retries on a relevance cache hit without caching the f
   assert.equal(relevanceCalls, 1); assert.equal(comparisonCalls, 2);
 });
 
-test('saved-suggestion wrapper skips existing links and returns only newly created entries', async t => {
+test('saved-idea wrapper skips existing links and returns only newly created entries', async t => {
   catalog(t, [], ['old']);
   t.mock.method(Service, 'findMatches', async input => {
     assert.equal(input.text, 'Summary\n\nDetails');
     return { data: [action('old'), action('new')].map(a => ({ ...a, matchProbability: .95 })), count: 2, diagnostics: {} } as any;
   });
   const create = t.mock.method(RecommendedActionService, 'create', async () => ({} as any));
-  const result = await Service.matchSuggestion({ id: 7, content: { summary: 'Summary', details: 'Details' }, location: {} } as any);
+  const result = await Service.matchIdea({ id: 7, content: { summary: 'Summary', details: 'Details' }, location: {} } as any);
   assert.deepEqual(result.map(a => a.id), ['new']);
   assert.equal(create.mock.callCount(), 1);
   assert.equal(create.mock.calls[0].arguments[2], 'recommendable-new');
   assert.equal(create.mock.calls[0].arguments[1].matchProbability, .95);
 });
 
-test('saved suggestions persist only the top five actions from the fallback bucket', async t => {
+test('saved ideas persist only the top five actions from the fallback bucket', async t => {
   const scores = [.14, .12, .1, .08, .04, .04, .03999];
   catalog(t, scores.map((_, i) => action(String(i))));
   jev(t, id => scores[Number(id)]);
   const create = t.mock.method(RecommendedActionService, 'create', async () => ({} as any));
-  const saved = await Service.matchSuggestion({ id: 42, content: { summary: 'Geofence policy request' }, location: {} } as any);
+  const saved = await Service.matchIdea({ id: 42, content: { summary: 'Geofence policy request' }, location: {} } as any);
   assert.deepEqual(saved.map(a => a.id), ['0', '1', '2', '3', '4']);
   assert.deepEqual(create.mock.calls.map(call => call.arguments[1].matchProbability), [.14, .12, .1, .08, .04]);
 });

@@ -2,7 +2,7 @@ import { recommendableMockDescriptions } from '../data/recommendableMockDescript
 import type { NextFunction, Request, Response } from 'express';
 import { createRequire } from 'node:module';
 import path from 'node:path';
-import { SuggestionService } from '../services/suggestionService.js';
+import { IdeaService } from '../services/ideaService.js';
 
 const require = createRequire(import.meta.url);
 
@@ -23,9 +23,9 @@ export class RecommendablePlaygroundController {
       if (typeof rawIdeaId === 'string' && /^\d+$/.test(rawIdeaId)) {
         const ideaId = Number(rawIdeaId);
         if (Number.isSafeInteger(ideaId) && ideaId > 0) {
-          const suggestion = await SuggestionService.getById(ideaId);
-          if (suggestion) {
-            initialDescription = [suggestion.content.summary, suggestion.content.details]
+          const idea = await IdeaService.getById(ideaId);
+          if (idea) {
+            initialDescription = [idea.content.summary, idea.content.details]
               .filter(text => text.trim())
               .join('\n\n');
           }

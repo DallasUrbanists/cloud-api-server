@@ -2,9 +2,9 @@
 
 ## Purpose and scope
 
-A **Recommendable Action** is a reusable, source-backed civic next step. A **Recommended Action** is an action attached to one suggestion. The catalog and the suggestion's action history are separate: reviewing or closing a catalog entry does not rewrite existing suggestion actions.
+A **Recommendable Action** is a reusable, source-backed civic next step. A **Recommended Action** is an action attached to one idea. The catalog and the idea's action history are separate: reviewing or closing a catalog entry does not rewrite existing idea actions.
 
-This pilot documents the reusable-action [model](../src/models/recommendableAction.ts), [controller](../src/controllers/recommendableActionController.ts), [service](../src/services/recommendableActionService.ts), and [router](../src/routes/recommendableActionRoutes.ts). Worker and suggestion integration are described as context, not a repository-wide comment backfill.
+This pilot documents the reusable-action [model](../src/models/recommendableAction.ts), [controller](../src/controllers/recommendableActionController.ts), [service](../src/services/recommendableActionService.ts), and [router](../src/routes/recommendableActionRoutes.ts). Worker and idea integration are described as context, not a repository-wide comment backfill.
 
 See [documentation conventions](documentation-conventions.md) for ownership rules. The [OpenAPI definition](../src/docs/swagger.ts) remains the HTTP contract for the `/api/recommendables` route family; this page intentionally does not reproduce its payloads, response tables, or authentication matrix.
 
@@ -22,10 +22,10 @@ flowchart TD
     Service --> Gemini[Gemini extraction]
     Service --> Boundaries[BoundaryService / PostgreSQL]
     Service --> Catalog[Firestore recommendableActions: all statuses and versions]
-    Suggestion[Suggestion creation] --> Service
+    Idea[Idea creation] --> Service
     Service --> Jev[Jev relevance judgments]
     Service --> Actions[RecommendedActionService]
-    Actions --> Linked[Suggestion actions and activity]
+    Actions --> Linked[Idea actions and activity]
 ```
 
 This is a responsibility/dependency map, not a call sequence: different service methods use different dependencies.
@@ -37,10 +37,10 @@ This is a responsibility/dependency map, not a call sequence: different service 
 | [App](../src/app.ts) and [router](../src/routes/recommendableActionRoutes.ts) | Mount the feature and apply API-key, user, and staff access policies before controllers. |
 | [Controller](../src/controllers/recommendableActionController.ts) | Validate HTTP-level choices, coordinate extraction and model validation, adapt results/errors, and cancel extraction if the response closes early. |
 | [Model](../src/models/recommendableAction.ts) | Define domain shapes, normalize candidate content without I/O, and express any-overlap geographic scope. |
-| [Service](../src/services/recommendableActionService.ts) | Retrieve/extract evidence, check boundary references, persist review/catalog state, version publications, and match suggestions. |
+| [Service](../src/services/recommendableActionService.ts) | Retrieve/extract evidence, check boundary references, persist review/catalog state, version publications, and match ideas. |
 | [Source scanner](../src/scripts/recommendableWorker.ts) | Detect changed registry pages and propose candidates; never auto-publish them. |
 | [Dallas 311 seed script](../src/scripts/seedDallas311Recommendables.ts) | Build one or more stable review candidates per service type; apply only after a citywide Dallas boundary is seeded. |
-| [Suggestion controller](../src/controllers/suggestionController.ts) | Save a suggestion, attempt matching, and preserve submission success if matching fails. |
+| [Idea controller](../src/controllers/ideaController.ts) | Save an idea, attempt matching, and preserve submission success if matching fails. |
 
 ## Workflows and invariants
 
@@ -69,7 +69,7 @@ The worker is a separate caller: it prepares candidate content directly rather t
 
 ### Playground and read-only matching
 
-Open `/playground/recommendables` from the home page to test unstructured text without creating a suggestion or saving results. Address mode is selected initially with `1902 Main St, Dallas, TX 75201` (Main Street Garden Park), using coordinates `32.781162`, `-96.794861` from the supplied map location. Switch to coordinates to edit them, or clear location to test unrestricted actions only. Public access requires no login or API key.
+Open `/playground/recommendables` from the home page to test unstructured text without creating an idea or saving results. Address mode is selected initially with `1902 Main St, Dallas, TX 75201` (Main Street Garden Park), using coordinates `32.781162`, `-96.794861` from the supplied map location. Switch to coordinates to edit them, or clear location to test unrestricted actions only. Public access requires no login or API key.
 
 `POST /api/recommendables/match` accepts `{ text, latitude?, longitude? }`. Text must be nonblank and at most 10,000 characters; coordinates must be supplied together within geographic ranges. The OpenAPI definition owns the complete request and response contract.
 
@@ -79,17 +79,17 @@ After redundancy filtering, selection uses the strongest available bucket: retur
 
 After relevance scoring, actions strictly above 20% compete in descending score order, with catalog ID breaking ties. For each surviving action, JEV answers the independent `noul` question “Would these actions lead the resident to take the same practical next step for this description?” against each remaining lower-ranked action. It receives the original description and both actions' summary, instructions, why and why-not text. Redundancy means the same practical action for this issue, including the same reporting route or request type despite wording differences; a shared website or department alone does not establish redundancy. Complementary steps (such as emergency dispatch and contacting a gas utility) and materially different outcomes remain. A probability strictly greater than 90% removes the lower-scoring action, even if it is more specific. Removed actions never participate in subsequent matchups. Comparisons within each survivor's round are batched by 40 with at most three concurrent calls.
 
-This filtering applies to both playground results and saved suggestion recommendations, before the acceptance threshold and any persistence. `eligibleActions` contains the remaining actions, while `diagnostics.eligibleCount` still counts geographic eligibility before redundancy filtering. Missing, invalid, failed, or timed-out comparison answers retain both actions and are not cached; caller cancellation and the overall deadline still abort the run. Successful pair judgments (including non-redundancy) are cached per process for one hour, using a hash of the normalized description, rounded coordinates, both actions' IDs and classification text, configured model, and comparison policy version (`same-practical-next-step-v2`). Old encapsulation judgments cannot be reused. The cache holds at most 10,000 pairs. Raw relevance scores remain separately cached so failed comparisons can be retried.
+This filtering applies to both playground results and saved idea recommendations, before the acceptance threshold and any persistence. `eligibleActions` contains the remaining actions, while `diagnostics.eligibleCount` still counts geographic eligibility before redundancy filtering. Missing, invalid, failed, or timed-out comparison answers retain both actions and are not cached; caller cancellation and the overall deadline still abort the run. Successful pair judgments (including non-redundancy) are cached per process for one hour, using a hash of the normalized description, rounded coordinates, both actions' IDs and classification text, configured model, and comparison policy version (`same-practical-next-step-v2`). Old encapsulation judgments cannot be reused. The cache holds at most 10,000 pairs. Raw relevance scores remain separately cached so failed comparisons can be retried.
 
 The API's `diagnostics` includes the configured model, total duration, relevance duration/cache hit/request count, and a `comparisons` report. That report includes the question and policy, exclusive thresholds, duration, candidate/pair counts, cache hits, network requests, failed pairs and removals. Candidate snapshots preserve classification text and original relevance scores, including removed actions. Each pair records action IDs (higher-ranked first), redundancy probability or null, cache hit, decision (`keep_both`, `remove_lower`, `keep_on_failure`), removed ID when applicable, and sanitized failure code (`timeout`, `network`, `http`, `malformed_response`, `invalid_answer`). Pair records follow deterministic matchup order regardless of response completion order. Runs without necessary comparisons still return a report with zero pairs/requests/failures/removals. Diagnostics are response-only; there is no diagnostic UI or persisted report.
 
 The playground displays action content, source links, probabilities, and geographic diagnostics. Nothing from a test is persisted.
 
-### Suggestion matching
+### Idea matching
 
-`matchSuggestion` wraps read-only classification for saved suggestions, combining their summary and details as input text. It skips catalog links already attached and delegates new matches to RecommendedActionService using deterministic IDs. Its return array contains only newly attached catalog entries.
+`matchIdea` wraps read-only classification for saved ideas, combining their summary and details as input text. It skips catalog links already attached and delegates new matches to RecommendedActionService using deterministic IDs. Its return array contains only newly attached catalog entries.
 
-Classification completes before linked actions are written. Persistence remains incremental rather than atomic across matches. The suggestion controller catches matching failures after saving the suggestion, so submission remains available.
+Classification completes before linked actions are written. Persistence remains incremental rather than atomic across matches. The idea controller catches matching failures after saving the idea, so submission remains available.
 
 ### Scheduled discovery
 
@@ -137,7 +137,7 @@ Existing setup instructions and environment-variable details remain in the [READ
 
 ## Verification and next step
 
-[Recommended Actions tests](../tests/recommendedActions.test.ts) cover model normalization and geographic applicability alongside suggestion-action behavior. They do not establish end-to-end correctness of extraction, review transactions, discovery, or external relevance services.
+[Recommended Actions tests](../tests/recommendedActions.test.ts) cover model normalization and geographic applicability alongside idea-action behavior. They do not establish end-to-end correctness of extraction, review transactions, discovery, or external relevance services.
 
 The approved pilot's comments feed TypeDoc-generated Markdown reference rendered directly inside the [developer portal](index.md), sharing its theme, navigation, layout, and search. The portal renders this overview's Mermaid diagram graphically, with light/dark themes and an expandable source view. Generate the unified site with `npm run docs:build`; this does not change executable API behavior or OpenAPI. This feature remains the four-module pilot; the shared reference also includes the [additional selected features](index.md#feature-guides). The [Documentation workflow](index.md#automated-checks) validates the unified build on Ubuntu and Windows. Broader backfill, required-check branch rules, and publication remain separate follow-up steps.
 
@@ -157,7 +157,7 @@ Deploy the updated API and scanner together with this data migration: older runt
 
 The playground shows the dynamically selected `data` matches by default. Its “Show low matches (including 0%)” toggle reveals all remaining `eligibleActions`, including scores below 4%, ordered by descending JEV probability. It switches the displayed results immediately without another model request. The matching response exposes `eligibleActions` for this inspection; `data` and `count` continue to represent accepted matches only.
 
-Playground cards use fixed visual score bands: primary at 80% or higher, secondary from 50% to below 80%, and tertiary from 0% to below 50%. The selected bucket determines which cards appear by default; the checkbox reveals the rest for inspection. These visual bands do not change bucket selection or saved-suggestion matching.
+Playground cards use fixed visual score bands: primary at 80% or higher, secondary from 50% to below 80%, and tertiary from 0% to below 50%. The selected bucket determines which cards appear by default; the checkbox reveals the rest for inspection. These visual bands do not change bucket selection or saved-idea matching.
 
 The low-match checkbox in Testing options is enabled when the inspection results include actions outside the selected bucket or its five-action limit. The “Boundary results” table follows all cards. Its Representative column shows each bold name/title above boundary breadcrumbs; the Contact column groups phone/email entries by contact label and displays only the longest contact reason per group. Duplicate representative name/title rows share one entry with all applicable breadcrumbs. Representative reads are paginated and do not trigger research or persistence. “No current representative on file” means the directory has no current record for that boundary, not that nobody represents it. Research requires a configured adapter, due-work enqueueing and the separately enabled [boundary worker](boundary-synchronization.md).
 

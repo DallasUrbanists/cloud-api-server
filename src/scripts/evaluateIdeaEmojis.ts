@@ -2,9 +2,9 @@ import 'dotenv/config';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { productionRegressions, mockEmojiExamples } from '../data/emojiEvaluationCases.js';
 import { recommendableMockDescriptions } from '../data/recommendableMockDescriptions.js';
-import { SuggestionEmojiService, type EmojiDiagnostics } from '../services/suggestionEmojiService.js';
+import { IdeaEmojiService, type EmojiDiagnostics } from '../services/ideaEmojiService.js';
 
-// Explicit opt-in: ordinary tests never call JEV or alter production suggestions.
+// Explicit opt-in: ordinary tests never call JEV or alter production ideas.
 if (!process.argv.includes('--live')) throw new Error('Pass --live to enable paid JEV calls.');
 if (!process.env.TYPESAFE_API_KEY?.trim()) throw new Error('Set TYPESAFE_API_KEY before running live evaluation.');
 const cases = productionRegressions.map(item => ({ ...item, id: `submission-${item.id}` }));
@@ -20,7 +20,7 @@ for (const fixture of cases) {
     let diagnostics: EmojiDiagnostics | undefined;
     let emoji: string | undefined;
     try {
-      emoji = await SuggestionEmojiService.assign(fixture.summary, fixture.details, {
+      emoji = await IdeaEmojiService.assign(fixture.summary, fixture.details, {
         mode, onDiagnostics: result => { diagnostics = result; },
       });
     } catch { /* Failure category is retained in the diagnostic record. */ }

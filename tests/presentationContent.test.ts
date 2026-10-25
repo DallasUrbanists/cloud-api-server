@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { canonicalDescriptionPages, effectiveCaptionVisible, initialPresentationState, normalizeStateForIdea, publicPresentationIdea } from '../src/models/presentation.js';
-import { makeFixture, suggestion, writableState } from './helpers/presentationFixture.js';
+import { makeFixture, idea as ideaRecord, writableState } from './helpers/presentationFixture.js';
 
 test('description pages use paragraph and word boundaries and cap Unicode code points at 320', () => {
   const paragraphText = `${'a'.repeat(310)}\n\n${'b'.repeat(40)}`;
@@ -28,7 +28,7 @@ test('pagination conserves long unbroken tokens and preserves words across page 
 });
 
 test('public DTO is narrow, media identity is stable, and duplicate URLs are deterministic', () => {
-  const source = suggestion(41, { content: { summary: 'Summary', details: 'Details', photos: [
+  const source = ideaRecord(41, { content: { summary: 'Summary', details: 'Details', photos: [
     { url: 'https://images.example/photo.jpg?token=secret', caption: 'First', internal: 'private' },
     { url: 'https://images.example/photo.jpg?token=other', caption: 'Second' },
     { url: 'http://insecure.example/photo.jpg', caption: 'Drop insecure URL' },
@@ -47,8 +47,8 @@ test('public DTO is narrow, media identity is stable, and duplicate URLs are det
 });
 
 test('state normalization advances idea epoch only for a new idea and enforces Streetmix framing', async () => {
-  const fixture = makeFixture({ initialSuggestions: [suggestion(41, { content: { summary: 'Mixed album', details: '', photos: [{ url: 'https://images.example/a.jpg', caption: 'Photo' }] }, streetmix: { streetmixId: 'c13a6af0-8888-4444-8888-0bbee0cc1122', streetmixUrl: 'https://streetmix.net/-/123', stale: true } })] });
-  const idea = publicPresentationIdea(fixture.suggestions.get(41));
+  const fixture = makeFixture({ initialIdeas: [ideaRecord(41, { content: { summary: 'Mixed album', details: '', photos: [{ url: 'https://images.example/a.jpg', caption: 'Photo' }] }, streetmix: { streetmixId: 'c13a6af0-8888-4444-8888-0bbee0cc1122', streetmixUrl: 'https://streetmix.net/-/123', stale: true } })] });
+  const idea = publicPresentationIdea(fixture.ideas.get(41));
   const initial = initialPresentationState();
   const choose = writableState(initial);
   choose.selectedIdeaId = '41';
@@ -66,7 +66,7 @@ test('state normalization advances idea epoch only for a new idea and enforces S
 });
 
 test('selecting an idea with an empty album starts on its explicit description page', () => {
-  const idea = publicPresentationIdea(suggestion(51, { content: { summary: 'No photos', details: '', photos: [] } }));
+  const idea = publicPresentationIdea(ideaRecord(51, { content: { summary: 'No photos', details: '', photos: [] } }));
   const initial = initialPresentationState(), requested = writableState(initial);
   requested.selectedIdeaId = '51';
   const selected = normalizeStateForIdea(requested, initial, idea);

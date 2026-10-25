@@ -1,6 +1,6 @@
-# Real-time suggestion notices
+# Real-time idea notices
 
-Connect to `wss://api.dallasurbanists.org/api/suggestions/ws` (alias: `/api/public-improvements/suggestions/ws`). Local development uses `ws://localhost:8080/api/suggestions/ws`. The socket is read-only and sends identifiers; fetch content through the existing REST endpoints.
+Connect to `wss://api.dallasurbanists.org/api/ideas/ws` (alias: `/api/public-improvements/ideas/ws`). Local development uses `ws://localhost:8080/api/ideas/ws`. The socket is read-only and sends identifiers; fetch content through the existing REST endpoints.
 
 ## Authentication and protocol
 
@@ -15,33 +15,33 @@ API keys use the same `API_KEYS_JSON` configuration as REST. Production also req
 The server sends nothing until authentication succeeds and the shared Firestore listener has established its baseline:
 
 ```json
-{"type":"ready","protocolVersion":1}
+{"type":"ready","protocolVersion":2}
 ```
 
 Subsequent messages have one of these shapes:
 
 ```json
-{"type":"suggestion.created","suggestionId":41}
-{"type":"suggestion.updated","suggestionId":41}
-{"type":"suggestion.deleted","suggestionId":41}
+{"type":"idea.created","ideaId":41}
+{"type":"idea.updated","ideaId":41}
+{"type":"idea.deleted","ideaId":41}
 ```
 
-All authenticated apps receive all suggestion notices. Changes to public suggestion fields, including emoji and persisted Streetmix summaries, produce notices. Internal-only changes such as `_deleting` do not. Recommended-action and activity subcollections are excluded. Initial existing records are never announced as new suggestions. Rapid writes may be combined by the underlying listener: notices invalidate cached state and are not an audit history or an exactly-once event stream.
+All authenticated apps receive all idea notices. Changes to public idea fields, including emoji and persisted Streetmix summaries, produce notices. Internal-only changes such as `_deleting` do not. Recommended-action and activity subcollections are excluded. Initial existing records are never announced as new ideas. Rapid writes may be combined by the underlying listener: notices invalidate cached state and are not an audit history or an exactly-once event stream.
 
 Sending additional client messages or binary authentication frames closes the connection. Ordinary HTTP GET requests to either socket path receive `426 Upgrade Required`. Swagger describes the HTTP handshake; it does not provide a WebSocket client.
 
 ## Browser integration
 
-Copy [the browser helper](https://github.com/DallasUrbanists/cloud-api-server/blob/main/examples/suggestion-notices.js) into your app. It obtains credentials on each connection, buffers and deduplicates notices during refreshes, debounces affected-record refreshes by 100 ms, aborts stale refreshes, and reconnects with exponential backoff and jitter between one and thirty seconds.
+Copy [the browser helper](https://github.com/DallasUrbanists/cloud-api-server/blob/main/examples/idea-notices.js) into your app. It obtains credentials on each connection, buffers and deduplicates notices during refreshes, debounces affected-record refreshes by 100 ms, aborts stale refreshes, and reconnects with exponential backoff and jitter between one and thirty seconds.
 
-Example using an already initialized Firebase App Check instance and an application-owned map of suggestions:
+Example using an already initialized Firebase App Check instance and an application-owned map of ideas:
 
 ```javascript
 import { getToken } from 'firebase/app-check';
-import { connectSuggestionNotices } from './suggestion-notices.js';
+import { connectIdeaNotices } from './idea-notices.js';
 
 const apiBase = 'https://api.dallasurbanists.org';
-const suggestions = new Map();
+const ideas = new Map();
 
 async function getCredentials() {
   const { token } = await getToken(appCheck, false);
@@ -59,31 +59,31 @@ async function read(path, signal) {
   });
 }
 
-const connection = connectSuggestionNotices({
-  url: `${apiBase.replace('https:', 'wss:')}/api/suggestions/ws`,
+const connection = connectIdeaNotices({
+  url: `${apiBase.replace('https:', 'wss:')}/api/ideas/ws`,
   getCredentials,
   async refreshAll(signal) {
-    const response = await read('/api/suggestions', signal);
+    const response = await read('/api/ideas', signal);
     if (!response.ok) throw new Error('Refresh failed');
     const { data } = await response.json();
     if (signal.aborted) return;
-    suggestions.clear();
-    for (const suggestion of data) suggestions.set(suggestion.id, suggestion);
-    renderSuggestions(suggestions);
+    ideas.clear();
+    for (const idea of data) ideas.set(idea.id, idea);
+    renderIdeas(ideas);
   },
-  async refreshSuggestions(ids, signal) {
+  async refreshIdeas(ids, signal) {
     // Sequential reads bound bursts; applications may use bounded concurrency.
     for (const id of ids) {
-      const response = await read(`/api/suggestions/${id}`, signal);
+      const response = await read(`/api/ideas/${id}`, signal);
       if (response.status === 404) {
-        if (!signal.aborted) suggestions.delete(id);
+        if (!signal.aborted) ideas.delete(id);
       } else {
         if (!response.ok) throw new Error('Refresh failed');
         const { data } = await response.json();
-        if (!signal.aborted) suggestions.set(id, data);
+        if (!signal.aborted) ideas.set(id, data);
       }
     }
-    if (!signal.aborted) renderSuggestions(suggestions);
+    if (!signal.aborted) renderIdeas(ideas);
   },
   onAuthenticationRequired(code) {
     // Pause until application credentials are refreshed, then create a new connection.
@@ -95,7 +95,7 @@ const connection = connectSuggestionNotices({
 // connection.stop();
 ```
 
-Every `ready` must trigger a REST refresh, including after reconnecting. Notices received during that refresh are processed afterward, so an older fetch cannot overwrite a more recent update. Check the supplied `AbortSignal` before applying fetched data; the helper aborts it when that connection ends. A detail fetch returning `404` removes the record. Filtered or paginated views must also update membership/order or refresh their list query when affected suggestions change.
+Every `ready` must trigger a REST refresh, including after reconnecting. Notices received during that refresh are processed afterward, so an older fetch cannot overwrite a more recent update. Check the supplied `AbortSignal` before applying fetched data; the helper aborts it when that connection ends. A detail fetch returning `404` removes the record. Filtered or paginated views must also update membership/order or refresh their list query when affected ideas change.
 
 Authentication failures stop automatic retries. Refresh application credentials and start a new helper instance to resume. Transport and refresh failures reconnect automatically. There is no replay cursor or persisted notice history.
 
@@ -111,6 +111,7 @@ Authentication failures stop automatic retries. Refresh application credentials 
 | Listener fails or cannot initialize within 15 seconds | `1013`; reconnect and refresh |
 | Outgoing buffer exceeds 1 MiB | `1013`; reconnect and refresh |
 | Shutdown | `1001`; reconnect and refresh |
+| Ideas maintenance cutover | `1013`; reconnect and refresh after the data layout switches |
 | Pending authentication reaches 50 or authenticated connections reach 500 per instance | HTTP `503` with `Retry-After: 5`, or `1013` if capacity fills during authentication |
 
 The server pings every 30 seconds and terminates connections that have not responded by the next check. Browsers respond to protocol pings automatically. Compression is disabled. Closing sockets are forcibly terminated after one second if the close handshake has not completed.
@@ -121,13 +122,17 @@ The server pings every 30 seconds and terminates connections that have not respo
 
 Each instance with authenticated clients owns one Firestore collection listener, regardless of the number of browsers on that instance. Multiple instances observe the same committed writes, including writes from external tools. Each listener reads an initial collection snapshot and receives subsequent changes, so Firestore read costs grow with collection size, reconnects, and active instance count. Open WebSocket requests also keep Cloud Run instances active. No Redis, event-history collection, schema migration, or sticky sessions are needed.
 
-Structured logs report connection counts, authentication timeouts/failures, listener failures, and slow clients without logging credentials, suggestion content, or raw provider errors.
+Structured logs report connection counts, authentication timeouts/failures, listener failures, slow clients, and `ideas_legacy_socket_connected` migration usage without logging credentials, idea content, or raw provider errors.
+
+## Legacy compatibility during migration
+
+The deprecated `/api/suggestions/ws` and `/api/public-improvements/suggestions/ws` paths remain available during the consumer transition. They use the same listener and authentication frame but send `ready` with protocol version 1 and `suggestion.created`, `suggestion.updated`, or `suggestion.deleted` with numeric `suggestionId`. Use the [legacy browser helper](../examples/suggestion-notices.js) only to keep an existing protocol-v1 app running temporarily. New clients use the Ideas paths and protocol version 2; do not subscribe to both streams.
 
 Run `npm test` and `npm run build`. The two-instance integration test requires an independently running Firestore emulator:
 
 ```powershell
 $env:FIRESTORE_EMULATOR_HOST = '127.0.0.1:8085'
-npx tsx --test tests/suggestionWebSocketEmulator.test.ts
+npx tsx --test tests/ideaWebSocketEmulator.test.ts
 ```
 
-The integration test uses a unique `demo-ws-*` project and the emulator's default database; it never uses production suggestion data. Without `FIRESTORE_EMULATOR_HOST`, that test is explicitly skipped.
+The integration test uses a unique `demo-ws-*` project and the emulator's default database; it never uses production idea data. Without `FIRESTORE_EMULATOR_HOST`, that test is explicitly skipped.

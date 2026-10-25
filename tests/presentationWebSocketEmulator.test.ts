@@ -13,9 +13,9 @@ import { PresentationWebSocketServer } from '../src/presentationWebSocket.js';
 import { createPresentationRouter } from '../src/routes/presentationRoutes.js';
 import { PresentationService } from '../src/services/presentationService.js';
 import { FirestorePresentationStore } from '../src/services/presentationStore.js';
-import { mapDocToSuggestion } from '../src/services/suggestionService.js';
-import { attachSuggestionWebSocket } from '../src/suggestionWebSocket.js';
-import { SuggestionNoticeService, type SuggestionSnapshot } from '../src/services/suggestionNoticeService.js';
+import { mapDocToIdea } from '../src/services/ideaService.js';
+import { attachIdeaWebSocket } from '../src/ideaWebSocket.js';
+import { IdeaNoticeService, type IdeaSnapshot } from '../src/services/ideaNoticeService.js';
 import { participant, writableState } from './helpers/presentationFixture.js';
 
 const skipReason = !process.env.FIRESTORE_EMULATOR_HOST && 'Set FIRESTORE_EMULATOR_HOST to a reachable loopback emulator to run the two-instance integration test.';
@@ -95,7 +95,7 @@ test('two independent API instances share presentation snapshots, revocation, co
   const dbOne = new Firestore({ projectId, databaseId });
   const dbTwo = new Firestore({ projectId, databaseId });
   const ideaId = '41';
-  await dbOne.collection('suggestion').doc(ideaId).set({
+  await dbOne.collection('idea').doc(ideaId).set({
     id: Number(ideaId), creationDate: '2026-10-22T12:00:00.000Z', modificationDate: '2026-10-22T12:00:00.000Z', status: 'new',
     author: { email: 'private@example.invalid', name: 'Synthetic author' },
     content: { summary: 'Synthetic cross-instance idea', details: 'Emulator-only integration fixture.', photos: [] },
@@ -103,9 +103,9 @@ test('two independent API instances share presentation snapshots, revocation, co
     internal: { shouldNeverBeSerialized: 'private fixture content' },
   });
   const makeService = (db: Firestore) => new PresentationService(new FirestorePresentationStore(db), {
-    getSuggestion: async id => {
-      const document = await db.collection('suggestion').doc(String(id)).get();
-      return document.exists ? mapDocToSuggestion(document.data(), document.id) : null;
+    getIdea: async id => {
+      const document = await db.collection('idea').doc(String(id)).get();
+      return document.exists ? mapDocToIdea(document.data(), document.id) : null;
     },
   });
   const serviceOne = makeService(dbOne);
@@ -119,14 +119,14 @@ test('two independent API instances share presentation snapshots, revocation, co
     return createServer(app);
   };
   const serverOne = createApi(serviceOne), serverTwo = createApi(serviceTwo);
-  const listener = (next: (snapshot: SuggestionSnapshot) => void) => {
+  const listener = (next: (snapshot: IdeaSnapshot) => void) => {
     queueMicrotask(() => next({ docChanges: () => [] }));
     return () => undefined;
   };
   const presentationOne = new PresentationWebSocketServer(serviceOne);
   const presentationTwo = new PresentationWebSocketServer(serviceTwo);
-  const dispatcherOne = attachSuggestionWebSocket(serverOne, { presentation: presentationOne, notices: new SuggestionNoticeService(listener), verify: async () => ({ name: 'emulator-test' }) });
-  const dispatcherTwo = attachSuggestionWebSocket(serverTwo, { presentation: presentationTwo, notices: new SuggestionNoticeService(listener), verify: async () => ({ name: 'emulator-test' }) });
+  const dispatcherOne = attachIdeaWebSocket(serverOne, { presentation: presentationOne, notices: new IdeaNoticeService(listener), verify: async () => ({ name: 'emulator-test' }) });
+  const dispatcherTwo = attachIdeaWebSocket(serverTwo, { presentation: presentationTwo, notices: new IdeaNoticeService(listener), verify: async () => ({ name: 'emulator-test' }) });
   serverOne.listen(0, '127.0.0.1'); serverTwo.listen(0, '127.0.0.1');
   await Promise.all([once(serverOne, 'listening'), once(serverTwo, 'listening')]);
   const baseOne = `http://127.0.0.1:${(serverOne.address() as any).port}`;
@@ -140,7 +140,7 @@ test('two independent API instances share presentation snapshots, revocation, co
     await dbOne.recursiveDelete(dbOne.collection('presentationBootstrapReceipts'));
     await dbOne.recursiveDelete(dbOne.collection('presentationCodeLookups'));
     await dbOne.recursiveDelete(dbOne.collection('presentationRateLimits'));
-    await dbOne.collection('suggestion').doc(ideaId).delete().catch(() => undefined);
+    await dbOne.collection('idea').doc(ideaId).delete().catch(() => undefined);
     await delay(100);
     await Promise.all([dbOne.terminate(), dbTwo.terminate()]);
   };
@@ -199,8 +199,8 @@ test('two independent API instances share presentation snapshots, revocation, co
   assert.equal(external.envelope.state.camera.zoom, 17);
 
   const refreshedContent = nextFrame(tv.ws, frame => frame.type === 'snapshot' && frame.envelope.session.revision === 3 && frame.envelope.content?.summary === 'Updated synthetic cross-instance idea', 12_000, 'selected-content refresh');
-  const source = (await dbOne.collection('suggestion').doc(ideaId).get()).data()!;
-  await dbOne.collection('suggestion').doc(ideaId).update({
+  const source = (await dbOne.collection('idea').doc(ideaId).get()).data()!;
+  await dbOne.collection('idea').doc(ideaId).update({
     content: { ...source.content, summary: 'Updated synthetic cross-instance idea' },
   });
   const refreshed = await refreshedContent;
@@ -231,11 +231,11 @@ test('two independent API instances share presentation snapshots, revocation, co
   assert.equal((await tvEnded as [number])[0], 4003);
   assert.equal((await controllerEnded as [number])[0], 4003);
 
-  for (const path of ['/api/suggestions/ws', '/api/public-improvements/suggestions/ws']) {
+  for (const path of ['/api/ideas/ws', '/api/public-improvements/ideas/ws']) {
     const ws = new WebSocket(`${baseTwo.replace(/^http/, 'ws')}${path}`);
     sockets.add(ws);
     await once(ws, 'open');
-    const ready = nextFrame(ws, frame => frame.type === 'ready', 6000, `suggestion alias ${path}`);
+    const ready = nextFrame(ws, frame => frame.type === 'ready', 6000, `idea alias ${path}`);
     ws.send(JSON.stringify({ type: 'authenticate', apiKey: 'emulator-test' }));
     assert.equal((await ready).type, 'ready');
   }

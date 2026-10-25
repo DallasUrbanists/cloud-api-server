@@ -1,5 +1,6 @@
 /**
- * Browser integration helper. Copy into your web app; no Node dependencies.
+ * Deprecated protocol-v1 browser helper. Keep only while migrating old consumers;
+ * use the Ideas helper in new apps. No Node dependencies.
  * Callbacks must honor signal.aborted before applying asynchronously fetched data.
  */
 export function connectSuggestionNotices({

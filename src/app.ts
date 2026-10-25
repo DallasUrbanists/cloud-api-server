@@ -2,7 +2,7 @@ import express, { Express, Request, Response, NextFunction } from 'express';
 import swaggerUi from 'swagger-ui-express';
 import dotenv from 'dotenv';
 import { corsMiddleware, corsErrorHandler } from './middleware/cors.js';
-import suggestionRoutes from './routes/suggestionRoutes.js';
+import { ideaRoutes, legacySuggestionRoutes } from './routes/ideaRoutes.js';
 import contactRoutes from './routes/contactRoutes.js';
 import checkinRoutes from './routes/checkinRoutes.js';
 import operationGroupRoutes from './routes/operationGroupRoutes.js';
@@ -21,6 +21,7 @@ import { RecommendablePlaygroundController } from './controllers/recommendablePl
 import { HomeController } from './controllers/homeController.js';
 import { formatResponseIntegers } from './utils/responseFormatting.js';
 import { createPresentationRouter } from './routes/presentationRoutes.js';
+import { ideasMaintenanceEnabled } from './config/ideas.js';
 import { PresentationService } from './services/presentationService.js';
 import { FirestorePresentationStore } from './services/presentationStore.js';
 import { getPublicImprovementsDb } from './config/firestore.js';
@@ -785,10 +786,15 @@ export function createApp(options: { presentationService?: PresentationService }
   });
 
   // API Routes
-  app.use('/api/public-improvements/suggestions', suggestionRoutes);
-  app.use('/api/suggestions', suggestionRoutes); // Also register alias /api/suggestions for convenience
+  app.use('/api/public-improvements/suggestions', legacySuggestionRoutes);
+  app.use('/api/suggestions', legacySuggestionRoutes);
+  app.use('/api/public-improvements/ideas', ideaRoutes);
+  app.use('/api/ideas', ideaRoutes);
   const presentationService = options.presentationService ?? new PresentationService(new FirestorePresentationStore(getPublicImprovementsDb()));
-  app.use('/api/public-improvements/presentation', createPresentationRouter(presentationService));
+  app.use('/api/public-improvements/presentation', (req, res, next) => {
+    if (!ideasMaintenanceEnabled()) { next(); return; }
+    res.set('Retry-After', '5').status(503).json({ error: 'SERVICE_UNAVAILABLE', message: 'Presentation services are briefly unavailable for an Idea data migration. Retry shortly.' });
+  }, createPresentationRouter(presentationService));
   app.use('/api/contacts', contactRoutes);
   app.use('/api/checkins', checkinRoutes);
   app.use('/api/operation-groups', operationGroupRoutes);

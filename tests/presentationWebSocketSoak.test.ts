@@ -14,8 +14,8 @@ import { PresentationWebSocketServer } from '../src/presentationWebSocket.js';
 import { createPresentationRouter } from '../src/routes/presentationRoutes.js';
 import { PresentationService } from '../src/services/presentationService.js';
 import { FirestorePresentationStore } from '../src/services/presentationStore.js';
-import { attachSuggestionWebSocket } from '../src/suggestionWebSocket.js';
-import { SuggestionNoticeService } from '../src/services/suggestionNoticeService.js';
+import { attachIdeaWebSocket } from '../src/ideaWebSocket.js';
+import { IdeaNoticeService } from '../src/services/ideaNoticeService.js';
 import { participant, writableState } from './helpers/presentationFixture.js';
 
 const optInSkip = process.env.PRESENTATION_WEBSOCKET_SOAK === '1'
@@ -101,8 +101,8 @@ test('ten-minute idle/interaction soak keeps sockets live without client sync po
   app.use('/api/public-improvements/presentation', createPresentationRouter(service));
   const server = createServer(app);
   const presentation = new PresentationWebSocketServer(service);
-  const notices = new SuggestionNoticeService(() => () => undefined);
-  const closeSockets = attachSuggestionWebSocket(server, { presentation, notices, suggestionsEnabled: false });
+  const notices = new IdeaNoticeService(() => () => undefined);
+  const closeSockets = attachIdeaWebSocket(server, { presentation, notices, ideasEnabled: false });
   server.listen(0, '127.0.0.1'); await once(server, 'listening');
   const base = `http://127.0.0.1:${(server.address() as any).port}`;
   const sockets = new Set<WebSocket>();

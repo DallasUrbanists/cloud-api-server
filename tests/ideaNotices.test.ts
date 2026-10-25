@@ -1,13 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { SuggestionNoticeService, type SuggestionSnapshot, type SuggestionNotice, type SuggestionWatch } from '../src/services/suggestionNoticeService.js';
+import { IdeaNoticeService, type IdeaSnapshot, type IdeaNotice, type IdeaWatch } from '../src/services/ideaNoticeService.js';
 import { verifyApplicationAccess, apiAccess } from '../src/middleware/auth.js';
 
 export function fakeWatch() {
-  let next: (snapshot: SuggestionSnapshot) => void;
+  let next: (snapshot: IdeaSnapshot) => void;
   let error: (error: unknown) => void;
   let starts = 0, stops = 0;
-  const watch: SuggestionWatch = (n, e) => { starts++; next = n; error = e; return () => { stops++; }; };
+  const watch: IdeaWatch = (n, e) => { starts++; next = n; error = e; return () => { stops++; }; };
   return { watch, starts: () => starts, stops: () => stops,
     emit(changes: Array<{ type: 'added' | 'modified' | 'removed'; id: string; data?: unknown }> = []) {
       next({ docChanges: () => changes.map(c => ({ type: c.type, doc: { id: c.id, data: () => c.data } })) });
@@ -17,10 +17,10 @@ export function fakeWatch() {
 
 test('one listener suppresses baseline, compares public fields, and cleans up on last unsubscribe', () => {
   const source = fakeWatch();
-  const notices = new SuggestionNoticeService(source.watch);
-  const received: SuggestionNotice[] = [];
+  const notices = new IdeaNoticeService(source.watch);
+  const received: IdeaNotice[] = [];
   let ready = 0;
-  const subscriber = () => ({ ready() { ready++; }, notice(n: SuggestionNotice) { received.push(n); }, failed() { assert.fail('unexpected failure'); } });
+  const subscriber = () => ({ ready() { ready++; }, notice(n: IdeaNotice) { received.push(n); }, failed() { assert.fail('unexpected failure'); } });
   const first = notices.subscribe(subscriber());
   const second = notices.subscribe(subscriber());
   assert.equal(source.starts(), 1);
@@ -35,9 +35,9 @@ test('one listener suppresses baseline, compares public fields, and cleans up on
   source.emit([{ type: 'modified', id: '41', data: { ...data, emoji: '🌳', streetmix: { coordinate: data.location, revision: 1 } } }]);
   assert.equal(received.length, 4);
   source.emit([{ type: 'added', id: '42', data: { ...data, id: 42 } }]);
-  assert.equal(received[4].type, 'suggestion.created');
+  assert.equal(received[4].type, 'idea.created');
   source.emit([{ type: 'removed', id: '41' }]);
-  assert.deepEqual(received[6], { type: 'suggestion.deleted', suggestionId: 41 });
+  assert.deepEqual(received[6], { type: 'idea.deleted', ideaId: 41 });
   const third = notices.subscribe(subscriber());
   assert.equal(ready, 3);
   first(); second();
@@ -47,10 +47,10 @@ test('one listener suppresses baseline, compares public fields, and cleans up on
 });
 
 test('listener failure resets its baseline and fences callbacks from old listeners', () => {
-  const callbacks: Array<(s: SuggestionSnapshot) => void> = [];
+  const callbacks: Array<(s: IdeaSnapshot) => void> = [];
   const errors: Array<(error: unknown) => void> = [];
   let failures = 0, ready = 0, notices = 0, stops = 0;
-  const service = new SuggestionNoticeService((n, e) => { callbacks.push(n); errors.push(e); return () => { stops++; }; });
+  const service = new IdeaNoticeService((n, e) => { callbacks.push(n); errors.push(e); return () => { stops++; }; });
   const subscriber = { ready() { ready++; }, notice() { notices++; }, failed() { failures++; } };
   service.subscribe(subscriber);
   callbacks[0]({ docChanges: () => [] });

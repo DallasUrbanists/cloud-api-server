@@ -1,7 +1,7 @@
 /**
- * Civic suggestion content, authorship, locations, and create/update normalization.
+ * Civic idea content, authorship, locations, and create/update normalization.
  *
- * Let's imagine a neighbor wants a shady place to sit at a bus stop. A suggestion
+ * Let's imagine a neighbor wants a shady place to sit at a bus stop. An idea
  * brings their idea, a nearby place, and any photos together so others can understand it.
  *
  * @remarks
@@ -11,11 +11,11 @@
  * @module
  */
 
-/** Workflow state of a suggestion, independent of any attached action's status. */
-export type SuggestionStatus = 'new' | 'inprogress' | 'stalled' | 'withdrawn' | 'completed';
+/** Workflow state of an idea, independent of any attached action's status. */
+export type IdeaStatus = 'new' | 'inprogress' | 'stalled' | 'withdrawn' | 'completed';
 
-/** Allowed suggestion states reused by validators and list filtering. */
-export const VALID_SUGGESTION_STATUSES: readonly SuggestionStatus[] = [
+/** Allowed idea states reused by validators and list filtering. */
+export const VALID_IDEA_STATUSES: readonly IdeaStatus[] = [
   'new',
   'inprogress',
   'stalled',
@@ -23,28 +23,28 @@ export const VALID_SUGGESTION_STATUSES: readonly SuggestionStatus[] = [
   'completed',
 ] as const;
 
-/** Public attribution supplied with a suggestion; mutation authorization checks authenticated emails separately. */
-export interface SuggestionAuthor {
+/** Public attribution supplied with an idea; mutation authorization checks authenticated emails separately. */
+export interface IdeaAuthor {
   email: string;
   name: string;
 }
 
 /** A referenced image with caption and normalized timestamp, not uploaded image bytes. */
-export interface SuggestionPhoto {
+export interface IdeaPhoto {
   url: string;
   caption: string;
   timestamp: string; // ISO 8601 string representation
 }
 
 /** The short idea, longer explanation, and optional photos that readers see. */
-export interface SuggestionContent {
+export interface IdeaContent {
   summary: string;
   details: string;
-  photos?: SuggestionPhoto[];
+  photos?: IdeaPhoto[];
 }
 
 /** Place hints supplied by the author; storing an address does not automatically geocode it. */
-export interface SuggestionLocation {
+export interface IdeaLocation {
   latitude?: number;
   longitude?: number;
   description: string;
@@ -55,33 +55,33 @@ export interface SuggestionLocation {
  * A persisted civic idea with public attribution and server-managed modification dates.
  *
  * Let's imagine a shared notebook where neighbors describe improvements to their
- * streets. Each suggestion is one page, keeping the idea and its place together.
+ * streets. Each idea is one page, keeping the idea and its place together.
  */
-export interface Suggestion {
+export interface Idea {
   id: number;
-  /** Optional server-assigned emoji describing the suggestion content. */
+  /** Optional server-assigned emoji describing the idea content. */
   emoji?: string;
-  /** IDs of effective boundaries matching the suggestion's location when it was created. */
+  /** IDs of effective boundaries matching the idea's location when it was created. */
   boundaryIds: number[];
   creationDate: string; // ISO 8601 string representation for API responses & JSON
   modificationDate: string;
-  status: SuggestionStatus;
-  author: SuggestionAuthor;
-  content: SuggestionContent;
-  location: SuggestionLocation;
+  status: IdeaStatus;
+  author: IdeaAuthor;
+  content: IdeaContent;
+  location: IdeaLocation;
   /** Current server-managed drawing; absent legacy records are returned as null. */
-  streetmix?: import('./suggestionStreetmix.js').SuggestionStreetmix | null;
+  streetmix?: import('./ideaStreetmix.js').IdeaStreetmix | null;
 }
 
 /** Detail view enriched with a recent activity page; list responses deliberately omit this log. */
-export interface SuggestionDetail extends Suggestion {
+export interface IdeaDetail extends Idea {
   log: import('./recommendedAction.js').LoggedAction[];
 }
 
 /** Author-supplied creation content before the service assigns persistence dates and a default identifier. */
-export interface CreateSuggestionDTO {
+export interface CreateIdeaDTO {
   id?: number;
-  status?: SuggestionStatus;
+  status?: IdeaStatus;
   author: {
     email: string;
     name: string;
@@ -89,7 +89,7 @@ export interface CreateSuggestionDTO {
   content: {
     summary: string;
     details?: string;
-    photos?: SuggestionPhoto[];
+    photos?: IdeaPhoto[];
   };
   location?: {
     latitude?: number;
@@ -100,8 +100,8 @@ export interface CreateSuggestionDTO {
 }
 
 /** Partial changes to known fields; nested objects merge and supplied photo arrays replace the prior array. */
-export interface UpdateSuggestionDTO {
-  status?: SuggestionStatus;
+export interface UpdateIdeaDTO {
+  status?: IdeaStatus;
   author?: {
     email?: string;
     name?: string;
@@ -109,7 +109,7 @@ export interface UpdateSuggestionDTO {
   content?: {
     summary?: string;
     details?: string;
-    photos?: SuggestionPhoto[];
+    photos?: IdeaPhoto[];
   };
   location?: {
     latitude?: number;
@@ -126,7 +126,7 @@ export interface UpdateSuggestionDTO {
  * Let's imagine adding a photo of a bus stop so neighbors can see where shade is
  * needed. This keeps the photo's address and a short caption together.
  */
-export function validatePhotos(photos: any): { error?: string; data?: SuggestionPhoto[] } {
+export function validatePhotos(photos: any): { error?: string; data?: IdeaPhoto[] } {
   if (!Array.isArray(photos)) {
     return { error: 'content.photos must be an array.' };
   }
@@ -135,7 +135,7 @@ export function validatePhotos(photos: any): { error?: string; data?: Suggestion
     return { error: 'content.photos cannot contain more than 10 photos.' };
   }
 
-  const validatedPhotos: SuggestionPhoto[] = [];
+  const validatedPhotos: IdeaPhoto[] = [];
 
   for (let i = 0; i < photos.length; i++) {
     const item = photos[i];
@@ -170,13 +170,13 @@ export function validatePhotos(photos: any): { error?: string; data?: Suggestion
 }
 
 /**
- * Prepares a new suggestion, trimming known text and supplying initial status/location defaults.
+ * Prepares a new idea, trimming known text and supplying initial status/location defaults.
  * @returns Normalized data or the first validation error; no record is created here.
  * @example
  * Let's imagine someone sends in the idea "Add a bench by the bus stop." This helps
- * organize their name, idea, and place into a suggestion ready to be saved.
+ * organize their name, idea, and place into an idea ready to be saved.
  */
-export function validateCreateSuggestion(body: any): { error?: string; data?: CreateSuggestionDTO } {
+export function validateCreateIdea(body: any): { error?: string; data?: CreateIdeaDTO } {
   if (!body || typeof body !== 'object') {
     return { error: 'Request body must be a JSON object.' };
   }
@@ -200,7 +200,7 @@ export function validateCreateSuggestion(body: any): { error?: string; data?: Cr
     return { error: 'content.summary is required and must be a non-empty string.' };
   }
 
-  let validatedPhotos: SuggestionPhoto[] | undefined = undefined;
+  let validatedPhotos: IdeaPhoto[] | undefined = undefined;
   if (body.content.photos !== undefined) {
     const photosValidation = validatePhotos(body.content.photos);
     if (photosValidation.error) {
@@ -210,9 +210,9 @@ export function validateCreateSuggestion(body: any): { error?: string; data?: Cr
   }
 
   // Validate status if provided
-  if (body.status !== undefined && !VALID_SUGGESTION_STATUSES.includes(body.status)) {
+  if (body.status !== undefined && !VALID_IDEA_STATUSES.includes(body.status)) {
     return {
-      error: `Invalid status "${body.status}". Allowed values: ${VALID_SUGGESTION_STATUSES.join(', ')}`,
+      error: `Invalid status "${body.status}". Allowed values: ${VALID_IDEA_STATUSES.join(', ')}`,
     };
   }
 
@@ -263,20 +263,20 @@ export function validateCreateSuggestion(body: any): { error?: string; data?: Cr
  * this is not a strict rejection of unsupported keys or an ownership check.
  * @example
  * Let's imagine the bench idea now has a better photo. This prepares that change
- * without making the neighbor write the whole suggestion again.
+ * without making the neighbor write the whole idea again.
  */
-export function validateUpdateSuggestion(body: any): { error?: string; data?: UpdateSuggestionDTO } {
+export function validateUpdateIdea(body: any): { error?: string; data?: UpdateIdeaDTO } {
   if (!body || typeof body !== 'object' || Object.keys(body).length === 0) {
     return { error: 'Request body must contain at least one field to update.' };
   }
 
-  const updateData: UpdateSuggestionDTO = {};
+  const updateData: UpdateIdeaDTO = {};
 
   // Status
   if (body.status !== undefined) {
-    if (!VALID_SUGGESTION_STATUSES.includes(body.status)) {
+    if (!VALID_IDEA_STATUSES.includes(body.status)) {
       return {
-        error: `Invalid status "${body.status}". Allowed values: ${VALID_SUGGESTION_STATUSES.join(', ')}`,
+        error: `Invalid status "${body.status}". Allowed values: ${VALID_IDEA_STATUSES.join(', ')}`,
       };
     }
     updateData.status = body.status;

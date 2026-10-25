@@ -4,6 +4,9 @@ Start with a feature guide below, then explore the [generated module and symbol 
 
 ## Feature guides
 
+- [Ideas consumer handoff](ideas-consumer-handoff.md): application migration instructions for the Suggestions-to-Ideas transition.
+- [Ideas data migration](ideas-migration.md): staged Firestore and photo migration runbook.
+
 - [Staging API operations](staging-operations.md): isolated configuration, operator provisioning, deployment, acceptance and rollback.
 
 - [Boundaries](boundaries.md): jurisdiction membership, map geometry, dates, and address lookup.
@@ -13,13 +16,13 @@ Start with a feature guide below, then explore the [generated module and symbol 
 - [TV presentation sessions](presentation.md): capability authentication, receiver/controller/audience lifecycle, REST and WebSocket synchronization, and isolated local setup.
 - [Streetmix](streetmix.md): coordinate-based street reconstruction, public designs, retries, and the testing playground.
 - [Representatives](representatives.md): public office/contact lookup using shared geography and tenure history.
-- [Suggestions](suggestions.md): civic ideas, photos, next steps, and activity.
+- [Ideas](ideas.md): civic ideas, photos, next steps, and activity.
 - [Recommendable Actions](recommendable-actions.md): the original reusable-action documentation pilot.
 
 ## Documentation layers
 
 - **Feature overview:** responsibilities, dependencies, and workflows, maintained as Markdown.
-- **Code reference:** generated from TypeScript declarations and TSDoc-style comments. Covers the Recommendable Actions pilot plus the selected boundary, synchronization, Assist, representative, and suggestion layers and their immediate helpers. It is not yet a reference for the entire system; migrations, seed registries, unrelated features, and shared application/configuration code are linked as context.
+- **Code reference:** generated from TypeScript declarations and TSDoc-style comments. Covers the Recommendable Actions pilot plus the selected boundary, synchronization, Assist, representative, and idea layers and their immediate helpers. It is not yet a reference for the entire system; migrations, seed registries, unrelated features, and shared application/configuration code are linked as context.
 - **HTTP reference:** the existing Swagger UI at `/docs` on a running API server. The [OpenAPI source](../src/docs/swagger.ts) remains authoritative for HTTP contracts. This static site does not start the API or duplicate its schemas.
 
 ## Build and read locally

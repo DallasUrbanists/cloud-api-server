@@ -19,7 +19,7 @@ export const RECOMMENDABLE_STATUSES = ['candidate', 'approved', 'closed', 'uncer
 /** A review or catalog state; only approved catalog entries participate in matching. */
 export type RecommendableStatus = typeof RECOMMENDABLE_STATUSES[number];
 
-/** A reusable, source-backed action, distinct from an action attached to one suggestion. */
+/** A reusable, source-backed action, distinct from an action attached to one idea. */
 export interface RecommendableAction {
   id: string;
   summary: string;
@@ -38,7 +38,7 @@ export interface RecommendableAction {
   status: RecommendableStatus;
   /** Catalog revision used to identify persisted snapshots; candidates start at one. */
   version: number;
-  /** Optional extraction confidence, distinct from a suggestion's match probability. */
+  /** Optional extraction confidence, distinct from an idea's match probability. */
   confidence: number | null;
   createdAt: string;
   updatedAt: string;
@@ -131,20 +131,20 @@ export function validateRecommendableInput(body: unknown): { data?: Recommendabl
 }
 
 /**
- * Determines whether an action's geographic scope includes a suggestion.
+ * Determines whether an action's geographic scope includes an idea.
  *
  * @remarks
- * An unrestricted action matches even when no suggestion boundaries are known.
+ * An unrestricted action matches even when no idea boundaries are known.
  * Restricted actions need any shared ID, not a match against every boundary.
  *
  * @param recommendableBoundaries - Action restrictions; empty means global applicability.
- * @param suggestionBoundaryIds - Boundaries resolved for the suggestion's location.
+ * @param ideaBoundaryIds - Boundaries resolved for the idea's location.
  * @returns Whether the geographic scope matches; does not judge topical relevance.
  *
  * @example
- * Let's imagine there's a recommendable action for Downtown and Uptown. A suggestion
+ * Let's imagine there's a recommendable action for Downtown and Uptown. An idea
  * in either neighborhood is in the right place for that action. This function is
- * like checking a map to see whether the action and the suggestion share a place.
+ * like checking a map to see whether the action and the idea share a place.
  * ```typescript
  * const downtown = 10;
  * const uptown = 20;
@@ -153,8 +153,8 @@ export function validateRecommendableInput(body: unknown): { data?: Recommendabl
  * anyBoundaryOverlap([downtown, uptown], [oakCliff]); // false
  * ```
  */
-export function anyBoundaryOverlap(recommendableBoundaries: number[], suggestionBoundaryIds: number[]): boolean {
+export function anyBoundaryOverlap(recommendableBoundaries: number[], ideaBoundaryIds: number[]): boolean {
   if (recommendableBoundaries.length === 0) return true;
-  const suggestionIds = new Set(suggestionBoundaryIds);
-  return recommendableBoundaries.some(id => suggestionIds.has(id));
+  const ideaIds = new Set(ideaBoundaryIds);
+  return recommendableBoundaries.some(id => ideaIds.has(id));
 }

@@ -6,10 +6,11 @@
 import 'dotenv/config';
 import { pathToFileURL } from 'node:url';
 import { deploymentConfig, type DeploymentEnv } from '../config/deployment.js';
+import { ideaDocumentPath } from '../config/ideas.js';
 
 /** Reserved fixture keys; reset touches only these records and their fixture descendants. */
 export const fixtureManifest = {
-  marker: 'cloud-api-staging-fixtures-v1', suggestion: '910000001', sqlId: -910000001,
+  marker: 'cloud-api-staging-fixtures-v1', idea: '910000001', sqlId: -910000001,
   contactName: 'STAGING FIXTURE NEIGHBOR', eventUid: 'staging-fixture-walk@example.invalid',
   object: 'staging-fixtures/v1/bus-stop.svg',
 } as const;
@@ -31,7 +32,7 @@ export async function runFixtures(args: string[]) {
     import('../config/firestore.js'), import('../config/storage.js'), import('../config/db.js'),
   ]);
   const db = getPublicImprovementsDb();
-  const ref = db.collection('suggestion').doc(fixtureManifest.suggestion);
+  const ref = db.doc(ideaDocumentPath(fixtureManifest.idea));
   const file = getStorage().bucket(plan.bucket).file(fixtureManifest.object);
   const client = await pool.connect();
   try {
@@ -59,7 +60,7 @@ export async function runFixtures(args: string[]) {
         contentType: 'image/svg+xml', metadata: { metadata: { fixture: fixtureManifest.marker } }, preconditionOpts: { ifGenerationMatch: 0 },
       });
       if (!existing.exists) await ref.create({
-        _fixture: fixtureManifest.marker, id: Number(fixtureManifest.suggestion), status: 'new', boundaryIds: [],
+        _fixture: fixtureManifest.marker, id: Number(fixtureManifest.idea), status: 'new', boundaryIds: [],
         creationDate: '2030-01-01T00:00:00Z', modificationDate: '2030-01-01T00:00:00Z',
         author: { name: 'Staging Neighbor', email: 'neighbor@example.invalid' },
         content: { summary: 'Add shade to a bus stop', details: 'Synthetic staging fixture.', photos: [{ url: `https://storage.googleapis.com/${plan.bucket}/${fixtureManifest.object}`, caption: 'Synthetic bus stop', timestamp: '2030-01-01T00:00:00Z' }] },

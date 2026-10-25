@@ -15,7 +15,7 @@ import { validateMatchInput } from '../models/recommendableMatch.js';
 
 /** Adapts Express requests to the reusable-action workflow without owning access policy. */
 export class RecommendableActionController {
-  /** Match free text without writing suggestions or recommended actions. */
+  /** Match free text without writing ideas or recommended actions. */
   static async match(req: Request, res: Response, next: NextFunction): Promise<void> {
     res.setHeader('Cache-Control', 'no-store');
     if (!req.is('application/json')) {

@@ -4,7 +4,7 @@ import { operationPaths, operationSchemas, stagingParameters, stagingResponses }
 import { DEFAULT_SUMMARY_OPTIONS, GRAMMAR_OUTPUT_LIMIT, SUMMARY_SENTENCE_TYPES } from '../models/assist.js';
 import { boundaryPaths, boundarySchemas, boundarySearchParameters } from './boundaries.js';
 import { streetmixPaths, streetmixSchemas } from './streetmix.js';
-import { suggestionStreetmixPaths, suggestionStreetmixSchemas } from './suggestionStreetmix.js';
+import { ideaStreetmixPaths, ideaStreetmixSchemas } from './ideaStreetmix.js';
 import { presentationApiPaths, presentationSchemas } from './presentation.js';
 
 const require = createRequire(import.meta.url);
@@ -40,7 +40,7 @@ Authorization:
 Endpoint policies:
 - Contacts: GET/list and GET/{id}/PUT/{id} are API-key REQUIRED and JWT PARTIAL; POST is REQUIRED/PUBLIC; DELETE is REQUIRED/PRIVATE.
 - Check-ins: GET/list and GET/{id} are REQUIRED/PARTIAL; POST is OPTIONAL/PUBLIC; PUT and DELETE are REQUIRED/PRIVATE. include_contact accepts false, partial, or full.
-- Suggestions: reads, creation, and upload URLs are REQUIRED/PUBLIC; update and delete are REQUIRED/PRIVATE for the author or staff.
+- Ideas: reads, creation, and upload URLs are REQUIRED/PUBLIC; update and delete are REQUIRED/PRIVATE for the author or staff.
 - Events and calendar reads are OPTIONAL/PUBLIC; event creation, updates, deletion, and iCal imports are REQUIRED/PRIVATE for staff or system roles.
 - Representatives, including the Dallas City Council shortcut, and boundary reads/TTL ticks/job status are public and require no API key or user authentication.
 - Forced boundary/representative tick POSTs require an API key, canonical staff user authorization, and production App Check; due research uses a separately deployed durable worker.
@@ -60,8 +60,8 @@ Endpoint policies:
   tags: [
     { name: 'Streetmix', description: 'Approximate existing street cross-sections from Dallas coordinates.' },
     {
-      name: 'Suggestions',
-      description: 'Endpoints for managing suggestions in the public-improvements database.',
+      name: 'Ideas',
+      description: 'Endpoints for managing ideas in the public-improvements database.',
     },
     {
       name: 'Contacts',
@@ -96,22 +96,22 @@ Endpoint policies:
     { name: 'Presentation', description: 'Accountless capability-authenticated sessions connecting a TV receiver, presenter, and independent audience viewers. Disabled by default with PRESENTATION_ENABLED=false.' },
   ],
   paths: {
-    '/api/suggestions/ws': {
+    '/api/ideas/ws': {
       get: {
-        tags: ['Suggestions'],
-        summary: 'Connect to real-time suggestion notices (WebSocket)',
-        description: 'Upgrade using a WebSocket client, then send {type:"authenticate",apiKey,appCheckToken} within five seconds. Production requires App Check. After {type:"ready",protocolVersion:1}, receive suggestion.created, suggestion.updated, and suggestion.deleted messages with suggestionId. Refetch REST data on every ready; no replay history. Alias: /api/public-improvements/suggestions/ws. Authentication is in the first frame, not URL parameters. See [protocol and browser example](https://github.com/DallasUrbanists/cloud-api-server/blob/main/docs/suggestion-notices.md).',
+        tags: ['Ideas'],
+        summary: 'Connect to real-time idea notices (WebSocket)',
+        description: 'Upgrade using a WebSocket client, then send {type:"authenticate",apiKey,appCheckToken} within five seconds. Production requires App Check. After {type:"ready",protocolVersion:2}, receive idea.created, idea.updated, and idea.deleted messages with numeric ideaId. Refetch REST data on every ready; no replay history. Alias: /api/public-improvements/ideas/ws. Suggestions socket paths remain available with protocolVersion 1 during migration. Authentication is in the first frame, not URL parameters. See [protocol and browser example](https://github.com/DallasUrbanists/cloud-api-server/blob/main/docs/idea-notices.md).',
         security: [],
         responses: {
           '101': { description: 'WebSocket upgraded; application authentication is still required before receiving notices.' },
           '426': { description: 'Ordinary HTTP requests must use WebSocket upgrade.' },
           '403': { description: 'Upgrade origin rejected.' },
-          '503': { description: 'Connection capacity reached; retry later.' },
+          '503': { description: 'Connection capacity reached or Ideas are in the migration maintenance window; retry shortly.' },
         },
       },
     },
       ...streetmixPaths,
-      ...suggestionStreetmixPaths,
+      ...ideaStreetmixPaths,
       ...presentationApiPaths,
       ...operationPaths,
       ...boundaryPaths,
@@ -692,11 +692,11 @@ Endpoint policies:
         },
       },
     },
-    '/api/suggestions/upload-url': {
+    '/api/ideas/upload-url': {
       post: {
         summary: 'Generate Signed Photo Upload URL',
         description: 'Generates a temporary V4 signed Google Cloud Storage PUT URL allowing client applications to upload resized photos directly to Cloud Storage securely.',
-        tags: ['Suggestions'],
+        tags: ['Ideas'],
         requestBody: {
           required: false,
           content: {
@@ -743,11 +743,11 @@ Endpoint policies:
                         publicUrl: {
                           type: 'string',
                           format: 'uri',
-                          description: 'Permanent public read URL to store in the suggestion photos array.',
+                          description: 'Permanent public read URL to store in the idea photos array.',
                         },
                         filePath: {
                           type: 'string',
-                          example: 'suggestions/uploads/1695484800000-uuid.webp',
+                          example: 'ideas/uploads/1695484800000-uuid.webp',
                         },
                         expiresAt: {
                           type: 'string',
@@ -770,16 +770,16 @@ Endpoint policies:
         },
       },
     },
-    '/api/suggestions': {
+    '/api/ideas': {
       get: {
-        summary: 'List All Suggestions',
-        description: 'Retrieves a list of suggestions from the public-improvements database, with optional filters.',
-        tags: ['Suggestions'],
+        summary: 'List All Ideas',
+        description: 'Retrieves a list of ideas from the public-improvements database, with optional filters.',
+        tags: ['Ideas'],
         parameters: [
           {
             name: 'status',
             in: 'query',
-            description: 'Filter suggestions by status',
+            description: 'Filter ideas by status',
             required: false,
             schema: {
               type: 'string',
@@ -789,7 +789,7 @@ Endpoint policies:
           {
             name: 'authorEmail',
             in: 'query',
-            description: 'Filter suggestions by author email',
+            description: 'Filter ideas by author email',
             required: false,
             schema: {
               type: 'string',
@@ -810,7 +810,7 @@ Endpoint policies:
         ],
         responses: {
           200: {
-            description: 'List of suggestions returned successfully.',
+            description: 'List of ideas returned successfully.',
             content: {
               'application/json': {
                 schema: {
@@ -819,7 +819,7 @@ Endpoint policies:
                     data: {
                       type: 'array',
                       items: {
-                        $ref: '#/components/schemas/Suggestion',
+                        $ref: '#/components/schemas/Idea',
                       },
                     },
                     count: {
@@ -840,22 +840,22 @@ Endpoint policies:
         },
       },
       post: {
-        summary: 'Create a New Suggestion',
-        description: 'Creates a new civic improvement suggestion in the public-improvements database. The integer ID will be auto-generated sequentially if omitted.',
-        tags: ['Suggestions'],
+        summary: 'Create a New Idea',
+        description: 'Creates a new civic improvement idea in the public-improvements database. The integer ID will be auto-generated sequentially if omitted.',
+        tags: ['Ideas'],
         requestBody: {
           required: true,
           content: {
             'application/json': {
               schema: {
-                $ref: '#/components/schemas/CreateSuggestionDTO',
+                $ref: '#/components/schemas/CreateIdeaDTO',
               },
             },
           },
         },
         responses: {
           201: {
-            description: 'Suggestion created successfully.',
+            description: 'Idea created successfully.',
             content: {
               'application/json': {
                 schema: {
@@ -863,10 +863,10 @@ Endpoint policies:
                   properties: {
                     message: {
                       type: 'string',
-                      example: 'Suggestion created successfully.',
+                      example: 'Idea created successfully.',
                     },
                     data: {
-                      $ref: '#/components/schemas/Suggestion',
+                      $ref: '#/components/schemas/Idea',
                     },
                   },
                 },
@@ -877,7 +877,7 @@ Endpoint policies:
             $ref: '#/components/responses/BadRequestError',
           },
           409: {
-            description: 'Conflict - Suggestion with provided ID already exists.',
+            description: 'Conflict - Idea with provided ID already exists.',
             content: {
               'application/json': {
                 schema: {
@@ -892,11 +892,11 @@ Endpoint policies:
         },
       },
     },
-    '/api/suggestions/{suggestionId}/boundaries': {
+    '/api/ideas/{ideaId}/boundaries': {
       get: {
-        summary: 'List Suggestion Boundaries', tags: ['Suggestions'], security: [{ ApiKeyAuth: [] }],
-        description: 'Returns the boundary records associated with the suggestion when it was created.',
-        parameters: [{ name: 'suggestionId', in: 'path', required: true, schema: { type: 'integer', minimum: 1 } }],
+        summary: 'List Idea Boundaries', tags: ['Ideas'], security: [{ ApiKeyAuth: [] }],
+        description: 'Returns the boundary records associated with the idea when it was created.',
+        parameters: [{ name: 'ideaId', in: 'path', required: true, schema: { type: 'integer', minimum: 1 } }],
         responses: {
           200: { description: 'Boundaries returned.', content: { 'application/json': { schema: { type: 'object', properties: { data: { type: 'array', items: { $ref: '#/components/schemas/Boundary' } }, count: { type: 'integer' } } } } } },
           400: { $ref: '#/components/responses/BadRequestError' },
@@ -904,12 +904,12 @@ Endpoint policies:
         },
       },
     },
-    '/api/suggestions/{suggestionId}/representatives': {
+    '/api/ideas/{ideaId}/representatives': {
       get: {
-        summary: 'List Suggestion Representatives', tags: ['Suggestions'], security: [{ ApiKeyAuth: [] }],
-        description: 'Returns representatives linked to the suggestion’s stored boundaries. Currently serving representatives are returned by default; servingAsOf selects a date.',
+        summary: 'List Idea Representatives', tags: ['Ideas'], security: [{ ApiKeyAuth: [] }],
+        description: 'Returns representatives linked to the idea’s stored boundaries. Currently serving representatives are returned by default; servingAsOf selects a date.',
         parameters: [
-          { name: 'suggestionId', in: 'path', required: true, schema: { type: 'integer', minimum: 1 } },
+          { name: 'ideaId', in: 'path', required: true, schema: { type: 'integer', minimum: 1 } },
           { name: 'servingAsOf', in: 'query', description: 'Return representatives serving on this date; defaults to currently serving.', schema: { type: 'string', format: 'date' } },
           { name: 'limit', in: 'query', schema: { type: 'integer', minimum: 1, maximum: 500, default: 100 } },
           { name: 'offset', in: 'query', schema: { type: 'integer', minimum: 0, maximum: 100000, default: 0 } },
@@ -921,28 +921,28 @@ Endpoint policies:
         },
       },
     },
-    '/api/suggestions/{suggestionId}/recommended-actions': {
+    '/api/ideas/{ideaId}/recommended-actions': {
       get: {
-        summary: 'List Recommended Actions', tags: ['Suggestions'], security: [{ ApiKeyAuth: [] }],
-        description: 'Lists actions for a Suggestion. Expired actions are excluded unless includeExpired=true.',
+        summary: 'List Recommended Actions', tags: ['Ideas'], security: [{ ApiKeyAuth: [] }],
+        description: 'Lists actions for an idea. Expired actions are excluded unless includeExpired=true.',
         parameters: [
-          { name: 'suggestionId', in: 'path', required: true, schema: { type: 'integer', minimum: 1 } },
+          { name: 'ideaId', in: 'path', required: true, schema: { type: 'integer', minimum: 1 } },
           { name: 'status', in: 'query', schema: { $ref: '#/components/schemas/RecommendedActionStatus' } },
           { name: 'includeExpired', in: 'query', schema: { type: 'boolean', default: false } },
         ],
         responses: { 200: { description: 'Actions returned.', content: { 'application/json': { schema: { type: 'object', properties: { data: { type: 'array', items: { $ref: '#/components/schemas/RecommendedAction' } }, count: { type: 'integer' } } } } } }, 404: { $ref: '#/components/responses/NotFoundError' } },
       },
       post: {
-        summary: 'Create Recommended Action', tags: ['Suggestions'], security: [{ ApiKeyAuth: [], BearerAuth: [] }],
+        summary: 'Create Recommended Action', tags: ['Ideas'], security: [{ ApiKeyAuth: [], BearerAuth: [] }],
         description: 'Staff only. representativeId is validated against PostgreSQL.',
-        parameters: [{ name: 'suggestionId', in: 'path', required: true, schema: { type: 'integer', minimum: 1 } }],
+        parameters: [{ name: 'ideaId', in: 'path', required: true, schema: { type: 'integer', minimum: 1 } }],
         requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/CreateRecommendedActionDTO' } } } },
         responses: { 201: { description: 'Action created.', content: { 'application/json': { schema: { $ref: '#/components/schemas/RecommendedActionEnvelope' } } } }, 400: { $ref: '#/components/responses/BadRequestError' }, 401: { $ref: '#/components/responses/UnauthorizedError' }, 403: { $ref: '#/components/responses/ForbiddenError' }, 404: { $ref: '#/components/responses/NotFoundError' } },
       },
     },
     '/api/recommendables': {
       get: {
-        summary: 'List or search approved Recommendable Actions', tags: ['Suggestions'], security: [],
+        summary: 'List or search approved Recommendable Actions', tags: ['Ideas'], security: [],
         description: 'Public endpoint. An optional search term performs a case-insensitive substring match across summary, instructions, why, and whyNot. Results are bounded to 500 approved catalog entries.',
         parameters: [{ name: 'search', in: 'query', required: false, schema: { type: 'string' } }],
         responses: {
@@ -955,7 +955,7 @@ Endpoint policies:
     },
     '/api/recommendables/locations': {
       get: {
-        summary: 'Autocomplete an address or resolve a selected Google place', tags: ['Suggestions'], security: [],
+        summary: 'Autocomplete an address or resolve a selected Google place', tags: ['Ideas'], security: [],
         description: 'Public server-side Places API (New) proxy for the playground. Supply input for predictions or placeId for location details, with the same sessionToken for a search/selection session. Requires GOOGLE_MAPS_API_KEY with Places API (New) enabled. Responses are not cached; credentials remain server-side.',
         parameters: [
           { name: 'input', in: 'query', schema: { type: 'string', minLength: 3, maxLength: 200 }, description: 'Address text. Required unless placeId is supplied. Predictions are biased toward Dallas.' },
@@ -974,8 +974,8 @@ Endpoint policies:
     },
     '/api/recommendables/match': {
       post: {
-        summary: 'Match free text to approved Recommendable Actions', tags: ['Suggestions'], security: [],
-        description: 'Read-only matching with no suggestion record. Optional coordinates must be supplied together; without them only unrestricted actions participate. Uses the entire approved catalog. Actions scoring strictly above 20% are compared for the same practical next step for this description; redundancy probabilities strictly above 90% remove the lower-scoring alternative. Complementary actions remain. Failed comparisons keep both actions. Diagnostics report each pair decision, failures, cache use and timings.',
+        summary: 'Match free text to approved Recommendable Actions', tags: ['Ideas'], security: [],
+        description: 'Read-only matching with no idea record. Optional coordinates must be supplied together; without them only unrestricted actions participate. Uses the entire approved catalog. Actions scoring strictly above 20% are compared for the same practical next step for this description; redundancy probabilities strictly above 90% remove the lower-scoring alternative. Complementary actions remain. Failed comparisons keep both actions. Diagnostics report each pair decision, failures, cache use and timings.',
         requestBody: { required: true, content: { 'application/json': { schema: {
           type: 'object', required: ['text'], properties: {
             text: { type: 'string', minLength: 1, maxLength: 10000 },
@@ -1032,13 +1032,13 @@ Endpoint policies:
     },
     '/api/recommendables/{id}': {
       get: {
-        summary: 'Get an approved Recommendable Action', tags: ['Suggestions'], security: [],
+        summary: 'Get an approved Recommendable Action', tags: ['Ideas'], security: [],
         description: 'Public endpoint. Returns only approved catalog entries.',
         parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
         responses: { 200: { description: 'Approved catalog entry.', content: { 'application/json': { schema: { $ref: '#/components/schemas/RecommendableActionEnvelope' } } } }, 404: { $ref: '#/components/responses/NotFoundError' } },
       },
       patch: {
-        summary: 'Update Recommendable Action status', tags: ['Suggestions'], security: [{ ApiKeyAuth: [], BearerAuth: [] }], description: 'Staff only. Creates a versioned status snapshot; uncertain and closed entries are excluded from matching.',
+        summary: 'Update Recommendable Action status', tags: ['Ideas'], security: [{ ApiKeyAuth: [], BearerAuth: [] }], description: 'Staff only. Creates a versioned status snapshot; uncertain and closed entries are excluded from matching.',
         parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
         requestBody: { required: true, content: { 'application/json': { schema: { type: 'object', required: ['status'], properties: { status: { type: 'string', enum: ['approved', 'closed', 'uncertain'] } } } } } },
         responses: { 200: { description: 'Catalog status updated.' }, 400: { $ref: '#/components/responses/BadRequestError' }, 403: { $ref: '#/components/responses/ForbiddenError' }, 404: { $ref: '#/components/responses/NotFoundError' } },
@@ -1046,7 +1046,7 @@ Endpoint policies:
     },
     '/api/recommendables/candidates': {
       post: {
-        summary: 'Extract a Recommendable Action candidate', tags: ['Suggestions'], security: [{ ApiKeyAuth: [], BearerAuth: [] }],
+        summary: 'Extract a Recommendable Action candidate', tags: ['Ideas'], security: [{ ApiKeyAuth: [], BearerAuth: [] }],
         description: 'Authenticated users may submit an official City of Dallas source URL, a description, and optional boundary IDs. The candidate is evidence-validated and queued for staff review.',
         requestBody: { required: true, content: { 'application/json': { schema: {
           type: 'object', required: ['sourceUrl', 'description'], properties: {
@@ -1058,29 +1058,29 @@ Endpoint policies:
         responses: { 201: { description: 'Candidate created.' }, 400: { $ref: '#/components/responses/BadRequestError' }, 401: { $ref: '#/components/responses/UnauthorizedError' }, 422: { description: 'No evidence-backed public input opportunity was found.' } },
       },
       get: {
-        summary: 'List Recommendable Actions for review', tags: ['Suggestions'], security: [{ ApiKeyAuth: [], BearerAuth: [] }], description: 'Staff only. Compatibility route returning up to the 500 newest actions across all statuses from recommendableActions.',
+        summary: 'List Recommendable Actions for review', tags: ['Ideas'], security: [{ ApiKeyAuth: [], BearerAuth: [] }], description: 'Staff only. Compatibility route returning up to the 500 newest actions across all statuses from recommendableActions.',
         responses: { 200: { description: 'Candidates returned.' }, 403: { $ref: '#/components/responses/ForbiddenError' } },
       },
     },
     '/api/recommendables/candidates/{id}': {
       patch: {
-        summary: 'Approve or reject an action', tags: ['Suggestions'], security: [{ ApiKeyAuth: [], BearerAuth: [] }], description: 'Staff only. Updates status and version history on the same recommendableActions document; the ID does not change. Only approved entries are eligible for matching.',
+        summary: 'Approve or reject an action', tags: ['Ideas'], security: [{ ApiKeyAuth: [], BearerAuth: [] }], description: 'Staff only. Updates status and version history on the same recommendableActions document; the ID does not change. Only approved entries are eligible for matching.',
         parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
         requestBody: { required: true, content: { 'application/json': { schema: { type: 'object', required: ['decision'], properties: { decision: { type: 'string', enum: ['approve', 'reject'] } } } } } },
         responses: { 200: { description: 'Candidate reviewed.' }, 400: { $ref: '#/components/responses/BadRequestError' }, 403: { $ref: '#/components/responses/ForbiddenError' }, 404: { $ref: '#/components/responses/NotFoundError' } },
       },
     },
-    '/api/suggestions/{suggestionId}/recommended-actions/{actionId}': {
-      get: { summary: 'Get Recommended Action', tags: ['Suggestions'], security: [{ ApiKeyAuth: [] }], parameters: [{ name: 'suggestionId', in: 'path', required: true, schema: { type: 'integer' } }, { name: 'actionId', in: 'path', required: true, schema: { type: 'string' } }], responses: { 200: { description: 'Action found.', content: { 'application/json': { schema: { $ref: '#/components/schemas/RecommendedActionEnvelope' } } } }, 404: { $ref: '#/components/responses/NotFoundError' } } },
-      patch: { summary: 'Update Recommended Action', tags: ['Suggestions'], security: [{ ApiKeyAuth: [], BearerAuth: [] }], description: 'Staff only. Repeating the current status returns noOp=true and does not append a log entry.', parameters: [{ name: 'suggestionId', in: 'path', required: true, schema: { type: 'integer' } }, { name: 'actionId', in: 'path', required: true, schema: { type: 'string' } }], requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/UpdateRecommendedActionDTO' } } } }, responses: { 200: { description: 'Action updated or unchanged.', content: { 'application/json': { schema: { $ref: '#/components/schemas/RecommendedActionEnvelope' } } } }, 400: { $ref: '#/components/responses/BadRequestError' }, 401: { $ref: '#/components/responses/UnauthorizedError' }, 403: { $ref: '#/components/responses/ForbiddenError' }, 404: { $ref: '#/components/responses/NotFoundError' } } },
-      delete: { summary: 'Delete Recommended Action', tags: ['Suggestions'], security: [{ ApiKeyAuth: [], BearerAuth: [] }], parameters: [{ name: 'suggestionId', in: 'path', required: true, schema: { type: 'integer' } }, { name: 'actionId', in: 'path', required: true, schema: { type: 'string' } }], responses: { 200: { description: 'Action deleted.' }, 401: { $ref: '#/components/responses/UnauthorizedError' }, 403: { $ref: '#/components/responses/ForbiddenError' }, 404: { $ref: '#/components/responses/NotFoundError' } } },
+    '/api/ideas/{ideaId}/recommended-actions/{actionId}': {
+      get: { summary: 'Get Recommended Action', tags: ['Ideas'], security: [{ ApiKeyAuth: [] }], parameters: [{ name: 'ideaId', in: 'path', required: true, schema: { type: 'integer' } }, { name: 'actionId', in: 'path', required: true, schema: { type: 'string' } }], responses: { 200: { description: 'Action found.', content: { 'application/json': { schema: { $ref: '#/components/schemas/RecommendedActionEnvelope' } } } }, 404: { $ref: '#/components/responses/NotFoundError' } } },
+      patch: { summary: 'Update Recommended Action', tags: ['Ideas'], security: [{ ApiKeyAuth: [], BearerAuth: [] }], description: 'Staff only. Repeating the current status returns noOp=true and does not append a log entry.', parameters: [{ name: 'ideaId', in: 'path', required: true, schema: { type: 'integer' } }, { name: 'actionId', in: 'path', required: true, schema: { type: 'string' } }], requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/UpdateRecommendedActionDTO' } } } }, responses: { 200: { description: 'Action updated or unchanged.', content: { 'application/json': { schema: { $ref: '#/components/schemas/RecommendedActionEnvelope' } } } }, 400: { $ref: '#/components/responses/BadRequestError' }, 401: { $ref: '#/components/responses/UnauthorizedError' }, 403: { $ref: '#/components/responses/ForbiddenError' }, 404: { $ref: '#/components/responses/NotFoundError' } } },
+      delete: { summary: 'Delete Recommended Action', tags: ['Ideas'], security: [{ ApiKeyAuth: [], BearerAuth: [] }], parameters: [{ name: 'ideaId', in: 'path', required: true, schema: { type: 'integer' } }, { name: 'actionId', in: 'path', required: true, schema: { type: 'string' } }], responses: { 200: { description: 'Action deleted.' }, 401: { $ref: '#/components/responses/UnauthorizedError' }, 403: { $ref: '#/components/responses/ForbiddenError' }, 404: { $ref: '#/components/responses/NotFoundError' } } },
     },
-    '/api/suggestions/{suggestionId}/log': {
-      get: { summary: 'List Suggestion Activity', tags: ['Suggestions'], security: [{ ApiKeyAuth: [] }], parameters: [{ name: 'suggestionId', in: 'path', required: true, schema: { type: 'integer' } }, { name: 'limit', in: 'query', schema: { type: 'integer', minimum: 1, maximum: 100, default: 50 } }, { name: 'cursor', in: 'query', schema: { type: 'string' } }], responses: { 200: { description: 'Newest-first page of activity.', content: { 'application/json': { schema: { $ref: '#/components/schemas/LoggedActionPage' } } } }, 400: { $ref: '#/components/responses/BadRequestError' }, 404: { $ref: '#/components/responses/NotFoundError' } } },
+    '/api/ideas/{ideaId}/log': {
+      get: { summary: 'List Idea Activity', tags: ['Ideas'], security: [{ ApiKeyAuth: [] }], parameters: [{ name: 'ideaId', in: 'path', required: true, schema: { type: 'integer' } }, { name: 'limit', in: 'query', schema: { type: 'integer', minimum: 1, maximum: 100, default: 50 } }, { name: 'cursor', in: 'query', schema: { type: 'string' } }], responses: { 200: { description: 'Newest-first page of activity.', content: { 'application/json': { schema: { $ref: '#/components/schemas/LoggedActionPage' } } } }, 400: { $ref: '#/components/responses/BadRequestError' }, 404: { $ref: '#/components/responses/NotFoundError' } } },
       post: {
-        summary: 'Append Suggestion Activity', tags: ['Suggestions'], security: [{ ApiKeyAuth: [], BearerAuth: [] }],
-        description: 'Authenticated Suggestion author or staff. Actor and timestamp are server supplied.',
-        parameters: [{ name: 'suggestionId', in: 'path', required: true, schema: { type: 'integer' } }],
+        summary: 'Append Idea Activity', tags: ['Ideas'], security: [{ ApiKeyAuth: [], BearerAuth: [] }],
+        description: 'Authenticated Idea author or staff. Actor and timestamp are server supplied.',
+        parameters: [{ name: 'ideaId', in: 'path', required: true, schema: { type: 'integer' } }],
         requestBody: {
           required: true,
           content: {
@@ -1099,17 +1099,17 @@ Endpoint policies:
         },
       },
     },
-    '/api/suggestions/{id}': {
+    '/api/ideas/{id}': {
       get: {
-        summary: 'Get Suggestion by ID',
-        description: 'Retrieves a single suggestion by its integer ID.',
-        tags: ['Suggestions'],
+        summary: 'Get Idea by ID',
+        description: 'Retrieves a single idea by its integer ID.',
+        tags: ['Ideas'],
         parameters: [
           {
             name: 'id',
             in: 'path',
             required: true,
-            description: 'Integer ID of the suggestion',
+            description: 'Integer ID of the idea',
             schema: {
               type: 'integer',
               example: 1,
@@ -1118,14 +1118,14 @@ Endpoint policies:
         ],
         responses: {
           200: {
-            description: 'Suggestion found.',
+            description: 'Idea found.',
             content: {
               'application/json': {
                 schema: {
                   type: 'object',
                   properties: {
                     data: {
-                      $ref: '#/components/schemas/Suggestion',
+                      $ref: '#/components/schemas/Idea',
                     },
                     logNextCursor: { type: 'string', nullable: true },
                     logHasMore: { type: 'boolean' },
@@ -1146,15 +1146,15 @@ Endpoint policies:
         },
       },
       put: {
-        summary: 'Update Suggestion',
-        description: 'Updates an existing suggestion by its integer ID. Modification date will be refreshed automatically.',
-        tags: ['Suggestions'],
+        summary: 'Update Idea',
+        description: 'Updates an existing idea by its integer ID. Modification date will be refreshed automatically.',
+        tags: ['Ideas'],
         parameters: [
           {
             name: 'id',
             in: 'path',
             required: true,
-            description: 'Integer ID of the suggestion to update',
+            description: 'Integer ID of the idea to update',
             schema: {
               type: 'integer',
               example: 1,
@@ -1166,14 +1166,14 @@ Endpoint policies:
           content: {
             'application/json': {
               schema: {
-                $ref: '#/components/schemas/UpdateSuggestionDTO',
+                $ref: '#/components/schemas/UpdateIdeaDTO',
               },
             },
           },
         },
         responses: {
           200: {
-            description: 'Suggestion updated successfully.',
+            description: 'Idea updated successfully.',
             content: {
               'application/json': {
                 schema: {
@@ -1181,10 +1181,10 @@ Endpoint policies:
                   properties: {
                     message: {
                       type: 'string',
-                      example: 'Suggestion updated successfully.',
+                      example: 'Idea updated successfully.',
                     },
                     data: {
-                      $ref: '#/components/schemas/Suggestion',
+                      $ref: '#/components/schemas/Idea',
                     },
                   },
                 },
@@ -1203,15 +1203,15 @@ Endpoint policies:
         },
       },
       delete: {
-        summary: 'Delete Suggestion',
-        description: 'Deletes a suggestion by its integer ID from the public-improvements database.',
-        tags: ['Suggestions'],
+        summary: 'Delete Idea',
+        description: 'Deletes an idea by its integer ID from the public-improvements database.',
+        tags: ['Ideas'],
         parameters: [
           {
             name: 'id',
             in: 'path',
             required: true,
-            description: 'Integer ID of the suggestion to delete',
+            description: 'Integer ID of the idea to delete',
             schema: {
               type: 'integer',
               example: 1,
@@ -1220,7 +1220,7 @@ Endpoint policies:
         ],
         responses: {
           200: {
-            description: 'Suggestion deleted successfully.',
+            description: 'Idea deleted successfully.',
             content: {
               'application/json': {
                 schema: {
@@ -1228,7 +1228,7 @@ Endpoint policies:
                   properties: {
                     message: {
                       type: 'string',
-                      example: 'Suggestion with ID 1 has been deleted successfully.',
+                      example: 'Idea with ID 1 has been deleted successfully.',
                     },
                   },
                 },
@@ -1709,7 +1709,7 @@ Endpoint policies:
     },
     schemas: {
           ...streetmixSchemas,
-          ...suggestionStreetmixSchemas,
+          ...ideaStreetmixSchemas,
           ...presentationSchemas,
           ...operationSchemas,
           ...boundarySchemas,
@@ -1984,7 +1984,7 @@ Endpoint policies:
           },
         },
       },
-      SuggestionPhoto: {
+      IdeaPhoto: {
         type: 'object',
         required: ['url', 'caption', 'timestamp'],
         properties: {
@@ -1992,7 +1992,7 @@ Endpoint policies:
             type: 'string',
             format: 'uri',
             description: 'Public URL of the photo (hosted on Cloud Storage/CDN)',
-            example: 'https://storage.googleapis.com/urbanists-suggestion-photos/suggestions/1/elm-street-lane.webp',
+            example: 'https://storage.googleapis.com/urbanists-idea-photos/ideas/1/elm-street-lane.webp',
           },
           caption: {
             type: 'string',
@@ -2007,7 +2007,7 @@ Endpoint policies:
           },
         },
       },
-      SuggestionAuthor: {
+      IdeaAuthor: {
         type: 'object',
         required: ['email', 'name'],
         properties: {
@@ -2022,7 +2022,7 @@ Endpoint policies:
           },
         },
       },
-      SuggestionContent: {
+      IdeaContent: {
         type: 'object',
         required: ['summary'],
         properties: {
@@ -2037,15 +2037,15 @@ Endpoint policies:
           },
           photos: {
             type: 'array',
-            description: 'Optional list of photos associated with the suggestion (max 10 photos).',
+            description: 'Optional list of photos associated with the idea (max 10 photos).',
             maxItems: 10,
             items: {
-              $ref: '#/components/schemas/SuggestionPhoto',
+              $ref: '#/components/schemas/IdeaPhoto',
             },
           },
         },
       },
-      SuggestionLocation: {
+      IdeaLocation: {
         type: 'object',
         properties: {
           latitude: {
@@ -2072,20 +2072,20 @@ Endpoint policies:
           },
         },
       },
-      Suggestion: {
+      Idea: {
         type: 'object',
         required: ['id', 'creationDate', 'modificationDate', 'status', 'author', 'content', 'location'],
         properties: {
-          streetmix: { $ref: '#/components/schemas/SuggestionStreetmix' },
+          streetmix: { $ref: '#/components/schemas/IdeaStreetmix' },
           id: {
             type: 'integer',
             example: 1,
-            description: 'Unique integer identifier for the suggestion',
+            description: 'Unique integer identifier for the idea',
           },
           emoji: {
             type: 'string',
             example: '🚲',
-            description: 'Optional server-assigned emoji describing the suggestion content. Assigned with JEV on creation or on an individual read when missing.',
+            description: 'Optional server-assigned emoji describing the idea content. Assigned with JEV on creation or on an individual read when missing.',
           },
           creationDate: {
             type: 'string',
@@ -2103,19 +2103,19 @@ Endpoint policies:
             example: 'new',
           },
           author: {
-            $ref: '#/components/schemas/SuggestionAuthor',
+            $ref: '#/components/schemas/IdeaAuthor',
           },
           content: {
-            $ref: '#/components/schemas/SuggestionContent',
+            $ref: '#/components/schemas/IdeaContent',
           },
           location: {
-            $ref: '#/components/schemas/SuggestionLocation',
+            $ref: '#/components/schemas/IdeaLocation',
           },
-          log: { type: 'array', description: 'Newest page of activity. Suggestion list results omit this field.', items: { $ref: '#/components/schemas/LoggedAction' } },
+          log: { type: 'array', description: 'Newest page of activity. Idea list results omit this field.', items: { $ref: '#/components/schemas/LoggedAction' } },
         },
       },
       RecommendedActionStatus: { type: 'string', enum: ['open', 'ignored', 'started', 'paused', 'cancelled', 'finished'] },
-      RecommendableAction: { type: 'object', required: ['id', 'summary', 'instructions', 'photos', 'why', 'whyNot', 'boundaries', 'sourceUrl', 'sourceEvidence', 'sourceDescription', 'status', 'version'], properties: { id: { type: 'string' }, summary: { type: 'string' }, instructions: { type: 'string' }, photos: { type: 'array', description: 'Photo URLs; empty when none are attached.', items: { type: 'string', format: 'uri' } }, why: { type: 'string' }, whyNot: { type: 'string', description: 'Empty string when no exclusion is recorded.' }, boundaries: { type: 'array', description: 'Empty means unrestricted; any one matching suggestion boundary is sufficient.', items: { type: 'integer' } }, sourceUrl: { type: 'string', format: 'uri' }, sourceEvidence: { type: 'string' }, sourceDescription: { type: 'string' }, status: { type: 'string', enum: ['candidate', 'approved', 'closed', 'uncertain', 'rejected'] }, version: { type: 'integer' }, confidence: { type: 'number', nullable: true }, createdAt: { type: 'string', format: 'date-time' }, updatedAt: { type: 'string', format: 'date-time' } } },
+      RecommendableAction: { type: 'object', required: ['id', 'summary', 'instructions', 'photos', 'why', 'whyNot', 'boundaries', 'sourceUrl', 'sourceEvidence', 'sourceDescription', 'status', 'version'], properties: { id: { type: 'string' }, summary: { type: 'string' }, instructions: { type: 'string' }, photos: { type: 'array', description: 'Photo URLs; empty when none are attached.', items: { type: 'string', format: 'uri' } }, why: { type: 'string' }, whyNot: { type: 'string', description: 'Empty string when no exclusion is recorded.' }, boundaries: { type: 'array', description: 'Empty means unrestricted; any one matching idea boundary is sufficient.', items: { type: 'integer' } }, sourceUrl: { type: 'string', format: 'uri' }, sourceEvidence: { type: 'string' }, sourceDescription: { type: 'string' }, status: { type: 'string', enum: ['candidate', 'approved', 'closed', 'uncertain', 'rejected'] }, version: { type: 'integer' }, confidence: { type: 'number', nullable: true }, createdAt: { type: 'string', format: 'date-time' }, updatedAt: { type: 'string', format: 'date-time' } } },
       RecommendableActionEnvelope: { type: 'object', required: ['data'], properties: { data: { $ref: '#/components/schemas/RecommendableAction' } } },
       RecommendedAction: { type: 'object', required: ['id', 'summary', 'instructions', 'representativeId', 'reason', 'expirationDate', 'status', 'creationDate', 'modificationDate'], properties: { id: { type: 'string' }, summary: { type: 'string' }, instructions: { type: 'string' }, representativeId: { type: 'integer', nullable: true }, reason: { type: 'string' }, expirationDate: { type: 'string', format: 'date-time', nullable: true }, status: { $ref: '#/components/schemas/RecommendedActionStatus' }, recommendableId: { type: 'string' }, matchProbability: { type: 'number', minimum: 0, maximum: 1 }, creationDate: { type: 'string', format: 'date-time' }, modificationDate: { type: 'string', format: 'date-time' } } },
       CreateRecommendedActionDTO: { type: 'object', required: ['summary', 'instructions', 'reason'], properties: { summary: { type: 'string' }, instructions: { type: 'string' }, representativeId: { type: 'integer', nullable: true }, reason: { type: 'string' }, expirationDate: { type: 'string', format: 'date-time', nullable: true }, status: { $ref: '#/components/schemas/RecommendedActionStatus' } } },
@@ -2123,7 +2123,7 @@ Endpoint policies:
       RecommendedActionEnvelope: { type: 'object', properties: { message: { type: 'string' }, data: { $ref: '#/components/schemas/RecommendedAction' }, noOp: { type: 'boolean' } } },
       LoggedAction: { type: 'object', required: ['id', 'summary', 'description', 'actor', 'timestamp'], properties: { id: { type: 'string' }, summary: { type: 'string' }, description: { type: 'string' }, actor: { type: 'object', required: ['name', 'email'], properties: { name: { type: 'string' }, email: { type: 'string', format: 'email' } } }, timestamp: { type: 'string', format: 'date-time' } } },
       LoggedActionPage: { type: 'object', required: ['data', 'nextCursor', 'hasMore'], properties: { data: { type: 'array', items: { $ref: '#/components/schemas/LoggedAction' } }, nextCursor: { type: 'string', nullable: true }, hasMore: { type: 'boolean' } } },
-      CreateSuggestionDTO: {
+      CreateIdeaDTO: {
         type: 'object',
         required: ['author', 'content'],
         properties: {
@@ -2139,17 +2139,17 @@ Endpoint policies:
             example: 'new',
           },
           author: {
-            $ref: '#/components/schemas/SuggestionAuthor',
+            $ref: '#/components/schemas/IdeaAuthor',
           },
           content: {
-            $ref: '#/components/schemas/SuggestionContent',
+            $ref: '#/components/schemas/IdeaContent',
           },
           location: {
-            $ref: '#/components/schemas/SuggestionLocation',
+            $ref: '#/components/schemas/IdeaLocation',
           },
         },
       },
-      UpdateSuggestionDTO: {
+      UpdateIdeaDTO: {
         type: 'object',
         properties: {
           status: {
@@ -2187,7 +2187,7 @@ Endpoint policies:
                 description: 'Optional updated list of photos (max 10 photos).',
                 maxItems: 10,
                 items: {
-                  $ref: '#/components/schemas/SuggestionPhoto',
+                  $ref: '#/components/schemas/IdeaPhoto',
                 },
               },
             },
@@ -3101,3 +3101,67 @@ swaggerDocument.paths['/api/assist/summarize'] = {
     }])),
   },
 };
+
+const ideasSchemaAliases: Record<string, string> = {
+  Idea: 'Suggestion', IdeaDetail: 'SuggestionDetail', IdeaAuthor: 'SuggestionAuthor',
+  IdeaPhoto: 'SuggestionPhoto', IdeaContent: 'SuggestionContent', IdeaLocation: 'SuggestionLocation',
+  CreateIdeaDTO: 'CreateSuggestionDTO', UpdateIdeaDTO: 'UpdateSuggestionDTO',
+  IdeaStreetmix: 'SuggestionStreetmix', IdeaStreetmixWorkflow: 'SuggestionStreetmixWorkflow',
+};
+const schemas = swaggerDocument.components.schemas as Record<string, any>;
+schemas.IdeaDetail = {
+  allOf: [
+    { $ref: '#/components/schemas/Idea' },
+    { type: 'object', required: ['log'], properties: { log: { type: 'array', items: { $ref: '#/components/schemas/LoggedAction' } } } },
+  ],
+};
+schemas.SuggestionDetail = {
+  deprecated: true,
+  allOf: [
+    { $ref: '#/components/schemas/Suggestion' },
+    { type: 'object', required: ['log'], properties: { log: { type: 'array', items: { $ref: '#/components/schemas/LoggedAction' } } } },
+  ],
+};
+for (const [current, legacy] of Object.entries(ideasSchemaAliases)) {
+  if (schemas[current]) schemas[legacy] = { ...JSON.parse(JSON.stringify(schemas[current])), deprecated: true };
+}
+
+const paths = swaggerDocument.paths as Record<string, any>;
+const canonicalIdeaPaths = Object.entries(paths).filter(([path]) => path.startsWith('/api/ideas'));
+for (const [path, definition] of canonicalIdeaPaths) {
+  const namespaced = path.replace('/api/ideas', '/api/public-improvements/ideas');
+  if (!paths[namespaced]) paths[namespaced] = definition;
+}
+const legacyIdeaPaths = Object.entries(paths).filter(([path]) =>
+  path.startsWith('/api/ideas') || path.startsWith('/api/public-improvements/ideas'));
+function legacyIdeaContract(value: any): any {
+  if (typeof value === 'string') {
+    let result = value;
+    for (const [current, legacy] of Object.entries(ideasSchemaAliases)) {
+      result = result.replaceAll(`#/components/schemas/${current}`, `#/components/schemas/${legacy}`);
+    }
+    return result.replaceAll('ideaId', 'suggestionId')
+      .replaceAll('Idea', 'Suggestion').replaceAll('idea', 'suggestion').replaceAll('Ideas', 'Suggestions');
+  }
+  if (Array.isArray(value)) return value.map(legacyIdeaContract);
+  if (!value || typeof value !== 'object') return value;
+  return Object.fromEntries(Object.entries(value).map(([key, child]) => [key, legacyIdeaContract(child)]));
+}
+for (const [path, definition] of legacyIdeaPaths) {
+  const legacyPath = path
+    .replace('/api/public-improvements/ideas', '/api/public-improvements/suggestions')
+    .replace('/api/ideas', '/api/suggestions')
+    .replaceAll('{ideaId}', '{suggestionId}');
+  const legacyDefinition = legacyIdeaContract(JSON.parse(JSON.stringify(definition)));
+  for (const method of Object.keys(legacyDefinition)) {
+    if (['get', 'post', 'put', 'patch', 'delete'].includes(method)) legacyDefinition[method].deprecated = true;
+  }
+  if (legacyPath.endsWith('/ws')) {
+    legacyDefinition.get.description = 'Deprecated protocol v1. After ready protocolVersion 1, receive suggestion.created, suggestion.updated, and suggestion.deleted with suggestionId. Refetch after every ready. Use the Ideas socket with protocolVersion 2 for new integrations.';
+  }
+  paths[legacyPath] = legacyDefinition;
+}
+const swaggerTags = swaggerDocument.tags as Array<{ name: string; description?: string }>;
+if (!swaggerTags.some(tag => tag.name === 'Suggestions')) {
+  swaggerTags.push({ name: 'Suggestions', description: 'Deprecated aliases for the Ideas API; migrate to the Ideas tag and paths.' });
+}
