@@ -12,7 +12,7 @@ import { StaffClaimService } from '../src/services/staffClaimService.js';
 import { migrateStaffClaims } from '../src/services/staffClaimMigration.js';
 import { stagingEnv } from './helpers/stagingEnvironment.js';
 import { STAGING } from '../src/config/deployment.js';
-import { attachSuggestionWebSocket } from '../src/suggestionWebSocket.js';
+import { attachIdeaWebSocket } from '../src/ideaWebSocket.js';
 import { PresentationWebSocketServer } from '../src/presentationWebSocket.js';
 import WebSocket from 'ws';
 
@@ -40,7 +40,7 @@ before(async () => {
   server = app.listen(0, '127.0.0.1');
   // Rejected origins must never reach either store or socket authentication.
   const presentation = { handleUpgrade() { throw new Error('Unexpected presentation upgrade'); }, close: async () => {} } as unknown as PresentationWebSocketServer;
-  closeSockets = attachSuggestionWebSocket(server, { presentation });
+  closeSockets = attachIdeaWebSocket(server, { presentation });
   await once(server, 'listening');
   base = `http://127.0.0.1:${(server.address() as { port: number }).port}`;
 });
@@ -97,9 +97,9 @@ test('staging browser preflight preserves request and exposed response headers',
   assert.equal((await fetch(`${base}/api/health`, { headers: { Origin: 'https://map.dallasurbanists.org' } })).status, 403);
 });
 
-test('suggestion and presentation socket upgrades reject production and local origins before handlers', async () => {
+test('idea and presentation socket upgrades reject production and local origins before handlers', async () => {
   process.env = { ...stagingEnv };
-  for (const path of ['/api/suggestions/ws', '/api/public-improvements/suggestions/ws', '/api/public-improvements/presentation/ws']) {
+  for (const path of ['/api/ideas/ws', '/api/public-improvements/ideas/ws', '/api/public-improvements/presentation/ws']) {
     for (const origin of ['https://map.dallasurbanists.org', 'http://localhost:5173']) {
       await new Promise<void>((resolve, reject) => {
         const socket = new WebSocket(`${base.replace('http:', 'ws:')}${path}`, { origin });

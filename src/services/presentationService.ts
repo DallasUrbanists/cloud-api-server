@@ -1,13 +1,13 @@
 /** Durable protocol v1 lifecycle and state operations for TV presentations. */
 import { createHash, randomBytes, randomInt, randomUUID, timingSafeEqual } from 'node:crypto';
-import { SuggestionService } from './suggestionService.js';
+import { IdeaService } from './ideaService.js';
 import {
   effectiveCaptionVisible, initialPresentationState, normalizeCode, normalizeStateForIdea,
   PresentationError, PRESENTATION_PROTOCOL_VERSION, publicPresentationIdea, validateUuid,
   validateWritableState, type PresentationIdea, type PresentationRole, type PresentationState,
 } from '../models/presentation.js';
 import { presentationPaths, type PresentationStore, type StoredDocument } from './presentationStore.js';
-import type { Suggestion } from '../models/suggestion.js';
+import type { Idea } from '../models/idea.js';
 
 const TEN_MINUTES = 10 * 60_000;
 const FOUR_HOURS = 4 * 60 * 60_000;
@@ -32,8 +32,8 @@ export interface PresentationServiceOptions {
   now?: () => number;
   uuid?: () => string;
   code?: () => string;
-  getSuggestion?: (id: number) => Promise<Suggestion | null>;
-  getSuggestionPage?: (afterId: string | null, limit: number) => Promise<{ items: Suggestion[]; nextCursor: string | null }>;
+  getIdea?: (id: number) => Promise<Idea | null>;
+  getIdeaPage?: (afterId: string | null, limit: number) => Promise<{ items: Idea[]; nextCursor: string | null }>;
 }
 export interface PresenceReport {
   localView?: 'map' | 'photo' | 'description';
@@ -71,21 +71,21 @@ function iso(ms: number): string { return new Date(ms).toISOString(); }
 function fingerprint(operation: string, participantId: string, digest: string, payload: unknown): string {
   return sha(JSON.stringify({ operation, participantId, digest, payload }));
 }
-function normalizedSuggestionId(id: unknown): string | null { return typeof id === 'string' && /^[1-9]\d*$/.test(id) ? id : null; }
+function normalizedIdeaId(id: unknown): string | null { return typeof id === 'string' && /^[1-9]\d*$/.test(id) ? id : null; }
 
 export class PresentationService {
   private readonly now: () => number;
   private readonly uuid: () => string;
   private readonly code: () => string;
-  private readonly getSuggestion: (id: number) => Promise<Suggestion | null>;
-  private readonly getSuggestionPage: (afterId: string | null, limit: number) => Promise<{ items: Suggestion[]; nextCursor: string | null }>;
+  private readonly loadIdea: (id: number) => Promise<Idea | null>;
+  private readonly getIdeaPage: (afterId: string | null, limit: number) => Promise<{ items: Idea[]; nextCursor: string | null }>;
 
   constructor(private readonly store: PresentationStore, options: PresentationServiceOptions = {}) {
     this.now = options.now ?? Date.now;
     this.uuid = options.uuid ?? randomUUID;
     this.code = options.code ?? (() => String(randomInt(0, 100_000)).padStart(5, '0'));
-    this.getSuggestion = options.getSuggestion ?? (id => SuggestionService.getForPresentation(id));
-    this.getSuggestionPage = options.getSuggestionPage ?? ((afterId, limit) => SuggestionService.getPresentationPage(afterId, limit));
+    this.loadIdea = options.getIdea ?? (id => IdeaService.getForPresentation(id));
+    this.getIdeaPage = options.getIdeaPage ?? ((afterId, limit) => IdeaService.getPresentationPage(afterId, limit));
   }
 
   /** Enforces a durable fixed-window admission limit shared by all Cloud Run instances. */
@@ -380,9 +380,9 @@ export class PresentationService {
 
   private async ideaById(id: string, sessionId = '{sessionId}'): Promise<PresentationIdea> {
     if (!/^[1-9]\d*$/.test(id) || !Number.isSafeInteger(Number(id))) throw new PresentationError(404, 'IDEA_UNAVAILABLE', 'This idea is unavailable.');
-    const suggestion = await this.getSuggestion(Number(id));
-    if (!suggestion) throw new PresentationError(404, 'IDEA_UNAVAILABLE', 'This idea is unavailable.');
-    return publicPresentationIdea(suggestion, sessionId);
+    const idea = await this.loadIdea(Number(id));
+    if (!idea) throw new PresentationError(404, 'IDEA_UNAVAILABLE', 'This idea is unavailable.');
+    return publicPresentationIdea(idea, sessionId);
   }
 
   private async maybeRefreshContent(sessionId: string): Promise<void> {
@@ -502,7 +502,7 @@ export class PresentationService {
     this.assertRole(context, ['controller']);
     const afterId = this.decodeCursor(cursor);
     if (!Number.isSafeInteger(limit) || limit < 1 || limit > 100) throw new PresentationError(422, 'INVALID_PRESENTATION_REQUEST', 'limit must be an integer from 1 through 100.');
-    const page = await this.getSuggestionPage(afterId, limit);
+    const page = await this.getIdeaPage(afterId, limit);
     return { protocolVersion: 1, items: page.items.map(item => publicPresentationIdea(item, context.sessionId)), nextCursor: page.nextCursor === null ? null : this.encodeCursor(page.nextCursor) };
   }
 
@@ -518,7 +518,7 @@ export class PresentationService {
   private encodeCursor(id: string): string { return Buffer.from(id).toString('base64url'); }
 
   async getIdea(context: PresentationParticipantContext, ideaId: string): Promise<Record<string, any>> {
-    const normalized = normalizedSuggestionId(ideaId);
+    const normalized = normalizedIdeaId(ideaId);
     if (!normalized) throw new PresentationError(404, 'IDEA_UNAVAILABLE', 'This idea is unavailable.');
     await this.maybeRefreshContent(context.sessionId);
     const session = await this.readSession(context.sessionId);
@@ -528,7 +528,7 @@ export class PresentationService {
   }
 
   async selectedStreetmixId(context: PresentationParticipantContext, ideaId: string): Promise<string> {
-    const normalized = normalizedSuggestionId(ideaId);
+    const normalized = normalizedIdeaId(ideaId);
     if (!normalized) throw new PresentationError(404, 'IDEA_UNAVAILABLE', 'This idea is unavailable.');
     await this.maybeRefreshContent(context.sessionId);
     const session = await this.readSession(context.sessionId);

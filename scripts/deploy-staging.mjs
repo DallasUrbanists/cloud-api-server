@@ -10,6 +10,11 @@ const account = id => `${id}@${project}.iam.gserviceaccount.com`;
 
 export function deploymentArgs(sha, env, existingService = true) {
   if (!/^[a-f0-9]{40}$/.test(sha)) throw new Error('A full tested commit SHA is required.');
+  const ideasLayout = env.STAGING_IDEAS_DATA_LAYOUT;
+  if (!['legacy', 'ideas'].includes(ideasLayout)) throw new Error('Set STAGING_IDEAS_DATA_LAYOUT to the reviewed staging source or destination layout.');
+  const ideaPhotosBucket = ideasLayout === 'ideas'
+    ? 'urbanists-idea-photos-staging-143738155808'
+    : 'urbanists-suggestion-photos-staging-143738155808';
   const settings = {
     '--cpu': 'STAGING_CPU', '--memory': 'STAGING_MEMORY', '--concurrency': 'STAGING_CONCURRENCY',
     '--min-instances': 'STAGING_MIN_INSTANCES', '--max-instances': 'STAGING_MAX_INSTANCES', '--ingress': 'STAGING_INGRESS',
@@ -23,7 +28,7 @@ export function deploymentArgs(sha, env, existingService = true) {
   const values = {
     DEPLOY_ENV: 'staging', NODE_ENV: 'production', GOOGLE_CLOUD_PROJECT: project,
     PUBLIC_IMPROVEMENTS_DB: 'public-improvements-staging', ASSIST_QUOTA_DB: 'public-improvements-staging',
-    SUGGESTION_PHOTOS_BUCKET: 'urbanists-suggestion-photos-staging-143738155808',
+    IDEAS_DATA_LAYOUT: ideasLayout, IDEA_PHOTOS_BUCKET: ideaPhotosBucket,
     DB_NAME: 'urbanists_staging', DB_USER: 'urbanists_staging',
     INSTANCE_CONNECTION_NAME: `${project}:us-south1:contacts-relationships-db`,
     ALLOWED_ORIGINS: 'https://map-staging-143738155808.web.app', BUILD_COMMIT: sha,

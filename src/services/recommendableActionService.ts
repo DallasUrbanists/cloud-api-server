@@ -1,10 +1,10 @@
 /**
- * Source extraction, candidate review, catalog versioning, and suggestion matching.
+ * Source extraction, candidate review, catalog versioning, and idea matching.
  *
  * @remarks
  * Coordinates official-document retrieval, Gemini extraction, PostgreSQL boundary
  * lookups, Firestore persistence, and Jev relevance judgments. Review candidates
- * share one collection with approved actions; suggestion-specific actions remain separate.
+ * share one collection with approved actions; idea-specific actions remain separate.
  *
  * @see [Feature overview](../../docs/recommendable-actions.md)
  * @module
@@ -15,12 +15,13 @@ import { isDeepStrictEqual } from 'node:util';
 import { validateMatchInput, matchCacheContext, type MatchInput, type MatchResult } from '../models/recommendableMatch.js';
 import { GoogleGenAI } from '@google/genai';
 import { getPublicImprovementsDb } from '../config/firestore.js';
+import { ideaDocumentPath } from '../config/ideas.js';
 import { BoundaryService } from './boundaryService.js';
 import { RepresentativesService } from './representativesService.js';
 import { readOfficialDocument } from './research/official.js';
 import { RecommendedActionService } from './recommendedActionService.js';
 import { RecommendableComparisonService } from './recommendableComparisonService.js';
-import type { Suggestion } from '../models/suggestion.js';
+import type { Idea } from '../models/idea.js';
 import { anyBoundaryOverlap, type RecommendableAction, type RecommendableInput, type RecommendableStatus } from '../models/recommendableAction.js';
 
 const ACTIONS = 'recommendableActions';
@@ -98,7 +99,7 @@ export class RecommendableActionService {
    *
    * @example
    * Let's imagine there's a city webpage asking for ideas about a park. This function
-   * reads the page and turns its invitation into a simple suggestion: "Share your
+   * reads the page and turns its invitation into a simple idea: "Share your
    * ideas for the park." It also keeps the words from the page that explain the invitation.
    */
   static async extractCandidate(sourceUrl: string, description: string, signal: AbortSignal): Promise<Omit<RecommendableInput, 'boundaries'>> {
@@ -186,7 +187,7 @@ export class RecommendableActionService {
   }
 
   /**
-   * Returns a bounded approved-only catalog view for readers and suggestion matching.
+   * Returns a bounded approved-only catalog view for readers and idea matching.
    *
    * @example
    * Let's imagine a noticeboard of things neighbors can do to help their community.
@@ -254,7 +255,7 @@ export class RecommendableActionService {
    *
    * @remarks
    * Every call for an existing entry increments its version, even if the status
-   * is unchanged. Existing suggestion actions are not rewritten.
+   * is unchanged. Existing idea actions are not rewritten.
    *
    * @returns The updated catalog entry, or null if it does not exist.
    * @throws Firestore read or transaction failures.
@@ -282,7 +283,7 @@ export class RecommendableActionService {
     return updated ? mapDoc(updated, id) : null;
   }
 
-  /** Read-only classification over the complete approved catalog. No suggestion is needed. */
+  /** Read-only classification over the complete approved catalog. No idea is needed. */
   static async findMatches(input: MatchInput, signal?: AbortSignal, options: { ignoreBoundaryRequirement?: boolean } = {}): Promise<MatchResult> {
     const started = performance.now();
     const validation = validateMatchInput(input);
@@ -428,18 +429,18 @@ export class RecommendableActionService {
     } finally { clearTimeout(deadline); }
   }
 
-  /** Classify a persisted suggestion, skip existing links, and create new linked actions. */
-  static async matchSuggestion(suggestion: Suggestion): Promise<RecommendableAction[]> {
-    const { latitude, longitude } = suggestion.location;
-    const result = await this.findMatches({ text: [suggestion.content.summary, suggestion.content.details].filter(Boolean).join('\n\n'),
+  /** Classify a persisted idea, skip existing links, and create new linked actions. */
+  static async matchIdea(idea: Idea): Promise<RecommendableAction[]> {
+    const { latitude, longitude } = idea.location;
+    const result = await this.findMatches({ text: [idea.content.summary, idea.content.details].filter(Boolean).join('\n\n'),
       ...(Number.isFinite(latitude) && Number.isFinite(longitude) ? { latitude, longitude } : {}) }, undefined, { ignoreBoundaryRequirement: true });
     if (!result.count) return [];
-    const existing = await getPublicImprovementsDb().collection(`suggestion/${suggestion.id}/recommendedActions`).get();
+    const existing = await getPublicImprovementsDb().collection(`${ideaDocumentPath(idea.id)}/recommendedActions`).get();
     const alreadyCreated = new Set(existing.docs.map(doc => doc.get('recommendableId')).filter(Boolean));
     const matches: RecommendableAction[] = [];
     for (const { matchProbability, ...action } of result.data) {
       if (alreadyCreated.has(action.id)) continue;
-      await RecommendedActionService.create(suggestion.id, { summary: action.summary, instructions: action.instructions,
+      await RecommendedActionService.create(idea.id, { summary: action.summary, instructions: action.instructions,
         reason: `Why: ${action.why} Why not: ${action.whyNot} Jev relevance probability: ${matchProbability.toFixed(2)}.`, representativeId: null, expirationDate: null,
         recommendableId: action.id, matchProbability }, `recommendable-${action.id}`);
       alreadyCreated.add(action.id);

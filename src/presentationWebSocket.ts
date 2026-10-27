@@ -1,4 +1,4 @@
-/** Capability-authenticated presentation sockets. The suggestion dispatcher owns HTTP upgrade routing. */
+/** Capability-authenticated presentation sockets. The idea dispatcher owns HTTP upgrade routing. */
 import type { IncomingMessage } from 'node:http';
 import type { Duplex } from 'node:stream';
 import { performance } from 'node:perf_hooks';
@@ -32,6 +32,7 @@ export interface PresentationWebSocketOptions {
 
 export interface PresentationUpgradeHandler {
   handleUpgrade(req: IncomingMessage, socket: Duplex, head: Buffer): void;
+  maintenance?(): void;
   close(): Promise<void>;
 }
 
@@ -99,6 +100,13 @@ export class PresentationWebSocketServer implements PresentationUpgradeHandler {
     this.uuid = options.uuid ?? randomUUID;
     this.enabled = options.enabled ?? (() => process.env.PRESENTATION_ENABLED === 'true' && process.env.PRESENTATION_WEBSOCKET_ENABLED === 'true');
     this.wss.on('connection', ws => this.accept(ws));
+  }
+
+  /** Closes active presentation clients during the coordinated Idea data cutover. */
+  maintenance(): void {
+    for (const connection of this.connections.values()) {
+      this.closeConnection(connection, 1013, 'SERVICE_UNAVAILABLE', 'Ideas are migrating; reconnect and refresh.');
+    }
   }
 
   handleUpgrade(req: IncomingMessage, socket: Duplex, head: Buffer): void {

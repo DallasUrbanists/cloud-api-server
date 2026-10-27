@@ -1,4 +1,4 @@
-// Public suggestion text only: no author, location, or photo metadata is needed.
+// Public idea text only: no author, location, or photo metadata is needed.
 export const productionRegressions = [
   { id: 24, summary: 'Another test, this time only providing details without summary.', details: 'Another test, this time only providing details without summary.', expected: ['📝'] },
   { id: 27, summary: 'Image upload test', details: 'Image upload test', expected: ['🖼️'] },

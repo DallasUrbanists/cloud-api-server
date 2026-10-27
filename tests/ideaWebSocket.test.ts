@@ -4,8 +4,8 @@ import { createServer } from 'node:http';
 import { once } from 'node:events';
 import { setTimeout as delay } from 'node:timers/promises';
 import { WebSocket } from 'ws';
-import { attachSuggestionWebSocket, type SuggestionSocketOptions } from '../src/suggestionWebSocket.js';
-import { SuggestionNoticeService, type SuggestionSnapshot } from '../src/services/suggestionNoticeService.js';
+import { attachIdeaWebSocket, type IdeaSocketOptions } from '../src/ideaWebSocket.js';
+import { IdeaNoticeService, type IdeaSnapshot } from '../src/services/ideaNoticeService.js';
 import { createApp } from '../src/app.js';
 import { swaggerDocument } from '../src/docs/swagger.js';
 
@@ -14,26 +14,26 @@ test('REST reserves both WebSocket paths before identifier routes', async t => {
   server.listen(0, '127.0.0.1'); await once(server, 'listening');
   t.after(() => new Promise<void>(resolve => server.close(() => resolve())));
   const base = `http://127.0.0.1:${(server.address() as any).port}`;
-  for (const path of ['/api/suggestions/ws', '/api/public-improvements/suggestions/ws']) {
+  for (const path of ['/api/ideas/ws', '/api/public-improvements/ideas/ws']) {
     const response = await fetch(base + path);
     assert.equal(response.status, 426);
     assert.equal(response.headers.get('upgrade'), 'websocket');
     assert.equal((await response.json()).error, 'UPGRADE_REQUIRED');
   }
-  assert.ok(swaggerDocument.paths['/api/suggestions/ws'].get.responses['101']);
+  assert.ok(swaggerDocument.paths['/api/ideas/ws'].get.responses['101']);
 });
 
-async function fixture(t: any, options: SuggestionSocketOptions = {}) {
-  let next: (snapshot: SuggestionSnapshot) => void;
+async function fixture(t: any, options: IdeaSocketOptions = {}) {
+  let next: (snapshot: IdeaSnapshot) => void;
   let fail: (error: unknown) => void;
   let starts = 0, stops = 0;
-  const service = new SuggestionNoticeService((n, e) => {
+  const service = new IdeaNoticeService((n, e) => {
     next = n; fail = e; starts++;
     queueMicrotask(() => n({ docChanges: () => [] }));
     return () => { stops++; };
   });
   const server = createServer((_req, res) => res.end());
-  const close = attachSuggestionWebSocket(server, { notices: service, verify: async ({ apiKey }) => {
+  const close = attachIdeaWebSocket(server, { notices: service, verify: async ({ apiKey }) => {
     if (apiKey !== 'valid') throw new Error('private credential information');
     return { name: 'test' };
   }, ...options });
@@ -46,7 +46,7 @@ async function fixture(t: any, options: SuggestionSocketOptions = {}) {
     await new Promise<void>(resolve => server.close(() => resolve()));
   });
   const url = `ws://127.0.0.1:${(server.address() as any).port}`;
-  async function client(path = '/api/suggestions/ws', config: any = {}) {
+  async function client(path = '/api/ideas/ws', config: any = {}) {
     const ws = new WebSocket(url + path, config);
     clients.push(ws);
     const frames: any[] = [];
@@ -67,14 +67,14 @@ async function fixture(t: any, options: SuggestionSocketOptions = {}) {
 test('both aliases authenticate, share a listener, and deliver identifier-only notices', async t => {
   const f = await fixture(t);
   const a = await f.client();
-  const b = await f.client('/api/public-improvements/suggestions/ws');
+  const b = await f.client('/api/public-improvements/ideas/ws');
   assert.equal(f.starts(), 0);
   await a.authenticate(); await b.authenticate();
-  assert.deepEqual(a.frames, [{ type: 'ready', protocolVersion: 1 }]);
+  assert.deepEqual(a.frames, [{ type: 'ready', protocolVersion: 2 }]);
   assert.equal(f.starts(), 1);
   const messages = Promise.all([once(a.ws, 'message'), once(b.ws, 'message')]);
   f.emit(); await messages;
-  assert.deepEqual(a.frames[1], { type: 'suggestion.created', suggestionId: 41 });
+  assert.deepEqual(a.frames[1], { type: 'idea.created', ideaId: 41 });
   assert.deepEqual(a.frames, b.frames);
   const closed = Promise.all([once(a.ws, 'close'), once(b.ws, 'close')]);
   a.ws.close(); b.ws.close(); await closed;
@@ -83,19 +83,34 @@ test('both aliases authenticate, share a listener, and deliver identifier-only n
   assert.equal(f.stops(), 1);
 });
 
+test('legacy socket aliases keep protocol v1 frames without mixing them into Ideas connections', async t => {
+  const f = await fixture(t);
+  const ideas = await f.client('/api/ideas/ws');
+  const legacy = await f.client('/api/suggestions/ws');
+  await ideas.authenticate(); await legacy.authenticate();
+  assert.deepEqual(ideas.frames, [{ type: 'ready', protocolVersion: 2 }]);
+  assert.deepEqual(legacy.frames, [{ type: 'ready', protocolVersion: 1 }]);
+  const messages = Promise.all([once(ideas.ws, 'message'), once(legacy.ws, 'message')]);
+  f.emit(); await messages;
+  assert.deepEqual(ideas.frames[1], { type: 'idea.created', ideaId: 41 });
+  assert.deepEqual(legacy.frames[1], { type: 'suggestion.created', suggestionId: 41 });
+  const closed = Promise.all([once(ideas.ws, 'close'), once(legacy.ws, 'close')]);
+  ideas.ws.close(); legacy.ws.close(); await closed;
+});
+
 test('origin, unknown paths, and URL credentials are rejected before upgrade', async t => {
   const f = await fixture(t);
   for (const [path, origin, expected] of [
-    ['/api/suggestions/ws', 'https://evil.example', 403],
+    ['/api/ideas/ws', 'https://evil.example', 403],
     ['/not-a-websocket', 'https://map.dallasurbanists.org', 404],
-    ['/api/suggestions/ws?apiKey=private', 'https://map.dallasurbanists.org', 400],
+    ['/api/ideas/ws?apiKey=private', 'https://map.dallasurbanists.org', 400],
   ] as const) {
     const ws = new WebSocket(f.url + path, { origin });
     ws.on('error', () => {});
     const status = await new Promise<number>(resolve => ws.once('unexpected-response', (_req, res) => { resolve(res.statusCode!); res.resume(); ws.terminate(); }));
     assert.equal(status, expected);
   }
-  const allowed = await f.client('/api/suggestions/ws', { origin: 'https://map.dallasurbanists.org' });
+  const allowed = await f.client('/api/ideas/ws', { origin: 'https://map.dallasurbanists.org' });
   await allowed.authenticate();
 });
 
@@ -131,7 +146,7 @@ test('pending and authenticated capacity reject overload and listener failure is
   const f = await fixture(t, { maxPending: 1, maxAuthenticated: 1 });
   const first = await f.client();
   async function overloaded() {
-    const ws = new WebSocket(f.url + '/api/suggestions/ws');
+    const ws = new WebSocket(f.url + '/api/ideas/ws');
     ws.on('error', () => {});
     const status = await new Promise(resolve => ws.once('unexpected-response', (_req, res) => { resolve(res.statusCode); res.resume(); ws.terminate(); }));
     assert.equal(status, 503);
@@ -149,7 +164,7 @@ test('pending and authenticated capacity reject overload and listener failure is
 
 test('heartbeat terminates unresponsive connections, session renewal and shutdown close cleanly', async t => {
   const f = await fixture(t, { heartbeatMs: 30, sessionMs: 150 });
-  const dead = await f.client('/api/suggestions/ws', { autoPong: false });
+  const dead = await f.client('/api/ideas/ws', { autoPong: false });
   await dead.authenticate();
   assert.equal((await once(dead.ws, 'close'))[0], 1006);
   const live = await f.client();
@@ -177,7 +192,7 @@ test('outgoing buffer limit disconnects slow clients', async t => {
 });
 
 test('listener initialization timeout closes authenticated connections without ready', async t => {
-  const notices = new SuggestionNoticeService(() => () => {});
+  const notices = new IdeaNoticeService(() => () => {});
   const f = await fixture(t, { notices, readyTimeoutMs: 40 });
   const { ws, frames } = await f.client();
   const closed = once(ws, 'close');

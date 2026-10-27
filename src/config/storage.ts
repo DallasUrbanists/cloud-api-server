@@ -19,8 +19,8 @@ export function getStorage(): Storage {
 }
 
 /**
- * Returns the configured GCS bucket name for suggestion photos.
+ * Returns the configured GCS bucket name for idea photos.
  */
-export function getSuggestionPhotosBucketName(): string {
+export function getIdeaPhotosBucketName(): string {
   return deploymentConfig().bucket;
 }

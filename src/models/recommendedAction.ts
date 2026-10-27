@@ -1,20 +1,20 @@
 /**
- * Suggestion-specific next steps and append-only activity shapes with local validation.
+ * Idea-specific next steps and append-only activity shapes with local validation.
  *
  * Let's imagine a neighbor's park idea comes with a next step: share it at a meeting.
  * An action keeps track of that task, while the activity log tells the story of progress.
  *
- * @remarks Reusable catalog actions are distinct; these records belong to one suggestion.
+ * @remarks Reusable catalog actions are distinct; these records belong to one idea.
  * @module
  */
 
-/** Allowed task states, independent of expiration and the parent suggestion's state. */
+/** Allowed task states, independent of expiration and the parent idea's state. */
 export const RECOMMENDED_ACTION_STATUSES = ['open', 'ignored', 'started', 'paused', 'cancelled', 'finished'] as const;
 /** Lifecycle state for an individual next step. */
 export type RecommendedActionStatus = typeof RECOMMENDED_ACTION_STATUSES[number];
 
 /**
- * A next step attached to one suggestion, optionally linked to a reusable catalog entry.
+ * A next step attached to one idea, optionally linked to a reusable catalog entry.
  *
  * Let's imagine "Share the park idea at a meeting" on a neighbor's to-do list.
  * The action holds that task and its progress so the neighbor can keep moving forward.

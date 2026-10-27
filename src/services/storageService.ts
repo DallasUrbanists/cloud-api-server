@@ -1,10 +1,10 @@
 /**
- * Direct-to-Cloud-Storage image upload signing for suggestion photos.
+ * Direct-to-Cloud-Storage image upload signing for idea photos.
  * No bytes pass through this service and signing does not verify the future file's contents.
  * @module
  */
 import crypto from 'crypto';
-import { getStorage, getSuggestionPhotosBucketName } from '../config/storage.js';
+import { getStorage, getIdeaPhotosBucketName } from '../config/storage.js';
 
 /** Optional image type/filename hints; the signer selects the bucket and unique path. */
 export interface GenerateUploadUrlOptions {
@@ -39,7 +39,7 @@ export class StorageService {
    * @remarks A provided filename only influences its extension. Public readability depends
    * on bucket policy; this does not upload, inspect, sanitize, or delete image bytes.
    * @example
-   * Let's imagine adding a photo of the bus stop to a suggestion. This gives the
+   * Let's imagine adding a photo of the bus stop to an idea. This gives the
    * browser a temporary delivery address so it can send the picture to storage.
    */
   static async generateUploadUrl(options: GenerateUploadUrlOptions = {}): Promise<UploadUrlResult> {
@@ -59,9 +59,9 @@ export class StorageService {
 
     const uniqueId = crypto.randomUUID();
     const timestamp = Date.now();
-    const filePath = `suggestions/uploads/${timestamp}-${uniqueId}.${extension}`;
+    const filePath = `ideas/uploads/${timestamp}-${uniqueId}.${extension}`;
 
-    const bucketName = getSuggestionPhotosBucketName();
+    const bucketName = getIdeaPhotosBucketName();
     const storage = getStorage();
     const bucket = storage.bucket(bucketName);
     const file = bucket.file(filePath);

@@ -1,5 +1,5 @@
 /**
- * Firestore persistence and normalization for civic suggestions in public-improvements.
+ * Firestore persistence and normalization for civic ideas in public-improvements.
  *
  * @remarks
  * Counter allocation is transactional, but allocation and document creation are
@@ -8,17 +8,18 @@
  */
 import { Timestamp, FieldValue } from '@google-cloud/firestore';
 import { getPublicImprovementsDb } from '../config/firestore.js';
+import { ideasCollectionName, ideasCounterFieldName } from '../config/ideas.js';
 import { BoundaryService } from './boundaryService.js';
-import { suggestionStreetmixSummary } from '../models/suggestionStreetmix.js';
+import { ideaStreetmixSummary } from '../models/ideaStreetmix.js';
+import { canonicalizeIdeaPhotos } from './ideaMediaService.js';
 import {
-  Suggestion,
-  CreateSuggestionDTO,
-  UpdateSuggestionDTO,
-  SuggestionStatus,
-  SuggestionContent,
-} from '../models/suggestion.js';
+  Idea,
+  CreateIdeaDTO,
+  UpdateIdeaDTO,
+  IdeaStatus,
+  IdeaContent,
+} from '../models/idea.js';
 
-const COLLECTION_NAME = 'suggestion';
 const COUNTER_DOC_PATH = '_metadata/counters';
 
 /**
@@ -41,10 +42,10 @@ function toIsoDateString(val: any, fallback: string): string {
 /**
  * Projects stored fields with legacy defaults; does not validate persisted status or coordinate values.
  */
-export function mapDocToSuggestion(docData: any, docId: string, fallbackDate = new Date().toISOString()): Suggestion {
+export function mapDocToIdea(docData: any, docId: string, fallbackDate = new Date().toISOString()): Idea {
   const idNumber = typeof docData.id === 'number' ? docData.id : parseInt(docId, 10) || 0;
 
-  const content: SuggestionContent = {
+  const content: IdeaContent = {
     summary: docData.content?.summary || '',
     details: docData.content?.details || '',
   };
@@ -63,13 +64,13 @@ export function mapDocToSuggestion(docData: any, docId: string, fallbackDate = n
     boundaryIds: Array.isArray(docData.boundaryIds) ? docData.boundaryIds : [],
     creationDate: toIsoDateString(docData.creationDate, fallbackDate),
     modificationDate: toIsoDateString(docData.modificationDate, fallbackDate),
-    status: docData.status as SuggestionStatus,
+    status: docData.status as IdeaStatus,
     author: {
       email: docData.author?.email || '',
       name: docData.author?.name || '',
     },
     content,
-    streetmix: suggestionStreetmixSummary(docData.streetmix, docData.location),
+    streetmix: ideaStreetmixSummary(docData.streetmix, docData.location),
     location: {
       latitude: docData.location?.latitude,
       longitude: docData.location?.longitude,
@@ -79,33 +80,33 @@ export function mapDocToSuggestion(docData: any, docId: string, fallbackDate = n
   };
 }
 
-/** Stores base suggestions; callers perform input validation and mutation authorization. */
-export class SuggestionService {
+/** Stores base ideas; callers perform input validation and mutation authorization. */
+export class IdeaService {
   /** Reads one public presentation source record, excluding an in-progress deletion. */
-  static async getForPresentation(id: number): Promise<Suggestion | null> {
+  static async getForPresentation(id: number): Promise<Idea | null> {
     if (!Number.isSafeInteger(id) || id < 1) return null;
-    const snapshot = await getPublicImprovementsDb().collection(COLLECTION_NAME).doc(String(id)).get();
+    const snapshot = await getPublicImprovementsDb().collection(ideasCollectionName()).doc(String(id)).get();
     if (!snapshot.exists || snapshot.get('_deleting') === true) return null;
-    return mapDocToSuggestion(snapshot.data(), snapshot.id);
+    return mapDocToIdea(snapshot.data(), snapshot.id);
   }
 
   /** Returns a stable numeric-ID page for presentation catalogs, omitting records being deleted. */
-  static async getPresentationPage(afterId: string | null, limit: number): Promise<{ items: Suggestion[]; nextCursor: string | null }> {
+  static async getPresentationPage(afterId: string | null, limit: number): Promise<{ items: Idea[]; nextCursor: string | null }> {
     const db = getPublicImprovementsDb();
     const after = afterId === null ? undefined : Number(afterId);
-    let query = db.collection(COLLECTION_NAME).orderBy('id', 'asc') as FirebaseFirestore.Query;
+    let query = db.collection(ideasCollectionName()).orderBy('id', 'asc') as FirebaseFirestore.Query;
     if (after !== undefined) query = query.startAfter(after);
     let cursor = after;
-    const items: Suggestion[] = [];
+    const items: Idea[] = [];
     while (items.length <= limit) {
       let page = query.limit(Math.max(limit + 1, 25));
-      if (cursor !== undefined) page = db.collection(COLLECTION_NAME).orderBy('id', 'asc').startAfter(cursor).limit(Math.max(limit + 1, 25)) as FirebaseFirestore.Query;
+      if (cursor !== undefined) page = db.collection(ideasCollectionName()).orderBy('id', 'asc').startAfter(cursor).limit(Math.max(limit + 1, 25)) as FirebaseFirestore.Query;
       const snapshot = await page.get();
       if (snapshot.empty) break;
       for (const doc of snapshot.docs) {
         cursor = Number(doc.get('id') ?? doc.id);
         if (doc.get('_deleting') === true) continue;
-        items.push(mapDocToSuggestion(doc.data(), doc.id));
+        items.push(mapDocToIdea(doc.data(), doc.id));
         if (items.length > limit) break;
       }
       if (items.length > limit || snapshot.size < Math.max(limit + 1, 25)) break;
@@ -124,17 +125,18 @@ export class SuggestionService {
 
     return await db.runTransaction(async (transaction) => {
       const counterDoc = await transaction.get(counterRef);
+      const counterField = ideasCounterFieldName();
       let currentId = 0;
 
       if (counterDoc.exists) {
-        currentId = counterDoc.data()?.lastSuggestionId || 0;
+        currentId = counterDoc.data()?.[counterField] || 0;
       }
 
       const nextId = currentId + 1;
       transaction.set(
         counterRef,
         {
-          lastSuggestionId: nextId,
+          [counterField]: nextId,
           updatedAt: FieldValue.serverTimestamp(),
         },
         { merge: true }
@@ -145,19 +147,19 @@ export class SuggestionService {
   }
 
   /**
-   * Reads suggestions ordered by stored identifier, with optional status/normalized-author filters and limit.
+   * Reads ideas ordered by stored identifier, with optional status/normalized-author filters and limit.
    * @remarks Returns base records only, not nested actions or activity; no implicit limit is added.
    * @example
    * Let's imagine browsing neighbors' ideas for improving streets. This brings back
-   * the suggestion cards, or just the ones at a particular stage of progress.
+   * the idea cards, or just the ones at a particular stage of progress.
    */
   static async getAll(filters?: {
-    status?: SuggestionStatus;
+    status?: IdeaStatus;
     authorEmail?: string;
     limit?: number;
-  }): Promise<Suggestion[]> {
+  }): Promise<Idea[]> {
     const db = getPublicImprovementsDb();
-    let query = db.collection(COLLECTION_NAME).orderBy('id', 'asc') as FirebaseFirestore.Query;
+    let query = db.collection(ideasCollectionName()).orderBy('id', 'asc') as FirebaseFirestore.Query;
 
     if (filters?.status) {
       query = query.where('status', '==', filters.status);
@@ -170,34 +172,34 @@ export class SuggestionService {
     }
 
     const snapshot = await query.get();
-    return snapshot.docs.map((doc) => mapDocToSuggestion(doc.data(), doc.id));
+    return snapshot.docs.map((doc) => mapDocToIdea(doc.data(), doc.id));
   }
 
   /**
    * Reads one base record, returning null when absent; activity enrichment is a controller concern.
    */
-  static async getById(id: number): Promise<Suggestion | null> {
+  static async getById(id: number): Promise<Idea | null> {
     const db = getPublicImprovementsDb();
-    const docRef = db.collection(COLLECTION_NAME).doc(id.toString());
+    const docRef = db.collection(ideasCollectionName()).doc(id.toString());
     const doc = await docRef.get();
 
     if (!doc.exists) {
       return null;
     }
 
-    return mapDocToSuggestion(doc.data(), doc.id);
+    return mapDocToIdea(doc.data(), doc.id);
   }
 
-  /** Stores a server-assigned emoji only if the suggestion does not already have one. */
-  static async assignEmojiIfMissing(id: number, emoji: string): Promise<Suggestion | null> {
+  /** Stores a server-assigned emoji only if the idea does not already have one. */
+  static async assignEmojiIfMissing(id: number, emoji: string): Promise<Idea | null> {
     const db = getPublicImprovementsDb();
-    const docRef = db.collection(COLLECTION_NAME).doc(id.toString());
+    const docRef = db.collection(ideasCollectionName()).doc(id.toString());
     return db.runTransaction(async transaction => {
       const snapshot = await transaction.get(docRef);
       if (!snapshot.exists) return null;
       const data = snapshot.data() || {};
       if (typeof data.emoji !== 'string' || !data.emoji) transaction.update(docRef, { emoji });
-      return mapDocToSuggestion({ ...data, emoji: typeof data.emoji === 'string' && data.emoji ? data.emoji : emoji }, snapshot.id);
+      return mapDocToIdea({ ...data, emoji: typeof data.emoji === 'string' && data.emoji ? data.emoji : emoji }, snapshot.id);
     });
   }
 
@@ -209,16 +211,17 @@ export class SuggestionService {
    * Let's imagine a neighbor shares a wish for a bench. This saves the idea as a
    * new page in the community's notebook so it can be read later.
    */
-  static async create(dto: CreateSuggestionDTO): Promise<Suggestion> {
+  static async create(dto: CreateIdeaDTO): Promise<Idea> {
     const db = getPublicImprovementsDb();
+    if (dto.content.photos) dto.content.photos = await canonicalizeIdeaPhotos(dto.content.photos, db);
     const nextId = dto.id ?? (await this.getNextId());
-    const docRef = db.collection(COLLECTION_NAME).doc(nextId.toString());
+    const docRef = db.collection(ideasCollectionName()).doc(nextId.toString());
 
     // Check if provided ID already exists
     if (dto.id !== undefined) {
       const existing = await docRef.get();
       if (existing.exists) {
-        throw new Error(`A suggestion with ID ${dto.id} already exists.`);
+        throw new Error(`An idea with ID ${dto.id} already exists.`);
       }
     }
 
@@ -248,7 +251,7 @@ export class SuggestionService {
 
     await docRef.set(docData);
 
-    return mapDocToSuggestion(docData, nextId.toString());
+    return mapDocToIdea(docData, nextId.toString());
   }
 
   /**
@@ -256,9 +259,10 @@ export class SuggestionService {
    * @remarks Transactional field patches preserve server-managed metadata and fence deletion.
    * Boundary matching is not rerun here.
    */
-  static async update(id: number, dto: UpdateSuggestionDTO): Promise<Suggestion | null> {
+  static async update(id: number, dto: UpdateIdeaDTO): Promise<Idea | null> {
     const db = getPublicImprovementsDb();
-    const docRef = db.collection(COLLECTION_NAME).doc(id.toString());
+    if (dto.content?.photos) dto.content.photos = await canonicalizeIdeaPhotos(dto.content.photos, db);
+    const docRef = db.collection(ideasCollectionName()).doc(id.toString());
     return db.runTransaction(async transaction => {
       const existingDoc = await transaction.get(docRef);
 
@@ -267,7 +271,7 @@ export class SuggestionService {
       }
 
       const existingData = existingDoc.data() || {};
-      if (existingData._deleting) throw Object.assign(new Error('Suggestion deletion is in progress.'), { status: 409 });
+      if (existingData._deleting) throw Object.assign(new Error('Idea deletion is in progress.'), { status: 409 });
       const now = new Date().toISOString();
 
       const updatedData: Record<string, any> = {
@@ -307,7 +311,7 @@ export class SuggestionService {
 
       transaction.update(docRef, updatedData);
 
-      return mapDocToSuggestion({ ...existingData, ...updatedData }, id.toString());
+      return mapDocToIdea({ ...existingData, ...updatedData }, id.toString());
     });
   }
 
@@ -319,13 +323,13 @@ export class SuggestionService {
    */
   static async delete(id: number): Promise<boolean> {
     const db = getPublicImprovementsDb();
-    const docRef = db.collection(COLLECTION_NAME).doc(id.toString());
+    const docRef = db.collection(ideasCollectionName()).doc(id.toString());
     let found = false;
     await db.runTransaction(async (transaction) => {
       const doc = await transaction.get(docRef);
       if (!doc.exists) return;
       found = true;
-      if (doc.get('_deleting') === true) throw Object.assign(new Error('Suggestion deletion is already in progress.'), { status: 409 });
+      if (doc.get('_deleting') === true) throw Object.assign(new Error('Idea deletion is already in progress.'), { status: 409 });
       transaction.update(docRef, { _deleting: true });
     });
     if (!found) return false;

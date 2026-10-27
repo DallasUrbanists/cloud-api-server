@@ -1,10 +1,11 @@
-/** Deletes the reviewed presentation test suggestions from the production Firestore database. */
+/** Deletes the reviewed presentation test ideas from the production Firestore database. */
 import 'dotenv/config';
 import { Firestore, type DocumentData } from '@google-cloud/firestore';
 import { writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { SuggestionService } from '../services/suggestionService.js';
+import { IdeaService } from '../services/ideaService.js';
+import { ideasCollectionName } from '../config/ideas.js';
 
 // ID 16 was deliberately excluded because its description could represent a real submission.
 export const CANDIDATE_IDS = [
@@ -19,7 +20,8 @@ const EXPECTED_DATABASE = 'public-improvements';
 const CONFIRMATION = 'DELETE 30 REVIEWED TEST IDEAS FROM PRODUCTION';
 
 export async function deleteCandidates(db: Firestore, apply: boolean, reportPath: string) {
-  const refs = CANDIDATE_IDS.map(id => db.collection('suggestion').doc(String(id)));
+  const collection = ideasCollectionName();
+  const refs = CANDIDATE_IDS.map(id => db.collection(collection).doc(String(id)));
   const docs = await db.getAll(...refs);
   const backup: Array<{ id: number; exists: boolean; data?: DocumentData }> = docs.map((doc, index) => ({
     id: CANDIDATE_IDS[index], exists: doc.exists, ...(doc.exists ? { data: doc.data() } : {}),
@@ -28,9 +30,9 @@ export async function deleteCandidates(db: Firestore, apply: boolean, reportPath
   await writeFile(resolve(reportPath), `${JSON.stringify({ project: EXPECTED_PROJECT, database: db.databaseId, mode: apply ? 'apply' : 'dry-run', candidateIds: CANDIDATE_IDS, backup }, null, 2)}\n`, { flag: 'wx' });
   const existingIds = docs.flatMap((doc, index) => doc.exists ? [CANDIDATE_IDS[index]] : []);
   if (apply) {
-    for (const id of existingIds) await SuggestionService.delete(id);
+    for (const id of existingIds) await IdeaService.delete(id);
   }
-  const remaining = await db.getAll(...existingIds.map(id => db.collection('suggestion').doc(String(id))));
+  const remaining = await db.getAll(...existingIds.map(id => db.collection(collection).doc(String(id))));
   const leftovers = remaining.flatMap((doc, index) => doc.exists ? [existingIds[index]] : []);
   if (apply && leftovers.length) throw new Error(`Deletion verification failed for IDs: ${leftovers.join(', ')}`);
   return { mode: apply ? 'apply' : 'dry-run', candidates: CANDIDATE_IDS.length, found: existingIds, missing: CANDIDATE_IDS.filter(id => !existingIds.includes(id)), deleted: apply ? existingIds.length : 0, leftovers, backup: resolve(reportPath) };

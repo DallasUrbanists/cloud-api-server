@@ -25,6 +25,9 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm test
+        env:
+          # Tests that simulate deployed requests must select the Ideas data layout explicitly.
+          IDEAS_DATA_LAYOUT: ideas
       - run: npm run build
       - id: identity
         run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"

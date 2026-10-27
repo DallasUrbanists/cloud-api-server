@@ -3,7 +3,7 @@ import { PresentationService, type EnrollmentRequest } from '../../src/services/
 import { initialPresentationState } from '../../src/models/presentation.js';
 import { PresentationMemoryStore } from './presentationMemoryStore.js';
 
-export function suggestion(id = 41, changes: Record<string, any> = {}): any {
+export function idea(id = 41, changes: Record<string, any> = {}): any {
   return {
     id, creationDate: '2026-10-21T12:00:00.000Z', modificationDate: '2026-10-21T12:00:00.000Z', status: 'new',
     author: { email: 'private@example.com', name: 'Public Author' }, uid: 'private-uid', internal: { generationRequest: 'secret' },
@@ -15,7 +15,7 @@ export function suggestion(id = 41, changes: Record<string, any> = {}): any {
   };
 }
 
-export function makeFixture(options: { initialSuggestions?: any[]; now?: number } = {}) {
+export function makeFixture(options: { initialIdeas?: any[]; now?: number } = {}) {
   const store = new PresentationMemoryStore();
   let now = options.now ?? Date.UTC(2026, 9, 21, 18, 0, 0);
   let codeNumber = 1;
@@ -24,18 +24,18 @@ export function makeFixture(options: { initialSuggestions?: any[]; now?: number 
     if (codes.length) return codes.shift()!;
     return String(codeNumber++).padStart(5, '0');
   };
-  const suggestions = new Map<number, any>((options.initialSuggestions ?? [suggestion()]).map(item => [item.id, item]));
+  const ideas = new Map<number, any>((options.initialIdeas ?? [idea()]).map(item => [item.id, item]));
   const service = new PresentationService(store, {
     now: () => now,
     code: makeCode,
-    getSuggestion: async id => suggestions.get(id) ?? null,
-    getSuggestionPage: async (afterId, limit) => {
-      const available = [...suggestions.values()].filter(item => !afterId || item.id > Number(afterId)).sort((a, b) => a.id - b.id);
+    getIdea: async id => ideas.get(id) ?? null,
+    getIdeaPage: async (afterId, limit) => {
+      const available = [...ideas.values()].filter(item => !afterId || item.id > Number(afterId)).sort((a, b) => a.id - b.id);
       const items = available.slice(0, limit);
       return { items, nextCursor: available.length > limit ? String(items.at(-1).id) : null };
     },
   });
-  return { store, service, suggestions, now: () => now, setNow: (value: number) => { now = value; } };
+  return { store, service, ideas, now: () => now, setNow: (value: number) => { now = value; } };
 }
 
 export function participant(): EnrollmentRequest {

@@ -3,12 +3,13 @@ import { createServer } from 'node:http';
 import { createConnection } from 'node:net';
 import express from 'express';
 import { getPublicImprovementsDb } from '../config/firestore.js';
+import { ideaDocumentPath } from '../config/ideas.js';
 import { corsErrorHandler, corsMiddleware } from '../middleware/cors.js';
 import { PresentationWebSocketServer } from '../presentationWebSocket.js';
 import { createPresentationRouter } from '../routes/presentationRoutes.js';
 import { PresentationService } from '../services/presentationService.js';
 import { FirestorePresentationStore } from '../services/presentationStore.js';
-import { attachSuggestionWebSocket } from '../suggestionWebSocket.js';
+import { attachIdeaWebSocket } from '../ideaWebSocket.js';
 
 function emulatorAddress(): { host: string; port: number } {
   const raw = process.env.FIRESTORE_EMULATOR_HOST;
@@ -48,10 +49,10 @@ async function main(): Promise<void> {
   const port = Number(process.env.PRESENTATION_HARNESS_PORT);
   if (host !== '127.0.0.1' || port !== 8187) throw new Error('The harness HTTP listener must bind to 127.0.0.1:8187.');
   const db = getPublicImprovementsDb();
-  const suggestion = db.collection('suggestion').doc(syntheticIdeaId);
+  const idea = db.doc(ideaDocumentPath(syntheticIdeaId));
   const server = createServer();
   let closeSockets: (() => Promise<void>) | undefined;
-  let suggestionSeeded = false;
+  let ideaSeeded = false;
   let cleanupPromise: Promise<void> | undefined;
   const cleanup = () => {
     cleanupPromise ??= (async () => {
@@ -61,19 +62,19 @@ async function main(): Promise<void> {
       await db.recursiveDelete(db.collection('presentationBootstrapReceipts')).catch(() => undefined);
       await db.recursiveDelete(db.collection('presentationCodeLookups')).catch(() => undefined);
       await db.recursiveDelete(db.collection('presentationRateLimits')).catch(() => undefined);
-      if (suggestionSeeded) await suggestion.delete().catch(() => undefined);
+      if (ideaSeeded) await idea.delete().catch(() => undefined);
       await db.terminate().catch(() => undefined);
     })();
     return cleanupPromise;
   };
   try {
-    await suggestion.set({
+    await idea.set({
       id: Number(syntheticIdeaId), creationDate: new Date().toISOString(), modificationDate: new Date().toISOString(), status: 'new',
       author: { email: 'smoke@example.invalid', name: 'Synthetic smoke fixture' },
       content: { summary: 'Synthetic WebSocket smoke idea', details: 'Fixture content for local presentation socket testing.', photos: [] },
       location: { latitude: 32.7767, longitude: -96.797, address: 'Synthetic local fixture', description: 'Emulator-only test data.' },
     });
-    suggestionSeeded = true;
+    ideaSeeded = true;
 
     const service = new PresentationService(new FirestorePresentationStore(db));
     const app = express();
@@ -84,7 +85,7 @@ async function main(): Promise<void> {
     app.get('/api/health', (_req, res) => res.json({ status: 'ok', service: 'presentation-websocket-local-harness' }));
     server.on('request', app);
     const presentationSockets = new PresentationWebSocketServer(service);
-    closeSockets = attachSuggestionWebSocket(server, { presentation: presentationSockets, suggestionsEnabled: false });
+    closeSockets = attachIdeaWebSocket(server, { presentation: presentationSockets, ideasEnabled: false });
 
     let stopping = false;
     const stop = () => {

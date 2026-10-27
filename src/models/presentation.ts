@@ -140,10 +140,10 @@ function safePhotoUrl(input: string): string | null {
   } catch { return null; }
 }
 
-export function publicPresentationIdea(suggestion: any, sessionId = '{sessionId}'): PresentationIdea {
-  const id = String(suggestion?.id ?? '');
+export function publicPresentationIdea(idea: any, sessionId = '{sessionId}'): PresentationIdea {
+  const id = String(idea?.id ?? '');
   if (!/^[1-9]\d*$/.test(id) || !Number.isSafeInteger(Number(id))) throw new PresentationError(404, 'IDEA_UNAVAILABLE', 'This idea is unavailable.');
-  const photos = Array.isArray(suggestion?.content?.photos) ? suggestion.content.photos : [];
+  const photos = Array.isArray(idea?.content?.photos) ? idea.content.photos : [];
   const seen = new Map<string, number>();
   const album: PresentationIdea['album'] = [];
   for (const photo of photos) {
@@ -155,7 +155,7 @@ export function publicPresentationIdea(suggestion: any, sessionId = '{sessionId}
     seen.set(identity, duplicate);
     album.push({ id: `photo:${identity}${duplicate > 1 ? `:${duplicate}` : ''}`, kind: 'photo', url, caption: typeof photo.caption === 'string' ? photo.caption : '' });
   }
-  const streetmix = suggestion?.streetmix;
+  const streetmix = idea?.streetmix;
   if (streetmix && typeof streetmix.streetmixId === 'string' && typeof streetmix.streetmixUrl === 'string') {
     const match = /^https:\/\/streetmix\.net\/-\/(\d+)$/.exec(streetmix.streetmixUrl);
     if (match) album.push({
@@ -165,19 +165,19 @@ export function publicPresentationIdea(suggestion: any, sessionId = '{sessionId}
   }
   const raw = {
     id,
-    creationDate: typeof suggestion.creationDate === 'string' ? suggestion.creationDate : new Date(0).toISOString(),
-    status: typeof suggestion.status === 'string' ? suggestion.status : 'new',
-    summary: typeof suggestion.content?.summary === 'string' ? suggestion.content.summary : '',
-    details: typeof suggestion.content?.details === 'string' ? suggestion.content.details : '',
-    ...(typeof suggestion.author?.name === 'string' && suggestion.author.name.trim() ? { authorName: suggestion.author.name.trim() } : {}),
-    descriptionPages: canonicalDescriptionPages(typeof suggestion.content?.details === 'string' ? suggestion.content.details : ''),
+    creationDate: typeof idea.creationDate === 'string' ? idea.creationDate : new Date(0).toISOString(),
+    status: typeof idea.status === 'string' ? idea.status : 'new',
+    summary: typeof idea.content?.summary === 'string' ? idea.content.summary : '',
+    details: typeof idea.content?.details === 'string' ? idea.content.details : '',
+    ...(typeof idea.author?.name === 'string' && idea.author.name.trim() ? { authorName: idea.author.name.trim() } : {}),
+    descriptionPages: canonicalDescriptionPages(typeof idea.content?.details === 'string' ? idea.content.details : ''),
     location: {
-      latitude: finiteCoordinate(suggestion.location?.latitude, -90, 90) ? suggestion.location.latitude : null,
-      longitude: finiteCoordinate(suggestion.location?.longitude, -180, 180) ? suggestion.location.longitude : null,
-      address: typeof suggestion.location?.address === 'string' ? suggestion.location.address : '',
-      description: typeof suggestion.location?.description === 'string' ? suggestion.location.description : '',
+      latitude: finiteCoordinate(idea.location?.latitude, -90, 90) ? idea.location.latitude : null,
+      longitude: finiteCoordinate(idea.location?.longitude, -180, 180) ? idea.location.longitude : null,
+      address: typeof idea.location?.address === 'string' ? idea.location.address : '',
+      description: typeof idea.location?.description === 'string' ? idea.location.description : '',
     },
-    ...(typeof suggestion.emoji === 'string' && suggestion.emoji ? { emoji: suggestion.emoji } : {}),
+    ...(typeof idea.emoji === 'string' && idea.emoji ? { emoji: idea.emoji } : {}),
     album,
   };
   const contentVersion = sha256(JSON.stringify(raw));

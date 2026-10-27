@@ -13,7 +13,7 @@ This backend API server powers the following client-side applications:
 | Project | Tags Used | Links |
 |---|---|---|
 | **Checkin Helper**<br>Tool for event check-in and attendee registration. Saves contacts and check-in records to the Dallas Urbanists PostgreSQL CRM database. | &bull; `Contacts`<br>&bull; `Checkins`<br>&bull; `Events` | &bull; [`GitHub repo`](https://github.com/DallasUrbanists/checkin-helper)<br>&bull; [`dallasurbanists.org/checkin`](https://dallasurbanists.org/checkin) |
-| **Improvement Map**<br>Interactive map application for exploring, submitting, and tracking civic improvement suggestions with photo attachments. | &bull; `Suggestions` | &bull; [`GitHub repo`](https://github.com/DallasUrbanists/improvement-map)<br>&bull; [`map.dallasurbanists.org`](https://map.dallasurbanists.org) |
+| **Improvement Map**<br>Interactive map application for exploring, submitting, and tracking civic improvement ideas with photo attachments. | &bull; `Ideas` | &bull; [`GitHub repo`](https://github.com/DallasUrbanists/improvement-map)<br>&bull; [`map.dallasurbanists.org`](https://map.dallasurbanists.org) |
 
 ---
 
@@ -22,7 +22,7 @@ This backend API server powers the following client-side applications:
 - [Streetmix service and playground](docs/streetmix.md): generate approximate existing Texas cross-sections with shared caching and street confirmation through `POST /api/streetmix/designs`, and test the service at `/playground/streetmix`. Generation defaults to disabled; see the guide for setup and compatibility checks.
 
 - [Documentation conventions](docs/documentation-conventions.md): comment format, ownership, and incremental rollout.
-- [Feature guides](docs/index.md#feature-guides): Boundaries, Boundary synchronization, Assist, Representatives, Suggestions, and the Recommendable Actions pilot, with system views and links to source/OpenAPI.
+- [Feature guides](docs/index.md#feature-guides): Boundaries, Boundary synchronization, Assist, Representatives, Ideas, and the Recommendable Actions pilot, with system views and links to source/OpenAPI.
 
 - [Generated-reference guide](docs/index.md): build and read the pilot TypeDoc site locally.
 - [Documentation skills](docs/index.md#documentation-skills): bounded existing-code backfills and documentation synchronization alongside changes.
@@ -36,7 +36,7 @@ Run `npm run docs:build` to generate the VitePress portal and TypeDoc reference 
 - **Web Framework**: Express.js (v5)
 - **API Documentation & Testing**: Swagger UI (OpenAPI 3.0.3) with Strong Towns Custom Theme & Dark/Light Mode
 - **Databases**:
-  - **Google Cloud Firestore**: NoSQL multi-database architecture for public suggestions and crowdsourced content.
+  - **Google Cloud Firestore**: NoSQL multi-database architecture for public ideas and crowdsourced content.
   - **PostgreSQL (Google Cloud SQL)**: Relational database for CRM contacts and event checkins.
 - **Media & Storage**: Google Cloud Storage for pre-signed photo uploads and static assets.
 - **Deployment & Hosting**: Google Cloud Run & Cloud SQL Unix socket proxy.
@@ -255,8 +255,8 @@ For the production Enterprise registration, deploy the updated code and set `FIR
 | `POST /api/checkins` | Optional | Public | Valid BIGINT event/contact IDs; one check-in per contact/event |
 | `GET /api/checkins/{id}` | Required | Partial | Contact details depend on ownership/staff status and `include_contact` |
 | `PUT`/`DELETE /api/checkins/{id}` | Required | Private | Contact owner or staff |
-| Suggestions reads/creation | Required | Public | `GET`, `POST`, and upload URL are public to authorized applications |
-| Suggestion update/delete | Required | Private | Author email match or staff |
+| Ideas reads/creation | Required | Public | `GET`, `POST`, and upload URL are public to authorized applications |
+| Idea update/delete | Required | Private | Author email match or staff |
 | Event reads and calendars | Optional | Public | Includes `/api/events`, `/api/events/{id}`, `/api/events/ical`, and `/meetup-ical` |
 | Event writes/import | Required | Private | `staff` or `system` role |
 | `GET /api/users` | Required | Private | Any authenticated user; no staff role required |
@@ -347,7 +347,7 @@ gcloud run services update urbanists-cloud-api-server `
 
 ## 🌟 Features
 
-- **Public Improvements API**: Full CRUD endpoints for managing civic improvement suggestions in Firestore (`public-improvements` database), with support for photo attachments and pre-signed GCS upload URLs.
+- **Public Improvements API**: Full CRUD endpoints for managing civic improvement ideas in Firestore (`public-improvements` database), with support for photo attachments and pre-signed GCS upload URLs.
 - **Contacts & CRM API**: PostgreSQL-backed contacts management with automatic data normalization (uppercase names, lowercase emails, standardized NANP phone formats) and multi-field search filtering.
 - **Event Checkins API**: Record and query event check-in entries linked to CRM contacts or anonymous attendees.
 - **Meetup Events & Calendar Proxy**: Proxies Dallas Urbanists Meetup iCal feeds with HTTP caching headers (`ETag`, `Last-Modified`, `Cache-Control`) and CORS headers for client-side applications.
@@ -359,20 +359,20 @@ gcloud run services update urbanists-cloud-api-server `
 
 ## 📊 Data Models & Schemas
 
-### 1. Suggestion (`public-improvements` Firestore Database)
+### 1. Idea (`public-improvements` Firestore Database)
 
-Documents in the `suggestion` collection inside the `public-improvements` Firestore database adhere to the following schema:
+Documents in the `idea` collection inside the `public-improvements` Firestore database adhere to the following schema:
 
 | Field | Type | Description |
 |---|---|---|
 | `id` | `integer` | Unique sequential integer identifier |
-| `emoji` | `string` (optional) | Server-assigned emoji describing the suggestion; JEV assigns it at creation and on individual reads when missing |
-| `creationDate` | `string` (ISO 8601) | Timestamp when suggestion was created |
+| `emoji` | `string` (optional) | Server-assigned emoji describing the idea; JEV assigns it at creation and on individual reads when missing |
+| `creationDate` | `string` (ISO 8601) | Timestamp when idea was created |
 | `modificationDate` | `string` (ISO 8601) | Timestamp of most recent update |
 | `status` | `enum` | `'new'` \| `'inprogress'` \| `'stalled'` \| `'withdrawn'` \| `'completed'` |
 | `author.email` | `string` (email) | Author's email address |
 | `author.name` | `string` | Author's display name |
-| `content.summary` | `string` | Short title / summary of the suggestion |
+| `content.summary` | `string` | Short title / summary of the idea |
 | `content.details` | `string` | Extended markdown / detailed description (default `""`) |
 | `content.photos` | `array<object>` | Optional array of photos (max 10 items) |
 | `content.photos[].url` | `string` (URI) | Public URL of uploaded photo |
@@ -383,11 +383,11 @@ Documents in the `suggestion` collection inside the `public-improvements` Firest
 | `location.description`| `string` | Landmark/corridor description (default `""`) |
 | `location.address` | `string` | Street address (default `""`) |
 
-Recommended Actions are stored as documents in `suggestion/{suggestionId}/recommendedActions/{actionId}`. Each has summary, instructions, reason, a nullable `representativeId` (validated against PostgreSQL), nullable UTC `expirationDate`, status (`open`, `ignored`, `started`, `paused`, `cancelled`, or `finished`), and creation/modification dates. Expired actions are hidden by default and can be included with `includeExpired=true`; expiration does not alter status.
+Recommended Actions are stored as documents in `idea/{ideaId}/recommendedActions/{actionId}`. Each has summary, instructions, reason, a nullable `representativeId` (validated against PostgreSQL), nullable UTC `expirationDate`, status (`open`, `ignored`, `started`, `paused`, `cancelled`, or `finished`), and creation/modification dates. Expired actions are hidden by default and can be included with `includeExpired=true`; expiration does not alter status.
 
-Suggestion activity is append-only under `suggestion/{suggestionId}/log/{entryId}`. Suggestion detail returns the newest 50 entries and pagination metadata; the Suggestions list omits logs. Status transitions add a server-attributed log entry atomically with the update. Repeating the current status is a no-op (`noOp: true`) and does not add another entry.
+Idea activity is append-only under `idea/{ideaId}/log/{entryId}`. Idea detail returns the newest 50 entries and pagination metadata; the Ideas list omits logs. Status transitions add a server-attributed log entry atomically with the update. Repeating the current status is a no-op (`noOp: true`) and does not add another entry.
 
-Reusable Recommendable Actions use a single Firestore `recommendableActions` collection for every status (`candidate`, `approved`, `rejected`, `closed`, `uncertain`). Approval and rejection update the same document in place; only approved actions are publicly readable and eligible for matching. Source-backed actions use their stable `sourceKey` as document ID, and changed content returns the same action to candidate status with version history. Suggestion-specific Recommended Actions remain separate. Entries retain exact source evidence and a version number. `boundaries` contains applicable boundary IDs; an empty array is unrestricted, otherwise any overlap with the suggestion's resolved boundary IDs is sufficient. Suggestion submission invokes Jev matching against approved entries; dynamic buckets select linked Recommended Actions after redundancy filtering: all matches at or above 80% when available, otherwise up to five at or above 15%, otherwise up to five at or above 4%. Results below 4% are excluded; weaker buckets do not fill unused slots. The former `RECOMMENDABLE_MATCH_THRESHOLD` setting is ignored. Boundary-scoped entries do not match suggestions without coordinates that resolve to boundaries.
+Reusable Recommendable Actions use a single Firestore `recommendableActions` collection for every status (`candidate`, `approved`, `rejected`, `closed`, `uncertain`). Approval and rejection update the same document in place; only approved actions are publicly readable and eligible for matching. Source-backed actions use their stable `sourceKey` as document ID, and changed content returns the same action to candidate status with version history. Idea-specific Recommended Actions remain separate. Entries retain exact source evidence and a version number. `boundaries` contains applicable boundary IDs; an empty array is unrestricted, otherwise any overlap with the idea's resolved boundary IDs is sufficient. Idea submission invokes Jev matching against approved entries; dynamic buckets select linked Recommended Actions after redundancy filtering: all matches at or above 80% when available, otherwise up to five at or above 15%, otherwise up to five at or above 4%. Results below 4% are excluded; weaker buckets do not fill unused slots. The former `RECOMMENDABLE_MATCH_THRESHOLD` setting is ignored. Boundary-scoped entries do not match ideas without coordinates that resolve to boundaries.
 
 Recommendable Action routes are public: `GET /api/recommendables` lists approved entries and accepts an optional `search` term matching summary, instructions, or reason; `GET /api/recommendables/:id` retrieves one approved entry. Both work without an API key. `/api/recommendables/candidates` supports authenticated submission and staff listing, `PATCH /api/recommendables/candidates/:id` handles staff approval/rejection, and `PATCH /api/recommendables/:id` updates status for staff. Submission currently accepts official `dallascityhall.com` sources only and requires staff approval before an entry can match. `npm run scan:recommendables` checks the version-controlled source registry in `src/data/recommendableSources.ts`, skips unchanged pages using content fingerprints, and creates evidence-backed candidates when an opportunity is detected. Production uses the `recommendable-worker` Cloud Run Job, invoked daily at midnight America/Chicago by the `recommendable-worker-daily` Cloud Scheduler job; discovery never auto-publishes. A changed page with no verifiable opportunity moves its catalog entry to `uncertain` for staff review.
 
@@ -501,9 +501,11 @@ NODE_ENV=development
 
 # Firestore Configuration
 PUBLIC_IMPROVEMENTS_DB=public-improvements
+IDEAS_DATA_LAYOUT=ideas
 
 # Google Cloud Storage
-SUGGESTION_PHOTOS_BUCKET=urbanists-suggestion-photos
+IDEA_PHOTOS_BUCKET=urbanists-idea-photos
+IDEAS_MAINTENANCE=false
 
 # PostgreSQL Database Configuration
 DB_USER=postgres
@@ -557,7 +559,7 @@ npm start
 
 The server includes an interactive **Swagger UI** built with the **OpenAPI 3.0.3** specification and customized with the Strong Towns design aesthetic, featuring:
 - **Dark Mode & Light Mode** toggle with instant switching and persistent `localStorage` preference.
-- **Categorized Endpoints** grouped under `Suggestions`, `Contacts`, `Checkins`, `Events`, and `System`.
+- **Categorized Endpoints** grouped under `Ideas`, `Contacts`, `Checkins`, `Events`, and `System`.
 - **Interactive "Try it out" Execution** for real-time testing and schema inspection directly in the browser.
 
 Once the server is running, access the documentation at any of the following URLs:
@@ -578,52 +580,55 @@ Once the server is running, access the documentation at any of the following URL
 
 ---
 
-### Suggestions (`Suggestions` Tag)
+### Ideas (`Ideas` Tag)
 
-Endpoints for managing civic improvement suggestions and photo uploads in Firestore (`public-improvements` database) and Google Cloud Storage. *(Mounted at `/api/suggestions` and `/api/public-improvements/suggestions`).*
+Endpoints for managing civic improvement ideas and photo uploads in Firestore (`public-improvements` database) and Google Cloud Storage. *(Mounted at `/api/ideas` and `/api/public-improvements/ideas`).*
 
 | Method | Endpoint | Description |
 |---|---|---|
-| `POST` | `/api/suggestions/upload-url` | Generate a pre-signed GCS URL for direct photo upload |
-| `GET` | `/api/suggestions` | List suggestions (supports `?status=`, `?authorEmail=`, `?limit=`) |
-| `GET` (WebSocket upgrade) | `/api/suggestions/ws` | Receive authenticated real-time create/update/delete notices; see [protocol and browser example](docs/suggestion-notices.md) |
-| `POST` | `/api/suggestions` | Create a new suggestion record |
-| `GET` | `/api/suggestions/:id` | Get suggestion details by integer ID |
-| `PUT` | `/api/suggestions/:id` | Update an existing suggestion by ID |
-| `DELETE` | `/api/suggestions/:id` | Delete a suggestion by ID |
-| `GET` | `/api/suggestions/:suggestionId/recommended-actions` | List actions (`?status=`, `?includeExpired=`) |
-| `POST` | `/api/suggestions/:suggestionId/recommended-actions` | Create a staff-managed action |
-| `GET` | `/api/suggestions/:suggestionId/recommended-actions/:actionId` | Get one action |
-| `PATCH` | `/api/suggestions/:suggestionId/recommended-actions/:actionId` | Update an action (staff only) |
-| `DELETE` | `/api/suggestions/:suggestionId/recommended-actions/:actionId` | Delete an action (staff only) |
-| `GET` | `/api/suggestions/:suggestionId/log` | Read paginated activity (`limit` max 100, opaque `cursor`) |
-| `POST` | `/api/suggestions/:suggestionId/log` | Append activity as the Suggestion author or staff |
+| `POST` | `/api/ideas/upload-url` | Generate a pre-signed GCS URL for direct photo upload |
+| `GET` | `/api/ideas` | List ideas (supports `?status=`, `?authorEmail=`, `?limit=`) |
+| `GET` (WebSocket upgrade) | `/api/ideas/ws` | Receive authenticated real-time create/update/delete notices; see [protocol and browser example](docs/idea-notices.md) |
+| `POST` | `/api/ideas` | Create a new idea record |
+| `GET` | `/api/ideas/:id` | Get idea details by integer ID |
+| `PUT` | `/api/ideas/:id` | Update an existing idea by ID |
+| `DELETE` | `/api/ideas/:id` | Delete an idea by ID |
+| `GET` | `/api/ideas/:ideaId/recommended-actions` | List actions (`?status=`, `?includeExpired=`) |
+| `POST` | `/api/ideas/:ideaId/recommended-actions` | Create a staff-managed action |
+| `GET` | `/api/ideas/:ideaId/recommended-actions/:actionId` | Get one action |
+| `PATCH` | `/api/ideas/:ideaId/recommended-actions/:actionId` | Update an action (staff only) |
+| `DELETE` | `/api/ideas/:ideaId/recommended-actions/:actionId` | Delete an action (staff only) |
+| `GET` | `/api/ideas/:ideaId/log` | Read paginated activity (`limit` max 100, opaque `cursor`) |
+| `POST` | `/api/ideas/:ideaId/log` | Append activity as the Idea author or staff |
 
-The nested routes are also available under `/api/public-improvements/suggestions`. All routes require an API key; action mutations require staff authentication. Child documents are removed when a Suggestion is deleted, and child writes are blocked while deletion is in progress.
+The nested routes are also available under `/api/public-improvements/ideas`. All routes require an API key; action mutations require staff authentication. Child documents are removed when an Idea is deleted, and child writes are blocked while deletion is in progress.
 
-#### Example: Generate Signed Upload URL (`POST /api/suggestions/upload-url`)
+#### Example: Generate Signed Upload URL (`POST /api/ideas/upload-url`)
 
 **Request Body:**
 ```json
 {
-  "fileName": "street-redesign.jpg",
-  "contentType": "image/jpeg",
-  "suggestionId": 12
+  "filename": "street-redesign.jpg",
+  "contentType": "image/jpeg"
 }
 ```
 
 **Response (`200 OK`):**
 ```json
 {
-  "uploadUrl": "https://storage.googleapis.com/urbanists-suggestion-photos/suggestions/12/1727800000000-street-redesign.jpg?X-Goog-Algorithm=...",
-  "publicUrl": "https://storage.googleapis.com/urbanists-suggestion-photos/suggestions/12/1727800000000-street-redesign.jpg",
-  "fileName": "suggestions/12/1727800000000-street-redesign.jpg",
-  "bucket": "urbanists-suggestion-photos",
-  "expiresInSeconds": 900
+  "message": "Signed upload URL generated successfully.",
+  "data": {
+    "uploadUrl": "https://storage.googleapis.com/urbanists-idea-photos/ideas/uploads/1727800000000-uuid.jpg?X-Goog-Algorithm=...",
+    "publicUrl": "https://storage.googleapis.com/urbanists-idea-photos/ideas/uploads/1727800000000-uuid.jpg",
+    "filePath": "ideas/uploads/1727800000000-uuid.jpg",
+    "expiresAt": "2026-09-23T14:45:00.000Z"
+  }
 }
 ```
 
-#### Example: Create Suggestion (`POST /api/suggestions`)
+The browser uploads bytes with a `PUT` to `uploadUrl`, using the same `contentType`, then stores the returned `publicUrl` as the photo URL. Treat returned URLs and paths as opaque; the signer does not require an Idea ID and does not return `ideaId`.
+
+#### Example: Create Idea (`POST /api/ideas`)
 
 **Request Body:**
 ```json
@@ -638,7 +643,7 @@ The nested routes are also available under `/api/public-improvements/suggestions
     "details": "Installing concrete bollards and native Texas oak trees will increase pedestrian safety and lower summer heat.",
     "photos": [
       {
-        "url": "https://storage.googleapis.com/urbanists-suggestion-photos/suggestions/1/elm-street.jpg",
+        "url": "https://storage.googleapis.com/urbanists-idea-photos/ideas/1/elm-street.jpg",
         "caption": "Current street condition without protected bike lane",
         "timestamp": "2026-09-23T14:30:00.000Z"
       }

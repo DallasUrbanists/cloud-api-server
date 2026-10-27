@@ -1,24 +1,24 @@
 # Streetmix
 
-## Suggestion integration
+## Idea integration
 
-Let's imagine a neighbor opens an idea for a safer crossing. The app can request a drawing using that suggestion's saved location, ask which road they meant when several roads meet, and show the saved drawing whenever anyone opens the idea again.
+Let's imagine a neighbor opens an idea for a safer crossing. The app can request a drawing using that idea's saved location, ask which road they meant when several roads meet, and show the saved drawing whenever anyone opens the idea again.
 
-The [suggestion workflow contract](../src/docs/suggestionStreetmix.ts) defines five endpoints under `/api/suggestions/:suggestionId` and the `/api/public-improvements/suggestions/:suggestionId` alias. Application API key and production App Check apply to every endpoint. User sign-in is optional for first generation and reads. Ordinary generation returns an existing attachment. Only the current signed-in author or staff may regenerate it, using `If-Match` from the current attachment GET response. Explicit regeneration fetches fresh sources and creates a new public design.
+The [idea workflow contract](../src/docs/ideaStreetmix.ts) defines five endpoints under `/api/ideas/:ideaId` and the `/api/public-improvements/ideas/:ideaId` alias. Application API key and production App Check apply to every endpoint. User sign-in is optional for first generation and reads. Ordinary generation returns an existing attachment. Only the current signed-in author or staff may regenerate it, using `If-Match` from the current attachment GET response. Explicit regeneration fetches fresh sources and creates a new public design.
 
-The [workflow service](../src/services/suggestionStreetmixService.ts) claims one active request per suggestion before provider calls. Initial generation shares the existing location caches; regeneration has a server-created refresh scope that remains stable across retries. Selection is valid for 15 minutes. Execution leases last 90 seconds; HTTP generation has a 60-second deadline. No background worker runs. Status reads do not advance work: clients retry the original POST, with its original key and body, to recover a stopped execution or finish saving.
+The [workflow service](../src/services/ideaStreetmixService.ts) claims one active request per idea before provider calls. Initial generation shares the existing location caches; regeneration has a server-created refresh scope that remains stable across retries. Selection is valid for 15 minutes. Execution leases last 90 seconds; HTTP generation has a 60-second deadline. No background worker runs. Status reads do not advance work: clients retry the original POST, with its original key and body, to recover a stopped execution or finish saving.
 
-The parent `suggestion/{id}` holds a small server-managed `streetmix` summary and a private active-request pointer. The permanent full result is at `suggestion/{id}/streetmix/current`; transient requests and application-scoped key mappings are in `streetmixRequests` and `streetmixRequestKeys` beneath that suggestion. Terminal request receipts have a logical 24-hour lifetime; Firestore TTL on their `expiresAt` field can clean them physically. Unresolved publication states have no automatic expiry. Candidate requests expire logically and can be superseded by a new initial/regeneration request. Suggestion deletion removes all these subcollections and leaves external public Streetmix designs intact.
+The parent `idea/{id}` holds a small server-managed `streetmix` summary and a private active-request pointer. The permanent full result is at `idea/{id}/streetmix/current`; transient requests and application-scoped key mappings are in `streetmixRequests` and `streetmixRequestKeys` beneath that idea. Terminal request receipts have a logical 24-hour lifetime; Firestore TTL on their `expiresAt` field can clean them physically. Unresolved publication states have no automatic expiry. Candidate requests expire logically and can be superseded by a new initial/regeneration request. Idea deletion removes all these subcollections and leaves external public Streetmix designs intact.
 
-Saving the attachment, current full result, and completed receipt is one transaction. A verified result is recorded before this transaction so `save_pending` recovery saves it without republishing. The service rechecks coordinates, revision, deletion, and replacement ownership before publication and saving. Ordinary suggestion updates use transactional known-field patches, preserving server-managed fields. Coordinate changes make saved summaries `stale: true`; the existing drawing remains readable. Unknown publication outcomes retain the active request and must never be retried with a fresh regeneration scope.
+Saving the attachment, current full result, and completed receipt is one transaction. A verified result is recorded before this transaction so `save_pending` recovery saves it without republishing. The service rechecks coordinates, revision, deletion, and replacement ownership before publication and saving. Ordinary idea updates use transactional known-field patches, preserving server-managed fields. Coordinate changes make saved summaries `stale: true`; the existing drawing remains readable. Unknown publication outcomes retain the active request and must never be retried with a fresh regeneration scope.
 
 ### Client example
 
-Use the suggestion ID rather than sending coordinates. Keep the original POST URL, body, and idempotency key in client state until it finishes, including after a page reload. `getAppCheckToken` and optional `getUserIdToken` below are supplied by the integrating application's existing Firebase setup.
+Use the idea ID rather than sending coordinates. Keep the original POST URL, body, and idempotency key in client state until it finishes, including after a page reload. `getAppCheckToken` and optional `getUserIdToken` below are supplied by the integrating application's existing Firebase setup.
 
 ```js
 const base = 'https://api.dallasurbanists.org';
-const path = `/api/suggestions/${suggestion.id}/streetmix`;
+const path = `/api/ideas/${idea.id}/streetmix`;
 
 async function call(path, { method = 'GET', body, key, etag } = {}) {
   const token = await getAppCheckToken();
@@ -53,7 +53,7 @@ if (outcome.response.status === 409 &&
 }
 
 if (outcome.data.status === 'completed') {
-  suggestion.streetmix = outcome.data.streetmix;
+  idea.streetmix = outcome.data.streetmix;
   const url = new URL(outcome.data.result.streetmixUrl);
   if (url.origin !== 'https://streetmix.net' || !/^\/-\/\d+$/.test(url.pathname)
       || url.search || url.hash || url.username || url.password) {

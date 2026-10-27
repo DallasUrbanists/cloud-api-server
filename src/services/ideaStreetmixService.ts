@@ -1,21 +1,23 @@
 /**
- * Coordinates suggestion-owned Streetmix requests with transactional leases and saves.
+ * Coordinates idea-owned Streetmix requests with transactional leases and saves.
  * Provider publication remains owned by Streetmix's durable shared cache. This layer
- * protects suggestion revisions, selection, permissions, and recovery after disconnects.
+ * protects idea revisions, selection, permissions, and recovery after disconnects.
  * @module
  */
 import { randomUUID } from 'node:crypto';
 import { FieldValue, type Firestore, type Transaction } from '@google-cloud/firestore';
 import { getPublicImprovementsDb } from '../config/firestore.js';
+import { ideaDocumentPath } from '../config/ideas.js';
+import type { IdeasContract } from '../routes/ideaRoutes.js';
 import type { AuthenticatedUser } from '../middleware/auth.js';
 import { StreetmixError, streetmixPoint, type StreetmixResult } from '../models/streetmix.js';
-import { suggestionStreetmixETag, suggestionStreetmixSummary, type SuggestionStreetmix, type SuggestionStreetmixRequest as Workflow } from '../models/suggestionStreetmix.js';
+import { ideaStreetmixETag, ideaStreetmixSummary, type IdeaStreetmix, type IdeaStreetmixRequest as Workflow } from '../models/ideaStreetmix.js';
 import { generateStreetmix } from './streetmixService.js';
 import { requireTexas } from './streetmixSources.js';
 import { streetmixHash } from './streetmixStore.js';
 
-/** Inputs are server-authenticated; coordinates are always loaded from the suggestion. */
-export interface SuggestionStreetmixCommand {
+/** Inputs are server-authenticated; coordinates are always loaded from the idea. */
+export interface IdeaStreetmixCommand {
   id: string;
   application: string;
   key: string;
@@ -27,23 +29,31 @@ export interface SuggestionStreetmixCommand {
 }
 
 /** HTTP-neutral outcome with a public recovery URL and optional revision validator. */
-export interface SuggestionStreetmixResponse { status: number; etag?: string; body: Record<string, unknown> }
+export interface IdeaStreetmixResponse { status: number; etag?: string; body: Record<string, unknown> }
 
 function authorize(data: any, user?: AuthenticatedUser): void {
-  if (!user) throw new StreetmixError(401, 'USER_AUTH_REQUIRED', 'Sign in as the suggestion author or staff to replace its design.');
-  if (!user.roles.includes('staff') && !user.emails.some(email => email.toLowerCase() === String(data.author?.email || '').toLowerCase())) throw new StreetmixError(403, 'FORBIDDEN', 'Only the suggestion author or staff may replace its design.');
+  if (!user) throw new StreetmixError(401, 'USER_AUTH_REQUIRED', 'Sign in as the idea author or staff to replace its design.');
+  if (!user.roles.includes('staff') && !user.emails.some(email => email.toLowerCase() === String(data.author?.email || '').toLowerCase())) throw new StreetmixError(403, 'FORBIDDEN', 'Only the idea author or staff may replace its design.');
 }
 
 function available(data: any): void {
-  if (!data) throw new StreetmixError(404, 'SUGGESTION_NOT_FOUND', 'Suggestion not found.');
-  if (data._deleting) throw new StreetmixError(409, 'SUGGESTION_DELETING', 'Suggestion deletion is in progress.');
+  if (!data) throw new StreetmixError(404, 'IDEA_NOT_FOUND', 'Idea not found.');
+  if (data._deleting) throw new StreetmixError(409, 'IDEA_DELETING', 'Idea deletion is in progress.');
 }
 
 /** Injectable database/provider boundaries support contention and crash-recovery tests. */
-export class SuggestionStreetmixService {
-  constructor(private readonly db: Firestore = getPublicImprovementsDb(), private readonly generate: typeof generateStreetmix = generateStreetmix, private readonly texas: typeof requireTexas = requireTexas) {}
+export class IdeaStreetmixService {
+  constructor(
+    private readonly db: Firestore = getPublicImprovementsDb(),
+    private readonly generate: typeof generateStreetmix = generateStreetmix,
+    private readonly texas: typeof requireTexas = requireTexas,
+    private readonly contract: IdeasContract = 'ideas',
+  ) {}
 
-  private parent(id: string) { return this.db.collection('suggestion').doc(id); }
+  private parent(id: string) {
+    const [collection, document] = ideaDocumentPath(id).split('/');
+    return this.db.collection(collection).doc(document);
+  }
 
   private async transaction<T>(signal: AbortSignal, work: (tx: Transaction) => Promise<T>): Promise<T> {
     const deadline = AbortSignal.any([signal, AbortSignal.timeout(5000)]);
@@ -62,45 +72,46 @@ export class SuggestionStreetmixService {
         } });
         return work(fenced);
       }, { maxAttempts: 3 }), new Promise<never>((_, reject) => {
-        abort = () => reject(new StreetmixError(signal.aborted ? 504 : 503, signal.aborted ? 'GENERATION_TIMEOUT' : 'STORAGE_UNAVAILABLE', 'Suggestion workflow storage is unavailable. Retry the same request.'));
+        abort = () => reject(new StreetmixError(signal.aborted ? 504 : 503, signal.aborted ? 'GENERATION_TIMEOUT' : 'STORAGE_UNAVAILABLE', 'Idea workflow storage is unavailable. Retry the same request.'));
         deadline.addEventListener('abort', abort, { once: true });
         if (deadline.aborted) abort();
       })]);
     } finally { deadline.removeEventListener('abort', abort); }
   }
 
-  private response(id: string, request: Workflow, status?: number): SuggestionStreetmixResponse {
+  private response(id: string, request: Workflow, status?: number): IdeaStreetmixResponse {
     const awaiting = request.status === 'awaiting_selection';
+    const prefix = this.contract === 'ideas' ? '/api/ideas' : '/api/suggestions';
     return { status: status ?? (awaiting ? 409 : request.status === 'completed' ? 200 : 202),
-      ...(request.streetmix ? { etag: suggestionStreetmixETag(id, request.streetmix.revision) } : {}),
-      body: { requestId: request.requestId, status: request.status, statusUrl: `/api/suggestions/${id}/streetmix/requests/${request.requestId}`,
+      ...(request.streetmix ? { etag: ideaStreetmixETag(id, request.streetmix.revision) } : {}),
+      body: { requestId: request.requestId, status: request.status, statusUrl: `${prefix}/${id}/streetmix/requests/${request.requestId}`,
         ...(awaiting ? { error: 'STREET_SELECTION_REQUIRED', message: 'Confirm the intended street before publishing.', coordinate: request.coordinate, candidates: request.candidates, selectionExpiresAt: request.selectionExpiresAt } : {}),
         ...(request.result ? { result: request.result } : {}), ...(request.streetmix ? { streetmix: request.streetmix } : {}),
         ...(request.error ? { error: request.error, message: request.message } : {}) } };
   }
 
   /** Reads the permanent attachment independently of transient receipt lifetime. */
-  async read(id: string, signal: AbortSignal): Promise<SuggestionStreetmixResponse> {
+  async read(id: string, signal: AbortSignal): Promise<IdeaStreetmixResponse> {
     return this.transaction(signal, async tx => {
       const parent = this.parent(id), data = (await tx.get(parent)).data();
       available(data);
       const current = (await tx.get(parent.collection('streetmix').doc('current'))).data();
       const active = data!._streetmixActive ? (await tx.get(parent.collection('streetmixRequests').doc(data!._streetmixActive))).data() as Workflow | undefined : undefined;
-      return { status: 200, etag: suggestionStreetmixETag(id, data!.streetmix?.revision || 0), body: {
-        streetmix: suggestionStreetmixSummary(data!.streetmix, data!.location), result: current?.result ?? null,
+      return { status: 200, etag: ideaStreetmixETag(id, data!.streetmix?.revision || 0), body: {
+        streetmix: ideaStreetmixSummary(data!.streetmix, data!.location), result: current?.result ?? null,
         activeRequest: active ? this.response(id, this.withExpiry(active)).body : null,
       } };
     });
   }
 
   /** Public recovery reads never trigger provider calls or publication. */
-  async readRequest(id: string, requestId: string, signal: AbortSignal): Promise<SuggestionStreetmixResponse> {
+  async readRequest(id: string, requestId: string, signal: AbortSignal): Promise<IdeaStreetmixResponse> {
     return this.transaction(signal, async tx => {
       const parent = this.parent(id), data = (await tx.get(parent)).data();
       available(data);
       const workflow = (await tx.get(parent.collection('streetmixRequests').doc(requestId))).data() as Workflow | undefined;
       if (!workflow || workflow.expiresAtMs && workflow.expiresAtMs <= Date.now()) throw new StreetmixError(404, 'REQUEST_NOT_FOUND', 'Request not found or receipt expired. Read the current attachment.');
-      return this.response(id, { ...this.withExpiry(workflow), ...(workflow.streetmix ? { streetmix: suggestionStreetmixSummary(workflow.streetmix, data!.location)! } : {}) }, 200);
+      return this.response(id, { ...this.withExpiry(workflow), ...(workflow.streetmix ? { streetmix: ideaStreetmixSummary(workflow.streetmix, data!.location)! } : {}) }, 200);
     });
   }
 
@@ -111,12 +122,12 @@ export class SuggestionStreetmixService {
 
   private validate(data: any, workflow: Workflow, user?: AuthenticatedUser): void {
     available(data);
-    if (data.location?.latitude !== workflow.coordinate.latitude || data.location?.longitude !== workflow.coordinate.longitude || (data.streetmix?.revision || 0) !== workflow.expectedRevision) throw new StreetmixError(409, 'SUGGESTION_CHANGED', 'Suggestion location or attachment changed. Start again from the current suggestion.');
+    if (data.location?.latitude !== workflow.coordinate.latitude || data.location?.longitude !== workflow.coordinate.longitude || (data.streetmix?.revision || 0) !== workflow.expectedRevision) throw new StreetmixError(409, 'IDEA_CHANGED', 'Idea location or attachment changed. Start again from the current idea.');
     if (workflow.mode === 'regenerate') authorize(data, user);
   }
 
   /** Claims one workflow or joins existing work; only its fenced owner invokes providers. */
-  async run(command: SuggestionStreetmixCommand, signal: AbortSignal): Promise<SuggestionStreetmixResponse> {
+  async run(command: IdeaStreetmixCommand, signal: AbortSignal): Promise<IdeaStreetmixResponse> {
     const parent = this.parent(command.id), application = streetmixHash(command.application);
     const phase = command.mode === 'selection' ? `selection:${command.requestId}` : command.mode;
     const keyRef = parent.collection('streetmixRequestKeys').doc(streetmixHash(`${application}:${phase}:${command.key}`));
@@ -138,7 +149,7 @@ export class SuggestionStreetmixService {
         if (!data!.streetmix) throw new StreetmixError(409, 'ATTACHMENT_REQUIRED', 'Generate the first attachment before regenerating.');
         if (!command.ifMatch) throw new StreetmixError(428, 'PRECONDITION_REQUIRED', 'Supply the current attachment ETag in If-Match.');
         // A completed same-key retry replays its receipt even though its old ETag was consumed.
-        if (!(replay && workflow?.status === 'completed') && command.ifMatch !== suggestionStreetmixETag(command.id, data!.streetmix.revision)) throw new StreetmixError(412, 'PRECONDITION_FAILED', 'Attachment revision changed. Read it again.');
+        if (!(replay && workflow?.status === 'completed') && command.ifMatch !== ideaStreetmixETag(command.id, data!.streetmix.revision)) throw new StreetmixError(412, 'PRECONDITION_FAILED', 'Attachment revision changed. Read it again.');
       }
       if (command.mode === 'selection') {
         if (!workflow || workflow.requestId !== command.requestId) throw new StreetmixError(404, 'REQUEST_NOT_FOUND', 'Request not found.');
@@ -162,7 +173,7 @@ export class SuggestionStreetmixService {
         if (workflow.leaseUntil > Date.now() && ['generating', 'publishing', 'publication_uncertain', 'save_pending'].includes(workflow.status)) return join();
       } else {
         const coordinate = streetmixPoint({ latitude: data!.location?.latitude, longitude: data!.location?.longitude });
-        workflow = { requestId: randomUUID(), application, mode: command.mode === 'regenerate' ? 'regenerate' : 'initial', status: 'generating', coordinate, expectedRevision: data!.streetmix?.revision || 0, createdAt: new Date().toISOString(), attempt: '', leaseUntil: 0,
+        workflow = { requestId: randomUUID(), application, providerNamespace: 'idea', mode: command.mode === 'regenerate' ? 'regenerate' : 'initial', status: 'generating', coordinate, expectedRevision: data!.streetmix?.revision || 0, createdAt: new Date().toISOString(), attempt: '', leaseUntil: 0,
           ...(command.mode === 'regenerate' ? { refreshScope: randomUUID() } : {}) };
       }
       // A replay retains its original provider identity, scope, and confirmed way.
@@ -180,7 +191,7 @@ export class SuggestionStreetmixService {
     });
     if (claim.existing) {
       const saved = await this.read(command.id, signal);
-      return { ...saved, body: { ...saved.body, requestId: (saved.body.streetmix as SuggestionStreetmix).requestId, status: 'completed' } };
+      return { ...saved, body: { ...saved.body, requestId: (saved.body.streetmix as IdeaStreetmix).requestId, status: 'completed' } };
     }
     let workflow = claim.workflow!;
     if (!claim.owner) return this.response(command.id, workflow);
@@ -198,7 +209,7 @@ export class SuggestionStreetmixService {
       if (!workflow.result) {
         await this.texas(workflow.coordinate, signal);
         const result = await this.generate({ ...workflow.coordinate, ...(workflow.osmWayId ? { osmWayId: workflow.osmWayId } : {}) },
-          `suggestion-${workflow.requestId}-${workflow.osmWayId || 'auto'}`, workflow.application, signal, undefined,
+          `${workflow.providerNamespace ?? 'suggestion'}-${workflow.requestId}-${workflow.osmWayId || 'auto'}`, workflow.application, signal, undefined,
           { refreshScope: workflow.refreshScope, beforePublish: () => patch({ status: 'publishing' }, true) });
         // Keep the verified result before the attachment transaction, even after disconnect.
         await patch({ status: 'save_pending', result, leaseUntil: 0 });
@@ -209,7 +220,7 @@ export class SuggestionStreetmixService {
         this.validate(data, workflow, command.user);
         if (current?.attempt !== workflow.attempt || data!._streetmixActive !== workflow.requestId) throw new StreetmixError(409, 'RESERVATION_EXPIRED', 'Another execution owns this workflow.');
         const result = workflow.result!, savedAt = new Date().toISOString();
-        const streetmix: SuggestionStreetmix = { streetmixId: result.streetmixId, streetmixUrl: result.streetmixUrl, selectedStreet: result.selectedStreet, coordinate: workflow.coordinate, snappedCoordinate: result.snappedCoordinate,
+        const streetmix: IdeaStreetmix = { streetmixId: result.streetmixId, streetmixUrl: result.streetmixUrl, selectedStreet: result.selectedStreet, coordinate: workflow.coordinate, snappedCoordinate: result.snappedCoordinate,
           ...(result.dividedRoad ? { dividedRoad: result.dividedRoad } : {}), generatedAt: result.generatedAt, savedAt, requestId: workflow.requestId, revision: workflow.expectedRevision + 1, stale: false };
         tx.set(parent.collection('streetmix').doc('current'), { result });
         tx.update(parent, { streetmix, _streetmixActive: FieldValue.delete() });
@@ -226,7 +237,7 @@ export class SuggestionStreetmixService {
         return this.response(command.id, workflow);
       }
       const uncertain = workflow.status === 'publishing' || workflow.status === 'publication_uncertain' || safe.code === 'PUBLICATION_UNCERTAIN';
-      const invalidated = ['SUGGESTION_CHANGED', 'SUGGESTION_DELETING', 'SUGGESTION_NOT_FOUND', 'FORBIDDEN', 'RESERVATION_EXPIRED'].includes(safe.code);
+      const invalidated = ['IDEA_CHANGED', 'IDEA_DELETING', 'IDEA_NOT_FOUND', 'FORBIDDEN', 'RESERVATION_EXPIRED'].includes(safe.code);
       const status = workflow.result ? invalidated ? 'failed' : 'save_pending' : uncertain ? 'publication_uncertain' : 'failed';
       const expiresAtMs = Date.now() + 86400000;
       await patch({ status, error: safe.code, message: safe.message, leaseUntil: 0, ...(status === 'failed' ? { expiresAtMs, expiresAt: new Date(expiresAtMs) } : {}) }).catch(() => {});

@@ -1,26 +1,27 @@
 /**
- * Suggestion Streetmix HTTP boundary: strict bodies, deadlines, and recoverable errors.
- * Authentication is applied by the suggestion router; OpenAPI owns the contract.
+ * Idea Streetmix HTTP boundary: strict bodies, deadlines, and recoverable errors.
+ * Authentication is applied by the idea router; OpenAPI owns the contract.
  * @module
  */
 import type { Request, Response } from 'express';
+import type { IdeasContract } from '../routes/ideaRoutes.js';
 import { StreetmixError, streetmixKey } from '../models/streetmix.js';
-import { SuggestionStreetmixService } from '../services/suggestionStreetmixService.js';
+import { IdeaStreetmixService } from '../services/ideaStreetmixService.js';
 import { readStreetmixThumbnail } from '../services/streetmixThumbnail.js';
 
 /** Builds a route handler without opening database connections at module import time. */
-export function suggestionStreetmixHandler(action: 'read' | 'request' | 'initial' | 'regenerate' | 'selection' | 'thumbnail') {
+export function ideaStreetmixHandler(action: 'read' | 'request' | 'initial' | 'regenerate' | 'selection' | 'thumbnail', contract: IdeasContract = 'ideas') {
   return async (req: Request, res: Response): Promise<void> => {
     const disconnect = new AbortController();
     const close = () => { if (!res.writableEnded) disconnect.abort(); };
     res.on('close', close);
     res.set('Cache-Control', 'no-store');
     try {
-      const id = String(req.params.suggestionId), requestId = req.params.requestId ? String(req.params.requestId) : undefined;
-      if (!/^[1-9]\d*$/.test(id) || !Number.isSafeInteger(Number(id))) throw new StreetmixError(400, 'INVALID_SUGGESTION_ID', 'Suggestion ID must be a positive safe integer.');
+      const id = String(req.params.ideaId), requestId = req.params.requestId ? String(req.params.requestId) : undefined;
+      if (!/^[1-9]\d*$/.test(id) || !Number.isSafeInteger(Number(id))) throw new StreetmixError(400, 'INVALID_IDEA_ID', 'Idea ID must be a positive safe integer.');
       if (requestId && !/^[a-f0-9-]{36}$/.test(requestId)) throw new StreetmixError(400, 'INVALID_REQUEST_ID', 'Invalid request identifier.');
       const signal = AbortSignal.any([disconnect.signal, AbortSignal.timeout(60000)]);
-      const service = new SuggestionStreetmixService();
+      const service = new IdeaStreetmixService(undefined, undefined, undefined, contract);
       if (action === 'thumbnail') {
         const current = await service.read(id, signal);
         const attachment = current.body.streetmix as { streetmixId: string } | null;
@@ -44,9 +45,18 @@ export function suggestionStreetmixHandler(action: 'read' | 'request' | 'initial
       if (!disconnect.signal.aborted) res.status(outcome.status).json(outcome.body);
     } catch (error) {
       if (disconnect.signal.aborted) return;
-      const safe = error instanceof StreetmixError ? error : new StreetmixError(503, 'STORAGE_UNAVAILABLE', 'Suggestion Streetmix storage is unavailable. Retry the same request.');
+      const rawSafe = error instanceof StreetmixError ? error : new StreetmixError(503, 'STORAGE_UNAVAILABLE', 'Idea Streetmix storage is unavailable. Retry the same request.');
+      const safe = contract === 'suggestions' && rawSafe.code.startsWith('IDEA_')
+        ? new StreetmixError(rawSafe.status, rawSafe.code.replace(/^IDEA_/, 'SUGGESTION_'), rawSafe.message, rawSafe.retryAfter, rawSafe.details)
+        : rawSafe;
       if (safe.retryAfter) res.set('Retry-After', String(safe.retryAfter));
-      res.status(safe.status).json({ ...(error as any)?.workflowResponse, error: safe.code, message: safe.message });
+      const workflowResponse = (error as any)?.workflowResponse;
+      const publicWorkflowResponse = workflowResponse ? {
+        ...workflowResponse,
+        ...(typeof workflowResponse.error === 'string' && workflowResponse.error.startsWith('IDEA_')
+          ? { error: workflowResponse.error.replace(/^IDEA_/, 'SUGGESTION_') } : {}),
+      } : {};
+      res.status(safe.status).json({ ...publicWorkflowResponse, error: safe.code, message: safe.message });
     } finally { res.off('close', close); }
   };
 }

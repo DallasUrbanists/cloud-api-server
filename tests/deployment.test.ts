@@ -5,11 +5,11 @@ import { fixturePlan, runFixtures } from '../src/scripts/stagingFixtures.js';
 import { stagingEnv } from './helpers/stagingEnvironment.js';
 import { deploymentArgs, assertHealth, validateManifest } from '../scripts/deploy-staging.mjs';
 import { getFirestoreDb } from '../src/config/firestore.js';
-import { getStorage, getSuggestionPhotosBucketName } from '../src/config/storage.js';
+import { getStorage, getIdeaPhotosBucketName } from '../src/config/storage.js';
 import { getAuthorizedOrigins, isOriginAllowed, corsOptions } from '../src/middleware/cors.js';
 import { readFileSync } from 'node:fs';
-import { SuggestionService } from '../src/services/suggestionService.js';
-import { SuggestionNoticeService } from '../src/services/suggestionNoticeService.js';
+import { IdeaService } from '../src/services/ideaService.js';
+import { IdeaNoticeService } from '../src/services/ideaNoticeService.js';
 import { FirestoreStreetmixCache } from '../src/services/streetmixCache.js';
 import { FirestoreStreetmixStore } from '../src/services/streetmixStore.js';
 import { FirestorePresentationStore } from '../src/services/presentationStore.js';
@@ -32,7 +32,7 @@ test('staging rejects every missing, blank, or incorrect required identifier wit
     }
   }
   for (const key of ['PUBLIC_IMPROVEMENTS_DB', 'ASSIST_QUOTA_DB']) assert.throws(() => deploymentConfig({ ...stagingEnv, [key]: 'public-improvements' }));
-  assert.throws(() => deploymentConfig({ ...stagingEnv, SUGGESTION_PHOTOS_BUCKET: 'urbanists-suggestion-photos' }));
+  assert.throws(() => deploymentConfig({ ...stagingEnv, IDEA_PHOTOS_BUCKET: 'urbanists-idea-photos' }));
   for (const key of ['DB_USER', 'DB_NAME']) assert.throws(() => deploymentConfig({ ...stagingEnv, [key]: 'postgres' }));
 });
 
@@ -45,9 +45,19 @@ test('reserved service cannot bypass validation, and staging cannot run in the p
 });
 
 test('non-staging defaults remain compatible with optional build metadata', () => {
-  assert.deepEqual(deploymentConfig({}), { staging: false, environment: 'unknown', database: 'public-improvements', bucket: 'urbanists-suggestion-photos', buildCommit: null });
-  assert.equal(deploymentConfig({ NODE_ENV: 'production' }).environment, 'production');
+  assert.deepEqual(deploymentConfig({}), { staging: false, ideasLayout: 'ideas', environment: 'unknown', database: 'public-improvements', bucket: 'urbanists-idea-photos', buildCommit: null });
+  assert.equal(deploymentConfig({ IDEAS_DATA_LAYOUT: 'legacy' }).bucket, 'urbanists-suggestion-photos');
+  assert.equal(deploymentConfig({ IDEAS_DATA_LAYOUT: 'ideas' }).bucket, 'urbanists-idea-photos');
+  assert.throws(() => deploymentConfig({ NODE_ENV: 'production' }), /IDEAS_DATA_LAYOUT is required/);
+  assert.equal(deploymentConfig({ NODE_ENV: 'production', IDEAS_DATA_LAYOUT: 'ideas' }).environment, 'production');
+  assert.throws(() => deploymentConfig({ IDEAS_DATA_LAYOUT: 'ideas', IDEA_PHOTOS_BUCKET: 'new', SUGGESTION_PHOTOS_BUCKET: 'old' }), /conflicts/);
   assert.equal(firestoreDatabase('custom-db', {}), 'custom-db');
+});
+
+test('staging permits only the deprecated bucket variable as a non-conflicting bridge fallback', () => {
+  const { IDEA_PHOTOS_BUCKET: _ignored, ...legacyFallback } = stagingEnv;
+  assert.equal(deploymentConfig({ ...legacyFallback, SUGGESTION_PHOTOS_BUCKET: STAGING.bucket }).bucket, STAGING.bucket);
+  assert.throws(() => deploymentConfig({ ...legacyFallback, SUGGESTION_PHOTOS_BUCKET: 'urbanists-idea-photos-staging-143738155808' }), /Unsafe staging configuration/);
 });
 
 test('auxiliary Firestore overrides cannot escape staging, including cached clients', async () => {
@@ -68,8 +78,8 @@ test('auxiliary Firestore overrides cannot escape staging, including cached clie
     get: async () => ({ data: () => undefined }), getAll: async (...refs: unknown[]) => refs.map(() => ({ data: () => undefined })),
     set() {}, update() {},
   })) as never);
-  assert.equal(await SuggestionService.getForPresentation(1), null);
-  const notices = new SuggestionNoticeService();
+  assert.equal(await IdeaService.getForPresentation(1), null);
+  const notices = new IdeaNoticeService();
   const unsubscribe = notices.subscribe({ ready() {}, notice() {}, failed() { assert.fail('Unexpected listener failure'); } });
   unsubscribe();
   await new FirestoreStreetmixCache().claim('fixture', new AbortController().signal);
@@ -88,7 +98,7 @@ test('auxiliary Firestore overrides cannot escape staging, including cached clie
     assert.throws(() => getFirestoreDb(db));
     assert.throws(() => firestoreDatabase(db, stagingEnv));
   }
-  assert.equal(getSuggestionPhotosBucketName(), STAGING.bucket);
+  assert.equal(getIdeaPhotosBucketName(), STAGING.bucket);
   delete process.env.DB_NAME;
   assert.throws(() => getFirestoreDb());
   assert.throws(() => getStorage());
@@ -103,7 +113,7 @@ test('staging CORS and both socket paths share exclusive canonical origins and e
   for (const origin of ['https://map.dallasurbanists.org', 'http://localhost:5173', 'https://other.web.app', 'https://map-staging-143738155808.web.app.evil.test']) assert.equal(isOriginAllowed(origin), false);
   assert.deepEqual(corsOptions.exposedHeaders, ['ETag', 'Retry-After']);
   assert.ok((corsOptions.allowedHeaders as string[]).includes('X-Firebase-AppCheck'));
-  const sockets = readFileSync(new URL('../src/suggestionWebSocket.ts', import.meta.url), 'utf8');
+  const sockets = readFileSync(new URL('../src/ideaWebSocket.ts', import.meta.url), 'utf8');
   assert.match(sockets, /isOriginAllowed\(req.headers.origin\)/);
   assert.ok(sockets.indexOf('isOriginAllowed(req.headers.origin)') < sockets.indexOf('presentation.handleUpgrade'));
   process.env = {};
@@ -123,7 +133,7 @@ test('fixture tools are staging-only, default report makes no network calls, and
 });
 
 test('deployment plan fixes target and identities, requires reviewed sizing, and checks candidate metadata', () => {
-  const env = { STAGING_CPU: '1', STAGING_MEMORY: '512Mi', STAGING_CONCURRENCY: '80', STAGING_MIN_INSTANCES: '0', STAGING_MAX_INSTANCES: '2', STAGING_INGRESS: 'all', STAGING_CPU_THROTTLING: 'true' };
+  const env = { STAGING_IDEAS_DATA_LAYOUT: 'legacy', STAGING_CPU: '1', STAGING_MEMORY: '512Mi', STAGING_CONCURRENCY: '80', STAGING_MIN_INSTANCES: '0', STAGING_MAX_INSTANCES: '2', STAGING_INGRESS: 'all', STAGING_CPU_THROTTLING: 'true' };
   const args = deploymentArgs(stagingEnv.BUILD_COMMIT, env);
   assert.equal(args[2], STAGING.service);
   assert.ok(args.includes('--no-traffic'));
@@ -132,6 +142,10 @@ test('deployment plan fixes target and identities, requires reviewed sizing, and
   assert.ok(!bootstrap.includes('--no-traffic'));
   assert.ok(args.includes('API_KEYS_JSON=improvement-map-staging-api-keys:latest,DB_PASSWORD=urbanists-staging-db-password:latest'));
   assert.ok(!args.join(' ').includes('contacts-db-password'));
+  assert.ok(args.join(' ').includes('IDEAS_DATA_LAYOUT=legacy,IDEA_PHOTOS_BUCKET=urbanists-suggestion-photos-staging-143738155808'));
+  const ideas = deploymentArgs(stagingEnv.BUILD_COMMIT, { ...env, STAGING_IDEAS_DATA_LAYOUT: 'ideas' });
+  assert.ok(ideas.join(' ').includes('IDEAS_DATA_LAYOUT=ideas,IDEA_PHOTOS_BUCKET=urbanists-idea-photos-staging-143738155808'));
+  assert.throws(() => deploymentArgs(stagingEnv.BUILD_COMMIT, { ...env, STAGING_IDEAS_DATA_LAYOUT: '' }));
   for (const key of Object.keys(env)) assert.throws(() => deploymentArgs(stagingEnv.BUILD_COMMIT, { ...env, [key]: '' }));
   assert.throws(() => deploymentArgs('main', env));
   const health = { status: 'ok', service: 'urbanists-cloud-api-server', environment: 'staging', buildCommit: stagingEnv.BUILD_COMMIT, revision: 'revision', databases: [STAGING.database] };

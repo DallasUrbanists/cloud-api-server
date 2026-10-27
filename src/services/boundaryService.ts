@@ -158,7 +158,7 @@ export class BoundaryService {
     finally { if (this.pendingSearches.get(key) === request) this.pendingSearches.delete(key); }
   }
 
-  /** Resolves all currently applicable boundaries for a suggestion location. */
+  /** Resolves all currently applicable boundaries for an idea location. */
   static async findApplicableToLocation(location: { latitude?: number; longitude?: number; address?: string }): Promise<Boundary[]> {
     let search: BoundarySearch;
     if (location.latitude !== undefined && location.longitude !== undefined) {

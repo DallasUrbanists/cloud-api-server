@@ -4,7 +4,7 @@
 
 Use these conventions for new or changed TypeScript behavior. The first pilot is the [Recommendable Actions feature](recommendable-actions.md): its model, controller, service, and router. Other existing files can be documented incrementally when touched; this is not a requirement to rewrite the entire repository.
 
-The pilot establishes source comments and a curated feature overview. Coverage now also includes Boundaries, Boundary synchronization, Assist, Representatives, and Suggestions with their immediate helpers. The [VitePress portal](index.md) renders the selected feature guides with graphical Mermaid diagrams alongside TypeDoc-generated Markdown reference; unrelated legacy modules remain outside this backfill. Guides and reference share the same navigation, theme, layout, and search. The [Documentation workflow](index.md#automated-checks) validates the build on pull requests and `main` pushes. Repository skills now guide bounded backfills and documentation synchronization; required-check branch rules and publication remain separate steps.
+The pilot establishes source comments and a curated feature overview. Coverage now also includes Boundaries, Boundary synchronization, Assist, Representatives, and Ideas with their immediate helpers. The [VitePress portal](index.md) renders the selected feature guides with graphical Mermaid diagrams alongside TypeDoc-generated Markdown reference; unrelated legacy modules remain outside this backfill. Guides and reference share the same navigation, theme, layout, and search. The [Documentation workflow](index.md#automated-checks) validates the build on pull requests and `main` pushes. Repository skills now guide bounded backfills and documentation synchronization; required-check branch rules and publication remain separate steps.
 
 ## One authority per concern
 
@@ -24,7 +24,7 @@ Use `/** ... */` documentation blocks compatible with TypeDoc's TSDoc-style synt
 
 - **Module/file:** begin with a short purpose statement and `@module`. Describe the layer's responsibility, important I/O dependencies or absence of I/O, and boundaries with other layers. Avoid an inventory of every declaration.
 - **Exported function or method:** explain purpose and the general flow when it is not obvious. Document meaningful return semantics, side effects, failure modes, and surprising assumptions. A short wrapper may need only one sentence; it does not need boilerplate parameters and returns.
-- **Exported classes, types, constants, and properties:** describe domain meaning where names and types are insufficient, such as global boundary scope or catalog versus suggestion identity.
+- **Exported classes, types, constants, and properties:** describe domain meaning where names and types are insufficient, such as global boundary scope or catalog versus idea identity.
 - **Internal helpers:** document non-obvious normalization, algorithms, or decisions. Do not require blocks for every anonymous callback or obvious accessor.
 - **Inline comments:** reserve for reasoning that cannot be conveyed clearly at declaration level. Do not narrate individual statements.
 
@@ -60,7 +60,7 @@ Provide examples liberally for modules, domain concepts, and functions whenever 
 
 ```typescript
 /**
- * Determines whether an action's geographic scope includes a suggestion.
+ * Determines whether an action's geographic scope includes an idea.
  *
  * @remarks
  * Unrestricted actions apply globally; restricted actions need any shared ID.
