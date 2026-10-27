@@ -52,6 +52,7 @@ jobs:
       STAGING_MAX_INSTANCES: ${{ vars.STAGING_MAX_INSTANCES }}
       STAGING_INGRESS: ${{ vars.STAGING_INGRESS }}
       STAGING_CPU_THROTTLING: ${{ vars.STAGING_CPU_THROTTLING }}
+      STAGING_IDEAS_DATA_LAYOUT: ${{ vars.STAGING_IDEAS_DATA_LAYOUT }}
       GITHUB_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v5

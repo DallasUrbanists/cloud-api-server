@@ -157,3 +157,8 @@ test('deployment plan fixes target and identities, requires reviewed sizing, and
   }
   assert.throws(() => validateManifest(['src/ignored-untracked.ts'], []));
 });
+
+test('staging workflow forwards the reviewed Ideas data layout to its deploy helper', () => {
+  const workflow = readFileSync(new URL('../.github/workflows/deploy-staging.yml', import.meta.url), 'utf8');
+  assert.match(workflow, /STAGING_IDEAS_DATA_LAYOUT:\s*\$\{\{\s*vars\.STAGING_IDEAS_DATA_LAYOUT\s*\}\}/);
+});
