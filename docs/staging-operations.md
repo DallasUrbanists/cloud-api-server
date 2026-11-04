@@ -32,6 +32,8 @@ FRONTEND=map-staging-deployer@$PROJECT.iam.gserviceaccount.com
 PROJECT_NUMBER=$(gcloud projects describe "$PROJECT" --format='value(projectNumber)')
 gh api repos/DallasUrbanists/cloud-api-server --jq '{id,owner_id:.owner.id,full_name}'
 gh api repos/DallasUrbanists/improvement-map --jq '{id,owner_id:.owner.id,full_name}'
+gh api repos/DallasUrbanists/cloud-api-server/actions/oidc/customization/sub
+gh api repos/DallasUrbanists/improvement-map/actions/oidc/customization/sub
 gcloud firestore databases list --project="$PROJECT"
 gcloud firestore databases describe --project="$PROJECT" --database=public-improvements \
   --format='yaml(name,locationId,type,concurrencyMode,appEngineIntegrationMode,pointInTimeRecoveryEnablement,deleteProtectionState)'
@@ -181,13 +183,17 @@ Use IAM Policy Analyzer/Troubleshooter and reviewed ancestor policies to inspect
 
 Create separate backend/frontend pools or separate providers with equivalent restrictive bindings. Discover numeric repository/owner IDs using the preflight commands and project number from Google Cloud. The following is a backend example; repeat with distinct frontend pool/provider and its discovered IDs, repository name `improvement-map`, and `$FRONTEND` identity. Set GitHub Environment `staging` deployment branch policy to `staging` only. Keep `main` the default branch.
 
+Read each repository's actual OIDC customization first. These repositories use GitHub's immutable subject format, with numeric IDs embedded in `sub_claim_prefix`. Preserve that setting and use the returned prefix when restricting the staging Environment subject. Repository names alone do not determine the current subject.
+
 ```bash
 : "${BACKEND_REPOSITORY_ID:?discovered numeric ID}"
 : "${OWNER_ID:?discovered numeric owner ID}"
 POOL=api-staging
 PROVIDER=github
+SUBJECT_PREFIX=$(gh api repos/DallasUrbanists/cloud-api-server/actions/oidc/customization/sub --jq .sub_claim_prefix)
+: "${SUBJECT_PREFIX:?discover the actual repository OIDC subject prefix}"
 run gcloud iam workload-identity-pools create "$POOL" --project="$PROJECT" --location=global --display-name='Backend staging'
-CONDITION="assertion.repository_id=='$BACKEND_REPOSITORY_ID' && assertion.repository_owner_id=='$OWNER_ID' && assertion.ref=='refs/heads/staging' && assertion.sub=='repo:DallasUrbanists/cloud-api-server:environment:staging' && assertion.workflow_ref=='DallasUrbanists/cloud-api-server/.github/workflows/deploy-staging.yml@refs/heads/staging'"
+CONDITION="assertion.repository_id=='$BACKEND_REPOSITORY_ID' && assertion.repository_owner_id=='$OWNER_ID' && assertion.ref=='refs/heads/staging' && assertion.sub=='${SUBJECT_PREFIX}:environment:staging' && assertion.workflow_ref=='DallasUrbanists/cloud-api-server/.github/workflows/deploy-staging.yml@refs/heads/staging'"
 run gcloud iam workload-identity-pools providers create-oidc "$PROVIDER" --project="$PROJECT" --location=global \
   --workload-identity-pool="$POOL" --issuer-uri=https://token.actions.githubusercontent.com \
   --attribute-mapping='google.subject=assertion.sub,attribute.repository_id=assertion.repository_id,attribute.repository_owner_id=assertion.repository_owner_id' \
