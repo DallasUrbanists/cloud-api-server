@@ -1,6 +1,8 @@
 import test, { mock } from 'node:test';
 import assert from 'node:assert/strict';
 import { once } from 'node:events';
+import { createRequire } from 'node:module';
+import path from 'node:path';
 import vm from 'node:vm';
 import { marked } from 'marked';
 import { getPublicImprovementsDb } from '../src/config/firestore.js';
@@ -9,7 +11,7 @@ import { RecommendedActionService } from '../src/services/recommendedActionServi
 import { BoundaryService } from '../src/services/boundaryService.js';
 import { RepresentativesService } from '../src/services/representativesService.js';
 import { validateMatchInput } from '../src/models/recommendableMatch.js';
-import { playgroundHtml } from '../src/controllers/recommendablePlaygroundController.js';
+import { playgroundHtml, RecommendablePlaygroundController } from '../src/controllers/recommendablePlaygroundController.js';
 import { createApp } from '../src/app.js';
 
 const action = (id: string, boundaries: number[] = [], status = 'approved') => ({ id, summary: `Action ${id}`, instructions: 'Call the city', why: 'Helps', whyNot: 'Unrelated issues', boundaries, sourceUrl: 'https://example.org/', sourceEvidence: 'Evidence', sourceDescription: 'Source', status, version: 1 });
@@ -376,6 +378,18 @@ test('saved suggestions persist only the top five actions from the fallback buck
   assert.deepEqual(create.mock.calls.map(call => call.arguments[1].matchProbability), [.14, .12, .1, .08, .04]);
 });
 
+test('playground script handlers serve fixed files relative to their package directories', () => {
+  const require = createRequire(import.meta.url);
+  for (const [handler, dependency, filename] of [
+    [RecommendablePlaygroundController.markedScript, 'marked', 'marked.umd.js'],
+    [RecommendablePlaygroundController.purifyScript, 'dompurify', 'purify.min.js'],
+  ] as const) {
+    let sent: unknown[] | undefined;
+    handler({} as any, { sendFile: (...args: unknown[]) => { sent = args; } } as any);
+    assert.deepEqual(sent, [filename, { root: path.dirname(require.resolve(dependency)) }]);
+  }
+});
+
 test('public page and API validate requests and cancel classification on disconnect', async t => {
   const calls: any[] = [];
   const match = t.mock.method(Service, 'findMatches', async (input, signal) => { calls.push(input); return { data: [], count: 0, diagnostics: { catalogCount: 0, eligibleCount: 0, threshold: .9, boundaries: [] } }; });
@@ -385,10 +399,14 @@ test('public page and API validate requests and cancel classification on disconn
   const page = await fetch(base + '/playground/recommendables'); assert.equal(page.status, 200);
   const html = await page.text(); assert.match(html, /value="32.781162"/); assert.match(html, /value="-96.794861"/);
   assert.match(html, /value="1902 Main St, Dallas, TX 75201"/);
+  const browserGlobals: any = {};
   for (const asset of ['marked.js', 'purify.js']) {
     const script = await fetch(base + '/playground/recommendables/' + asset);
     assert.equal(script.status, 200); assert.match(script.headers.get('content-type') ?? '', /javascript/);
+    vm.runInNewContext(await script.text(), browserGlobals);
   }
+  assert.equal(browserGlobals.marked.parse('**Ready**').trim(), '<p><strong>Ready</strong></p>');
+  assert.equal(typeof browserGlobals.DOMPurify, 'function');
   assert.match(await (await fetch(base)).text(), /href="\/playground\/recommendables"/);
   const url = base + '/api/recommendables/match';
   assert.equal((await fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: 'x' })).status, 415);

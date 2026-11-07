@@ -1,0 +1,825 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Write to a Representative | Dallas Urbanists</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous" />
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family: Inter, system-ui, sans-serif;
+        background: #07172b;
+        color: #f5f3ee;
+        line-height: 1.6;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+      }
+      header {
+        border-bottom: 1px solid #193860;
+        background: #0c2340;
+        padding: 1rem 1.5rem;
+      }
+      a {
+        color: #85b8ff;
+      }
+      main {
+        max-width: 850px;
+        margin: 2.5rem auto;
+        padding: 0 1.25rem;
+      }
+      h1 {
+        font-family: Georgia, serif;
+        font-weight: normal;
+        color: #ffa800;
+        line-height: 1.2;
+        margin-bottom: 0;
+      }
+      h1 + p {
+        margin-top: 0;
+      }
+      p {
+        color: #a9bed4;
+      }
+      .card {
+        padding: 1.5rem;
+        border: 1px solid #193860;
+        border-radius: 10px;
+        background: #0c2340;
+        margin: 1rem 0;
+      }
+      label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 0.4rem;
+      }
+      input,
+      textarea,
+      select {
+        width: 100%;
+        font: inherit;
+        padding: 0.7rem;
+        background: #05101f;
+        color: #f5f3ee;
+        border: 1px solid #748da9;
+        border-radius: 5px;
+      }
+      textarea {
+        display: block;
+        min-height: 110px;
+        resize: none;
+        overflow-y: hidden;
+      }
+      button,
+      .send {
+        display: inline-block;
+        font: inherit;
+        font-weight: 700;
+        padding: 0.7rem 1.2rem;
+        background: #ffa800;
+        color: #0c2340;
+        border: 0;
+        border-radius: 5px;
+        cursor: pointer;
+        text-decoration: none;
+      }
+      button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+      :focus-visible {
+        outline: 3px solid #85b8ff;
+        outline-offset: 3px;
+      }
+      .field {
+        margin: 1rem 0;
+      }
+      .picker {
+        position: relative;
+      }
+      #suggestion-options {
+        position: absolute;
+        z-index: 2;
+        top: 100%;
+        left: 0;
+        right: 0;
+        max-height: 18rem;
+        overflow: auto;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        background: #102c49;
+        border: 1px solid #748da9;
+        border-radius: 0 0 5px 5px;
+      }
+      #suggestion-options li {
+        padding: 0.6rem;
+        cursor: pointer;
+        overflow-wrap: anywhere;
+      }
+      #suggestion-options li:hover,
+      #suggestion-options li[aria-selected="true"] {
+        background: #193860;
+      }
+      #new-description { border-radius: 5px 5px 0 0; }
+      .description-tools { display: flex; flex-wrap: wrap; width: 100%; border: 1px solid #748da9; border-top: 0; border-radius: 0 0 5px 5px; background: #102c49; padding: 0.35rem; gap: 0.3rem; }
+      .description-tools button, .secondary-button { background: transparent; color: #a5ccff; border: 1px solid #426c96; padding: 0.4rem 0.75rem; font-size: 0.875rem; }
+      .description-tools button { border-color: transparent; }
+      .toolbar-icon { width: 1rem; height: 1rem; flex: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+      #choose-sample { display: inline-flex; align-items: center; gap: 0.4rem; }
+      dialog { width: min(700px, calc(100% - 2rem)); max-height: 85vh; padding: 1.25rem; border: 1px solid #426c96; border-radius: 10px; background: #0c2340; color: #f5f3ee; }
+      dialog::backdrop { background: #0009; }
+      dialog[open]::backdrop { animation: sample-backdrop-in 0.18s ease-out; }
+      @keyframes sample-backdrop-in { from { background: #0000; } to { background: #0009; } }
+      .dialog-header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+      .dialog-header h2 { margin: 0; }
+      .sample-list { list-style: none; padding: 0; margin: 0.75rem 0; max-height: 50vh; overflow: auto; }
+      .sample-list button { display: block; width: 100%; text-align: left; background: #05101f; color: #a9bed4; font-weight: 400; border: 1px solid #193860; margin: 0.35rem 0; }
+      .sample-list button:hover { border-color: #85b8ff; }
+      #sample-count { display: block; margin-top: 0.5rem; }
+      @media (prefers-reduced-motion: reduce) { dialog[open]::backdrop { animation: none; } }
+      @media (max-width: 520px) {
+        .toolbar-label { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+        #random-description, #choose-sample { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; padding: 0.5rem; }
+        #random-description > span[aria-hidden] { font-size: 1.25rem; line-height: 1; }
+      }
+      .suggestion-mode { border: 0; padding: 0; margin: 1rem 0; }
+      .suggestion-mode legend { font-weight: 700; margin-bottom: 0.4rem; }
+      .suggestion-mode label { display: flex; align-items: center; gap: 0.5rem; font-weight: 400; }
+      .suggestion-mode input { width: auto; accent-color: #ffa800; }
+      .map-widget { position: relative; isolation: isolate; }
+      #location-map { height: 380px; border-radius: 5px; color: #17283d; }
+      .map-controls { position: absolute; z-index: 500; top: 0.5rem; left: 0.5rem; right: 0.5rem; display: flex; gap: 0.4rem; align-items: flex-start; }
+      .map-search { position: relative; flex: 1; min-width: 0; }
+      .map-controls button { padding: 0.7rem; }
+      #address-options { position: absolute; top: 100%; left: 0; right: 0; list-style: none; margin: 0; padding: 0; background: #102c49; border: 1px solid #748da9; }
+      #address-options [role="option"] { display: block; width: 100%; padding: 0.7rem; color: #f5f3ee; cursor: pointer; }
+      #address-options [role="option"]:hover, #address-options [role="option"]:focus-visible { background: #193860; }
+      .location-pin { font-size: 28px; line-height: 36px; text-align: center; }
+      #location-status:empty { display: none; }
+      .privacy-note, .map-help { color: #a9bed4; font-size: 0.9rem; }
+      @media (max-width: 540px) { .map-controls { flex-wrap: wrap; } .map-search { flex-basis: 100%; } #location-map { height: 360px; } }
+      #status:empty {
+        display: none;
+      }
+      #status.error {
+        color: #ffb3ac;
+      }
+      [hidden] {
+        display: none !important;
+      }
+      footer {
+        margin-top: 2rem;
+        color: #a9bed4;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Write to a Representative</h1>
+      <p>
+        Choose an idea and a representative, then review and edit a draft
+        before opening your email app. Drafts are generated with AI. Idea text
+        is sent to Gemini and may contain personal information. Review the
+        message and recipients before sending.
+      </p>
+      <form id="email-form">
+        <fieldset class="suggestion-mode">
+          <legend>Choose an idea</legend>
+          <label><input type="radio" name="suggestion-mode" id="mode-saved" value="saved" checked /> Choose a previously submitted idea</label>
+          <label><input type="radio" name="suggestion-mode" id="mode-new" value="new" /> Write a new idea</label>
+        </fieldset>
+        <div id="saved-suggestion" class="field picker">
+          <label for="suggestion">Idea</label
+          ><input
+            id="suggestion"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-controls="suggestion-options"
+            aria-expanded="false"
+            autocomplete="off"
+            placeholder="Search ideas"
+            disabled
+          />
+          <ul
+            id="suggestion-options"
+            role="listbox"
+            aria-label="Ideas"
+            hidden
+          ></ul>
+        </div>
+        <div id="new-suggestion" hidden>
+          <div class="field">
+            <label for="new-description">Describe your idea</label>
+            <textarea id="new-description" maxlength="10000" rows="3"></textarea>
+            <div class="description-tools" role="toolbar" aria-label="Description samples"><!-- DESCRIPTION_SAMPLE_BUTTONS --></div>
+            <p class="privacy-note">Your idea is not saved. Text you enter, including any personal information, is sent to Gemini. Google Maps may receive the selected coordinates to look up a street address.</p>
+          </div>
+          <div class="field">
+            <label for="map-address">Choose location</label>
+            <p id="map-help" class="map-help">Click the map to place a pin, search for an address, or use your current location. Keyboard users can move the map and select its center. Address search uses Google Places; map tiles come from OpenStreetMap.</p>
+            <div class="map-widget">
+              <div id="location-map" aria-label="Choose a location on the map" aria-describedby="map-help"></div>
+              <div class="map-controls">
+                <div class="map-search">
+                  <input id="map-address" role="combobox" aria-label="Search for an address" aria-autocomplete="list" aria-controls="address-options" aria-expanded="false" autocomplete="off" placeholder="Search for an address" maxlength="200" />
+                  <ul id="address-options" role="listbox" aria-label="Address results" hidden></ul>
+                </div>
+                <button id="current-location" type="button">Center on my location</button>
+                <button id="map-center" type="button">Use map center</button>
+              </div>
+            </div>
+            <small id="maps-attribution" hidden>Address search powered by Google</small>
+            <p id="location-status" role="status" aria-live="polite"></p>
+          </div>
+        </div>
+        <div id="representative-field" class="field" hidden>
+          <label for="representative">Representative</label
+          ><select id="representative" disabled>
+            <option value="">Select a representative</option>
+          </select>
+        </div>
+        <button id="generate" type="submit" hidden>
+          Generate written letter
+        </button>
+      </form>
+      <!-- DESCRIPTION_SAMPLE_DIALOG -->
+      <p id="status" role="status" aria-live="polite"></p>
+      <button id="retry-suggestions" type="button" hidden>
+        Retry loading ideas
+      </button>
+      <div id="draft" hidden>
+        <div class="field">
+          <label for="subject">Subject line</label
+          ><input id="subject" type="text" />
+        </div>
+        <div class="field">
+          <label for="body">Message</label
+          ><textarea id="body" rows="5"></textarea>
+        </div>
+        <a id="send" class="send" href="#">Send email</a
+        ><button id="unavailable" type="button" disabled hidden>
+          Recipient email unavailable
+        </button>
+      </div>
+    </main>
+    <script>
+      (() => {
+        const apiBaseUrl = "https://api.dallasurbanists.org/";
+        const suggestion = document.getElementById("suggestion");
+        const options = document.getElementById("suggestion-options");
+        const representativeField = document.getElementById(
+          "representative-field",
+        );
+        const representative = document.getElementById("representative");
+        const form = document.getElementById("email-form");
+        const generate = document.getElementById("generate");
+        const status = document.getElementById("status");
+        const retrySuggestions = document.getElementById("retry-suggestions");
+        const draft = document.getElementById("draft");
+        const subject = document.getElementById("subject");
+        const body = document.getElementById("body");
+        const send = document.getElementById("send");
+        const unavailable = document.getElementById("unavailable");
+        const savedMode = document.getElementById("mode-saved");
+        const newMode = document.getElementById("mode-new");
+        const savedSection = document.getElementById("saved-suggestion");
+        const newSection = document.getElementById("new-suggestion");
+        const description = document.getElementById("new-description");
+        const address = document.getElementById("map-address");
+        const addressOptions = document.getElementById("address-options");
+        const locationStatus = document.getElementById("location-status");
+        const mapsAttribution = document.getElementById("maps-attribution");
+        const currentLocation = document.getElementById("current-location");
+        let mode = "saved", point = null, map = null, marker = null, mapLoad = null;
+        let locationVersion = 0, addressTimer, addressRequest, sessionToken;
+        let suggestionsState = "loading", representativeVersion = 0;
+        let items = [],
+          filtered = [],
+          selected = null,
+          active = -1,
+          version = 0,
+          recipients = "";
+        /* DESCRIPTION_SAMPLES_SCRIPT */
+        const descriptionSamples = setupDescriptionSamples(description, () => {
+          version++;
+          resetDraft();
+          generate.disabled = !description.value.trim();
+          message("");
+        });
+        function message(text, error) {
+          status.textContent = text.replace(/\bsuggestions?\b/gi, (word) => {
+            const replacement = word.toLowerCase() === "suggestions" ? "ideas" : "idea";
+            return word === word.toUpperCase() ? replacement.toUpperCase() : /^[A-Z]/.test(word) ? replacement[0].toUpperCase() + replacement.slice(1) : replacement;
+          });
+          status.classList.toggle("error", !!error);
+        }
+        function label(item) {
+          const date =
+            typeof item.date === "string" && item.date
+              ? item.date.slice(0, 10)
+              : "unknown date";
+          return (
+            [item.emoji, item.summary].filter(Boolean).join(" ") +
+            " (" +
+            (item.author || "Unknown author") +
+            " on " +
+            date +
+            ")"
+          );
+        }
+        function hideOptions() {
+          options.hidden = true;
+          suggestion.setAttribute("aria-expanded", "false");
+          suggestion.removeAttribute("aria-activedescendant");
+          active = -1;
+        }
+        function drawOptions() {
+          const query =
+            selected && suggestion.value === label(selected)
+              ? ""
+              : suggestion.value.trim().toLocaleLowerCase();
+          filtered = items.filter((item) =>
+            label(item).toLocaleLowerCase().includes(query),
+          );
+          options.replaceChildren();
+          active = -1;
+          for (const item of filtered) {
+            const option = document.createElement("li");
+            option.id = "suggestion-option-" + item.id;
+            option.setAttribute("role", "option");
+            option.setAttribute("aria-selected", "false");
+            option.textContent = label(item);
+            option.addEventListener("mousedown", (event) =>
+              event.preventDefault(),
+            );
+            option.addEventListener("click", () => choose(item));
+            options.appendChild(option);
+          }
+          options.hidden = !filtered.length;
+          suggestion.setAttribute("aria-expanded", String(!!filtered.length));
+        }
+        function highlight(index) {
+          if (!filtered.length) return;
+          active = Math.max(0, Math.min(index, filtered.length - 1));
+          Array.from(options.children).forEach((option, i) =>
+            option.setAttribute("aria-selected", String(i === active)),
+          );
+          const option = options.children[active];
+          suggestion.setAttribute("aria-activedescendant", option.id);
+          option.scrollIntoView({ block: "nearest" });
+        }
+        function resetDraft() {
+          draft.hidden = true;
+          recipients = "";
+          send.removeAttribute("href");
+        }
+        function resetSelection() {
+          selected = null;
+          version++;
+          representativeVersion++;
+          representativeField.hidden = true;
+          representative.disabled = true;
+          representative.replaceChildren(
+            new Option("Select a representative", ""),
+          );
+          generate.hidden = true;
+          generate.disabled = false;
+          resetDraft();
+        }
+        async function fetchJson(url, init) {
+          const endpoint = new URL(
+            url.replace(/^\/+/, ""),
+            new URL(apiBaseUrl, window.location.href),
+          );
+          const response = await fetch(endpoint, {
+            ...init,
+            credentials: "omit",
+            signal: init?.signal
+              ? AbortSignal.any([init.signal, AbortSignal.timeout(30000)])
+              : AbortSignal.timeout(30000),
+          });
+          const data = await response.json().catch(() => ({}));
+          if (!response.ok)
+            throw new Error(
+              typeof data.message === "string"
+                ? data.message
+                : "Unable to complete the request.",
+            );
+          return data;
+        }
+        async function choose(item) {
+          resetSelection();
+          selected = item;
+          suggestion.value = label(item);
+          hideOptions();
+          await loadRepresentatives({ suggestionId: String(item.id) }, "this idea");
+        }
+        async function loadRepresentatives(parameters, subject) {
+          representativeField.hidden = false;
+          message("Loading representatives…");
+          const current = representativeVersion;
+          try {
+            let offset = 0,
+              choices = [];
+            do {
+              const data = await fetchJson(
+                "/api/email/representatives?" +
+                  new URLSearchParams({ ...parameters, offset: String(offset) }),
+              );
+              if (current !== representativeVersion) return;
+              choices.push(...data.data);
+              if (
+                data.nextOffset !== null &&
+                (!Number.isSafeInteger(data.nextOffset) ||
+                  data.nextOffset <= offset)
+              )
+                throw new Error("Unable to load representatives.");
+              offset = data.nextOffset;
+            } while (offset !== null);
+            for (const choice of choices) {
+              const text = [
+                choice.name || "Representative",
+                choice.title,
+                choice.boundary,
+              ]
+                .filter(Boolean)
+                .join(" — ");
+              representative.add(new Option(text, String(choice.id)));
+            }
+            representative.disabled = !choices.length;
+            message(
+              choices.length
+                ? ""
+                : "No current representatives are available for " + subject + ".",
+            );
+          } catch (error) {
+            if (current === representativeVersion)
+              message(error.message || "Unable to load representatives.", true);
+          }
+        }
+        suggestion.addEventListener("input", () => {
+          resetSelection();
+          message("");
+          drawOptions();
+        });
+        suggestion.addEventListener("focus", drawOptions);
+        suggestion.addEventListener("click", drawOptions);
+        suggestion.addEventListener("blur", hideOptions);
+        suggestion.addEventListener("keydown", (event) => {
+          if (event.key === "Escape") {
+            hideOptions();
+            return;
+          }
+          if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+            event.preventDefault();
+            if (options.hidden) drawOptions();
+            highlight(active + (event.key === "ArrowDown" ? 1 : -1));
+          } else if (event.key === "Enter" && !options.hidden && active >= 0) {
+            event.preventDefault();
+            choose(filtered[active]);
+          }
+        });
+        representative.addEventListener("change", () => {
+          version++;
+          resetDraft();
+          generate.hidden = !representative.value;
+          generate.disabled = mode === "new" && !description.value.trim();
+          message("");
+        });
+        function stopAddressSearch() {
+          clearTimeout(addressTimer);
+          addressRequest?.abort();
+          addressRequest = null;
+          addressOptions.replaceChildren();
+          addressOptions.hidden = true;
+          address.setAttribute("aria-expanded", "false");
+        }
+        function clearPoint() {
+          point = null;
+          if (marker && map) map.removeLayer(marker);
+          marker = null;
+          resetSelection();
+        }
+        function drawPin() {
+          if (!map || !point) return;
+          const coordinates = [point.latitude, point.longitude];
+          if (marker) marker.setLatLng(coordinates);
+          else marker = window.L.marker(coordinates, {
+            icon: window.L.divIcon({ className: "location-pin", html: "&#x1f4cd;", iconSize: [28, 36], iconAnchor: [14, 34] }),
+          }).addTo(map);
+        }
+        function setPoint(latitude, longitude, center = false) {
+          if (!Number.isFinite(latitude) || !Number.isFinite(longitude) || Math.abs(latitude) > 90 || Math.abs(longitude) > 180) return;
+          stopAddressSearch();
+          locationVersion++;
+          currentLocation.disabled = false;
+          clearPoint();
+          point = { latitude, longitude };
+          drawPin();
+          if (map && center) map.setView([latitude, longitude], Math.max(map.getZoom(), 15));
+          locationStatus.textContent = "Selected location: " + latitude.toFixed(5) + ", " + longitude.toFixed(5) + ".";
+          void loadRepresentatives({ latitude: String(latitude), longitude: String(longitude) }, "this location");
+        }
+        function loadLeaflet() {
+          if (window.L) return Promise.resolve(window.L);
+          if (!mapLoad) {
+            mapLoad = new Promise((resolve, reject) => {
+              const script = document.createElement("script");
+              script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+              script.integrity = "sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=";
+              script.crossOrigin = "anonymous";
+              script.onload = () => window.L ? resolve(window.L) : reject(new Error("Map unavailable."));
+              script.onerror = () => { script.remove(); reject(new Error("Map unavailable.")); };
+              document.head.append(script);
+            }).catch(error => { mapLoad = null; throw error; });
+          }
+          return mapLoad;
+        }
+        async function showMap() {
+          try {
+            const L = await loadLeaflet();
+            if (mode !== "new") return;
+            if (!map) {
+              map = L.map("location-map", { scrollWheelZoom: false, zoomControl: false }).setView([32.781162, -96.794861], 13);
+              L.control.zoom({ position: "bottomright" }).addTo(map);
+              L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+                maxZoom: 19, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+              }).addTo(map).on("tileerror", () => { locationStatus.textContent = "Map tiles are unavailable. You can still search for an address or use your location."; });
+              map.on("click", event => {
+                address.value = "";
+                mapsAttribution.hidden = true;
+                setPoint(event.latlng.lat, event.latlng.lng);
+              });
+              if (point) { drawPin(); map.setView([point.latitude, point.longitude], 15); }
+            } else map.invalidateSize();
+          } catch {
+            if (mode === "new") locationStatus.textContent = "Map could not load. Search for an address or use your current location.";
+          }
+        }
+        function updateSavedStatus() {
+          retrySuggestions.hidden = suggestionsState !== "empty" && suggestionsState !== "error";
+          message(suggestionsState === "loading" ? "Loading ideas…" : suggestionsState === "empty" ? "No ideas are available from the configured API." : suggestionsState === "error" ? "Unable to load ideas. Check the API base URL and connection, then retry." : "", suggestionsState === "error");
+        }
+        function switchMode(next) {
+          if (mode === next) return;
+          mode = next;
+          locationVersion++;
+          stopAddressSearch();
+          currentLocation.disabled = false;
+          resetSelection();
+          suggestion.value = "";
+          hideOptions();
+          savedSection.hidden = mode !== "saved";
+          newSection.hidden = mode !== "new";
+          if (mode === "saved") {
+            descriptionSamples.dismiss();
+            updateSavedStatus();
+          } else {
+            retrySuggestions.hidden = true;
+            message("");
+            descriptionSamples.resize();
+            void showMap();
+            if (point) void loadRepresentatives({ latitude: String(point.latitude), longitude: String(point.longitude) }, "this location");
+          }
+        }
+        savedMode.addEventListener("change", () => { if (savedMode.checked) switchMode("saved"); });
+        newMode.addEventListener("change", () => { if (newMode.checked) switchMode("new"); });
+        document.getElementById("map-center").addEventListener("click", () => {
+          if (!map) { locationStatus.textContent = "The map is not available yet."; return; }
+          const center = map.getCenter();
+          address.value = "";
+          mapsAttribution.hidden = true;
+          setPoint(center.lat, center.lng);
+        });
+        currentLocation.addEventListener("click", () => {
+          stopAddressSearch();
+          const current = ++locationVersion;
+          clearPoint();
+          address.value = "";
+          mapsAttribution.hidden = true;
+          if (!navigator.geolocation) { locationStatus.textContent = "Current location is unavailable. Search for an address or click the map."; return; }
+          currentLocation.disabled = true;
+          locationStatus.textContent = "Requesting your location…";
+          navigator.geolocation.getCurrentPosition(position => {
+            if (current !== locationVersion || mode !== "new") return;
+            setPoint(position.coords.latitude, position.coords.longitude, true);
+          }, error => {
+            if (current !== locationVersion || mode !== "new") return;
+            currentLocation.disabled = false;
+            locationStatus.textContent = error.code === 1 ? "Location permission was denied. Search for an address or click the map." : "Could not get your location. Search for an address or click the map.";
+          }, { enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 });
+        });
+        async function selectAddress(choice) {
+          stopAddressSearch();
+          address.focus();
+          const current = ++locationVersion;
+          const controller = new AbortController();
+          addressRequest = controller;
+          locationStatus.textContent = "Resolving address…";
+          try {
+            const data = await fetchJson("/api/email/locations?" + new URLSearchParams({ placeId: choice.placeId, sessionToken }), { signal: controller.signal });
+            if (current !== locationVersion || controller.signal.aborted || mode !== "new") return;
+            address.value = data.address;
+            mapsAttribution.hidden = false;
+            sessionToken = undefined;
+            setPoint(data.latitude, data.longitude, true);
+          } catch (error) {
+            if (!controller.signal.aborted && current === locationVersion && mode === "new") locationStatus.textContent = error.message || "Address search is unavailable.";
+          }
+        }
+        address.addEventListener("input", () => {
+          stopAddressSearch();
+          const current = ++locationVersion;
+          currentLocation.disabled = false;
+          clearPoint();
+          mapsAttribution.hidden = true;
+          const query = address.value.trim();
+          locationStatus.textContent = query.length < 3 ? (query ? "Type at least three characters." : "Choose a location.") : "Looking for addresses…";
+          if (query.length < 3) return;
+          sessionToken ||= crypto.randomUUID();
+          addressTimer = setTimeout(async () => {
+            const controller = new AbortController();
+            addressRequest = controller;
+            try {
+              const data = await fetchJson("/api/email/locations?" + new URLSearchParams({ input: query, sessionToken }), { signal: controller.signal });
+              if (current !== locationVersion || controller.signal.aborted || mode !== "new") return;
+              addressOptions.replaceChildren();
+              for (const choice of data.suggestions) {
+                const item = document.createElement("li");
+                item.setAttribute("role", "option");
+                item.setAttribute("aria-selected", "false");
+                item.tabIndex = -1;
+                item.textContent = choice.text;
+                item.addEventListener("mousedown", event => event.preventDefault());
+                item.addEventListener("click", () => selectAddress(choice));
+                item.addEventListener("keydown", event => {
+                  if (event.key === "Enter" || event.key === " ") { event.preventDefault(); item.click(); }
+                });
+                addressOptions.append(item);
+              }
+              addressOptions.hidden = !data.suggestions.length;
+              address.setAttribute("aria-expanded", String(!!data.suggestions.length));
+              mapsAttribution.hidden = !data.suggestions.length;
+              locationStatus.textContent = data.suggestions.length ? "Select an address from the results." : "No addresses found. Refine your search or click the map.";
+            } catch (error) {
+              if (!controller.signal.aborted && current === locationVersion && mode === "new") locationStatus.textContent = error.message || "Address search is unavailable.";
+            }
+          }, 250);
+        });
+        address.addEventListener("keydown", event => {
+          if (event.key === "ArrowDown" && addressOptions.children.length) { event.preventDefault(); addressOptions.querySelector('[role="option"]').focus(); }
+          if (event.key === "Escape") stopAddressSearch();
+        });
+        for (const element of [address, addressOptions]) {
+          element.addEventListener("focusout", event => {
+            if (event.relatedTarget !== address && !addressOptions.contains(event.relatedTarget)) stopAddressSearch();
+          });
+        }
+        addressOptions.addEventListener("keydown", event => {
+          if (event.key === "Escape") { stopAddressSearch(); address.focus(); return; }
+          const choices = Array.from(addressOptions.querySelectorAll('[role="option"]'));
+          const index = choices.indexOf(document.activeElement);
+          if (choices.length && (event.key === "ArrowDown" || event.key === "ArrowUp")) {
+            event.preventDefault(); choices[(index + (event.key === "ArrowDown" ? 1 : choices.length - 1)) % choices.length].focus();
+          }
+        });
+        function encode(value) {
+          return encodeURIComponent(
+            Array.from(value, (char) =>
+              char.length === 1 &&
+              char.charCodeAt(0) >= 0xd800 &&
+              char.charCodeAt(0) <= 0xdfff
+                ? "\ufffd"
+                : char,
+            ).join(""),
+          );
+        }
+        function updateLink() {
+          if (!recipients) {
+            send.removeAttribute("href");
+            return;
+          }
+          const addresses = recipients.split(",").map((address) => {
+            const at = address.lastIndexOf("@");
+            return (
+              encode(address.slice(0, at)) + "@" + encode(address.slice(at + 1))
+            );
+          });
+          const emailBody = body.value.replace(/\r\n|\r|\n/g, "\r\n");
+          send.href =
+            "mailto:" +
+            addresses.join(",") +
+            "?subject=" +
+            encode(subject.value) +
+            "&body=" +
+            encode(emailBody);
+        }
+        function resize() {
+          body.style.height = "auto";
+          body.style.height = body.scrollHeight + "px";
+        }
+        subject.addEventListener("input", updateLink);
+        body.addEventListener("input", () => {
+          resize();
+          updateLink();
+        });
+        form.addEventListener("submit", async (event) => {
+          event.preventDefault();
+          if (!representative.value || generate.disabled ||
+              (mode === "saved" ? !selected : !point || !description.value.trim())) return;
+          const current = ++version;
+          resetDraft();
+          generate.disabled = true;
+          message("Generating your letter…");
+          try {
+            let data;
+            if (mode === "saved") {
+              const query = new URLSearchParams({
+                suggestionId: String(selected.id),
+                representativeId: representative.value,
+              });
+              data = await fetchJson("/api/email/generate?" + query, { method: "POST" });
+            } else {
+              data = await fetchJson("/api/email/generate-unsaved", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ description: description.value, latitude: point.latitude, longitude: point.longitude, representativeId: Number(representative.value) }),
+              });
+            }
+            if (current !== version) return;
+            subject.value = data.subject_line;
+            body.value = data.email_body;
+            recipients = data.recipient_email_string;
+            draft.hidden = false;
+            send.hidden = !recipients;
+            unavailable.hidden = !!recipients;
+            if (recipients) updateLink();
+            resize();
+            message("Review and edit your draft before sending.");
+          } catch (error) {
+            if (current === version)
+              message(error.message || "Unable to generate the letter.", true);
+          } finally {
+            if (current === version) generate.disabled = false;
+          }
+        });
+        async function loadSuggestions() {
+          suggestionsState = "loading";
+          retrySuggestions.hidden = true;
+          suggestion.disabled = true;
+          suggestion.placeholder = "Loading ideas…";
+          if (mode === "saved") updateSavedStatus();
+          try {
+            let cursor = null,
+              loaded = [];
+            do {
+              const params =
+                cursor === null ? "" : "?" + new URLSearchParams({ cursor });
+              const data = await fetchJson("/api/email/suggestions" + params);
+              loaded.push(...data.data);
+              if (
+                data.nextCursor !== null &&
+                (typeof data.nextCursor !== "string" ||
+                  !/^\d+$/.test(data.nextCursor) ||
+                  !Number.isSafeInteger(Number(data.nextCursor)) ||
+                  Number(data.nextCursor) <= Number(cursor || 0))
+              )
+                throw new Error("Unable to load ideas.");
+              cursor = data.nextCursor;
+            } while (cursor !== null);
+            const timestamp = (item) => {
+              const value =
+                typeof item.date === "string" ? Date.parse(item.date) : NaN;
+              return Number.isFinite(value) ? value : -Infinity;
+            };
+            items = loaded.sort((a, b) => {
+              const first = timestamp(a),
+                second = timestamp(b);
+              return first === second ? 0 : first > second ? -1 : 1;
+            });
+            suggestion.disabled = !items.length;
+            suggestion.placeholder = items.length
+              ? "Search ideas"
+              : "No ideas available";
+            suggestionsState = items.length ? "ready" : "empty";
+            if (mode === "saved") {
+              updateSavedStatus();
+              if (document.activeElement === suggestion) drawOptions();
+            }
+          } catch (error) {
+            suggestion.placeholder = "Ideas unavailable";
+            suggestionsState = "error";
+            if (mode === "saved") updateSavedStatus();
+          }
+        }
+        retrySuggestions.addEventListener("click", loadSuggestions);
+        loadSuggestions();
+      })();
+    </script>
+  </body>
+</html>

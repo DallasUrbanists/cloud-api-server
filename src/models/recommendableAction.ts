@@ -2,10 +2,9 @@
  * Domain shapes, input normalization, and geographic applicability for reusable civic actions.
  *
  * Let's imagine there's a city webpage inviting residents to comment on a proposed
- * neighborhood park redesign. A recommendable action is like a helpful card saying,
- * "Share your ideas for the park." It tells people what they can do and why their
- * ideas matter. Recommendable actions can apply to particular neighborhoods or
- * have no geographic boundaries and apply anywhere.
+ * neighborhood park redesign. The invitation to share feedback is an example of a "recommendable action."
+ * It tells people what they can do and why their ideas matter. Recommendable actions can apply
+ * to particular neighborhoods or have no geographic boundaries and apply anywhere.
  *
  * @remarks
  * This module performs no I/O. Source retrieval, boundary existence checks, and

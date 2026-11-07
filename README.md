@@ -137,6 +137,41 @@ The API uses two independent authorization layers:
 - **API key authorization:** send `X-API-Key: <application-key>`. `OPTIONAL` endpoints work without a key; `REQUIRED` endpoints require a valid key. Keys identify applications, are configured through `API_KEYS_JSON`, and should be stored in Cloud Secret Manager rather than committed to source control. In production, API-key-required browser requests also require Firebase App Check. Local development may use a registered Firebase App Check debug token.
 - **User authorization:** send `Authorization: Bearer <Firebase-ID-token>` when required. Firebase Authentication / Google Identity Platform issues the token. Only the canonical boolean custom claim `staff: true` authorizes staff; legacy `role: 'staff'` and `roles` staff entries no longer authorize staff. The `system` claim and unrelated roles retain their existing behavior. `PUBLIC` endpoints do not require a user token; `PARTIAL` endpoints return restricted data without an authorized token; `PRIVATE` endpoints require a valid token and the endpoint's ownership or role condition. Invalid JWTs are ignored on `PUBLIC` and use restricted behavior on `PARTIAL` endpoints.
 
+### Public email drafting
+
+The public `/playground/email` page creates editable drafts for representatives. `POST /api/email/generate?suggestionId=1&representativeId=2` also works without an API key, user sign-in, or App Check; see Swagger for its response and selector endpoints. The API does not send email. The page opens the user's mail client after review; mail-client URL limits and behavior vary.
+
+All playground browser requests (suggestions, representatives, and generation) default to `https://api.dallasurbanists.org/`, even when the page is served locally. Override `EMAIL_PLAYGROUND_API_BASE_URL` in the server environment and restart the server to select another API. Use `/` for the page's own origin, `http://localhost:8080/` for a local API, or an absolute HTTP(S) base URL with an optional path prefix. URLs containing credentials, query parameters, or fragments are rejected. The target must have the public email routes deployed and allow browser CORS requests; generation uses that target's Gemini quota. A local page does not upgrade its configured API: before submitting a location, verify that the target runs the current coordinate-privacy implementation. This setting does not change the server's database configuration.
+
+The suggestion picker publicly exposes each suggestion's summary, emoji, author name, and creation date, including all statuses, but not author email or full records. It lists current representatives for the suggestion's stored boundaries. Alternatively, write an unsaved suggestion and choose a map point to find current representatives for that location. Direct API calls can address any stored representative. All usable stored addresses, including staff contacts, are returned. If no usable address is on record, a draft is still generated and the page disables sending.
+
+New suggestion text is sent to Gemini but is not saved as a suggestion. Structured coordinates are withheld from Gemini; when no saved address exists, Google Maps Geocoding may receive them to look up a street address. Free text can still contain addresses or other personal information. Address searches are sent to Google Places; the map uses Leaflet and OpenStreetMap tiles. The map starts in downtown Dallas without a pin; the location button requests browser permission and places a pin at the returned position. Address search requires `GOOGLE_MAPS_API_KEY` with Places API (New) enabled on the selected API server. Coordinates alone cannot match shape-less boundaries that require administrative hints.
+
+Gemini receives suggestion text, any free-text location description, and minimal representative identity, but not the structured address or coordinates. Free text is not scrubbed for addresses, coordinates, or other personal details. For saved suggestions, exact occurrences of the complete stored author name and email are removed case-insensitively from supplied content; a name collision elsewhere in provider input fails closed. Unsaved text has no stored author identity to redact.
+
+Gemini is instructed to decide whether a street address would help, favor `[ADDRESS]` for site-specific concerns, and avoid inventing geographic details. A general request may omit the placeholder; compliance is not enforced. The service replaces every occurrence in the subject and body after generation. A saved address takes precedence; otherwise the service requests the first street-address result from Google Maps Geocoding and falls back to `latitude, longitude` if lookup fails or is unconfigured. A trailing `, USA` is removed from the inserted address. If neither address nor valid coordinates exist, it uses `an unspecified location`. The lookup is bounded to five seconds and uses the optional server-side `GOOGLE_MAPS_API_KEY` with Geocoding API enabled. Model compliance and geocoding accuracy are not guaranteed; review the draft. The server does not log or persist drafts or raw provider errors; provider data handling remains subject to Gemini's terms.
+
+| Setting | Default | Purpose |
+|---|---|---|
+| `GEMINI_API_KEY` | Required | Server-only Gemini API key, preferably injected from Secret Manager |
+| `GOOGLE_MAPS_API_KEY` | Optional | Server-only key for Places API (New) address search and Geocoding API reverse lookup |
+| `EMAIL_PLAYGROUND_API_BASE_URL` | `https://api.dallasurbanists.org/` | Public API used for all email playground browser requests; `/` selects same-origin |
+| `EMAIL_GEMINI_MODEL` | `gemini-3.1-flash-lite` | Server-selected Gemini model |
+| `EMAIL_QUOTA_DB` | `PUBLIC_IMPROVEMENTS_DB` or `public-improvements` | Firestore database for the shared email quota |
+| `EMAIL_GLOBAL_REQUESTS_PER_MINUTE` | `20` | Global fixed-minute request limit across instances; maximum 10000 |
+| `EMAIL_MAX_CONCURRENT` | `4` | Per-process concurrent requests; maximum 32 |
+
+Example request to a running API (replace the representative ID with a stored record):
+
+```http
+POST /api/email/generate-unsaved
+Content-Type: application/json
+
+{"description":"Add shade near the bus stop.","latitude":32.781162,"longitude":-96.794861,"representativeId":1}
+```
+
+The runtime identity needs Firestore read/write access (for example `roles/datastore.user`), Cloud SQL access for representatives, and access to the Gemini secret (for example `roles/secretmanager.secretAccessor`). Quota storage fails closed. Quota is charged before reverse geocoding and the model request and is not refunded on failure; a timed-out Firestore transaction may still commit. Fixed-minute windows permit bursts across boundaries. Configure provider quotas and billing alerts as additional protection. Optionally enable Firestore TTL on `email-draft-quotas.expiresAt`; quota correctness does not depend on TTL cleanup. Responses use `Cache-Control: no-store`.
+
 ### Grammar assistance
 
 `POST /api/assist/grammar` accepts `{ "text": "Their is a meeting tomorrow." }` and returns `{ "data": { "text": "There is a meeting tomorrow." } }`. Supply a valid `X-API-Key` and, in production, `X-Firebase-AppCheck`. User sign-in is optional; supplied Firebase tokens use existing PUBLIC authentication behavior.

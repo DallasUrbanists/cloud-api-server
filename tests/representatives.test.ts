@@ -126,6 +126,12 @@ test('coordinates use district polygons and address lookups are skipped when coo
   const inHole = await get('/api/representatives?lat=5&lon=5&district=District%201');
   assert.deepEqual(await inHole.json(), []);
 
+  const emailInside = await get('/api/email/representatives?latitude=2&longitude=2');
+  assert.equal(emailInside.status, 200);
+  assert.deepEqual((await emailInside.json()).data.map((row: { name: string }) => row.name), ['Current Member', 'Other Office']);
+  const emailHole = await get('/api/email/representatives?latitude=5&longitude=5');
+  assert.deepEqual((await emailHole.json()).data, []);
+
   const partialCoordinates = await get('/api/representatives?lat=2');
   assert.equal(partialCoordinates.status, 400);
 

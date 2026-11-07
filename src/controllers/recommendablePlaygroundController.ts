@@ -1,4 +1,4 @@
-import { recommendableMockDescriptions } from '../data/recommendableMockDescriptions.js';
+import { descriptionSampleButtons, descriptionSampleDialog, descriptionSamplesScript } from '../utils/descriptionSamples.js';
 import type { NextFunction, Request, Response } from 'express';
 import { createRequire } from 'node:module';
 import path from 'node:path';
@@ -9,11 +9,12 @@ const require = createRequire(import.meta.url);
 /** Public, ephemeral interface for testing approved civic actions. */
 export class RecommendablePlaygroundController {
   static markedScript(_req: Request, res: Response): void {
-    res.sendFile(path.join(path.dirname(require.resolve('marked')), 'marked.umd.js'));
+    // Resolve the package directory as the root so hidden dependency-store paths are not rejected as dotfiles.
+    res.sendFile('marked.umd.js', { root: path.dirname(require.resolve('marked')) });
   }
 
   static purifyScript(_req: Request, res: Response): void {
-    res.sendFile(path.join(path.dirname(require.resolve('dompurify')), 'purify.min.js'));
+    res.sendFile('purify.min.js', { root: path.dirname(require.resolve('dompurify')) });
   }
 
   static async render(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -78,7 +79,7 @@ dialog{width:min(700px,calc(100% - 2rem));max-height:85vh;padding:1.25rem;border
 <main><h1>Search Actions &amp; Representatives</h1>
 <form id="match-form"><fieldset id="form-controls">
 <label for="text">Describe your idea, observation, request, or concern.</label><textarea id="text" name="text" maxlength="10000" required></textarea>
-<div class="description-tools" role="toolbar" aria-label="Description samples"><button id="random-description" type="button"><span aria-hidden="true">↻</span><span class="toolbar-label"> Randomize</span></button><button id="choose-sample" type="button" aria-haspopup="dialog"><svg class="toolbar-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg><span class="toolbar-label">Choose sample...</span></button><details id="testing-options" class="testing-options"><summary id="testing-options-button" aria-controls="testing-options-panel" aria-expanded="false"><svg class="toolbar-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m9 3 1-2h4l1 2 2 1 2.3-.1 2 3.4-1.2 2 .1 2.4 1.2 2-2 3.4-2.4-.1-2 1-1 2h-4l-1-2-2-1-2.3.1-2-3.4 1.2-2V9.3l-1.2-2 2-3.4L7 4Z"/><circle cx="12" cy="10.5" r="3"/></svg><span class="toolbar-label">Testing options</span></summary><div id="testing-options-panel" class="testing-options-panel"><label class="result-toggle"><input id="bypass-jev-cache" type="checkbox"> Run without JEV cache</label><label id="low-toggle" class="result-toggle"><input id="show-all" type="checkbox" disabled> Show low matches (including 0%)</label></div></details></div>
+<div class="description-tools" role="toolbar" aria-label="Description samples">${descriptionSampleButtons}<details id="testing-options" class="testing-options"><summary id="testing-options-button" aria-controls="testing-options-panel" aria-expanded="false"><svg class="toolbar-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m9 3 1-2h4l1 2 2 1 2.3-.1 2 3.4-1.2 2 .1 2.4 1.2 2-2 3.4-2.4-.1-2 1-1 2h-4l-1-2-2-1-2.3.1-2-3.4 1.2-2V9.3l-1.2-2 2-3.4L7 4Z"/><circle cx="12" cy="10.5" r="3"/></svg><span class="toolbar-label">Testing options</span></summary><div id="testing-options-panel" class="testing-options-panel"><label class="result-toggle"><input id="bypass-jev-cache" type="checkbox"> Run without JEV cache</label><label id="low-toggle" class="result-toggle"><input id="show-all" type="checkbox" disabled> Show low matches (including 0%)</label></div></details></div>
 <fieldset class="location-picker" aria-label="Location">
 <div id="coordinate-fields" class="coordinates" hidden><div><label for="latitude">Latitude</label><input id="latitude" name="latitude" type="number" min="-90" max="90" step="any" value="32.781162" disabled></div>
 <div><label for="longitude">Longitude</label><input id="longitude" name="longitude" type="number" min="-180" max="180" step="any" value="-96.794861" disabled></div></div>
@@ -87,7 +88,7 @@ dialog{width:min(700px,calc(100% - 2rem));max-height:85vh;padding:1.25rem;border
 <button id="submit" type="submit" disabled>Search</button>
 </fieldset>
 </form>
-<dialog id="sample-dialog" aria-labelledby="sample-heading"><div class="dialog-header"><h2 id="sample-heading">Choose a sample</h2><button id="close-samples" class="secondary-button" type="button" aria-label="Close sample browser">Close</button></div><label for="sample-filter">Filter scenarios</label><input id="sample-filter" type="search" placeholder="Search samples…"><small id="sample-count" role="status"></small><ul id="sample-list" class="sample-list"></ul></dialog>
+${descriptionSampleDialog}
 <section aria-labelledby="results-heading" id="results" aria-busy="false"><h2 id="results-heading" hidden>Recommended actions</h2><p id="status" role="status" aria-live="polite"></p><div id="output"></div></section>
 </main>
 <script src="/playground/recommendables/marked.js"></script>
@@ -111,7 +112,6 @@ const addressInput = document.getElementById('address');
 const addressOptions = document.getElementById('address-options');
 const locationStatus = document.getElementById('location-status');
 const attribution = document.getElementById('maps-attribution');
-const sampleDialog = document.getElementById('sample-dialog');
 const locationMenu = document.getElementById('set-location');
 const locationMenuButton = document.getElementById('set-location-button');
 const locationMenuOptions = document.getElementById('set-location-options');
@@ -179,67 +179,11 @@ let addressTimer;
 let addressRequest;
 let sessionToken;
 let lastResult = null;
-const mockDescriptions = ${JSON.stringify(recommendableMockDescriptions).replace(/</g, '\u003c')};
-function resizeDescription() {
-  textarea.style.height = 'auto';
-  textarea.style.height = Math.max(110, textarea.scrollHeight + 2) + 'px';
-}
+${descriptionSamplesScript}
 function updateSubmit() { button.disabled = loading || locating || resolving || !textarea.value.trim(); }
-let descriptionTransition;
-function stopDescriptionTransition() { descriptionTransition?.cancel(); descriptionTransition = undefined; }
-function setDescription(text) { stopDescriptionTransition(); textarea.value = text; resizeDescription(); updateSubmit(); }
-textarea.addEventListener('input', () => { stopDescriptionTransition(); resizeDescription(); updateSubmit(); });
-window.addEventListener('resize', resizeDescription);
-if (initialDescription) setDescription(initialDescription);
-resizeDescription(); updateSubmit();
-document.getElementById('random-description').addEventListener('click', () => {
-  stopDescriptionTransition();
-  const oldHeight = textarea.getBoundingClientRect().height;
-  setDescription(mockDescriptions[Math.floor(Math.random() * mockDescriptions.length)]);
-  if (!motionEnabled(textarea)) return;
-  const height = textarea.getBoundingClientRect().height + 'px';
-  const color = getComputedStyle(textarea).color || '#f5f3ee';
-  descriptionTransition = textarea.animate([
-    { color: 'transparent', textShadow: '0 0 12px #85b8ff', height: oldHeight + 'px' },
-    { color: '#85b8ff', textShadow: '0 0 3px #85b8ff', height, offset: .45 },
-    { color, textShadow: '0 0 0 transparent', height },
-  ], { duration: 360, easing: 'cubic-bezier(.22,.76,.18,1)' });
-  descriptionTransition.finished.catch(() => {});
-});
-function renderSamples() {
-  const query = document.getElementById('sample-filter').value.trim().toLowerCase();
-  const list = document.getElementById('sample-list'); list.replaceChildren();
-  const samples = mockDescriptions.filter(text => text.toLowerCase().includes(query));
-  document.getElementById('sample-count').textContent = samples.length + (samples.length === 1 ? ' scenario' : ' scenarios');
-  for (const text of samples) {
-    const choice = element('button', text, element('li', '', list)); choice.type = 'button';
-    choice.addEventListener('click', () => { setDescription(text); closeSamples(true); });
-  }
-  if (!samples.length) element('li', 'No scenarios match your filter.', list);
-}
-let dialogTransition;
-function openSamples() {
-  dialogTransition?.cancel(); renderSamples();
-  if (!sampleDialog.open) sampleDialog.showModal();
-  if (motionEnabled(sampleDialog)) {
-    dialogTransition = sampleDialog.animate([{ opacity: 0, transform: 'translateY(12px) scale(.98)' }, { opacity: 1, transform: 'translateY(0) scale(1)' }], { duration: 200, easing: 'ease-out' });
-    dialogTransition.finished.catch(() => {});
-  }
-  document.getElementById('sample-filter').focus();
-}
-function closeSamples(focusDescription = false) {
-  if (!sampleDialog.open) return;
-  dialogTransition?.cancel();
-  const finish = () => { sampleDialog.close(); if (focusDescription) textarea.focus(); };
-  if (!motionEnabled(sampleDialog)) { finish(); return; }
-  const animation = sampleDialog.animate([{ opacity: 1, transform: 'translateY(0) scale(1)' }, { opacity: 0, transform: 'translateY(8px) scale(.98)' }], { duration: 160, easing: 'ease-in', fill: 'forwards' });
-  dialogTransition = animation;
-  animation.finished.then(() => { if (dialogTransition === animation) { finish(); animation.cancel(); dialogTransition = undefined; } }, () => {});
-}
-document.getElementById('choose-sample').addEventListener('click', openSamples);
-document.getElementById('sample-filter').addEventListener('input', renderSamples);
-document.getElementById('close-samples').addEventListener('click', () => closeSamples());
-sampleDialog.addEventListener('cancel', event => { event.preventDefault(); closeSamples(); });
+const descriptionSamples = setupDescriptionSamples(textarea, updateSubmit);
+if (initialDescription) descriptionSamples.set(initialDescription);
+descriptionSamples.resize(); updateSubmit();
 function stopAddressSearch() {
   clearTimeout(addressTimer); if (addressRequest) addressRequest.abort();
   addressOptions.replaceChildren(); addressInput.setAttribute('aria-expanded', 'false');

@@ -1,4 +1,5 @@
 import express, { Express, Request, Response, NextFunction } from 'express';
+import cors from 'cors';
 import swaggerUi from 'swagger-ui-express';
 import dotenv from 'dotenv';
 import { corsMiddleware, corsErrorHandler } from './middleware/cors.js';
@@ -16,6 +17,8 @@ import { renderStreetmixPlayground } from './controllers/streetmixPlaygroundCont
 import boundariesRoutes from './routes/boundariesRoutes.js';
 import boundaryTickRoutes from './routes/boundaryTickRoutes.js';
 import recommendableActionRoutes from './routes/recommendableActionRoutes.js';
+import emailDraftRoutes from './routes/emailDraftRoutes.js';
+import { renderEmailPlayground } from './controllers/emailPlaygroundController.js';
 import { swaggerDocument } from './docs/swagger.js';
 import { RecommendablePlaygroundController } from './controllers/recommendablePlaygroundController.js';
 import { HomeController } from './controllers/homeController.js';
@@ -48,7 +51,9 @@ export function createApp(options: { presentationService?: PresentationService }
   const operationJson = express.json({ limit: '2mb' });
   const assistJson = express.json({ limit: '64kb' });
   const presentationJson = express.json({ limit: '32kb', strict: true });
+  const emailJson = express.json({ limit: '64kb', strict: true });
   app.use((req, res, next) => {
+    if (/^\/api\/email\/generate-unsaved\/?$/i.test(req.path)) return emailJson(req, res, next);
     if (/^\/api\/public-improvements\/presentation(?:\/|$)/i.test(req.path)) return presentationJson(req, res, next);
     if (/^\/api\/(?:assist|streetmix)(?:\/|$)/i.test(req.path)) return assistJson(req, res, next);
     const isOperation = req.path === '/api/operation-groups' || req.path.startsWith('/api/operation-groups/');
@@ -65,7 +70,8 @@ export function createApp(options: { presentationService?: PresentationService }
   });
 
   // CORS Middleware & Error handling
-  app.use(corsMiddleware);
+  const publicEmailCors = cors({ origin: '*', methods: ['GET', 'POST', 'OPTIONS'], allowedHeaders: ['Content-Type'], exposedHeaders: ['Retry-After'] });
+  app.use((req, res, next) => /^\/api\/email(?:\/|$)/i.test(req.path) ? publicEmailCors(req, res, next) : corsMiddleware(req, res, next));
   app.use(corsErrorHandler);
     app.use((req, res, next) => {
       if (req.header('X-Operation-Group') !== undefined && !['GET', 'HEAD', 'OPTIONS'].includes(req.method)
@@ -753,6 +759,7 @@ export function createApp(options: { presentationService?: PresentationService }
   // Homepage: Render README.md with top navigation to GitHub and API Docs
   app.get('/', HomeController.renderHome);
   app.get('/playground/recommendables', RecommendablePlaygroundController.render);
+  app.get('/playground/email', renderEmailPlayground);
   app.get('/playground/streetmix', renderStreetmixPlayground);
   app.get('/playground/recommendables/marked.js', RecommendablePlaygroundController.markedScript);
   app.get('/playground/recommendables/purify.js', RecommendablePlaygroundController.purifyScript);
@@ -795,6 +802,7 @@ export function createApp(options: { presentationService?: PresentationService }
   app.use('/api/assist', assistRoutes);
   app.use('/api/streetmix', streetmixRoutes);
   app.use('/api/recommendables', recommendableActionRoutes);
+  app.use('/api/email', emailDraftRoutes);
   app.use('/meetup-ical', eventsRoutes);
   app.use('/api/meetup-ical', eventsRoutes);
 
@@ -811,6 +819,12 @@ export function createApp(options: { presentationService?: PresentationService }
     if (/^\/api\/public-improvements\/presentation(?:\/|$)/i.test(req.path)) {
       const status = err.status === 413 ? 413 : 422;
       res.status(status).json({ error: status === 413 ? 'PAYLOAD_TOO_LARGE' : 'INVALID_PRESENTATION_REQUEST', message: status === 413 ? 'Request body cannot exceed 32 KiB.' : 'Request body must be a valid JSON object.' });
+      return;
+    }
+    if (/^\/api\/email(?:\/|$)/i.test(req.path)) {
+      const status = err.status === 413 ? 413 : err.status === 400 ? 400 : 500;
+      res.setHeader('Cache-Control', 'no-store');
+      res.status(status).json({ error: status === 413 ? 'PAYLOAD_TOO_LARGE' : status === 400 ? 'INVALID_EMAIL_REQUEST' : 'EMAIL_INTERNAL_ERROR', message: status === 500 ? 'Email generation could not complete.' : 'Invalid request body.' });
       return;
     }
     if (/^\/api\/streetmix(?:\/|$)/i.test(req.path)) {

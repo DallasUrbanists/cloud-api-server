@@ -6,6 +6,7 @@ import { boundaryPaths, boundarySchemas, boundarySearchParameters } from './boun
 import { streetmixPaths, streetmixSchemas } from './streetmix.js';
 import { suggestionStreetmixPaths, suggestionStreetmixSchemas } from './suggestionStreetmix.js';
 import { presentationApiPaths, presentationSchemas } from './presentation.js';
+import { emailDraftPaths, emailDraftSchemas } from './emailDraft.js';
 
 const require = createRequire(import.meta.url);
 const pkg = require('../../package.json');
@@ -42,7 +43,7 @@ Endpoint policies:
 - Check-ins: GET/list and GET/{id} are REQUIRED/PARTIAL; POST is OPTIONAL/PUBLIC; PUT and DELETE are REQUIRED/PRIVATE. include_contact accepts false, partial, or full.
 - Suggestions: reads, creation, and upload URLs are REQUIRED/PUBLIC; update and delete are REQUIRED/PRIVATE for the author or staff.
 - Events and calendar reads are OPTIONAL/PUBLIC; event creation, updates, deletion, and iCal imports are REQUIRED/PRIVATE for staff or system roles.
-- Representatives, including the Dallas City Council shortcut, and boundary reads/TTL ticks/job status are public and require no API key or user authentication.
+- Representatives, including the Dallas City Council shortcut, boundary reads/TTL ticks/job status, and email draft operations are public and require no API key or user authentication.
 - Forced boundary/representative tick POSTs require an API key, canonical staff user authorization, and production App Check; due research uses a separately deployed durable worker.
 - Grammar, clarity, and summary assistance are REQUIRED/PUBLIC: API key and production App Check are required; user sign-in is optional.`,
     contact: {
@@ -59,6 +60,7 @@ Endpoint policies:
   security: [{ ApiKeyAuth: [], BearerAuth: [] }],
   tags: [
     { name: 'Streetmix', description: 'Approximate existing street cross-sections from Dallas coordinates.' },
+    { name: 'Email drafts', description: 'Public editable drafts addressed to representatives.' },
     {
       name: 'Suggestions',
       description: 'Endpoints for managing suggestions in the public-improvements database.',
@@ -111,6 +113,7 @@ Endpoint policies:
       },
     },
       ...streetmixPaths,
+      ...emailDraftPaths,
       ...suggestionStreetmixPaths,
       ...presentationApiPaths,
       ...operationPaths,
@@ -1709,6 +1712,7 @@ Endpoint policies:
     },
     schemas: {
           ...streetmixSchemas,
+          ...emailDraftSchemas,
           ...suggestionStreetmixSchemas,
           ...presentationSchemas,
           ...operationSchemas,
