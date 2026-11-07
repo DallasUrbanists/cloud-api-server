@@ -7,6 +7,7 @@ import { streetmixPaths, streetmixSchemas } from './streetmix.js';
 import { suggestionStreetmixPaths, suggestionStreetmixSchemas } from './suggestionStreetmix.js';
 import { presentationApiPaths, presentationSchemas } from './presentation.js';
 import { emailDraftPaths, emailDraftSchemas } from './emailDraft.js';
+import { walkAuditPaths, walkAuditSchemas } from './walkAudits.js';
 
 const require = createRequire(import.meta.url);
 const pkg = require('../../package.json');
@@ -44,6 +45,7 @@ Endpoint policies:
 - Suggestions: reads, creation, and upload URLs are REQUIRED/PUBLIC; update and delete are REQUIRED/PRIVATE for the author or staff.
 - Events and calendar reads are OPTIONAL/PUBLIC; event creation, updates, deletion, and iCal imports are REQUIRED/PRIVATE for staff or system roles.
 - Representatives, including the Dallas City Council shortcut, boundary reads/TTL ticks/job status, and email draft operations are public and require no API key or user authentication.
+- Walk-audit reads are public except profiles and drafts. Writes use Firebase user authentication and production App Check without an application API key; staff means the canonical staff:true claim.
 - Forced boundary/representative tick POSTs require an API key, canonical staff user authorization, and production App Check; due research uses a separately deployed durable worker.
 - Grammar, clarity, and summary assistance are REQUIRED/PUBLIC: API key and production App Check are required; user sign-in is optional.`,
     contact: {
@@ -59,6 +61,7 @@ Endpoint policies:
   ],
   security: [{ ApiKeyAuth: [], BearerAuth: [] }],
   tags: [
+    { name: 'Walk audits', description: 'Study generation, observations, private drafts, progress, and editable reports.' },
     { name: 'Streetmix', description: 'Approximate existing street cross-sections from Dallas coordinates.' },
     { name: 'Email drafts', description: 'Public editable drafts addressed to representatives.' },
     {
@@ -118,6 +121,7 @@ Endpoint policies:
       ...presentationApiPaths,
       ...operationPaths,
       ...boundaryPaths,
+      ...walkAuditPaths,
       '/api/health': {
       get: {
         summary: 'Server Health Check',
@@ -1701,7 +1705,7 @@ Endpoint policies:
         type: 'apiKey',
         in: 'header',
         name: 'X-Firebase-AppCheck',
-        description: 'Required in production for API-key-required endpoints; optional in development.',
+        description: 'Required in production for API-key-required endpoints and private walk-audit routes; optional in development.',
       },
       BearerAuth: {
         type: 'http',
@@ -1717,6 +1721,7 @@ Endpoint policies:
           ...presentationSchemas,
           ...operationSchemas,
           ...boundarySchemas,
+          ...walkAuditSchemas,
       Representative: {
         type: 'object',
         required: ['id', 'boundaryId', 'boundary', 'researchService', 'lastResearchSync', 'researchSyncTTL'],

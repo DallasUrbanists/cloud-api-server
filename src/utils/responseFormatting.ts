@@ -9,9 +9,10 @@ const integerFields = new Set([
   'offset',
 ]);
 
-function formatValue(value: unknown, key?: string): unknown {
+function formatValue(value: unknown, key?: string, preserveKeys?: ReadonlySet<string>): unknown {
+  if (key && preserveKeys?.has(key)) return value;
   if (value instanceof Date) return value.toISOString();
-  if (Array.isArray(value)) return value.map((item) => formatValue(item));
+  if (Array.isArray(value)) return value.map((item) => formatValue(item, undefined, preserveKeys));
   if (!value || typeof value !== 'object') {
     if (key && integerFields.has(key) && typeof value === 'string' && /^-?\d+$/.test(value)) {
       const number = Number(value);
@@ -22,11 +23,11 @@ function formatValue(value: unknown, key?: string): unknown {
 
   const formatted: Record<string, unknown> = {};
   for (const [childKey, childValue] of Object.entries(value)) {
-    formatted[childKey] = formatValue(childValue, childKey);
+    formatted[childKey] = formatValue(childValue, childKey, preserveKeys);
   }
   return formatted;
 }
 
-export function formatResponseIntegers<T>(value: T): T {
-  return formatValue(value) as T;
+export function formatResponseIntegers<T>(value: T, preserveKeys?: ReadonlySet<string>): T {
+  return formatValue(value, undefined, preserveKeys) as T;
 }

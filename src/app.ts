@@ -1,4 +1,4 @@
-import express, { Express, Request, Response, NextFunction } from 'express';
+import express, { Express, Request, Response, NextFunction, RequestHandler } from 'express';
 import cors from 'cors';
 import swaggerUi from 'swagger-ui-express';
 import dotenv from 'dotenv';
@@ -27,10 +27,12 @@ import { createPresentationRouter } from './routes/presentationRoutes.js';
 import { PresentationService } from './services/presentationService.js';
 import { FirestorePresentationStore } from './services/presentationStore.js';
 import { getPublicImprovementsDb } from './config/firestore.js';
+import { createWalkAuditRouter } from './routes/walkAuditRoutes.js';
+import { WalkAuditWorkflows } from './services/walkAuditWorkflows.js';
 
 dotenv.config();
 
-export function createApp(options: { presentationService?: PresentationService } = {}): Express {
+export function createApp(options: { presentationService?: PresentationService; walkAuditService?: WalkAuditWorkflows; walkAuditAuth?: RequestHandler[] } = {}): Express {
   const app = express();
 
   app.use('/api/public-improvements/presentation', (_req, res, next) => { res.set('Cache-Control', 'no-store'); next(); });
@@ -46,13 +48,27 @@ export function createApp(options: { presentationService?: PresentationService }
 
   app.use('/api/streetmix', (_req, res, next) => { res.set('Cache-Control', 'no-store'); next(); });
 
+  // Apply the existing origin policy before this namespace's parser can reject a body.
+  app.use('/api/walk-audits', corsMiddleware);
+  app.use('/api/walk-audits', corsErrorHandler);
+
   // Basic Middleware
   const ordinaryJson = express.json();
   const operationJson = express.json({ limit: '2mb' });
   const assistJson = express.json({ limit: '64kb' });
   const presentationJson = express.json({ limit: '32kb', strict: true });
   const emailJson = express.json({ limit: '64kb', strict: true });
+  const walkAuditJson = express.json({ limit: '256kb', strict: true });
+  const walkAuditBoundaryJson = express.json({ limit: '1mb', strict: true });
   app.use((req, res, next) => {
+    if (/^\/api\/walk-audits(?:\/|$)/i.test(req.path)) {
+      if (['POST', 'PATCH'].includes(req.method) && !req.is('application/json')) {
+        res.setHeader('Cache-Control', 'no-store');
+        return res.status(415).json({ error: 'UNSUPPORTED_MEDIA_TYPE', message: 'Send an application/json request body.' });
+      }
+      const boundaryMutation = (req.method === 'POST' && /^\/api\/walk-audits\/studies\/?$/i.test(req.path)) || (req.method === 'PATCH' && /^\/api\/walk-audits\/studies\/\d+\/?$/i.test(req.path));
+      return (boundaryMutation ? walkAuditBoundaryJson : walkAuditJson)(req, res, next);
+    }
     if (/^\/api\/email\/generate-unsaved\/?$/i.test(req.path)) return emailJson(req, res, next);
     if (/^\/api\/public-improvements\/presentation(?:\/|$)/i.test(req.path)) return presentationJson(req, res, next);
     if (/^\/api\/(?:assist|streetmix)(?:\/|$)/i.test(req.path)) return assistJson(req, res, next);
@@ -63,9 +79,11 @@ export function createApp(options: { presentationService?: PresentationService }
 
   // PostgreSQL returns BIGINT values as strings. Normalize integer response fields
   // at the HTTP boundary so every endpoint emits JSON numbers consistently.
-  app.use((_req, res, next) => {
+  const walkAuditOpaqueJson = new Set(['answers', 'prompts', 'area', 'geojson', 'intersections', 'segments', 'sourceMetadata', 'capturedData']);
+  app.use((req, res, next) => {
     const originalJson = res.json.bind(res);
-    res.json = ((body: unknown) => originalJson(formatResponseIntegers(body))) as typeof res.json;
+    const preserveJson = /^\/api\/walk-audits(?:\/|$)/i.test(req.path) ? walkAuditOpaqueJson : undefined;
+    res.json = ((body: unknown) => originalJson(formatResponseIntegers(body, preserveJson))) as typeof res.json;
     next();
   });
 
@@ -803,6 +821,7 @@ export function createApp(options: { presentationService?: PresentationService }
   app.use('/api/streetmix', streetmixRoutes);
   app.use('/api/recommendables', recommendableActionRoutes);
   app.use('/api/email', emailDraftRoutes);
+  app.use('/api/walk-audits', createWalkAuditRouter(options.walkAuditService, options.walkAuditAuth));
   app.use('/meetup-ical', eventsRoutes);
   app.use('/api/meetup-ical', eventsRoutes);
 
@@ -816,6 +835,12 @@ export function createApp(options: { presentationService?: PresentationService }
 
   // Global Error Handler
   app.use((err: any, req: Request, res: Response, _next: NextFunction) => {
+    if (/^\/api\/walk-audits(?:\/|$)/i.test(req.path)) {
+      const status = err.status === 413 ? 413 : err.status === 400 ? 400 : 500;
+      res.setHeader('Cache-Control', 'no-store');
+      res.status(status).json({ error: status === 413 ? 'PAYLOAD_TOO_LARGE' : status === 400 ? 'INVALID_INPUT' : 'INTERNAL_ERROR', message: status === 413 ? 'Request body exceeds the allowed size.' : status === 400 ? 'Request body must be a valid JSON object.' : 'The request could not be completed.' });
+      return;
+    }
     if (/^\/api\/public-improvements\/presentation(?:\/|$)/i.test(req.path)) {
       const status = err.status === 413 ? 413 : 422;
       res.status(status).json({ error: status === 413 ? 'PAYLOAD_TOO_LARGE' : 'INVALID_PRESENTATION_REQUEST', message: status === 413 ? 'Request body cannot exceed 32 KiB.' : 'Request body must be a valid JSON object.' });

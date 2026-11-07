@@ -20,6 +20,7 @@ export default defineConfig({
         { text: 'Boundary synchronization', link: '/boundary-synchronization' },
         { text: 'Assist', link: '/assist' },
         { text: 'Streetmix', link: '/streetmix' },
+        { text: 'Walk audits', link: '/walk-audits' },
         { text: 'Representatives', link: '/representatives' },
         { text: 'Suggestions', link: '/suggestions' },
         { text: 'Recommendable Actions', link: '/recommendable-actions' },
@@ -36,6 +37,7 @@ export default defineConfig({
           { text: 'Boundary synchronization', link: '/boundary-synchronization' },
           { text: 'Assist', link: '/assist' },
           { text: 'Streetmix', link: '/streetmix' },
+          { text: 'Walk audits', link: '/walk-audits' },
           { text: 'Representatives', link: '/representatives' },
           { text: 'Suggestions', link: '/suggestions' },
           { text: 'Real-time suggestion notices', link: '/suggestion-notices' },
@@ -70,7 +72,7 @@ export default defineConfig({
           token.attrSet('href', `${repository}/blob/main/src/docs/swagger.ts`);
         }
         // Keep repository-relative source links useful both in Markdown and the portal.
-        if (href?.startsWith('../src/') || href?.startsWith('../scripts/') || href?.startsWith('../.github/') || href === '../README.md') {
+        if (href?.startsWith('../src/') || href?.startsWith('../scripts/') || href?.startsWith('../.github/') || href === '../README.md' || href === '../.env.example') {
           token.attrSet('href', `${repository}/blob/main/${href.slice(3)}`);
         }
         return link(tokens, index, options, env, self);

@@ -10,6 +10,7 @@ Start with a feature guide below, then explore the [generated module and symbol 
 - [Assist](assist.md): grammar, clarity, summaries, validation, and shared quota accounting.
 - [TV presentation sessions](presentation.md): capability authentication, receiver/controller/audience lifecycle, REST and WebSocket synchronization, and isolated local setup.
 - [Streetmix](streetmix.md): coordinate-based street reconstruction, public designs, retries, and the testing playground.
+- [Walk audits](walk-audits.md): generated neighborhood networks, private drafts, submitted observations, and editable reports.
 - [Representatives](representatives.md): public office/contact lookup using shared geography and tenure history.
 - [Suggestions](suggestions.md): civic ideas, photos, next steps, and activity.
 - [Recommendable Actions](recommendable-actions.md): the original reusable-action documentation pilot.
