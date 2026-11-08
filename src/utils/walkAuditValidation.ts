@@ -28,7 +28,7 @@ export function positiveInt(value: unknown, name: string): number {
 }
 /** Validate an audit type. */
 export function auditType(value: unknown): AuditType {
-  if (value !== 'intersection' && value !== 'street-segment') invalid('type must be intersection or street-segment.');
+  if (value !== 'intersection' && value !== 'street-segment' && value !== 'point') invalid('type must be intersection, street-segment or point.');
   return value;
 }
 

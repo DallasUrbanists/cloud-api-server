@@ -2,6 +2,7 @@
 import { AreaFeature, FeatureCollection, GeneratedStudy, NetworkFeature, Position, WalkAuditError } from '../models/walkAudit.js';
 import { pointInRing } from '../utils/walkAuditValidation.js';
 import { renderWalkAuditThumbnail } from './walkAuditThumbnail.js';
+import { endpointKey } from './walkAuditRouting.js';
 
 const MAX_BYTES = 10 * 1024 * 1024, MAX_FEATURES = 10000;
 const roads = new Set(['primary', 'primary_link', 'secondary', 'secondary_link', 'tertiary', 'tertiary_link', 'unclassified', 'residential', 'living_street', 'service', 'pedestrian']);
@@ -84,7 +85,7 @@ export function extractWalkAuditNetwork(area: AreaFeature, value: unknown, contr
       if (!neighbours.has(from)) neighbours.set(from, new Set()); if (!neighbours.has(to)) neighbours.set(to, new Set());
       neighbours.get(from)!.add(to); neighbours.get(to)!.add(from);
       for (const [part, coordinates] of clip(a, b, ring).entries()) {
-        segments.push({ type: 'Feature', properties: { id: `way/${way.id}/${edgeKey}/${occurrence}/${part}`, name, highway }, geometry: { type: 'LineString', coordinates } });
+        segments.push({ type: 'Feature', properties: { id: `way/${way.id}/${edgeKey}/${occurrence}/${part}`, name, highway, fromNodeKey: endpointKey(from, coordinates[0]), toNodeKey: endpointKey(to, coordinates[coordinates.length - 1]) }, geometry: { type: 'LineString', coordinates } });
         if (segments.length > MAX_FEATURES) throw new Error('Network exceeds feature limit');
       }
     }
@@ -129,15 +130,15 @@ export class WalkAuditGenerator {
     try {
       const ring = area.geometry.coordinates[0], lons = ring.map(p => p[0]), lats = ring.map(p => p[1]);
       const bbox = `${Math.min(...lats)},${Math.min(...lons)},${Math.max(...lats)},${Math.max(...lons)}`;
-      const query = `[out:json][timeout:25];(way["highway"~"^(primary|primary_link|secondary|secondary_link|tertiary|tertiary_link|unclassified|residential|living_street|service|pedestrian)$"](${bbox});>;);out body;`;
+      const query = `[out:json][timeout:45];way["highway"~"^(primary|primary_link|secondary|secondary_link|tertiary|tertiary_link|unclassified|residential|living_street|service|pedestrian)$"](${bbox});(._;>;);out body;`;
       let network: ReturnType<typeof extractWalkAuditNetwork> | undefined, endpoint = '';
       for (const url of this.config.urls) {
         const remaining = this.config.timeoutMs - (Date.now() - start);
         if (remaining <= 0 || deadline.aborted || signal?.aborted) break;
-        const attempt = AbortSignal.timeout(Math.min(remaining, 25000));
+        const attempt = AbortSignal.timeout(Math.min(remaining, 55000));
         try {
           const combined = AbortSignal.any([deadline, attempt, ...(signal ? [signal] : [])]);
-          const response = await this.fetcher(url, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams({ data: query }), redirect: 'error', signal: combined });
+          const response = await this.fetcher(`${url}?${new URLSearchParams({ data: query })}`, { method: 'GET', headers: { 'Accept': 'application/json', 'User-Agent': 'DallasUrbanistsWalkAudit/1.0 (+https://dallasurbanists-walk-audit.web.app)' }, redirect: 'error', signal: combined });
           const payload = await readBounded(response);
           try { network = extractWalkAuditNetwork(area, payload, { deadlineAt: start + this.config.timeoutMs, signal }); }
           catch { throw new ProviderFailure('invalid_network', 'Overpass network could not be used'); }

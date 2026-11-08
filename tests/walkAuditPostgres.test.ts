@@ -49,6 +49,7 @@ test('isolated PostgreSQL serializes submissions and preserves data and deletion
     await db.query(await readFile(new URL('../migrations/009_walk_audits.sql', import.meta.url), 'utf8'));
     const seed = await readFile(new URL('../migrations/010_seed_walk_audit_worksheets.sql', import.meta.url), 'utf8');
     await db.query(seed); await db.query(seed);
+    await db.query(await readFile(new URL('../migrations/011_study_questionnaires_routes_photos.sql', import.meta.url), 'utf8'));
     await start();
     for (const uid of ['organizer', 'contributor']) await expect(await call('/contributors/me', 'POST', uid, { displayName: uid }), 201);
     const starts = await Promise.all([call('/studies', 'POST', 'organizer', { neighborhood: 'First', area }), call('/studies', 'POST', 'organizer', { neighborhood: 'First', area })]);
@@ -64,8 +65,13 @@ test('isolated PostgreSQL serializes submissions and preserves data and deletion
     const png = Buffer.from(await (await call(`/studies/${study.id}/thumbnail`)).arrayBuffer());
     const data = { type: 'intersection', worksheetId: 1, featureId: 'node/2', locationGps: { longitude: 0.005, latitude: 0.005 }, locationDescription: 'Crossing', answers: { 'crossing-comfort': 'comfortable' } };
     const draft = (await expect(await call(`/studies/${study.id}/drafts`, 'POST', 'contributor', {}), 201)).draft;
-    await expect(await call(`/drafts/${draft.id}`, 'PATCH', 'contributor', { expectedVersion: 1, ...data }), 200);
-    const submissions = await Promise.all([call(`/drafts/${draft.id}/submit`, 'POST', 'contributor', { expectedVersion: 2 }), call(`/drafts/${draft.id}/submit`, 'POST', 'contributor', { expectedVersion: 2 })]);
+    const image = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10, 1, 2]);
+    const uploads = await Promise.all([1, 2].map(slot => fetch(`${base}/drafts/${draft.id}/photos/${slot}`, { method: 'PUT', headers: { 'X-Test-Identity': 'contributor', 'Content-Type': 'image/png', 'If-Match': '"1"' }, body: image as any })));
+    assert.deepEqual(uploads.map(response => response.status).sort(), [200, 409]);
+    const withPhoto = (await uploads.find(response => response.status === 200)!.json()).draft;
+    assert.equal(withPhoto.photos.length, 1);
+    const filled = (await expect(await call(`/drafts/${draft.id}`, 'PATCH', 'contributor', { expectedVersion: withPhoto.version, ...data }), 200)).draft;
+    const submissions = await Promise.all([call(`/drafts/${draft.id}/submit`, 'POST', 'contributor', { expectedVersion: filled.version }), call(`/drafts/${draft.id}/submit`, 'POST', 'contributor', { expectedVersion: filled.version })]);
     assert.deepEqual(submissions.map(response => response.status).sort(), [201, 404]);
     const audit = (await submissions.find(response => response.status === 201)!.json()).audit;
     const edited = (await expect(await call(`/audits/${audit.id}`, 'PATCH', 'contributor', { expectedVersion: 1, locationDescription: 'Updated' }), 200)).audit;
@@ -75,6 +81,7 @@ test('isolated PostgreSQL serializes submissions and preserves data and deletion
     assert.equal((await expect(await call(`/studies/${study.id}`), 200)).study.neighborhood, 'First');
     assert.equal((await expect(await call(`/audits/${audit.id}`), 200)).audit.locationDescription, 'Updated');
     assert.equal((await expect(await call(`/reports/${report.id}`), 200)).report.description, 'Saved narrative');
+    assert.deepEqual(Buffer.from(await (await call(`/audits/${audit.id}/photos/${withPhoto.photos[0].slot}`)).arrayBuffer()), image);
     assert.deepEqual(Buffer.from(await (await call(`/studies/${study.id}/thumbnail`)).arrayBuffer()), png);
     const edits = await Promise.all([call(`/audits/${audit.id}`, 'PATCH', 'contributor', { expectedVersion: edited.version, locationDescription: 'Writer one' }), call(`/audits/${audit.id}`, 'PATCH', 'contributor', { expectedVersion: edited.version, locationDescription: 'Writer two' })]);
     assert.deepEqual(edits.map(response => response.status).sort(), [200, 409]);
@@ -83,7 +90,7 @@ test('isolated PostgreSQL serializes submissions and preserves data and deletion
     const privateDraft = (await expect(await call(`/studies/${study.id}/drafts`, 'POST', 'contributor', {}), 201)).draft;
     const results = await Promise.all([call(`/studies/${study.id}?confirmPermanentDelete=true`, 'DELETE', 'organizer'), call(`/studies/${study.id}/drafts`, 'POST', 'contributor', {})]);
     assert.equal(results[0].status, 204); assert.ok([201, 404].includes(results[1].status));
-    for (const table of ['walk_audit_audits', 'walk_audit_drafts', 'walk_audit_reports']) assert.equal((await db.query(`SELECT count(*)::int AS count FROM ${table} WHERE study_id=$1`, [study.id])).rows[0].count, 0);
+    for (const table of ['walk_audit_audits', 'walk_audit_drafts', 'walk_audit_reports', 'walk_audit_photos', 'walk_audit_study_questionnaires']) assert.equal((await db.query(`SELECT count(*)::int AS count FROM ${table} WHERE study_id=$1`, [study.id])).rows[0].count, 0);
     assert.equal((await db.query('SELECT count(*)::int AS count FROM walk_audit_studies WHERE id=$1', [study.id])).rows[0].count, 0);
     assert.equal((await db.query('SELECT content FROM unrelated WHERE id=1')).rows[0].content, 'keep');
     assert.equal((await call(`/studies/${other.id}`)).status, 200);

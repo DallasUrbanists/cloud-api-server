@@ -29,7 +29,7 @@ export function pagination(req: Request, allowed: string[] = []): Page {
     if (typeof value !== 'string') invalid('Invalid query parameter.');
     if (['creator', 'author', 'worksheet'].includes(key)) page[key] = pathId(value);
     else if (key === 'includeVersions') { if (value !== 'true' && value !== 'false') invalid('includeVersions must be true or false.'); page[key] = value === 'true'; }
-    else if (key === 'type') { if (value !== 'intersection' && value !== 'street-segment') invalid('Invalid audit type.'); page[key] = value; }
+    else if (key === 'type') { if (value !== 'intersection' && value !== 'street-segment' && value !== 'point') invalid('Invalid audit type.'); page[key] = value; }
     else if (key === 'updatedSince') { if (!/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d{1,3})?Z$/.test(value) || !Number.isFinite(Date.parse(value))) invalid('updatedSince must be an ISO UTC timestamp.'); page[key] = value; }
     else { if (value.length > 200) invalid('Query value is too long.'); page[key] = value.trim(); }
   }
@@ -45,6 +45,12 @@ export function walkAuditError(error: unknown, _req: Request, res: Response, _ne
   if (error instanceof WalkAuditError) {
     if (error.retryAfter !== undefined) res.setHeader('Retry-After', String(error.retryAfter));
     res.status(error.status).json({ error: error.code, message: error.message }); return;
+  }
+  if (error && typeof error === 'object' && 'status' in error && (error as { status: unknown }).status === 413) {
+    res.status(413).json({ error: 'PAYLOAD_TOO_LARGE', message: 'The photo exceeds the 2 MiB limit.' }); return;
+  }
+  if (error && typeof error === 'object' && 'status' in error && (error as { status: unknown }).status === 415) {
+    res.status(415).json({ error: 'UNSUPPORTED_MEDIA_TYPE', message: 'The image encoding or media type is not supported.' }); return;
   }
   const code = error && typeof error === 'object' && 'code' in error ? (error as { code: unknown }).code : undefined;
   if (code === '23505' || code === '23503' || code === '40001' || code === '40P01' || code === '55P03') {

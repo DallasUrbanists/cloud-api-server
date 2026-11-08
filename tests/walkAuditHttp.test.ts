@@ -29,6 +29,7 @@ before(async () => {
   db = new PGlite();
   await db.exec(await readFile(new URL('../migrations/009_walk_audits.sql', import.meta.url), 'utf8'));
   await db.exec(await readFile(new URL('../migrations/010_seed_walk_audit_worksheets.sql', import.meta.url), 'utf8'));
+  await db.exec(await readFile(new URL('../migrations/011_study_questionnaires_routes_photos.sql', import.meta.url), 'utf8'));
   const query = (sql: string, params?: unknown[]) => db.query(sql, params);
   const adapter = { query, connect: async () => ({ query, release() {} }) } as unknown as Pool;
   const generator = new WalkAuditGenerator({ urls: ['https://overpass.example/api'], timeoutMs: 1000, concurrency: 2, intervalMs: 60000 }, async () => overpassFailure ? new Response('unavailable', { status: 503 }) : Response.json(osm));
@@ -116,7 +117,7 @@ test('Firebase access, private drafts, reports, coverage and destructive lifecyc
   const data = { type: 'intersection', worksheetId: 1, featureId: 'node/2', locationGps: { longitude: 0.005, latitude: 0.005 }, locationDescription: 'Crossing', answers: { 'crossing-comfort': 'comfortable' } };
   assert.equal((await request(`/studies/${study.id}/audits`, 'POST', 'contributor', { ...data, createdBy: 1 })).status, 400);
   assert.equal((await request(`/studies/${study.id}/audits`, 'POST', 'contributor', { ...data, featureId: 'node/999' })).status, 400);
-  assert.equal((await request(`/studies/${study.id}/audits`, 'POST', 'contributor', { ...data, worksheetId: 2 })).status, 400);
+  assert.equal((await request(`/studies/${study.id}/audits`, 'POST', 'contributor', { ...data, worksheetId: 2 })).status, 409);
   assert.equal((await request(`/studies/${study.id}/audits`, 'POST', 'contributor', { ...data, answers: { 'crossing-comfort': 'invented' } })).status, 400);
   assert.equal((await request(`/drafts/${draft.id}`, 'PATCH', 'contributor', { expectedVersion: 1, answers: { notes: 'x'.repeat(100001) } })).status, 413);
   const oversized = await request(`/drafts/${draft.id}`, 'PATCH', 'contributor', { expectedVersion: 1, answers: { notes: 'x'.repeat(270000) } }, { Origin: 'http://localhost:5173' });
@@ -132,9 +133,8 @@ test('Firebase access, private drafts, reports, coverage and destructive lifecyc
   assert.equal((await request(`/studies/${study.id}`, 'PATCH', 'organizer', { expectedVersion: 3, area })).status, 409);
   const worksheet = (await expect(await request('/worksheets', 'POST', 'staff', { slug: 'number-note', title: 'Number note', description: '', sourceUrl: 'https://example.org/', recommendFor: ['intersection'], prompts: [{ id: 'count', type: 'text', label: 'Count?', required: true, maxLength: 10 }] }), 201)).worksheet;
   assert.equal((await request(`/worksheets/${worksheet.id}`)).status, 200);
-  const counted = (await expect(await request(`/studies/${study.id}/audits`, 'POST', 'contributor', { ...data, worksheetId: worksheet.id, answers: { count: '123' } }), 201)).audit;
-  assert.equal(counted.answers.count, '123');
-  assert.equal((await expect(await request(`/audits/${counted.id}`), 200)).audit.answers.count, '123');
+  // A newly created global template cannot replace the study's pinned form.
+  assert.equal((await request(`/studies/${study.id}/audits`, 'POST', 'contributor', { ...data, worksheetId: worksheet.id, answers: { count: '123' } })).status, 409);
   const revised = (await expect(await request('/worksheets/1', 'PATCH', 'staff', { title: 'Revised title' }), 200)).worksheet;
   assert.notEqual(revised.id, 1); assert.equal(revised.version, 2);
   assert.equal((await request(`/worksheets/${revised.id}`, 'DELETE', 'staff')).status, 204);

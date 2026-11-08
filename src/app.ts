@@ -60,8 +60,11 @@ export function createApp(options: { presentationService?: PresentationService; 
   const emailJson = express.json({ limit: '64kb', strict: true });
   const walkAuditJson = express.json({ limit: '256kb', strict: true });
   const walkAuditBoundaryJson = express.json({ limit: '1mb', strict: true });
+  const isWalkAuditPhotoPut = (req: Request): boolean => req.method === 'PUT' && /^\/api\/walk-audits\/drafts\/[^/]+\/photos\/[^/]+\/?$/i.test(req.path);
   app.use((req, res, next) => {
     if (/^\/api\/walk-audits(?:\/|$)/i.test(req.path)) {
+      // Photo bytes are parsed only by the authenticated, bounded upload route.
+      if (isWalkAuditPhotoPut(req)) return next();
       if (['POST', 'PATCH'].includes(req.method) && !req.is('application/json')) {
         res.setHeader('Cache-Control', 'no-store');
         return res.status(415).json({ error: 'UNSUPPORTED_MEDIA_TYPE', message: 'Send an application/json request body.' });
@@ -75,7 +78,8 @@ export function createApp(options: { presentationService?: PresentationService; 
     const isOperation = req.path === '/api/operation-groups' || req.path.startsWith('/api/operation-groups/');
     return (isOperation || req.header('X-Operation-Group') !== undefined ? operationJson : ordinaryJson)(req, res, next);
   });
-  app.use(express.urlencoded({ extended: true }));
+  const urlencoded = express.urlencoded({ extended: true });
+  app.use((req, res, next) => isWalkAuditPhotoPut(req) ? next() : urlencoded(req, res, next));
 
   // PostgreSQL returns BIGINT values as strings. Normalize integer response fields
   // at the HTTP boundary so every endpoint emits JSON numbers consistently.

@@ -32,6 +32,9 @@ test('OSM topology uses stable IDs and clips crossing roads while keeping bounda
   const network = extractWalkAuditNetwork(area, fixture);
   assert.deepEqual(network.intersections.features.map(f => f.properties.id), ['node/2']);
   assert.deepEqual(network.segments.features.map(f => f.properties.id), ['way/10/1/2/0/0', 'way/10/2/3/0/0', 'way/20/4/2/0/0', 'way/20/2/5/0/0']);
+  assert.equal(network.segments.features[0].properties.fromNodeKey, 'node/1@0.000000000,0.005000000');
+  assert.equal(network.segments.features[0].properties.toNodeKey, network.segments.features[1].properties.fromNodeKey);
+  assert.equal(network.segments.features[0].properties.toNodeKey, network.segments.features[2].properties.toNodeKey);
   const first = network.segments.features[0].geometry;
   assert.equal(first.type, 'LineString');
   if (first.type === 'LineString') assert.ok(Math.abs(first.coordinates[0][0]) < 1e-10);
@@ -53,8 +56,11 @@ test('thumbnail is a decoded nonblank PNG even for an empty network', () => {
 test('generator falls back within its budget, and rejects bad configuration and provider failure', async () => {
   assert.throws(() => generationConfig({ WALK_AUDIT_OVERPASS_URLS: 'http://example.com' }), /HTTPS/);
   let attempts = 0;
-  const generator = new WalkAuditGenerator({ urls: ['https://one.example/api', 'https://two.example/api'], timeoutMs: 1000, concurrency: 1, intervalMs: 60000 }, async (_url, options) => {
+  const generator = new WalkAuditGenerator({ urls: ['https://one.example/api', 'https://two.example/api'], timeoutMs: 1000, concurrency: 1, intervalMs: 60000 }, async (url, options) => {
     assert.equal(options?.redirect, 'error');
+    assert.equal(options?.method, 'GET');
+    assert.match(String((options?.headers as Record<string, string>)['User-Agent']), /DallasUrbanistsWalkAudit/);
+    assert.ok(new URL(String(url)).searchParams.has('data'));
     attempts++;
     return attempts === 1 ? new Response('busy', { status: 429 }) : Response.json(fixture);
   }, () => new Date('2026-01-01T00:00:00Z'));

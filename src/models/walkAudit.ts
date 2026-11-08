@@ -8,7 +8,7 @@
 
 /** Longitude and latitude, in WGS84 order. */
 export type Position = [number, number];
-export type AuditType = 'intersection' | 'street-segment';
+export type AuditType = 'intersection' | 'street-segment' | 'point';
 export interface AreaFeature {
   type: 'Feature';
   properties: Record<string, unknown>;
@@ -16,7 +16,7 @@ export interface AreaFeature {
 }
 export interface NetworkFeature {
   type: 'Feature';
-  properties: { id: string; name: string | null; highway?: string };
+  properties: { id: string; name: string | null; highway?: string; fromNodeKey?: string; toNodeKey?: string };
   geometry: { type: 'Point'; coordinates: Position } | { type: 'LineString'; coordinates: Position[] };
 }
 export interface FeatureCollection { type: 'FeatureCollection'; features: NetworkFeature[] }

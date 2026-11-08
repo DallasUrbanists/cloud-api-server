@@ -1,12 +1,16 @@
 # Walk audits
 
-Neighbors can define a study area, record observations at intersections or along streets, and assemble a report. The server uses the existing Cloud SQL PostgreSQL pool and Firebase identity. The namespaced API is intended for a future client migration; it is not a drop-in replacement for the original application's cookie sessions. The [OpenAPI fragment](../src/docs/walkAudits.ts), also served in `/docs`, owns the endpoint, validation, and response contract.
+Neighbors can define a study area, record observations at intersections, points, or along streets, and assemble a report. The server uses the existing Cloud SQL PostgreSQL pool and Firebase identity. The namespaced API serves the shared frontend; it is not a drop-in replacement for the original application's cookie sessions. The [OpenAPI fragment](../src/docs/walkAudits.ts), also served in `/docs`, owns the endpoint, validation, and response contract.
 
 ## How data fits together
 
 A contributor profile belongs to one verified Firebase UID but public responses show only its display name and domain ID. A profile is required for domain writes, including staff administration; creating the profile is the registration step. A study has an organizer, polygon boundary, generated street and intersection collections, OSM attribution, and a PNG stored in the same PostgreSQL row. Worksheet IDs pin a specific version of the prompts. Drafts are private to their owner, including from staff. Submitted audits are public; an organizer cannot edit someone else's audit merely by organizing the study. Canonical `staff:true` can administer public domain records but cannot read another person's draft. Private requests require Firebase authentication and, in production, App Check; public reads need neither an application API key nor sign-in. Existing authorized-origin CORS applies.
 
-Draft autosaves and audit edits use `expectedVersion` to reject stale changes. Submitting a draft validates its pinned worksheet and known study feature, locks the study before its children, and creates or updates an audit in the same transaction that consumes the draft. A failed submission retains the draft. Transaction lock waits are bounded to five seconds and individual statements to fifteen seconds; a lock conflict returns 409. Progress counts distinct known feature IDs, so repeated observations of one place do not inflate coverage.
+Each study pins one immutable questionnaire for every enabled audit type. Authors can choose intersection, street segment, and point in any nonempty combination and provide 1–30 authored choice or text prompts for each. If an older study-create client omits both configuration fields, the server pins the explicit intersection and street default templates. Submitted audit types and historical worksheet IDs cannot be changed; an older mismatched draft is kept for reference and must be replaced by a separate draft.
+
+Draft autosaves and audit edits use `expectedVersion` to reject stale changes. Submitting a draft validates its assigned worksheet and location, locks the study before its children, and creates or updates an audit in the same transaction that consumes the draft. A failed submission retains the draft. Transaction lock waits are bounded to five seconds and individual statements to fifteen seconds; a lock conflict returns 409. Point observations remain points on a saved street edge. New street observations require a shortest route from a saved intersection to a street endpoint, which may be midblock; legacy single-edge observations remain valid until their location is explicitly replaced. Coverage unions edge intervals and distinguishes partial edges, while point counts do not imply network coverage.
+
+An audit can include up to three JPEG, PNG, or WebP photos, each at most 2 MiB. Draft photo reads and writes require the draft owner; writes also require the quoted current draft version in `If-Match`. Submission atomically transfers those images to the public audit. Existing audit edits preserve their photos. DTOs and report captures contain descriptors, never image bytes; deletion of the parent removes its stored bytes.
 
 Reports capture sanitized study, worksheet, and selected public audit data. Text edits preserve the capture. Replacing the selected audit IDs explicitly refreshes captured inputs and coverage, while keeping the author's description unless it is changed. Later audit edits or individual audit deletion do not change existing captures. An omitted selection captures all current audits, subject to the 500-audit and 16 MiB bounds; an empty selection is valid. Completion is stored to five decimal places. No AI provider is used.
 
@@ -22,11 +26,11 @@ The runtime uses the existing `DB_*` and `INSTANCE_CONNECTION_NAME`, Firebase se
 
 ## Migration and recovery
 
-An operator must apply `migrations/009_walk_audits.sql` explicitly, followed optionally by `migrations/010_seed_walk_audit_worksheets.sql` for the original starter prompts. Seed reruns leave existing versions and edits intact. Neither migration is applied on startup. Use a DDL-authorized migration account separately from the application's least-privilege DML role. Before production changes, verify the target, ordering and checksums, backup/PITR availability, and rehearse application and recovery on an isolated copy.
+An operator must explicitly apply `migrations/009_walk_audits.sql`, then `migrations/010_seed_walk_audit_worksheets.sql`, then `migrations/011_study_questionnaires_routes_photos.sql`. The third migration backfills each existing study with two assignments: the latest submitted audit's worksheet for each type, or the highest version of the corresponding explicit default slug. Missing required defaults abort the transaction. It does not rewrite historical audits, answers, geometry, or report captures. No migration runs on startup. Use a DDL-authorized migration account separately from the application's least-privilege DML role.
 
 Rolling back application code while retaining these tables is safer than dropping them. Application rollback cannot restore a deleted study; recovery requires an authorized restore from a verified backup and is limited by the available retention and restore procedure. Backups may retain deleted data under the operator's retention policy. No production migration or deletion is performed by the test commands below.
 
-For an explicitly isolated local test database, inspect the target first and apply the two SQL files with a tool such as `psql -v ON_ERROR_STOP=1 -f migrations/009_walk_audits.sql` and then `-f migrations/010_seed_walk_audit_worksheets.sql`, with connection details set for that isolated target. The optional automated PostgreSQL test creates and drops only a unique schema within a dedicated local database named `walk_audit_test`; it refuses non-loopback URLs and requires both `WALK_AUDIT_TEST_DATABASE_URL` and `WALK_AUDIT_TEST_DESTRUCTIVE=true`. It applies the feature SQL itself, uses fixture-backed Overpass responses and test-only identities, exercises concurrent requests, and starts and stops its own API fixture processes.
+For an explicitly isolated local test database, inspect the target first and apply the three SQL files in order with an error-stopping migration tool. The optional automated PostgreSQL test creates and drops only a unique schema within a dedicated local database named `walk_audit_test`; it refuses non-loopback URLs and requires both `WALK_AUDIT_TEST_DATABASE_URL` and `WALK_AUDIT_TEST_DESTRUCTIVE=true`. It applies the feature SQL itself, uses fixture-backed Overpass responses and test-only identities, exercises concurrent requests, and starts and stops its own API fixture processes.
 
 ```powershell
 $env:WALK_AUDIT_TEST_DATABASE_URL = 'postgresql://test-user@127.0.0.1:5432/walk_audit_test'
@@ -42,6 +46,13 @@ $walkAuditTests = @(Get-ChildItem .\tests -Filter 'walkAudit*.test.ts' -File | S
 npm run build
 npm run docs:build
 ```
+
+For local browser rehearsals, build the sibling frontend and run
+`tsx tests/helpers/walkAuditBrowserFixture.ts` from this repository. This helper
+binds only to loopback and uses an in-memory PGlite database, fixture street
+topology, and test-only identities; it does not contact Cloud SQL or perform a
+real Firebase/App Check exchange. Stop it when finished. It is not part of the
+production runtime.
 
 For a local authenticated request, use an actual test Firebase ID token and, in production, an App Check token in the headers. For example, after creating a profile, a public study can be retrieved without credentials:
 
